@@ -1,0 +1,41 @@
+  * [[:start]]
+
+  * [[:projects:intro]]
+
+  *  Norbert Feurle
+      * [[projects:Continuous Wave Sinusgenerator]]
+      * [[projects:UART/RS232 Receiver Transmitter]]
+      * [[projects:Python Hardware Processor]]
+
+  * Thomas Traber
+      * [[projects:mixedmodesimulation]]
+      * [[projects:cordic_calculations]]
+      * [[projects:sinewave_generator]]
+      * [[projects:cosimulation_with_quartus]]
+      * [[projects:interactive_simulation_using_ipython]]
+
+  * Christopher L. Felton
+      * [[projects:gcicexample]]
+      * [[users:cfelton:projects:recursivefft]]
+      * [[users:cfelton:projects:fxintbv]]
+      * [[users:cfelton:projects:usbp]]
+
+  * Guenter Dannoritzer
+      * [[projects:conste_encoder|Constellation Encoder]]
+      * [[projects:cplx_math|Complex Math]]
+      * [[projects:rounding|Rounding]]
+      * [[projects:ft245r|FT245R Interface]]
+      * [[projects:mips32_asm]]
+      * [[projects:ise_py:|Call Xilinx ISE from Python]]
+
+  * Jan Decaluwe
+      * [[http://www.jandecaluwe.com/hdldesign/digmac.html|MyHDL-based design of a digital macro]]
+
+  * George Pantazopoulos 
+      * [[users:george_pantazopoulos:memory]]
+      * [[users:george_pantazopoulos|George's personal page]]
+      * [[projects:phoenixsid_65x81]]
+      * [[projects:dsx1000]]
+      * [[users:george_pantazopoulos:projects:oss_ip_cores:lfsr_sid|LFSR6581 RNG]]
+
+  * [[:terms_of_use]]

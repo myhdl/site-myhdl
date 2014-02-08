@@ -1,0 +1,45 @@
+====== USB Controller Model ======
+
+The following diagram shows the components of the USB controller and the USB interface.  The USB controller is modeled with MyHDL.  MyHDL and Python make it easy to model the behavior of the USB controller.
+
+
+{{:users:cfelton:projects:usbp_diagrams.png?480}}
+
+==== Interface Functions ====
+In a testbench simple functions can be used to drive the bus transactors:
+  * Write(data, ep)
+  * Read(ep)
+  * IsEmpty(ep)
+  * IsData(ep)
+  * WriteAddress(addr, data)
+  * ReadAddress(addr)
+==== Testbench Example Using the FX2 Model ====
+<code myhdl>
+        yield fx2Model.WriteAddress(0x0101, 1)       # Write Wishbone memory mapped device 
+        yield fx2Model.WriteAddress(0x0103, 0xAA)    # Write Wishbone memory mapped device
+        yield fx2Model.ReadAddress(0x0103, rbuf)
+        
+        # Write data to the FX2 Model
+        for dat in test_data1:
+            fx2Model.Write(dat, fx2Model.EP4)        
+
+        # Wait for the data to transfer
+        yield fx2Model.IsEmpty(fx2Model.EP4)
+   
+        # Wait for data in FIFO
+        yield fx2Model.IsData(fx2Model.EP8, 5)
+        
+        
+        # Read Data out of the FX2
+        for dat in test_data1:
+            rdata = fx2Model.Read(fx2Model.EP8)
+            assert rdata == dat, \
+             "Testbench FAILED return data %x expected %x" % (rdata, dat)
+
+        yield delay(20*fx2Model.IFCLK_TICK)
+</code>
+
+Some of the USB controller functions will be a generator and will return a valid 
+MyHDL yield type.  Majority of the functions do complicated tasks that require the
+simulation engine to run and to wait for events.
+

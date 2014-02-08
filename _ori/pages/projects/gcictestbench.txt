@@ -1,0 +1,155 @@
+<code myhdl>
+def cmdLineTestBench(run='trace', M=1, D=5, R=50, Q=7, Type=None):
+    """
+    This is the simulation and conversion function for the CIC filter.
+
+    Inputs
+      run  --  Simulation or coversion type
+      M    --  Order of the CIC filter
+      D    --  Delay of the Comb Filter
+      R    --  Decimation/Interpolation size
+      Q    --  Quantization size of input word
+    """
+    global MaxGain
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Parameters / Globals
+    MaxGain = D**M      # Max gain of the CIC
+    L = 2**(Q)          # Max value for input
+    maxV = L * MaxGain  # Max Value for output
+    minV = -maxV        # Min Value for output
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Signals
+    clk = Signal(False)
+    rst = Signal(False)
+
+    x = Signal(intbv(0, min=-L, max=L))
+    y = Signal(intbv(0, min=minV, max=maxV))
+
+    dvi = Signal(True)
+    dvo = Signal(False)
+
+    xcnt  = Signal(0)
+    N_CLK = 0
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Instantiate MyHDL simulation and coversion functions
+    if run == 'trace':
+        dut = traceSignals(cic, clk, rst, x, dvi, y, dvo, M, D, R)
+    elif run == 'ver':
+        toVerilog(cic, clk, rst, x, dvi, y, dvo, M, D, R)
+        return None
+    elif run == 'vhd':
+        toVHDL(cic, clk, rst, x, dvi, y, dvo, M, D, R)
+    else:
+        dut = cic(clk, rst, x, dvi, y, dvo, M, D, R)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Stimulus
+    @always(delay(1))    
+    def clkgen():
+        clk.next = not clk
+
+    @always(clk.posedge)
+    def ist():
+        
+        # Generate Input samples
+        if xcnt >= N_CLK:
+            x.next = int(L*uniform(-1,1))
+            dvi.next = True
+            xcnt.next = 0
+        else:
+            x.next = 0
+            dvi.next = False
+            xcnt.next = xcnt + 1
+
+                     
+    @instance
+    def stimulus():
+        """
+        The following is a basic testbench to stimulate the CIC filter
+        and create some plots.
+        """
+
+        ysave = [0.0] * Nfft
+        favg  = np.zeros(Nfft)
+        xfavg = np.zeros(Nfft)
+        xs    = np.zeros(Nfft)
+
+        yield clk.posedge
+        rst.next = True
+        yield delay(10)
+        rst.next = False
+        yield delay(10)
+
+        for ii in range(Nloops):
+            for jj in range(Nfft):
+                xs[jj] = float(x)/L
+                if dvo:
+                    if y == 0:
+                        #Prevent any log(0) errors, startup zeros
+                        ysave[jj] = 10.0**-10
+                    else:
+                        ysave[jj] = float(y._val)/L  # Undo fix-point
+                yield clk.negedge
+                
+            favg = favg + abs(fft(ysave, Nfft)) / Nfft
+            xfavg = xfavg + abs(fft(xs))/Nfft
+            
+        favg = favg / Nloops
+        xfavg = xfavg / Nloops
+
+    
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # Plot responses
+        xa = 2*pi * np.arange(Nfft)/Nfft - pi
+        plt.ioff()
+        plt.plot(xa, fftshift(20*log10(favg/MaxGain)) )
+        plt.plot(xa, fftshift(20*log10(xfavg)) ) 
+        plt.title('CIC Filter Frequency Response')
+        plt.savefig('plots/myhdl_cic_freq_response_M%d_D%d_R%d.png' % (M,D,R) )
+        plt.close('all')
+
+        print MaxGain
+        xrsp = 20*log10(favg/MaxGain) - 20*log10(xfavg)
+        plt.plot(xa, fftshift(xrsp) )
+        #plt.plot(xa, fftshift(20*log10(xfavg)) ) 
+        plt.title('CIC Filter Frequency Response Gain Removed, Output * 1/D')
+        plt.ylabel('Amplitude dB')
+        plt.xlabel('Normailzed Frequency radians')
+        plt.axis([ -pi, pi, -60, 0])
+        plt.savefig('plots/myhdl_cic_freq_response2_M%d_D%d_R%d.png' % (M,D,R) )
+        plt.close('all')
+
+        # Plot the expected response
+        num = np.zeros(D+1)
+        num[0] = 1
+        num[D] = -1        
+        den = [1, -1]
+        print num, den
+        
+        w,H = freqz(num, den)
+        Hplt = 20*log10(abs(H[1:]))
+        plt.plot(w[1:],  Hplt)
+        plt.title('CIC Filter Frequency Response freqz')
+        plt.axis([ 0, pi, -60, max(Hplt) + 2])
+        plt.ylabel('Amplitude dB')
+        plt.xlabel('Normailzed Frequency radians')
+        plt.savefig('plots/freqz_cic_freq_response_M%d_D%d.png' % (M,D) )
+        plt.close('all')
+
+        Hplt = 20*log10(abs(H[1:]/D))
+        plt.plot(w[1:],  Hplt)
+        plt.title('CIC Filter Frequency Response freqz')
+        plt.axis([ 0, pi, -60, max(Hplt) + 2])
+        plt.ylabel('Amplitude dB')
+        plt.xlabel('Normailzed Frequency radians')
+        plt.savefig('plots/freqz_cic_freq_response2_M%d_D%d.png' % (M,D) )
+        plt.close('all')
+        
+        raise StopSimulation
+
+    return clkgen, stimulus, ist, dut
+
+</code>

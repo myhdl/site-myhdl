@@ -1,0 +1,40 @@
+====== To do for MyHDL 0.6 ======
+
+
+===== Status =====
+
+0.6 has been released.
+
+
+===== To do =====
+
+  * <del> RAM support using array types </del>
+  * <del> operators with signed operands </del>
+  * <del> augmented operators </del>
+  * <del> enhanced ''print'' statement support </del>
+  * <del> user-defined VHDL support </del>
+  * <del> ''inout'' handling</del>
+  * <del> enhance ''toVerilog'' so that it can work with the new verification method also. In particular, ''print'' statements should be handled properly.</del>
+  * write conversion verification test benches for some cookbook examples
+  * <del> include date/tool info in conversion output </del>
+  * <del> review ''if %%__%%debug%%__%%'' functionality with new verification capabilities </del> 
+  * <del> encoding attributes to enumeration types </del> 
+  * <del> use a package in a separate file for general VHDL output code </del>
+
+===== Open issues =====
+
+==== Name clashes ====
+
+  * Find a good solution to avoid name clashes. In the Verilog output, I relied on using ''_'' as a prefix, but because VHDL doesn't allow this, and I want a general solution, this needs to change.
+
+  * Find a good solution to avoid name clashes with Verilog and VHDL keywords.
+
+
+==== Rom inference support ====
+
+Currently, ROMs are inferred from case statements, as in Verilog. Users and synthesis tools may prefer arrays of integers. Feedback welcome.
+
+
+==== User-defined VHDL code ====
+
+<del>It is straightforward to support the ''%%__%%toVHDL%%__%%'' attribute for user-defined VHDL, similar to the Verilog solution. This may not be sufficient however, because VHDL requires instantiated components to be declared in the code. We may have to add a way to add such user-defined declarations.</del>

@@ -1,0 +1,603 @@
+Back to the [[projects:mips32_asm|MIPS32 Assembler]] page
+
+
+<code python asm.py>
+#!/usr/bin/python
+
+''' MIPS32 Assembler
+
+File format:
+
+  [label:] [operation] [operands] [#comments]
+
+'''
+
+__version__ = 0.1
+
+import os
+
+from optparse import OptionParser, OptionGroup
+
+from pyparsing import Word, alphas, nums, alphanums, Combine, oneOf
+from pyparsing import FollowedBy, Optional, pythonStyleComment
+from pyparsing import ParseException
+
+class ArgError(Exception):
+  pass
+
+class OperandError(Exception):
+  pass
+
+class EncodeError(Exception):
+  pass
+
+class SymbolLookUpError(Exception):
+  pass
+
+
+class Mips32Assembler(object):
+
+  def __init__(self):
+    
+    #
+    # register file
+    #
+    # specify the register name and its number
+    self.registerFileD = {}
+    self.registerFileD['$0'] = 0
+    self.registerFileD['$at'] = 1
+    self.registerFileD['$v0'] = 2
+    self.registerFileD['$v1'] = 3
+    self.registerFileD['$a0'] = 4
+    self.registerFileD['$a1'] = 5
+    self.registerFileD['$a2'] = 6
+    self.registerFileD['$a3'] = 7
+    for i in range(8): self.registerFileD['$t%d'%i] = 8+i
+    for i in range(8): self.registerFileD['$s%d'%i] = 16+i
+    self.registerFileD['$t8'] = 24
+    self.registerFileD['$t9'] = 25
+    self.registerFileD['$k0'] = 26
+    self.registerFileD['$k1'] = 27
+    self.registerFileD['$gp'] = 28
+    self.registerFileD['$sp'] = 29
+    self.registerFileD['$fp'] = 30
+    self.registerFileD['$ra'] = 31
+    
+    
+    valid_registers = self.registerFileD.keys()
+    
+    #
+    # bnf grammar for operands
+    #
+    identifier_bnf = Word(alphas+"_",alphanums+"_")
+    integer_bnf = Word(nums)
+    addr_bnf = identifier_bnf
+
+    reg_bnf = oneOf(valid_registers)            # any of the registers
+    
+    # imm([reg]) with imm being 16-bit signed number
+    imm_bnf = (integer_bnf).setResultsName("imm") +\
+              "(" + (reg_bnf).setResultsName("reg") + ")"
+
+    #
+    # operations
+    #
+    # dict of dict specifying the supported operations
+    # dict key is the supported assembler mnemonic of the operation. Each
+    # dict entry associate is another dictionary, specifying the
+    # operation.
+    #
+    # The dictionary of each entry has the following keys:
+    # 'valid_op'  - a list, specifying the valid operands in pyparsing
+    #               grammar. R-type operations for example will need three
+    #               operands for the operation. The list will hence
+    #               contain three reg_bnf entries.
+    # 'opcode'    - the machine opcode for the operation
+    # 'funct'     - function code, only used for R-type operations
+    self.operationsD = {}
+    
+    #
+    # R-type
+    #
+    self.operationsD['add'] = { 'valid_op': [reg_bnf, reg_bnf, reg_bnf],
+                                'opcode': 0,
+                                'funct': 32}
+    self.operationsD['sub'] = { 'valid_op': [reg_bnf, reg_bnf, reg_bnf],
+                                'opcode': 0,
+                                'funct': 34}
+    self.operationsD['and'] = { 'valid_op': [reg_bnf, reg_bnf, reg_bnf],
+                                'opcode': 0,
+                                'funct': 36}
+    self.operationsD['or'] =  { 'valid_op': [reg_bnf, reg_bnf, reg_bnf],
+                                'opcode': 0,
+                                'funct': 37}
+    self.operationsD['slt'] = { 'valid_op': [reg_bnf, reg_bnf, reg_bnf],
+                                'opcode': 0,
+                                'funct': 42}
+    
+    #
+    # I- and J-type operations
+    #
+    self.operationsD['j'] =   { 'valid_op': [addr_bnf],
+                                'type': 'J',
+                                'opcode': 2}
+    self.operationsD['beq'] = { 'valid_op': [reg_bnf, reg_bnf, addr_bnf],
+                                'type': 'I',
+                                'opcode': 4}
+    self.operationsD['addi'] = {'valid_op': [reg_bnf, reg_bnf, imm_bnf],
+                                'type': 'I',
+                                'opcode': 8}
+    self.operationsD['lw'] =  { 'valid_op': [reg_bnf, imm_bnf],
+                                'type': 'I',
+                                'opcode': 35}
+    self.operationsD['sw'] =  { 'valid_op': [reg_bnf, imm_bnf],
+                                'type': 'I',
+                                'opcode': 43}
+    
+    valid_operations = self.operationsD.keys()
+
+    # bnf grammar for operations
+    label_bnf = identifier_bnf + ":"
+    operation_bnf = oneOf(valid_operations)
+    operand_bnf = Word(alphanums+"_+-*/()[]$")
+
+
+    # parsing rules for lines
+    instruction_bnf = Optional(label_bnf).setResultsName("label")+\
+        Optional((operation_bnf).setResultsName("operation") +\
+        Optional((operand_bnf).setResultsName("op1")) +\
+        Optional("," + (operand_bnf).setResultsName("op2")) +\
+        Optional("," + (operand_bnf).setResultsName("op3")))
+
+    self.bnf = instruction_bnf
+
+    # using python style comments, ignore them
+    #bnf.ignore(pythonStyleComment)
+
+  ###################################################################
+  # properties
+  def __getHexMachineL(self):
+    '''return machine list as hex list
+    '''
+    hexD = {0:'0', 1:'1', 2:'2', 3:'3', 4:'4', 5:'5', 6:'6', 7:'7', 8:'8',
+            9:'9', 10:'A', 11:'B', 12:'C', 13:'D', 14:'E', 15:'F'}
+    hexL = []
+    nibbles = 8 #int(math.ceil(32/4.0))
+
+    for instr in self.machineL:
+      # merge values
+      hex_entryL = []
+      for n in range(nibbles-1, -1, -1):
+        nvalue = (instr >> n*4) & 0xf
+        hex_entryL.append(hexD[nvalue])
+
+      hexL.append(''.join(hex_entryL))
+
+    return hexL
+
+  machineHexL = property(__getHexMachineL)
+
+
+
+  ###################################################################
+  # memeber functions
+
+  def parse(self, str, debug=False):
+    '''Parsing the assembly string
+    
+    Will set up self.symbolTableD and self.instructionL.
+    symbolTableD  : dictionary with the label as key and the address as value
+    instructionL  : list of list with each list entry being starting
+                    with the address, followed by the instruction with
+                    its operands. Examples are:
+
+                    0x00 lw $rt, imm($rs)    --> [0, 'lw', '$rt', '$rs', 'imm']
+                    0x04 addi $rt, $rs, imm  --> [4, 'addi', '$rt', '$rs', 'imm']
+                    0x08 j my_label          --> [8, 'j', 'my_label']
+                    0x0C add $rd, $rs, $rt   --> [12, 'add', '$rd', '$rs', '$rt']
+
+    '''
+    
+    PC = 0 # init program counter to 0
+    self.symbolTableD = {}
+    self.instructionL = []
+
+    for i, line in enumerate(str.split('\n')):
+      pr = self.bnf.parseString(line)
+      
+      if debug:
+        print
+        print "line %d: '%s' --> '%s'"%(i, line, pr)
+        print "label: ", pr.label
+        print "operation: ", pr.operation
+        print "op1: ", pr.op1, type(pr.op1), len(pr.op1)
+        print "op2: ", pr.op2, type(pr.op2), len(pr.op2)
+        print "op3: ", pr.op3, type(pr.op3), len(pr.op3)
+        if pr.op3: print "op3 is True"
+
+      # found a label, add to symbol table
+      if pr.label:
+        if debug: print "Found label: ", pr.label
+        self.symbolTableD[pr.label[0]] = PC
+
+      # found operation, check if operands are valid
+      if pr.operation:
+        if debug: print "Found operation: ", pr.operation
+
+        num_op = len(self.operationsD[pr.operation]['valid_op'])
+        if debug: print "Expecting %d operands"% num_op
+
+        # check the correct number of operands
+        if num_op == 1:
+          if not (pr.op1 and not pr.op2 and not pr.op3):
+            got = 0
+            if pr.op1: got += 1
+            if pr.op2: got += 1
+            if pr.op3: got += 1
+            msg = "#%d: " % i
+            msg += "Expected only one operand for operation '%s'." % pr.operation
+            msg += " Got %d"% got
+            raise OperandError, msg
+        elif num_op == 2:
+          if not (pr.op1 and pr.op2 and not pr.op3):
+            got = 0
+            if pr.op1: got += 1
+            if pr.op2: got += 1
+            if pr.op3: got += 1
+            msg = "#%d: " % i
+            msg += "Expected only two operands for operation '%s'." % pr.operation
+            msg += " Got %d"% got
+            raise OperandError, msg
+        elif num_op == 3:
+          if not (pr.op1 and pr.op2 and pr.op3):
+            got = 0
+            if pr.op1: got += 1
+            if pr.op2: got += 1
+            if pr.op3: got += 1
+            msg = "#%d: " % i
+            msg += "Expected three operands for operation '%s'." % pr.operation
+            msg += " Got %d"% got
+            raise OperandError, msg
+
+        # check correct operand types
+        # TODO: need to verify that the operands are correct
+
+        # Everything was fine, so add the PC and the operation to the
+        # instruction list
+        instr = [PC, pr.operation]
+        if num_op > 0: instr.append(pr.op1)
+        
+        # Special treatment of I-type as there are three forms: 
+        # addi  $rt, $rs, imm
+        # lw    $rt, imm($rs)
+        # lui   $rt, imm
+        if num_op > 1: 
+          if self.isItype(pr.operation):
+            st = pr.op2.find('(')
+            end = pr.op2.find(')')
+            if debug: print "Found '()' at %d and %d" % (st, end)
+            if st > -1 and end > -1:
+              reg = pr.op2[st+1:end]
+              imm = pr.op2[:st]
+              
+              if debug:
+                print "Slicing registers: '%s'"%reg
+                print "Slicing imm: '%s'"%imm
+
+              # put imm always at the end
+              instr.append(reg)
+              instr.append(int(imm))
+
+            else:
+              instr.append(pr.op2)
+          else:
+            instr.append(pr.op2)
+
+        if num_op > 2: 
+          if self.isItype(pr.operation):
+            instr.append(int(pr.op3))
+          else:
+            instr.append(pr.op3)
+
+
+        self.instructionL.append(instr)
+        PC += 4
+
+    if debug:
+      print "Symbol Table: ", self.symbolTableD
+      print "Instruction List: ", self.instructionL
+      print "PC: ", PC
+
+
+
+  def passTwo(self, debug=False):
+    '''Pass two will replace lables with addresses from the symbol table
+    and convert the instructions into machine code.
+
+    Expect self.symboTableD and self.instructionL to be setup correct
+    by a previous self.parse() call.
+    '''
+    self.machineL = []
+    
+    #
+    # first part will replace lables with addresses from symbol table
+    #
+    for i, instrL in enumerate(self.instructionL):
+      if self.hasLabel(instrL):
+        self.instructionL[i] = self.replaceLabel(instrL)
+
+    #
+    # second part will convert assembler instructions into machine code
+    #
+    for instrL in self.instructionL:
+      #print "Instr: ", instrL[1]
+      self.machineL.append(self.encodeInstruction(instrL))
+
+    if debug: print self.machineL
+
+
+  ###################
+  # helper functions
+  #
+
+  def encodeInstruction(self, instrL):
+    '''Encode the instruction into machine code
+
+    instrL : a list with the operation and the operands. All are validated.
+    '''
+    opcode = self.operationsD[instrL[1]]['opcode']
+    
+    # encode opcode
+    instr = opcode << 26
+
+    if opcode == 0:
+
+      # set values. There are some operations that do not have 3
+      # registers. Test first how many operands there are
+      funct = self.operationsD[instrL[1]]['funct']
+      num_reg = len(self.operationsD[instrL[1]]['valid_op'])
+      rs = self.registerFileD[instrL[3]]
+      rt = 0
+      rd = 0
+
+      if num_reg > 1: rt = self.registerFileD[instrL[4]]
+      if num_reg > 2: rd = self.registerFileD[instrL[2]]
+      shamt = 0
+
+      # merge the bits together
+      instr |= funct
+      instr |= (shamt << 6)
+      instr |= (rd << 11)
+      instr |= (rt << 16)
+      instr |= (rs << 21)
+
+    elif self.operationsD[instrL[1]]['type'] == 'I':
+
+      # discerne between lw $t2, 32($0) and addi $3, $0, 7 thype calls
+      # TODO: need to take extra care for BNE and BEQ, imm can only be
+      # calculated in the second pass, after the symbol table has been
+      # setup. But that also requires to pass PC per instruction, as the
+      # imm value is calculated relative to the PC of the current
+      # operation.
+      rt = self.registerFileD[instrL[2]]
+      rs = self.registerFileD[instrL[3]]
+      imm = instrL[4]
+
+      # merge the bits together
+      mask = 2**16-1
+      instr |= (imm & mask)
+      instr |= (rt << 16)
+      instr |= (rs << 21)
+    
+    elif self.operationsD[instrL[1]]['type'] == 'J':
+      
+      # for all J-type instructions usually the instrunction only
+      # consist out of the operation and one operand, the address
+      idx = len(self.operationsD[instrL[1]]['valid_op'])
+      addr = instrL[idx+1]
+      
+      #print instrL, " merging addr: ", addr
+
+      # merge the bits together
+      instr |= addr
+
+    else:
+      raise EncodeError, "Not R-, I-, J-type command. %s"% instrL
+
+    return instr
+
+
+  def isItype(self, instr):
+    '''Return True if it the passed instruction is I-type'''
+    ret_value = False
+
+    if self.operationsD[instr].has_key('type'):
+      if self.operationsD[instr]['type'] == 'I':
+        ret_value = True
+
+    #if ret_value: print "'%s' is I-type"%instr
+    #else: print "'%s' is NOT I-type"%instr
+
+    return ret_value
+
+  def hasLabel(self, instrL):
+    '''Return True if the instrL contains a label'''
+    ret_value = False
+
+    if instrL[1] == 'j':
+      #print "Has label: ", instrL
+      ret_value = True
+
+    return ret_value
+
+  def replaceLabel(self, instrL):
+    '''Replace the label in instrL with the address from the symbol table
+    '''
+    idx = 1 + len(self.operationsD[instrL[1]]['valid_op'])
+    #print "Expect label at index: ", idx, instrL
+    if self.symbolTableD.has_key(instrL[idx]):
+      instrL[idx] = self.symbolTableD[instrL[idx]]
+      #print "Replaced label: ", instrL
+    else:
+      raise SymbolLookUpError, "Instr: %s, symbol '%s' not found"% (
+          instrL, instrL[idx])
+    
+    return instrL
+
+  def writeHexToFile(self, file_name, pad):
+    '''Write the machine code as hex to a file'''
+
+    if pad:
+      if pad < len(self.machineL):
+        raise ValueError, ("Pad value " + str(pad) + " is too small."
+                          " Machine code needs " + 
+                          str( len(self.machineL)) +
+                          " entries.")
+
+    fid = open(file_name, 'w')
+
+    for instr in self.machineHexL:
+      fid.write('%s\n'%instr)
+
+    if pad:
+      for i in range(pad - len(self.machineL)):
+        fid.write('00000000\n')
+
+    fid.close()
+
+  #
+  # end of Mips32Assembler class
+  ######################################################################
+
+########################################################################
+# main functions initiated based on command line options
+########################################################################
+def showMnemonic():
+  '''
+  '''
+  print
+  print "Supported MIPS32 Mnemonic:"
+  asm = Mips32Assembler()
+  instL = asm.operationsD.keys()
+  instL.sort()
+  print instL
+
+def compile(in_fileL, out_file, pad):
+  '''main compile function
+  
+  in_fileL  : list of file names. At the moment only one file is
+              supported.
+  out_file  : output file with machine code
+  pad       : integer value, specifying to how many entries the machine
+              output file should be padded with zeros.
+  '''
+  asm = Mips32Assembler()
+
+  for fn in in_fileL:
+    fid = open(fn, 'r')
+    txtL = fid.readlines()
+    txt = ''.join(txtL)
+
+    fid.close()
+
+  asm.parse(txt)
+  print "Parsed assembler file"
+  asm.passTwo()
+  print "Create machine code"
+  asm.writeHexToFile(out_file, pad)
+  print "Wrote machine code to file '%s'"% out_file
+
+
+
+
+######################################################################## 
+# setting up command line parser
+def setupParser():
+  '''Set up command line parser'''
+
+  usage = "usage: %prog [options] arg"
+  usage += "\n\nMIPS32 Assembler"
+  usage += "\n\nCompiles MIPS32 assembler code into machine code."
+  usage += "\n\narg: text file with mips32 assembler mnemonic to compile."
+  usage += " At the moment only one file is accepted."
+  usage += " File can be avoided with -m option"
+
+  parser = OptionParser(usage=usage, version="%prog "+str(__version__))
+
+  #
+  # adding options
+  parser.add_option("-m", "--show-mnemonic", dest="show_mnemonic",
+                    action="store_true", default=False,
+                    help="show the supported mnemonic and exit."
+                          " Requires no argument")
+  parser.add_option("-o", "--out-file", dest="out_file", 
+                    default="mips32out.dat",
+                    help="store the machine code in the output file."
+                    " [default='%default']")
+
+  ofile_group = OptionGroup(parser, "Output file specific options")
+  
+  ofile_group.add_option("-p", "--pad", dest="pad",
+                    type="int",
+                    help="pad the generated machine code to the "
+                          "specified length with zero values. "
+                          "If e.g. the generated machine code only needs "
+                          "30 entries a '-p 32' will padd the file with"
+                          " 2 zero values. Xilinx ISE e.g. requires all"
+                          " entries in a ROM to be initalized. In case the"
+                          " machine code needs more space than specified by"
+                          " the pad option, a ValueError is raised, telling"
+                          " how many entries the machine code requires.")
+
+  parser.add_option_group(ofile_group)
+
+  text_org = 0
+  data_org = 0
+
+  linker_group = OptionGroup(parser, "Linker specific options")
+  linker_group.add_option('--data', dest='data_org',
+                    type='int', default=data_org,
+                    help="specify the start of the .data segment."
+                          " [default=%s]"%(hex(data_org)))
+  linker_group.add_option('--text', dest='text_org',
+                    type='int', default=text_org,
+                    help="specify the start of the .text segment."
+                          " [default=%s]"%(hex(text_org)))
+  
+  parser.add_option_group(linker_group)
+
+  return parser
+
+
+
+def checkOptArgErrors(opt, arg, parser):
+  '''Check for mutual exclusive options or args error.
+  If there are command line switches that are mutual exclusive, they are
+  checked for here and parser exceptions are raised.
+  '''
+  if not (opt.show_mnemonic) and len(args) != 1:
+    parser.error("incorrect number of arguments")
+  #if opt.a and opt.b:
+  #  parser.error("options -a and -b are mutually exclusive")
+
+
+######################################################################## 
+# main
+######################################################################## 
+if __name__ == '__main__':
+  
+  parser = setupParser()
+
+  (opt, args) = parser.parse_args()
+  checkOptArgErrors(opt, args, parser)
+
+  if opt.show_mnemonic:
+    showMnemonic()
+  else:
+    for file in args:
+      if not os.path.exists(file):
+        raise ArgError, "File '%s' does not exist"% file
+
+    compile(args, opt.out_file, opt.pad)
+
+</code>

@@ -1,0 +1,6 @@
+  * [[:start]]
+
+  * **What's new in MyHDL**
+     * [[whatsnew:0.5|0.5]]
+     * [[http://myhdl.jandecaluwe.com/doc/0.4/whatsnew04|0.4]]
+     * [[http://myhdl.jandecaluwe.com/doc/0.3/whatsnew03|0.3]]

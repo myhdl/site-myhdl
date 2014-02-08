@@ -1,0 +1,228 @@
+====== Constellation Encoder using intbv.signed() ======
+
+===== Introduction =====
+
+The example on this page uses a constellation encoder, as found e.g. in ADSL modems, and shows the usage of the intbv.signed() member function for its implementation. The intbv.signed() member function is a new function since MyHDL version 0.6.
+
+On the modulator side of an ADSL modem a constellation encoder performs the conversion of data bits to the  complex plane. The following figure shows a constellation diagram of the size b=4 bits. It allows to encode four
+data bits to the complex plane. The number at each constellation point represents the input data value to the constellation encoder and the output is the constellation point in the complex plane, represented by the X and Y coordinate values.
+
+{{ :projects:const_b4.png?330x321 |Constellation diagram for b=4 bits }}
+
+As an example, the following figure shows how from the data bits the constellation point is determined. Constellation coordinates are always odd numbered, so the lsb of the constellation point value is always set to 1.
+
+
+{{ :projects:const_b4_encoding.png |Encoding example of 4 data bits }}
+
+
+The X value of the constellation point is created by concatenating all the odd numbered bits of the data word.  The Y value by concatenating all even numbered bits of the data word. In this example the data value 5 is encoded. The odd bits # 1 and 3 are 0 and with the always set lsb, the X value of the constellation point results to X = 1. For the Y value the even bits # 0 and 2 are 1 and in connection with the always set lsb, the constellation value results to Y = -1. The value is considered a signed number and with the msb set, here bit # 2, the value is a negative number.
+
+The constellation encoder is implemented as a combinational logic module with the interface shown in the following figure.
+
+{{ :projects:const_block_b4_2.png |Constellation Encoder block for b=4 bits}}
+
+
+===== Test bench =====
+
+The test bench will feed as input data the values from 0 .. 15 and verify the expected output after a delay of 10. The expected output values for the x_o and y_o are hard coded in the lists expXL and expYL.
+
+<code myhdl test_const_encoder.py>
+#!/usr/bin/env python
+
+
+import unittest
+from myhdl import *
+
+from const_encoder import const_encoder
+
+
+class TestConstEncoder(unittest.TestCase):
+
+  def test_const_encoder(self):
+    
+    def bench():
+   
+      data_i = Signal(intbv(0)[4:])
+      x_o, y_o = [Signal(intbv(0, min=-4, max=4)) for i in range(2)]
+
+      const_encoder_inst = const_encoder(data_i, x_o, y_o)
+
+      expXL = [1, 1, 3, 3, 1, 1, 3, 3, -3, -3, -1, -1, -3, -3, -1, -1]
+      expYL = [1, 3, 1, 3, -3, -1, -3, -1, 1, 3, 1, 3, -3, -1, -3, -1]
+
+      @instance
+      def stimulus():
+        print
+        for i in range(2**4):
+          data_i.next = i
+          yield delay(10)
+          print "(%3d) data_i: %2d x: % d y: % d"%(now(), data_i, x_o, y_o)
+          self.assertEqual(x_o, expXL[i])
+          self.assertEqual(y_o, expYL[i])
+
+        raise StopSimulation
+
+    
+      return instances()
+
+    
+    #####################################
+    tb = bench()
+    #tb = traceSignals()
+    sim = Simulation(tb)
+    sim.run()
+
+
+########################################################################
+# main
+if __name__ == '__main__':
+  suite = unittest.TestLoader().loadTestsFromTestCase(TestConstEncoder)
+  unittest.TextTestRunner(verbosity=2).run(suite)
+</code>
+
+===== RTL implementation =====
+
+Now to the actual implementation of the constellation encoder. With bit indexing the odd and even bits are extracted and concatenated with the concat() function to form the x_o and y_o outputs. Note how the intbv.signed() member function is used in connection with the concat() function. The concat() function would return an intbv() instance with a positive value range. Here in this case it would be 3 bits wide, hence min=0 and max=8. For the constellation encoder function the msb, here bit # 2, is considered the sign bit and the intbv.signed() function does just that. It considers the msb as the sign bit and returns an integer value with the intbv value as two's complement number.
+
+<code myhdl const_encoder.py>
+#!/usr/bin/env python
+#
+# const_encoder.py
+#
+from myhdl import *
+
+
+def const_encoder(data_i, x_o, y_o):
+  '''Constellation encoder as combinational logic with constellation
+  size b=4
+
+  I/O pins:
+  =========
+  
+  data_i        : data word to be encoded
+  x_o           : real part of the constellation point
+  y_o           : imaginary part of the constellation point
+
+  '''
+
+  @always_comb
+  def const_enc():
+
+    x_o.next = concat(data_i[3], data_i[1], True).signed()
+    y_o.next = concat(data_i[2], data_i[0], True).signed()
+
+
+  return instances()
+
+
+########################################################################
+def convert():
+  
+  data_i = Signal(intbv(0)[4:])
+  x_o, y_o = [Signal(intbv(0, min=-4, max=4)) for i in range(2)]
+
+  toVerilog(const_encoder, 
+            data_i,
+            x_o, y_o)
+
+  toVHDL(const_encoder,
+            data_i,
+            x_o, y_o)
+ 
+
+if __name__ == '__main__':
+  convert()
+</code>
+
+Running the test bench will result in the output:
+
+<code>
+( 10) data_i:  0 x:  1 y:  1
+( 20) data_i:  1 x:  1 y:  3
+( 30) data_i:  2 x:  3 y:  1
+( 40) data_i:  3 x:  3 y:  3
+( 50) data_i:  4 x:  1 y: -3
+( 60) data_i:  5 x:  1 y: -1
+( 70) data_i:  6 x:  3 y: -3
+( 80) data_i:  7 x:  3 y: -1
+( 90) data_i:  8 x: -3 y:  1
+(100) data_i:  9 x: -3 y:  3
+(110) data_i: 10 x: -1 y:  1
+(120) data_i: 11 x: -1 y:  3
+(130) data_i: 12 x: -3 y: -3
+(140) data_i: 13 x: -3 y: -1
+(150) data_i: 14 x: -1 y: -3
+(160) data_i: 15 x: -1 y: -1
+</code>
+
+===== Conversion to Verilog =====
+Running the conversion code part of the const_encoder.py file creates the Verilog and VHDL code. Here is the created Verilog code:
+
+<code verilog const_encoder.v>
+// File: const_encoder.v
+// Generated by MyHDL 0.6dev10
+// Date: Fri Dec  5 22:14:55 2008
+
+`timescale 1ns/10ps
+
+module const_encoder (
+    data_i,
+    x_o,
+    y_o
+);
+
+input [3:0] data_i;
+output signed [2:0] x_o;
+wire signed [2:0] x_o;
+output signed [2:0] y_o;
+wire signed [2:0] y_o;
+
+
+
+
+
+assign x_o = $signed({data_i[3], data_i[1], 1'b1});
+assign y_o = $signed({data_i[2], data_i[0], 1'b1});
+
+endmodule
+</code>
+
+===== Conversion to VHDL =====
+
+With the conversion the following VHDL code is created:
+
+<code vhdl const_encoder.vhd>
+-- File: const_encoder.vhd
+-- Generated by MyHDL 0.6dev10
+-- Date: Fri Dec  5 22:26:38 2008
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+use std.textio.all;
+
+use work.pck_myhdl_06dev10.all;
+
+entity const_encoder is
+    port (
+        data_i: in unsigned(3 downto 0);
+        x_o: out signed (2 downto 0);
+        y_o: out signed (2 downto 0)
+    );
+end entity const_encoder;
+
+architecture MyHDL of const_encoder is
+
+
+begin
+
+
+
+x_o <= signed(unsigned'(data_i(3) & data_i(1) & '1'));
+y_o <= signed(unsigned'(data_i(2) & data_i(0) & '1'));
+
+end architecture MyHDL;
+</code>
+
+===== Reference =====
+[[http://www.itu.int/rec/T-REC-G.992.1/|ITU recommendation G.992.1 "Asymmetric digital subscriber line (ADSL) transceivers"]]

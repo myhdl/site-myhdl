@@ -1,0 +1,292 @@
+====== Modular bit vector types ======
+
+
+^           MEP: | 106 |
+^           Author: | Jan Decaluwe |
+^           Status: | Draft |
+^          Created: | May 25, 2011 |
+^          MyHDL-Version: |   |
+
+
+===== Rationale =====
+
+Recently, there has been a lot of activity regarding
+"wrap-around" types. I have looked at the proposals. My own
+thoughts on the matter have evolved also. Here is my
+analysis and proposal.
+
+First some background.
+One of my main critiques on the mainstream use of Verilog/VHDL
+is the focus on "representational" types for integer
+arithmetic. In other words, the starting point is a bit
+vector representation to which an integer interpretation is
+added later. The hidden assumption is that this is necessary
+for implementation efficiency.
+
+I believe that MyHDL has convincingly demonstrated that
+there is a better way by taking a top-down perspective. In
+MyHDL, integer arithmetic simply works as expected. The
+convertor takes care of representational details as required
+by the Verilog/VHDL target.
+
+This is not just a semantic discussion. In MyHDL, you don't
+need castings, manual sign extensions or resizings to get
+integer arithmetic to work. In Verilog/VHDL, that is the name
+of the game. Best of all, there is no implementation
+efficiency price to pay.
+
+Understandably, I would like to use a similar approach when
+considering to introduce new types: first look at the
+modelling aspect, that is, how a designer would prefer to
+use a type, and only then move to conversion and efficiency
+concerns.
+
+===== Wrap-around type proposals =====
+
+There is no question that there is a genuine need for the
+elegant modeling of wrap-around behavior in hardware
+modeling. The question is whether this is important enough to
+warrant dedicated language support.
+
+In the past, I have suggested that this need may not be that
+high. For example, in the common case of an incrementer or
+decrementor, it is often necessary to decode the end count
+anyway:
+
+<code myhdl>
+    if count == N-1:
+        count.next = 0
+        some_decode_action()
+    else:
+        count.next = count + 1
+</code>
+    
+However, I would agree that even then it could be clearer to
+keep the incrementer description separate from the decoding:
+
+<code myhdl>
+    if count == N-1:
+        some_decode action()
+        
+    count.next = (count + 1) % N
+</code>
+
+I have also argued that the modulo operator offers an
+explicit and elegant high-level solution to describe
+wrap-around behavior in a one-liner. However, it has 
+been pointed out
+that this doesn't work for the case of a "signed" integer.
+A ''wrap()'' method was proposed as a solution.
+
+Both the modulo operator and a ''wrap()'' method have some
+disadvantages. Though they are explicit in good Python
+style, there is a conflict with another good principle: DRY
+(Don't Repeat Yourself). If wrap-around is the desired
+behavior, it is probably a property of an object and its
+type, not of a particular assignment.
+
+The two techniques have another problem that I have
+successfully managed to keep out of spotlights in earlier
+discussions :-). I believe a common use case for wrap-around
+behavior would be to describe an
+incrementor/decrementer using augmented asssignment
+with a variable:
+
+<code myhdl>
+    count += 1
+</code>
+
+The two techniques discussed above cannot support this.
+
+Another proposal is  a ''wrap'' parameter to the intbv
+constructor, with default False. When True, it would modify
+the assignment behavior as desired.
+
+This technique addresses the issues mentioned above, but has
+some problems itself.  An additional parameter makes object
+construction heavier. Also, the use of a default value
+suggests that one type of behavior is the rule, and the
+other the exception.  I don't like the idea of modifying the
+fundamental behavior of a type in such a way.  If
+wrap-around behavior is considered important enough to
+warrant direct language support, it should be as easy to use
+as other behaviors.
+
+Finally, a parameter cannot support the following conversion
+trick:
+
+<code myhdl>
+    a = intbv(0)[N:]
+</code>
+
+to construct an "N bits wide" positive intbv, even though
+such "closer to hardware" objects are probably popular
+candidates for wrap-around behavior.
+
+The most important problem that I have with the discussed
+proposals is still elsewhere: they go against the
+MyHDL-specific philosophy that I described earlier.
+The starting point of the proposals is that
+wrap-around behavior will only supported on "full range"
+bit-vectors. This is likely influenced by implicit
+assumptions of efficient hardware implementation.
+
+In my modeling work, I use wrap-around counters all the
+time. However, more often than not, their bounds are not
+powers of 2. I suspect this is the same for many
+designers. As I have argued earlier, we should look at
+modeling first, and at hardware efficiency later. In
+previous cases, such as the ''intbv'' type, we have been able to
+achieve much easier modeling without having to pay a price
+in efficiency.
+
+===== Ada modular types =====
+
+Recently I got introduced to Ada modular types. These are
+natural integer types with wrap-around behaviour.
+
+The wrap-around behavior of modular types is based on the
+sound mathematical concept of 
+[[http://en.wikipedia.org/wiki/Modular_arithmetic|modulo arithmetic]]. 
+Therefore,
+the modulus is not limited to powers of 2.
+
+The rationale behind modular types is interesting. For
+example:
+
+> The modulus of a modular type need not be a power of two although it often will be. It might, however, be convenient to use some obscure prime number as the modulus perhaps in the implementation of hash tables.
+
+Source: http://www.adaic.org/resources/add_content/standards/95rat/rat95html/rat95-p2-3.html
+
+Another resource says:
+
+> Modular types don't need to be powers of two, but if they are the Ada compiler will select especially efficient  operations to implement them.
+
+Source: http://www.dwheeler.com/lovelace/s17sf.htm
+
+This is exactly the kind of reasoning I'm looking for. Ada
+considers module arithmetic important enough to warrant
+direct language support, but in the general, mathematically
+sound sense. On the other hand, it recognizes that
+powers of 2 bounds are very important. There is actually a
+predefined package with power of 2 based subtypes. Moreover,
+the compiler can select "especially efficient operations" to
+implement them.
+
+Interestingly, Ada even defines and/or/xor bit operations on
+modular types, unlike other integer types. Apparently it
+chooses modular types for this purpose because their
+"unsigned" interpretation poses less problems than bit
+operations on "signed" representations. In any case, the
+dual nature of the type - both high-level and
+representation-friendly - is similar to what MyHDL does with
+the ''intbv''. When reading all this, I can only conclude that
+VHDL lost a big opportunity by forgetting about its origins.
+
+I believe the Ada example is the route to follow. Two issues
+still have to be addressed:
+
+   - Ada modular types are restricted to natural values. We want to support integer values in general.
+   - Ada modular types are types, which means that conversions would be needed to let them work with other integer-liketypes. (Disclaimer: I am not sure that this statement is true.)
+
+===== A proposal for MyHDL: the modbv type =====
+
+Ada's modular type is called ''mod''. By analogy, I am
+proposing a ''modbv'' type in MyHDL. Behaviorally, the only
+difference with ''intbv'' would be how bounds are handled:
+out-of-bound values result in an error with ''intbv'', and in
+wrap-around with ''modbv''. In particular, ''modbv'' would have
+exactly the same interface as the intbv. The wap-around
+behavior would be defined as follows, with ''val'' denoting
+the current value and ''min''/''max'' the bounds:
+
+<code myhdl>
+    val = (val - min) % (max - min) + min
+ </code>
+
+Unlike Ada, ''intbv'' and ''modbv'' would be subtypes of a general
+integer-bitvector type. Therefore, they can be mixed
+transparantly in expressions. This should be not problem as
+the bound handling only occurs at assignment time in the
+assigned object.
+           
+This proposal addresses the issues mentioned earlier. In
+particular:
+
+<code myhdl>
+     count += 1
+</code>
+
+and
+
+<code myhdl>
+     count = modbv(0)[32:]
+</code>
+
+would have wrap-around behavior.
+
+=====  Implementation notes =====
+
+
+Technically, the cleanest implementation would probably be
+to make both ''intbv'' and ''modbv'' a subtype of some general
+integer-bitvector class. In a first phase, it would
+probably be OK to simply subclass intbv.
+
+To make this kind of subclassing possible, the intbv class
+has to be made more robust. For example, at some points were
+it returns a literal ''intbv'' object, it should use the
+actual subtype itself.
+
+The basic difference with ''intbv'' is bound
+handling. Currently, this is already done in a separate
+method called ''intbv._checkBounds()''. This method should
+probably be renamed to ''intbv._handleBounds()'', and then
+overwritten with the proper behavior in the subclass.
+
+===== Conversion notes =====
+
+It is expected that conversion would work directly for the
+case of "full range" ''modbv'' objects. (Note that it is not
+sufficient that both bounds are powers of 2.) In a first
+phase, the convertor could impose that restriction.
+
+To demonstrate the advantage of the chosen approach, we
+could attempt to lift some restrictions for interesting use
+cases. For example, a common use case for wrap-around
+behavior would be incrementors and decrementors. The
+analyzer could detect such cases and mark them. For such
+patterns, we could then support general wrap-around for non
+full-range objects also. For example:
+
+<code myhdl>
+     count.next = count + 1
+</code>
+
+would be converted to the Verilog/VHDL equivalent of:
+
+<code myhdl>
+     if count == MAX-1:
+         count.next = MIN
+     else:
+         count.next = count + 1
+</code>
+
+It is probably possible to remove more restrictions in a
+gradual process. When doing so, we would be adding items to
+the list of useful features that MyHDL can fully support,
+even though they have no native support in Verilog/VHDL. At
+some point, this list of features, unique to MyHDL, could
+become very attractive to Verilog/VHDL designers.
+
+===== Status ======
+
+A draft implementation has been developed in the 0.8-dev
+branch in the mercurial repo.
+
+
+===== Acknowledgements =====
+
+Chris Felton has kept this feature on the map.
+Thanks to Chris Felton, Tom Dillon and Benoît Allard for proposals,
+tests, and discussions.

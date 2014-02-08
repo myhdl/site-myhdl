@@ -1,0 +1,58 @@
+====== My Frequently Asked Questions =====
+
+Not questions that I frequently ask but questions / issues I have run across that 
+seem to reappear by other users.
+
+===== 2's Compliment Wrap =====
+In the MyHDL FAQ normal binary wrapping is [[::faq | explained]].  Because MyHDL's
+integer act more like integers and less like bit vectors 
+(good thing, see [[http://www.jandecaluwe.com/hdldesign/counting.html|counting]] for more info). 
+Some of the basic properties of bit vectors, like [[::faq | wrapping]], have to be
+explicitly coded.  I imagine there might be varied views on this.  But I think only
+those that have come a custom to bit vectors wrapping or 2's complements wrapping will
+not like having to explicitly define the wrapping.
+
+As explained in the [[::faq]] to code an unsigned wrap the modulus can be used, for 
+example a simple unsigned accumulator can be defined as:
+
+<code myhdl>
+def acc_unsigned(clk, x, y, N=8):
+
+    @always(clk.posedge)
+    def rtl():
+        y.next = (y+x) % N
+
+    return rtl
+</code>
+
+For signed (2's compliment) wrap the modulus can't be used because the modulus
+always results in a positive number (remainder of the divide).  Each case needs
+to be explicitly defined.
+
+One way of doing this is defining an intermediate value that can hold the max
+sum (twice the bit width) of the current value plus the new input.  Then check 
+the intermediate value and adjust accordingly.
+ 
+<code myhdl>
+def acc_signed(clk, x, y, N=8):
+
+    z = Signal(intbv(0, max=2*y.max, min=2*y.min))
+
+    @always_comb
+    def rtl_add():
+        z.next = y + x
+               
+    @always(clk.posedge)
+    def rtl():
+
+        if z >= N-1:
+            y.next = -N
+        elif z <= -N:
+            y.next = N-1
+        else:
+            y.next = z
+
+    return rtl_add, rtl
+</code>
+
+The only problem with this is that this will generated more logic than is needed.

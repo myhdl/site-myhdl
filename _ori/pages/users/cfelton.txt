@@ -1,0 +1,32 @@
+====== My Examples and Projects ======
+
+===== Mature Projects =====
+The following are projects that are mature but could be under development as well 
+(always can find changes or features to add). 
+These projects have been used by me or others.  
+If you have issues or questions with the following projects feel free to 
+post questions to the [[http://www.myhdl.org/doku.php/mailing_list | MyHDL newsgroup]]
+  * [[projects:gcicexample]]
+  * [[users:cfelton:projects:recursivefft]]
+  * [[users:cfelton:projects:fxintbv]]
+  * [[users:cfelton:projects:usbp]]
+  
+===== Immature Projects =====
+The following are projects that I started but might have gone stale or 
+just haven't had time to work more on them.  These are use/preview at your own 
+risk.  The state of these projects might be too poor for some to handle.
+More than likely these projects will not work out of the box and 
+will require some investigation.  I thought it was useful to post 
+these projects even know they are incomplete and *non-functional*.
+The wiki is a convenient spot to document progress on the projects 
+which makes it easier to pick up when I do have time to work on them.   
+These projects are products of sleepless nights are rainy Saturdays.
+  * [[users:cfelton:projects:zpu]]
+  * [[users:cfelton:projects:reg_def]]
+  * [[users:cfelton:projects:dspsys]]
+
+
+===== Misc Information =====
+  * [[user:cfelton:faq| My FAQs]]
+  * [[user:cfelton:projects:small_profile]]
+  * [[users:cfelton:fpgacamp:FPGA Camp | FPGA Camp]]

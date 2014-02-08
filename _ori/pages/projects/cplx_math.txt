@@ -1,0 +1,189 @@
+====== Complex Math ======
+
+===== Complex Multiplier =====
+
+Multiplying two complex numbers __A__ and __B__ is performed in the following way:
+
+ (a+jb) * (c+jd) = ac -bd + jbc + ad
+
+Here __A__ is (a+jb), with a the real part and b the imaginary part of the number __A__ and __B__ being (c+jd), with c the real part and d the imaginary part of the number.
+
+The architecture for this computation looks as follows:
+
+{{ :projects:cplx_mult_arch.png?531x261 |Complex Multiplier Architecture}}
+
+A common way to put that into a HDL block is to provide four input ports (Re{__A__}, Im{__A__}, Re{__B__}, Im{__B__}) and two output ports (Re{__Y__}, Im{__Y__}). Sometimes it might be desirable to provide the data over a data bus and combine real and imaginary part. The ports reduce then to two inputs (__A__, __B__) and one output (__Y__).
+
+The block diagram of this complex multiplier looks then as follows:
+
+{{ :projects:cplx_mult2.png |Complex Multiplier}}
+
+Note that we talked earlier in the architecture figure about a data width of DWIDTH. Here now the width of the input ports is WIDTH which is 2*DWIDTH.
+
+With the data bus approach the upper bits are used e.g. for the real value and the lower bits for the imaginary value. For the calculation the input data need to be split up and considered as signed numbers. This is done using the intbv.signed() method in connection with the slice. Let's A be the input port with operand __A__ and bit width parameter WIDTH. The real and imaginary values are sliced off by:
+
+<code myhdl>
+a_real = A[WIDTH:WIDTH//2].signed()
+a_imag = A[WIDTH//2:].signed()
+</code>
+
+After the computation the result is concatenated by:
+
+<code myhdl>
+Y.next = concat( intbv(ac - bd)[WIDTH+1:], intbv(bc + ad)[WIDTH+1:] )
+</code>
+
+The subtraction and addition of the complex operation is here included into the concatenation of the result.
+
+
+===== Test bench =====
+
+For testing a unittest is created that creates all combination of possible input values, calculates the expected output and feeds the input data to the MyHDL module, verifying that the output matches the expected output.
+
+<code myhdl test_cplxMult.py>
+#!/usr/bin/env python
+
+import unittest
+from myhdl import *
+ 
+from cplxMult import cplxMult
+ 
+ 
+class TestCplxMath(unittest.TestCase):
+ 
+  def test_cplxMath(self):
+ 
+    def bench():
+
+      dwidth = 2
+      iwidth = 2 * dwidth         # input bus width
+      owidth = 2*iwidth+2         # output bus width
+
+      umax = 2**dwidth -1
+      smax = 2**(dwidth-1)-1
+      smin = -2**(dwidth-1)
+
+      a_i, b_i = [Signal(intbv(0)[iwidth:]) for i in range(2)]
+      y_o = Signal(intbv(0)[owidth:])
+
+      cplxMult_inst = cplxMult(a_i, b_i, y_o, iwidth)
+
+
+      @instance
+      def stimulus():
+       
+        a_i.next = 0
+        b_i.next = 0
+        yield delay(10)
+
+        for a in range(smin, smax+1):
+          for b in range(smin, smax+1):
+            for c in range(smin, smax+1):
+              for d in range(smin, smax+1):
+
+                # calculate expected values
+                re = a*c - b*d
+                im = b*c + a*d
+               
+                a_i.next = concat(bin(a, dwidth), bin(b, dwidth))
+                b_i.next = concat(bin(c, dwidth), bin(d, dwidth))
+
+                yield delay(1)
+
+                self.assertEqual(re, y_o[owidth:owidth/2].signed())
+                self.assertEqual(im, y_o[owidth/2:].signed())
+
+        raise StopSimulation
+
+      return instances()
+
+    #####################################
+    tb = bench()
+    #tb = traceSignals()
+    sim = Simulation(tb)
+    sim.run()
+ 
+
+########################################################################
+# main
+if __name__ == '__main__':
+  suite = unittest.TestLoader().loadTestsFromTestCase(TestCplxMath)
+  unittest.TextTestRunner(verbosity=2).run(suite)
+</code>
+
+
+===== RTL implementation =====
+
+Here is the implementation of the complex multiplier:
+
+<code myhdl cplxMult.py>
+#!/usr/bin/env python
+
+from myhdl import *
+
+def cplxMult(a_i, b_i, y_o, WIDTH):
+  '''Compute the complex multiply of a * b
+
+  (a+jb) * (c+jd) = (ac-bd +j bc+ad)
+
+  I/O pins:
+  =========
+  a_i   : operand a, with the upper half being the real value and the
+          lower bits the imaginary value
+  b_i   : operand b, with the upper half being the real value and the
+          lower bits the imaginary value
+  y_o   : result of complex multiply a * b with the upper half being the
+          real value and the lower bits the imaginary value. The bit
+          width is input bit width + 2
+
+  Parameters:
+  ===========
+  WIDTH : bit width of a_i and b_i. The output bit width needs to be
+          2 * WIDTH + 2. WIDTH needs to be an even number and the real
+          and imaginary value of input a_i and b_i are each WIDTH/2 bit 
+          wide.
+  '''
+
+  smin = -2**(WIDTH-1)
+  smax = 2**(WIDTH-1)-1
+  ac, bd, bc, ad = [Signal(intbv(0, min=smin, max=smax+1)) for i in range(4)]
+
+  @always_comb
+  def mult_logic():
+    ac.next = a_i[WIDTH:WIDTH//2].signed() * b_i[WIDTH:WIDTH//2].signed()
+    bd.next = a_i[WIDTH//2:].signed() * b_i[WIDTH//2:].signed()
+    
+    bc.next = b_i[WIDTH:WIDTH//2].signed() * a_i[WIDTH//2:].signed()
+    ad.next = b_i[WIDTH//2:].signed() * a_i[WIDTH:WIDTH//2].signed()
+    
+  @always_comb
+  def add_sub_logic():
+    y_o.next = concat( intbv(ac - bd)[WIDTH+1:], intbv(bc + ad)[WIDTH+1:] )
+
+  return instances()
+
+########################################################################
+def convert():
+  
+  DWIDTH = 2
+  IWIDTH = 2 * DWIDTH
+  OWIDTH = 2 * IWIDTH + 2
+
+  a_i, b_i = [Signal(intbv(0)[IWIDTH:]) for i in range(2)]
+  y_o = Signal(intbv(0)[OWIDTH:])
+
+  toVerilog(cplxMult,
+            a_i, b_i,
+            y_o,
+            IWIDTH)
+
+  toVHDL(cplxMult,
+          a_i, b_i,
+          y_o,
+          IWIDTH)
+
+if __name__ == '__main__':
+  convert()
+
+</code>
+

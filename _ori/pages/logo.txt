@@ -1,0 +1,16 @@
+====== Logo ======
+
+Thanks to Rodrigo Peixoto, MyHDL now has a logo. It looks a bit like a dune close to a brazilian beach :-)
+
+Feel free to use the logo to indicate MyHDL usage and projects or for any other MyHDL-related occasion as you see fit.
+
+Here are a number of versions with various pixel widths:
+
+
+{{ myhdl_logo_256.png |logo width=256}}
+
+{{ myhdl_logo_128.png |logo width=128}}
+
+{{ myhdl_logo_64.png |logo width=64}}
+
+{{ myhdl_logo_48.png |logo width=48}}

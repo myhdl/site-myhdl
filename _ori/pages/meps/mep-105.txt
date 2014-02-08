@@ -1,0 +1,333 @@
+====== Shadow signals ======
+
+^           MEP: | 105 |
+^           Author: | Jan Decaluwe |
+^           Status: | Final |
+^          Created: | June 19, 2009|
+^          MyHDL-Version: | 0.7 |
+
+===== Introduction =====
+
+Compared to mainstream HDLs, MyHDL signals are less flexible. For example, slicing a signal returns a slice of the current value. For behavioral code, this is just fine. However, it implies that you cannot use such as slice in structural descriptions. In other words, a signal slice cannot be used as a signal. Obviously, this behavior is restrictive and confusing to users of mainstream HDLs.
+
+In this MEP, we will propose a solution for most use cases of signal slicing and similar modelling problems. The basis of the solution is new kind of signal subclass, called the "shadow signal".
+
+===== Analysis =====
+
+Consider signal slicing. In MyHDL, you take a slice as follows:
+
+<code myhdl>
+sl = sig[m:n]
+</code>
+
+Under the hood, the slicing operation is delegated to the signal's current value, just like for any other operator. Within behavioral code - the code you write within a generator - this works just like expected. However, it is clear that such a slice is useless when writing structural code. Structure requires signals as composing elements, not plain values.
+
+This behavior is restrictive and confusing because in HDLs such as Verilog and VHDL, signal slices can indeed be used as signals. To understand this better, let's define two forms of slicing:
+
+  * **Behavioral slicing** Slicing is delegated to the current signal value. This is how MyHDL signals behave, as described above.
+  * **Structural slicing** The slice behaves as another signal.
+
+It is clear that behavioral slicing is easy and cheap. On the other hand, structural slicing in its most general form is complex and expensive. Structural slices should behave as some kind of proxy objects of the original signal, reflecting and propagating changes to the original signal. At the same time, they should be behave as signals themselves.
+
+In Verilog and VHDL, structural and behavioral slicing are supported by the same slicing syntax. If you think about it, this is remarkable, because the two forms of slicing are so different in behavior and complexity. In Verilog and VHDL, this is possible because they are compiled languages. From the context, the compiler can find out whether behavioral or structural slicing should be used. Obviously, it will avoid the complexities of structural slicing within code that merely needs a slice of the current signal value.
+
+In MyHDL, we don't have this luxury as there is no compiler. Slicing therefore behaves the same in all contexts. As the primary focus of MyHDL is behavioral descriptions, signal slicing is implemented in the easy way, as behavioral slicing. To support structural slicing, we will need new concepts and new syntax.
+
+To find a solution for structural slicing, let's consider the current workaround. If you want to use a signal slice as a signal elsewhere, you can define a new signal and a generator as follows:
+
+<code myhdl>
+sl = Signal(intbv(0)[m-n:0])
+
+@always_comb
+def slice_shadower():
+    sl.next = sig[m:n]
+</code>
+
+While this may feel redundant and inconvenient, it works just fine functionally. It is also conceptually simple. However, note that this workaround is not fully general. It works perfectly for reading signal slices elsewhere in the code. However, it doesn't work for //driving// signal slices. Nor is there an obvious similar solution for that functionality. In short, we have a good and simple workaround for reading but not for driving. Let's reflect on this to see whether it is a problem or not.
+
+Reading and driving a signal are not symmetrical. Reading may occur on any place in the design without any problem. However, for the most common case of unresolved signals, driving should normally happen from a single generator only. In Verilog and VHDL, it is possible to write to exclusive parts of such a signal from different processes or always blocks. But even then, I wouldn't call that good practice. I don't think many users would miss that functionality if it were not available. My conclusion is that it is not a problem if we don't have a solution to drive signal slices structurally. Reading signal slices should cover most, if not all, of the practical use cases.
+
+To summarize, my conclusion for structural slicing is as follows:
+
+  * **Read-only is OK** A solution that only covers reading slices is just fine.
+  * **Delta cycles are OK** In Verilog and VHDL, a structural slice directly refers to the original signal. In the MyHDL workaround as describe above, we simply introduce a new signal that follows the original slice after a delta cycle. But this is just fine: delta cycles are intended to maintain illusion of zero time delays while preserving proper event ordering.
+
+We have come up with a solution that basically implements the workaround automatically. However, structural slicing is not the only modeling issue. Obviously, indexing is a similar problem. Moreover, other modeling problems can be interpreted and solved in a similar way. Therefore, the first step is an abstract signal subclass that implements the general ideas outlined above: the shadow signal.
+
+===== Introducing shadow signals =====
+
+A shadow signal is related to another signal or signals as a shadow
+to its parent object. It follows any change to its parent signal
+or signals directly. However, it is not the same as the original:
+in particular, the user cannot assign to a shadow signal. Also,
+there may be a delta cycle delay between a change in the original
+and the corresponding change in the shadow signal. Finally, to
+be useful, the shadow signal performs some kind of transformation
+of the values of its parent signal or signals.
+
+A shadow signal is convenient because it is directly constructed
+from its parent signals. The constructor infers everything that's needed:
+the type info, the initial value, and the transformation of the
+parent signal values. For simulation, the transformation is defined by
+a generator which is automatically created and added to the list of
+generators to be simulated. For conversion, the constructor defines
+a piece of dedicated Verilog and VHDL code which is automatically
+added to the convertor output.
+
+===== Concrete shadow signal subclasses =====
+
+==== _SliceSignal ====
+
+The original inspiration for shadow signals was to a have solution for
+structural slicing. This is the purpose of the ''_SliceSignal'' 
+subclass.
+
+**''class _SliceSignal''**''(sig, left[, right=None])''
+
+This class implements read-only structural slicing and indexing. It creates a new
+signal that shadows the slice or index of the parent signal ''sig''. If the
+''right'' parameter is ommitted, you get indexing instead of slicing.
+Parameters ''left''  and ''right'' have the usual meaning for slice
+indices: in particular, ''left'' is non-inclusive but ''right''
+is inclusive. ''sig'' should be appropriate for slicing and indexing, which
+means it should be based on ''intbv'' in practice.
+
+The class constructors is not intended to be used explicitly. Instead,
+regular signals now have a call interface that returns a _SliceSignal:
+
+**''%%__call__%%''**''(left[, right=None])''
+
+Therefore, instead of:
+
+<code myhdl>
+sl = _SliceSignal(sig, left, right)
+</code>
+
+you can do:
+<code myhdl>
+sl = sig(left, right)
+</code>
+
+Obviously, the call interface was intended to be similar to a slicing interface. Of course,
+it is not exacly the same which may seem inconvenient. On the other hand, there are Python
+functions with a similar slicing functionality and a similar interface, such as the
+''range'' function.
+Moreover, the call interface conveys the notion that something is being constructed, which
+is what really happens.
+
+==== ConcatSignal ====
+
+''_SliceSignal'' creates a shadow signal on a part of another signal. The
+opposite is also useful: a signal that shadows a composition of other
+signals. This is the purpose of the ''ConcatSignal'' subclass.
+
+**'' class ConcatSignal''**''(*args)''
+
+This class creates a new signal that shadows the concatenation
+of its parent signal values. You can pass an arbitrary number
+of signals to the constructor. The signal arguments should be bit-oriented
+with a defined number of bits.
+
+==== TristateSignal ====
+
+As often is the case, the idea of shadow signals had some useful side effects.
+In particular, I realized that the ''TristateSignal'' proposed in [[meps:mep-103]]
+could be interpreted as a shadow signal of its drivers. With the machinery of
+the shadow signal in place, it became easier to support this for simulation
+and conversion.
+
+**''class TristateSignal''**''(val)''
+
+A shadow signal that supports tristate values. For more info,
+see [[meps:mep-103]].
+
+===== Methodology notes =====
+
+Shadow signals are intended to be constructed at elaboration
+time, that is, before the simulation or conversion starts.
+If required, it may be possible to lift this restriction
+for modeling (not for conversion), but I don't think this
+will be necessary.
+
+The implication is that shadow signals should be constructed
+outside generator code (like other signals normally.) A happy
+side effect is that you can use any Python code in the book to
+construct them, without compromising convertibility.
+Therefore, they should be ideal to describe complex
+structures and convert them to Verilog and VHDL.
+
+Be careful though. Shadow signals, being signals, are expensive
+and slow compared to plain variables. Using them to describe
+complex structures elegantly is fine. For other purposes,
+prefer behavioral code and variables within generators.
+
+===== Examples =====
+
+The examples are taken from design problems described
+[[http://www.antfarm.org/blog/aaronf/2008/02/myhdl_example_permute.html|here]].
+
+==== A permutation circuit ====
+
+Consider a circuit whose output should be a permutation of the
+inputs bits. In a particular instance, the structure is fixed,
+but we want to make the design parametrizable by defining the
+permutation by a ''mapping'' parameter. Using shadow signals,
+the design can be described as follows:
+
+<code myhdl>
+def permute(x, a, mapping):
+""" Permute input bits.
+
+    x: output port
+    a: input port
+    mapping: tuple that maps input bit indices to output bit positions
+
+"""
+    p = [a(m) for m in mapping] # index signals
+    
+    q = ConcatSignal(*p)
+    
+    @always_comb
+    def assign():
+        x.next = q
+
+    return assign
+</code>
+
+Shadow signals are convertible to Verilog and VHDL.
+For example, consider the following parameter definitions:
+
+<code myhdl>
+x = Signal(intbv(0)[3:])
+a = Signal(intbv(0)[3:])
+mapping = (0, 2, 1)
+</code>
+
+The output Verilog code for this example is as follows:
+
+<code verilog>
+module permute (
+    x,
+    a
+);
+
+output [2:0] x;
+wire [2:0] x;
+input [2:0] a;
+
+wire [2:0] q;
+
+assign q[2] = a[0];
+assign q[1] = a[2];
+assign q[0] = a[1];
+
+assign x = q;
+
+endmodule
+</code>
+
+==== An error bit adapter circuit ====
+
+A more complicated example shows the capabilities of inline
+scripting with shadow signals. The circuit maps input error
+bits ''i_err'' to output error bits ''o_err'', according to a
+spec. The output spec ''o_spec'' is a tuple of strings.
+The input spec ''i_spec'' is a mapping of strings to bit indices.
+For example:
+
+<code myhdl>
+o_spec = ('c', 'a', 'other', 'nomatch')
+i_spec = { 'a' : 1, 'b' : 2, 'c' : 0, 'd' : 3, 'e' : 4, 'f' : 5, }
+</code>
+
+Strings 'other' and 'nomatch' are special. 'nomatch' specifies that the output error bit
+on that position should be assigned to zero. 'other' specifies a bit that is
+the or-ing of all input error bits whose string key is not present in the output spec.
+For other output spec
+strings, the corresponding input bit index is looked up in the input spec.
+
+For the design description, the idea is to assemble the individual bits for 
+the ''other'' and ''o_err'' vectors in a list, and then use ''ConcatSignal''
+to make new signals out of them:
+
+<code myhdl>
+def adapter(o_err, i_err, o_spec, i_spec):
+
+    nomatch = Signal(bool(0))
+    other = Signal(bool(0))
+
+    o_err_bits = []
+    for s in o_spec:
+        if s == 'other':
+            o_err_bits.append(other)
+        elif s == 'nomatch':
+            o_err_bits.append(nomatch)
+        else:
+            bit = i_err(i_spec[s]) # index signal
+            o_err_bits.append(bit)
+    o_err_vec = ConcatSignal(*o_err_bits)
+
+    other_bits = []
+    for s, i in i_spec.items():
+        if s in o_spec:
+            continue
+        bit = i_err(i) # index signal
+        other_bits.append(bit)
+    other_vec = ConcatSignal(*other_bits)
+
+    @always_comb
+    def assign():
+ 	nomatch.next = 0
+        other.next = (other_vec != 0)
+        o_err.next = o_err_vec
+
+    return assign
+</code>
+
+For the example spec above, the convertor generates
+the following Verilog code for the design instance:
+
+<code verilog>
+module adapter (
+    o_err,
+    i_err
+);
+
+output [3:0] o_err;
+wire [3:0] o_err;
+input [5:0] i_err;
+
+wire nomatch;
+wire [3:0] o_err_vec;
+wire other;
+wire [3:0] other_vec;
+
+
+
+assign o_err_vec[3] = i_err[0];
+assign o_err_vec[2] = i_err[1];
+assign o_err_vec[1] = other;
+assign o_err_vec[0] = nomatch;
+assign other_vec[3] = i_err[2];
+assign other_vec[2] = i_err[4];
+assign other_vec[1] = i_err[3];
+assign other_vec[0] = i_err[5];
+
+
+assign nomatch = 0;
+assign other = (other_vec != 0);
+assign o_err = o_err_vec;
+
+endmodule
+
+</code>
+
+
+
+===== Status and conclusion =====
+
+A initial version of shadow signal support has been pushed to the mercurial repository
+under development version 0.7dev. There are some unit tests that check basic
+functionality, but there are no appropriate usage, type or value checks. The
+purpose is to get feedback from the community to see if shadow signals
+solve the problems they are intended to solve.

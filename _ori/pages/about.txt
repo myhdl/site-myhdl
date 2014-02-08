@@ -1,0 +1,26 @@
+====== About this site ======
+
+===== Wiki-based content management =====
+
+This site uses a wiki tool as its content management system (CMS).
+
+Wiki's were invented to facilitate colloborative web site development. The idea is that anyone can contribute, using no other tool than a browser. The entry format is typically a simple markup format that keeps the source code very readable. Because of these characteristics, a wiki is also interesting as a content management system even if there is only a single maintainer.
+
+The present site is not a wiki in the true sense however. Not everyone can contribute anonymously; registering and logging in is required first. However, everyone with a valid e-mail address can register. This was done for 2 reasons:
+  - Requiring registration and a valid e-mail address is probably an effective measure against wikispam, a phenomenon that is on the rise with the growing popularity of wiki's.
+  - The author of a contribution is known. This may facilitate content licensing.
+
+===== The wiki tool =====
+The wiki tool used by this site is [[doku>wiki:dokuwiki|dokuwiki]]. It was chosen because of its light-weight design and rich feature set. 
+
+This author enhanced dokuwiki with a template to facilitate navigation. You can find out more about this work [[http://www.jandecaluwe.com/testwiki/doku.php/navigation:intro|here]].  --- //[[jan@jandecaluwe.com|Jan Decaluwe]] 2005/09/30 14:11//
+
+===== Content license =====
+
+Arguably, this site provides documentation of a software tool. Therefore,
+the [[http://www.gnu.org/licenses/fdl.html|Gnu Free Documentation License]] (GFDL)
+seems a natural choice as a license for its content.
+
+However, this choice is not that straightforward as it seems. The wiki nature of the site implies that there may be many contributors. This makes the GFDL potentially hard to use, for example because all principal authors need to be known. 
+
+Alternative licenses have been considered, such those provided by the [[http://creativecommons.org/licenses|Creative Commons]] organization. However, at this point it seems that the GFDL still is the best match. It is used by [[wp>wiki|wikipedia]], arguably the most popular wiki. Also, unlike true wiki's, the present site requires contributors to registrate with name and e-mail address, and it keeps track of their contributions. Therefore, it is in principle possible to meet the requirements of the GFDL. Finally, it is not unlikely that there will only be single principal author for the forseeable future :-)

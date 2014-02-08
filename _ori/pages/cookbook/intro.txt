@@ -1,0 +1,7 @@
+====== Introduction ======
+
+Welcome to MyHDL by Example.
+
+On these pages, you will find a number of MyHDL designs explained in detail. The goal is that you can learn by example.
+
+This is not a manual. Rather, the idea here is to jump right in, without a lot of explanation of MyHDL concepts and terminology. If you have difficulties to understand the examples, consider reading the first few chapters of the [[http://www.myhdl.org/doc/0.6/manual/index.html|manual]] first.

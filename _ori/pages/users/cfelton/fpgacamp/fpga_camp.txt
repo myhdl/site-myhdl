@@ -1,0 +1,5 @@
+This page contains some material and discussion for the 4th FPGA Camp booth.
+==== 4th FPGA Camp ====
+== Poster ==
+  * {{:users:cfelton:fpgacamp:myhdl_fpgacamp_v4.pdf|Poster Version 4 (60"x36")}}
+  * {{:users:cfelton:fpgacamp:myhdl_fpgacamp_v4_A0.pdf|Poster Version 4 A0 }}

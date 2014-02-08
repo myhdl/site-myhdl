@@ -1,0 +1,6 @@
+
+
+
+====== Fixed Point Package ======
+
+This project has been moved to a [[https://bitbucket.org/cfelton/fixed_point/overview | bitbucket repository]].  

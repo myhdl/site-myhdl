@@ -1,0 +1,9 @@
+====== Manual in pdf ======
+
+{{:doc:myhdl.pdf|MyHDL manual}}
+
+{{:doc:whatsnew0.8.pdf|What's new in MyHDL 0.8}}
+
+{{:doc:whatsnew0.7.pdf|What's new in MyHDL 0.7}}
+
+{{:doc:whatsnew0.6.pdf|What's new in MyHDL 0.6}}

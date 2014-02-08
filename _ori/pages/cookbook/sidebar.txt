@@ -1,0 +1,19 @@
+  * [[:start]]
+
+  * **MyHDL by Example**
+    * [[cookbook:intro]]
+    * [[cookbook:ff]]
+    * [[cookbook:jc2]]
+    * [[cookbook:stopwatch]]
+      * [[cookbook:stopwatch:synthesis]]
+      * [[cookbook:stopwatch:map]]
+      * [[cookbook:stopwatch:cpldfit]]
+    * [[cookbook:sinecomp]]
+      * [[cookbook:sinecomp:synthesis]]
+    * [[cookbook:bitonic]]
+      * [[cookbook:bitonic:verilog]]
+      * [[cookbook:bitonic::synthesis]]
+    * [[cookbook:helloworld]]
+
+
+  * [[:cookbook:sidebar|This sidebar]]

@@ -1,0 +1,10 @@
+====== Publications about MyHDL ======
+
+Here is a list of external publications about MyHDL.
+
+  * DesignWest 2013 {{:users:cfelton:esc-329paper_felton.pdf|white-paper}} and {{:users:cfelton:esc-329slides_felton_24apr2013.pdf|presentation}}
+  * [[http://www.dilloneng.com/documents/DE_HPEC2007_Abstract.pdf|Dillon Engineering paper]]
+  * [[http://www.dilloneng.com/documents/DE_HPEC2007_Posters.pdf|Dillon Engineering posters]]
+  * [[http://eetimes.com/news/design/showArticle.jhtml?articleID=177101584|EETimes article]]
+  * [[http://www.linuxjournal.com/article/7542|Linux Journal article]]
+  * [[http://www.cin.ufpe.br/~cinlug/wiki/index.php/Hardware_myhdl_python|CInLUG article (in portuguese)]]

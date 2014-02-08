@@ -1,0 +1,126 @@
+====== High Speed Sigma Delta DAC ======
+
+This code is a modified version of [[users:george_pantazopoulos|George Pantazopoulos]] [[projects:dsx1000|Delta-Sigma DAC]]. 
+
+It runs on a CycloneII together with the [[projects:sinewave_generator|Sinewave Generator]] in 16 bit mode with a clock frequency of 245 MHz.
+
+===== License =====
+
+Copied from the orginial wiki page:
+
+Free for non-commercial use. Please mention my name (George's), website and contribution(s) in your documentation. For other license arrangements, please contact me (George).
+
+Have a great time and feel free to write me – George Pantazopoulos
+
+{{:projects:gp_email.png|:projects:gp_email.png}} 
+
+===== Code =====
+
+<code myhdl>
+#!/usr/bin/env python
+
+"""                                                                            
+dac_dsx1000_hd.py
+DSX1000 core hardware description
+First-order Delta-Sigma DAC with variable bit-width
+ 
+MyHDL implementation by George Pantazopoulos http://www.gammaburst.net   
+Nov 2006
+
+Speed modifications by Thomas Traber
+Jun 2008
+"""
+
+from myhdl import *
+from math import log, ceil
+ 
+# ----------------------------------------------------------------------------
+ 
+def dac_dsx1000(clk_i, rst_i, pcm_i, pdm_o):
+    """
+    GJP Enterprises DSX1000 
+    Multiplatform First-order Delta-Sigma DAC core with variable bit width.
+ 
+    Inputs:
+    clk_i   clock (The faster, the better!)
+    rst_i   active high reset
+    pcm_i   digital PCM value to convert to PDM stream (adjustable width)
+ 
+    Outputs:
+            pdm_o   Pulse-density modulated bitstream. Range [0,1]
+ 
+    Note: The bit resolution of this converter depends on the width of the
+    PCM input
+ 
+    Analog output
+    -------------
+    To complete the DAC, an external RC analog low-pass filter at the output 
+    is usually needed.
+    See XAPP154 for more information.
+ 
+    Verification
+    ------------
+    This modification of the original code was tested on cyclone II 
+    with 81MHz clock frequency and internal multiplyer by 3 i.e. 243 MHz.
+
+    License
+    -------
+    Free for non-commercial use. 
+    Please mention my name, website and contribution(s) in your documentation.
+ 
+    For other license arrangements, please contact me.
+ 
+    References
+    ----------
+    Uwe Beis, http://www.beis.de/Elektronik/DeltaSigma/DeltaSigma.html
+    Xilinx Application Note XAPP154.
+ 
+    """
+ 
+    __author__    = "Thomas Traber (orign: George Pantazopoulos http://www.gammaburst.net)"
+    __version__   = "1.0.2t"
+    __date__      = "14 June 2008"    
+ 
+    RES = len(pcm_i)
+ 
+    DREF_NEG =  0
+    DREF_POS =  (2**RES)-1
+ 
+    MIN = -2**(RES-1)
+    MAX = +2**(RES-1)
+ 
+    reg_o   = Signal(intbv(0, min=4*MIN, max=4*MAX))
+    diff_p    = Signal(intbv(0, min=4*MIN, max=4*MAX))
+    diff_n    = Signal(intbv(0, min=4*MIN, max=4*MAX))
+    diff_op    = Signal(intbv(0, min=4*MIN, max=4*MAX))
+    diff_on    = Signal(intbv(0, min=4*MIN, max=4*MAX))
+
+    @always(clk_i.posedge)
+    def Reg():
+        if rst_i:
+	        pdm_o.next = 0
+        else:
+
+	    if reg_o > 0: 
+		pdm_o.next = 1
+	    else:
+		pdm_o.next = 0
+
+	    diff_p.next = pcm_i - DREF_POS
+	    diff_n.next = pcm_i - DREF_NEG
+	    diff_op.next = reg_o + diff_p
+	    diff_on.next = reg_o + diff_n
+
+
+    @always(clk_i.negedge)                        
+    def Switch():
+        if rst_i:
+	    reg_o.next = 0
+        else:
+	    if reg_o > 0: 
+		reg_o.next = diff_op
+	    else:
+		reg_o.next = diff_on
+
+    return instances()
+</code>

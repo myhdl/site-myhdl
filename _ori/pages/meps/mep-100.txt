@@ -1,0 +1,200 @@
+====== Creating generators with decorators ======
+
+^              MEP: | 100 |
+^           Author: | Jan Decaluwe |
+^           Status: | Final |
+^          Created: | 19-Oct-2005 |
+^    MyHDL-Version: | 0.5 |
+
+===== Background =====
+
+Python 2.4 introduced a new feature called //decorators//. A decorator consists of special syntax in front of a function declaration. It refers to a decorator function. The decorator function automatically transforms the declared function into some other callable object. 
+
+A decorator function ''deco'' is used in a decorator statement as follows:
+
+<code python>
+@deco
+def func(arg1, arg2, ...):
+    <body>
+</code>
+
+This code is equivalent to the following template:
+
+<code python>
+def func(arg1, arg2, ...):
+    <body>
+func = deco(func)
+</code>
+
+Note that the decorator statement goes directly in front of the function declaration, and that the function name ''func'' is automatically reused.
+
+===== MyHDL applications =====
+
+==== Using always_comb as a decorator ====
+
+At first sight, decorators may seem an esoteric feature with little relevance to MyHDL. However, this is not the case. Consider the usage of ''always_comb'':
+
+<code python>
+def top(...):
+    ...
+    def comb():
+        <combinatorial body>
+    ...
+    comb_inst = always_comb(comb)
+    ...
+    return comb_inst, ...
+</code>
+
+You can immediately recognize the template from the previous section. Therefore, we suspect that it should be possible to use ''always_comb'' as a decorator. And indeed, only a small backwards compatible change was required to make this possible. The equivalent decorator usage is as follows:
+
+<code python>
+def top(...):
+    ...
+    @always_comb
+    def comb_inst():
+        <combinatorial body>
+    ...
+    return comb_inst, ...
+</code>
+
+What do we gain with this? First, the ''always_comb'' decorator is explicitly attached to the corresponding function. This makes it immediately clear what the purpose of the function is. Also, we don't need the original function name, and a decorator automatically reuses it as the name for the transfored result, which is a generator in this case.
+
+==== A generic decorator for local generator functions ====
+
+The use of ''always_comb'' as a decorator is a no-brainer. However, the next question is: why stop there? Consider the general case of a local generator:
+
+<code python>
+def top(...):
+    ...
+    def gen_func():
+        <generator body>
+    ...
+    inst = gen_func()
+    ...
+    return inst, ...
+</code>
+
+This has similar issues as the original ''always_comb'' usage. The only purpose of the local generator function is to be called exactly once. Also, we don't need the function name. All this is not directly clear from the function declaration.
+
+Therefore, it seems appropriate to design a general decorator for local generator functions. The only thing it needs to do is call the generator function and return it, but in addition to that the decorator syntax makes the purpose explicit.
+
+How should such a general decorator be called? Several possibilities were considered. ''process'' or ''always'' as in Verilog/VHDL is incorrect, as a generator doesn't loop forever on itself. ''initial'' sounds awkward. On the other hand, the generic name ''generator'' seems not specific enough for MyHDL purposes.
+
+Eventually, I believe ''instance'' is the best choice. The meaning is: create a generator instance from the following generator function and reuse the function name as the generator name. Usage is as follows:
+
+<code python>
+def top(...):
+    ...
+    @instance
+    def inst():
+        <generator body>
+    ...
+    return inst, ...
+</code>
+
+==== The always decorator ====
+
+Feature creep is a dangerous beast. Yet at this point one still wonders: why stop here? There is a code pattern that is so popular, that it seems to warrant yet one decorator. This is the case in which all functional code is embedded in a ''while True'' loop, and the first line of the code is a single ''yield'' statement, representing the sensitivity list.
+
+What we want to accomplish is a decorator which takes the sensitivity list as its parameter, and creates the endless loop and the ''yield'' statement automatically. The functional behavior can then be described with a classic function instead of generator. The appriopriate name for the decorator is ''always'': the meaning is that the function is executed whenever one of the events occurs. The ''always'' decorator is used as follows:
+
+<code python>
+def top(...):
+    ...
+    @always(event1, event2, ...)
+    def inst()
+        <body>
+    ...
+    return inst, ...
+</code>
+
+This is equivalent to the following code:
+
+<code python>
+def top(...):
+    
+    def _func()
+        <body>
+
+    def _gen_func()
+        while True:
+            yield event1, event2, ... # the only yield
+            _func()
+    ...
+    inst = _gen_func()
+    ...
+    return inst, ...
+</code>
+
+Appropriate events are edge specifiers, signals, and delay objects.
+
+===== Examples =====
+
+==== Ram model ====
+
+As an example, it may be useful to compare a model without decorators to an equivalent model with decorators. The following is a MyHDL model of a RAM, without decorators:
+
+<code python>
+def ram(dout, din, addr, we, clk, depth=128):
+        
+    mem = [Signal(intbv(0)) for i in range(depth)]
+
+    def wrLogic() :
+        while 1:
+            yield clk.posedge
+            if we:
+                mem[int(addr)].next = din
+    write = wrLogic()
+            
+    def rdLogic() :
+        dout.next = mem[int(read_addr)]
+    read = always_comb(rdLogic)
+    
+    return write, read
+</code>
+
+Using decorators this code can be rewritten as follow:
+
+<code python>
+def ram(dout, din, addr, we, clk, depth=128):
+    
+    mem = [Signal(intbv(0)) for i in range(depth)]
+
+    @always(clk.posedge)
+    def write():
+        if we:
+            mem[int(addr)].next = din
+                
+    @always_comb
+    def read():
+        dout.next = mem[int(addr)]
+
+    return write, read
+</code>
+
+==== Clock generator ====
+The ''always'' decorator can also take a delay object as its parameter. The following example of a clock generator illustrates how this feature can be used.
+
+<code python>
+def testbench():
+    ...
+    clock = Signal(intbv(0))
+    ...
+    HALF_PERIOD = delay(10)
+
+    @always(HALF_PERIOD)
+    def clockGen():
+        clock.next = not clock
+    ...
+</code>
+
+===== Discussion and evaluation =====
+
+Introducing decorators in MyHDL has been an authentic Pythonic experience. The trigger to do so was the functionality of ''always_comb''. ''always_comb'' was designed before decorators were introduced in the language and before they were known to the author. Yet, it was immediately usable as a decorator, and accomplishes the desirable goal of clearer code. As often, the progress of Python creates better solutions for relevant coding problems.
+
+With the additional ''instance'' and ''always'' decorators we end up with more advantages. Every local generator can now be created by using a decorator. This makes it immediately clear that the corresponding functions are special. Unlike normal functions, they are not intended to be reused: they are more like named code blocks. Note for example that it is meaningless to give them parameters. Also, the decorators are probably meaningless on non-local generator functions. By making the purpose explicit, the use of decorators results in better code.
+
+There is one more advantage. MyHDL has a function called ''instances'' that looks up all instances automatically. There is also a similar function called ''processes'' that creates instances from all local generator functions by calling them. When the proposed decorators are used, the function ''processes'' becomes superfluous, and can thus be removed from MyHDL. I suspect ''processes'' is not used very often. Moreover, it may be confusing to understand the difference between ''processes'' and ''instances''. So by removing it we will gain in clarity.
+
+The ''always'' decorator deserves some further considerations.
+Although I believe the name is appropriate, the ''always'' decorator is less general than the Verilog always block. First, the function cannot contain ''yield'' statements (otherwise it would be a generator function) to wait for additional events. More importantly, it is not possible to use local state variables, as the function is invoked again on every event. (In contrast, a generator function with a ''while True'' loop can stay alive forever.) This is a pity. Nevertheless, I believe the ''always'' decorator will have many applications, and the increased code clarity justifies its existence.

@@ -1,0 +1,321 @@
+
+<code python>
+#
+# This is adapted from the ZPU java implementation.  Borrows some ideas and
+# implemematation from the HC11 EVBU simulator.
+#
+
+ABEL = 0
+ZETA = 1
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Instruction Handlers
+def ADDSP(Cpu, Stack, Mem):
+    pass
+
+def STORESP(Cpu, Stack, Mem):
+    pass
+
+def LOADSP(Cpu, Stack, Mem):
+    pass
+
+def EMULATE(Cpu, Stack, Mem):
+    pass
+
+def SYSCALL(Cpu, Stack, Mem):
+    pass
+
+def PUSHPC(Cpu, Stack, Mem):
+    """
+    Push the program counter onto the stack
+    """
+    Stack.pushInt(Cpu.GetPc())
+
+def OR(Stack, Cpu):
+    """
+    Pop 2 values of the stack bitwise or and push the result 
+    """
+    Stack.pushInt(Stack.popInt() | Stack.popInt())
+
+def NOT(Cpu, Stack, Mem):
+    Stack.pushInt(Stack.popInt() ^ 0xFFFFFFFF)
+
+def LOAD(Cpu, Stack, Mem):
+    Stack.pushInt(Mem.readl32(Stack.popInt()))
+    
+def PUSHSPADD(Cpu, Stack, Mem):
+    a = Cpu.GetSp()         # Cpu.sp
+    b = Stack.popInt() * 4  #
+    Stack.pushInt(a + b)    #
+
+def STORE(Cpu, Stack, Mem):
+    addr = Stack.popInt()
+    val  = Stack.popInt()  # Stack.popIntOrExt() only 1 stack
+    Mem.write32(addr, val) # writeLong depricated
+
+def POPPC(Cpu, Stack, Mem):
+    """
+    Pop address off stack and set program counter (PC)
+    """
+    # Does NOT flush internal stack
+
+    # Check the internal stack pointer
+    a = Stack.popInt()
+    # ??? Only have one stack ???
+    #if Cpu.isp > 0:
+    #    a = Stack.popInt()
+    #else:
+    #    a = Cpu.Pop()
+
+    # Grab some information on the emulated instructions
+    if Cpu.sp > Cpu.emu_sp and Cpu.emulateInProgress:
+        Cpu.emulateInProgress = False
+        x = Cpu.emulateOpcodeHistogram[Cpu.emu_opcode]
+        Cpu.emulateOpcodeHistogram[Cpu.emu_op] = x + 1
+        x = Cpu.emulateOpcodeHistogramCycles[Cpu.emu_op]
+        Cpu.emulateOpcodeHistogramCycles[Cpu.emu_op] = x + Cpu.cycles
+
+    Cpu.SetPc(a)
+
+def POPCREL(Cpu, Stack, Mem):
+    """
+    SetPc(popIntStack() + GetPc());
+    """
+    Cpu.SetPc(Stack.popInt() + Cpu.GetPc())
+
+def FLIP(Cpu, Stack, Mem):
+    """
+    Reverses the bit order of the value on the stack,
+    i.e. abc->cba, 100->001, 110->011, etc.
+    """
+
+    Stack.pushInt( flip(Stack.popInt()) )
+
+def ADD(Cpu, Stack, Mem):
+    Stack.pushInt(Stack.popInt() + Stack.popInt())
+
+def SUB(Cpu, Stack, Mem):
+    a = Stack.popInt()
+    b = Stack.popInt()
+    Stack.pushInt(b - a)
+
+def PUSHSP(Cpu, Stack, Mem):
+    Stack.pushInt(Cpu.getSp())
+
+def POPSP(Cpu, Stack, Mem):
+    # @TODO accessor for some and not others??
+    Cpu.changeSp(Stack.popInt())
+    Cpu.isp = 0
+
+def NOP(Cpu, Stack, Mem):
+    pass
+
+def AND(Cpu, Stack, Mem):
+    Stack.pushInt( Stack.popInt() & Stack.popInt() )
+
+def XOR(Cpu, Stack, Mem):
+    Stack.pushInt( Stack.popInt() ^ Stack.popInt() )
+
+def LOADB(Cpu, Stack, Mem):
+    Stack.pushInt( Mem.read8( Stack.popInt() ) )
+
+def STOREB(Cpu, Stack, Mem):
+    addr = Stack.popInt()
+    val  = Stack.popInt()
+    Mem.write8(addr, val)   # writeByte depricated
+
+def LOADH(Cpu, Stack, Mem):
+    Stack.pushInt( Mem.read16( Stack.popInt() ))
+
+def STOREH(Cpu, Stack, Mem):
+    addr = Stack.popInt()
+    val  = Stack.popInt()
+    Mem.write16(addr, val)
+
+def LESSTHAN(Cpu, Stack, Mem):
+    a = Stack.popInt()
+    b = Stack.popInt()
+    Stack.pushInt( a < b )
+
+def LESSTHANOREQUAL(Cpu, Stack, Mem):
+    a = Stack.popInt()
+    b = Stack.popInt()
+    Stack.pushInt( a <= b )
+
+def ULESSTHAN(Cpu, Stack, Mem):
+    a = Stack.popInt() & Cpu.INTMASK
+    b = Stack.popInt() & Cpu.INTMASK
+    Stack.pushInt( a < b )
+
+def ULESSTHANOREQUAL(Cpu, Stack, Mem):
+    a = Stack.popInt() & Cpu.INTMASK
+    b = Stack.popInt() & Cpu.INTMASK
+
+def SWAP(Cpu, Stack, Mem):
+    swapVal = Stack.popInt()
+    Stack.pushInt( ((swapVal >> 16) & 0xFFFF) | (swapVal << 16) )
+
+def MULT16X16(Cpu, Stack, Mem):
+    a = Stack.popInt()
+    b = Stack.popInt()
+    Stack.pushInt( (a&0xFFFF) * (b&0xFFFF))
+
+def EQBRANCH(Cpu, Stack, Mem):
+    target  = Stack.popInt() + Cpu.pc
+    compare = Stack.popInt()
+    if compare:
+        Cpu.SetPc(target)
+    else:
+        Cpu.SetPc(Cpu.pc+1)
+
+def NEQBRANCH(Cpu, Stack, Mem):
+    target  = Stack.popInt() + pc
+    compare = Stack.popInt()
+    if not compare:
+        Cpu.SetPc(target)
+    else:
+        Cpu.SetPc(Cpu.pc + 1)
+
+def MULT(Cpu, Stack, Mem):
+    Stack.pushInt( Stack.popInt() * Stack.popInt())
+
+def DIV(Cpu, Stack, Mem):
+    a = Stack.popInt()
+    b = Stack.popInt()
+    if b == 0:
+        raise CPUException('DIVIDE by 0', Cpu, Stack, Mem)
+
+    Stack.pushInt( a / b )
+
+def MOD(Cpu, Stack, Mem):
+    a = Stack.popInt()
+    b = Stack.popInt()
+    if b == 0:
+        raise CPUException('MOD by 0', Cpu, Stack, Mem)
+
+    Stack.pushInt( a % b )
+
+def LSHIFTRIGHT(Cpu, Stack, Mem):
+    shift = Stack.popInt() & Cpu.INTMASK
+    valX  = Stack.popInt() & Cpu.INTMASK
+    t = (valX << shift)
+    Stack.pushInt(t)
+
+def ASHIFTLEFT(Cpu, Stack, Mem):
+    shift = Stack.popInt() & Cpu.INTMASK
+    valX  = Stack.popInt() & Cpu.INTMASK
+    t = (valX << (shift & 0x3F))
+    Stack.pushInt(t)
+
+def ASHIFTRIGHT(Cpu, Stack, Mem):
+    shift = Stack.popInt() & Cpu.INTMASK
+    valX  = Stack.popInt()
+    t = valX >> (shift & 0x3F)
+    Stack.pushInt(t)
+
+def CALL(Cpu, Stack, Mem):
+    Cpu.isp = 0
+    addr = Cpu.pop()
+    Cpu.push(Cpu.pc + 1)
+    Cpu.SetPc(addr)
+
+def CALLPCREL(Cpu, Stack, Mem):
+    Cpu.isp = 0
+    addr = Cpu.pop()
+    Cpu.push(pc + 1)
+    Cpu.SetPc(addr + Cpu.pc)
+
+def EQ(Cpu, Stack, Mem):
+    Stack.pushInt( Stack.popInt() == Stack.popInt())
+
+def NEQ(Cpu, Stack, Mem):
+    Stack.pushInt( Stack.popInt() != Stack.popInt())
+
+def NEG(Cpu, Stack, Mem):
+    Stack.pushInt(-Stack.popInt())
+
+def CONFIG(Cpu, Stack, Mem):
+    cpu = Stack.popInt()
+
+    if cpu == ABEL:
+        print 'ZPU feeble instruction set'
+        # Set Feebles
+    elif cpu == ZETA:
+        print 'Complete instruction set'
+        for op in Ops:
+            op[1] = False
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Supporting functions 
+
+def flip(i):
+    """
+    Flip the bits of an integer
+    """
+    t = 0
+    for j in range(32):
+        t = t | ((i>>j)&1) << (31-j)
+
+    return t
+
+
+def isAddSP(instruction):
+    pass
+
+def isStoreSP(instruction):
+    pass
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Instruction Table
+Ops = {
+# OpCode   OpCode Name       Emulate, # Cycles 
+  0x3B:    {'func':PUSHPC,           'emu':False,   'cyc':1},   # Pushes program counter onto stack
+  0x07:    {'func':OR,               'emu':False,   'cyc':1},   # Pops 2 integers, does a bitwise 'or' pushes result
+  0x09:    {'func':NOT,              'emu':False,   'cyc':1},   # Bitwise inverse of value on stack
+  0x08:    {'func':LOAD,             'emu':False,   'cyc':1},   # Pop address, then loads the value of that address onto stack
+  0x0C:    {'func':STORE,            'emu':False,   'cyc':1},   # Pops address, then value, saves value to address
+  0x04:    {'func':POPPC,            'emu':False,   'cyc':1},   # Pops program counter 
+  0x0A:    {'func':FLIP,             'emu':False,   'cyc':1},   # Reverse the bit order of the value on stack
+  0x05:    {'func':ADD,              'emu':False,   'cyc':1},   # Pops 2 values adds them push stack
+  0x02:    {'func':PUSHSP,           'emu':False,   'cyc':1},   # Push stack pointer
+  0x0D:    {'func':POPSP,            'emu':False,   'cyc':1},   # Pop stack pointer
+  0x0B:    {'func':NOP,              'emu':False,   'cyc':1},   # No Op
+  0x06:    {'func':AND,              'emu':False,   'cyc':1},   # Pop two values from stack, bit-wise and, push result
+  0x10:    {'func':ADDSP,            'emu':False,   'cyc':1},   # 
+  0x20:    {'func':EMULATE,          'emu':False,   'cyc':1},   #
+  0x22:    {'func':LOADH,            'emu':False,   'cyc':1},   #
+  0x23:    {'func':STOREH,           'emu':False,   'cyc':1},   #
+  0x24:    {'func':LESSTHAN,         'emu':False,   'cyc':1},   #
+  0x25:    {'func':LESSTHANOREQUAL,  'emu':False,   'cyc':1},   #
+  0x26:    {'func':ULESSTHAN,        'emu':False,   'cyc':1},   #
+  0x27:    {'func':ULESSTHANOREQUAL, 'emu':False,   'cyc':1},   #
+  0x28:    {'func':SWAP,             'emu':False,   'cyc':1},   #
+  0x29:    {'func':MULT,             'emu':False,   'cyc':1},   #
+  0x2A:    {'func':LSHIFTRIGHT,      'emu':False,   'cyc':1},   #
+  0x2B:    {'func':ASHIFTLEFT,       'emu':False,   'cyc':1},   #
+  0x2C:    {'func':ASHIFTRIGHT,      'emu':False,   'cyc':1},   #
+  0x2D:    {'func':CALL,             'emu':False,   'cyc':1},   #
+  0x2E:    {'func':EQ,               'emu':False,   'cyc':1},   #
+  0x2F:    {'func':NEQ,              'emu':False,   'cyc':1},   #
+  0x30:    {'func':NEG,              'emu':False,   'cyc':1},   #
+  0x31:    {'func':SUB,              'emu':False,   'cyc':1},   #
+  0x32:    {'func':XOR,              'emu':False,   'cyc':1},   #
+  0x33:    {'func':LOADB,            'emu':False,   'cyc':1},   #
+  0x34:    {'func':STOREB,           'emu':False,   'cyc':1},   #
+  0x35:    {'func':DIV,              'emu':False,   'cyc':1},   #
+  0x36:    {'func':MOD,              'emu':False,   'cyc':1},   #
+  0x37:    {'func':EQBRANCH,         'emu':False,   'cyc':1},   #
+  0x38:    {'func':NEQBRANCH,        'emu':False,   'cyc':1},   #
+  0x39:    {'func':POPCREL,          'emu':False,   'cyc':1},   #
+  0x3A:    {'func':CONFIG,           'emu':False,   'cyc':1},   #
+  0x3C:    {'func':SYSCALL,          'emu':False,   'cyc':1},   #
+  0x3D:    {'func':PUSHSPADD,        'emu':False,   'cyc':1},   #
+  0x3E:    {'func':MULT16X16,        'emu':False,   'cyc':1},   #
+  0x3F:    {'func':CALLPCREL,        'emu':False,   'cyc':1},   #
+  0x40:    {'func':STORESP,          'emu':False,   'cyc':1},   #
+  0x60:    {'func':LOADSP,           'emu':False,   'cyc':1}    #
+    }
+
+
+</code>

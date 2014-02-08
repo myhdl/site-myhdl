@@ -1,0 +1,15 @@
+====== MyHDL Open Cores ======
+**Use at your own risk this is a project that has been started and currently in development.**
+
+This is a collection of basic digital components.  Many of these components have been used in 
+the [[users:cfelton:projects:usbp | USB FPGA Development Boards]] project.
+
+==== MyHDL Cores ====
+@TODO add code
+  * SPI Controller
+  * TWI Controller
+  * USART Controller
+
+...
+
+ 

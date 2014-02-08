@@ -1,0 +1,74 @@
+====== User-defined Verilog code ======
+
+^              MEP: | 101 |
+^           Author: | Jan Decaluwe |
+^           Status: | Final |
+^          Created: | 9-Nov-2005 |
+^    MyHDL-Version: | 0.5 |
+
+===== Background =====
+
+In order to provide a path to implementation, MyHDL code can be converted to Verilog. However, in some cases the conversion may fail or the result may not be acceptable. For example:
+
+  * conversion will fail if the MyHDL code doesn't follow the rules of the convertible subset
+  * a user may want to explicitly instantiate an existing Verilog module, instead of converting the corresponding MyHDL code
+  * it may be necessary to include technology-dependent modules in the Verilog output
+
+As a conclusion, MyHDL users need a method to include user-defined Verilog code during the conversion process.
+
+===== Requirements =====
+
+
+    * A primary application for user-defined Verilog code is an instantiation of an existing Verilog module. However, the solution should be more general. Any Verilog code that can be placed where an instantiation can be placed should be possible, including always blocks and assign statements.
+
+    * The behavioral MyHDL code and user-defined Verilog code should be independent. In particular, the MyHDL simulation should not be influenced by the user-defined Verilog code.
+
+    * When user-defined Verilog code is specified, the MyHDL code at the same hierarchical level and below should be ignored by the convertor. In particular, it can be inconvertible code.
+
+    * The user-defined Verilog code should be able to refer to all signals and parameters of its MyHDL context.
+
+    * It should be possible to include custom Verilog code without corresponding behavioral MyHDL code.
+
+===== Proposed solution =====
+
+The proposed solution is to define a hook that is understood by ''toVerilog'' but ignored by the MyHDL simulator. 
+
+The Python convention to name special methods or hooks is to use double underscores. Consequently, the hook is called ''%%__verilog__%%''. Its operation can be understood as a special return value. When a MyHDL function defines ''%%__verilog__%%'', the Verilog converter will use its value instead of the regular return value.
+
+
+The value of ''%%__verilog__%%'' should be a template string. More specifically, it should be a format string that uses keys in its format specifiers. The keys refer to the variable names in the context of the string.
+
+XXX Should the new (Python 2.4) template string, that understands perl-like subsitution, be supported also? In that case, substitution can be triggered by simply prefixing variable with ''$''.
+
+Example:
+
+<code python>
+def inc_comb(nextCount, count, n):
+
+    @always_comb
+    def logic():
+        nextCount.next = (count + 1) % n
+
+    __verilog__ = \
+"""
+assign %(nextCount)s = (%(count)s + 1) %% %(n)s;
+"""
+    nextCount.driven = "wire"
+
+    return logic
+</code>
+
+In this example, conversion of the ''inc_comb'' function is bypassed and the user-defined Verilog code is inserted instead. Note that the user-defined code refers to signals and parameters in the MyHDL context by using format specifiers. During conversion, the appropriate hierarchical names and parameter values will be filled in. Note also that the format specifier indicator ''%'' needs to be escaped (by doubling it) if it is required in the user-defined code.
+
+There is one more issue that needs user attention. Normally, the Verilog convertor infers inputs, internal signals, and outputs. It also detects undriven and multiple driven signals. To do this, it assumes that signals are not driven by default. It then processes the code to find out which signals are driven from where. However, it cannot do this for user-defined code. Without additional help, this will result in warnings or errors during the inference process, or in compilation errors from invalid Verilog code. The user should solve this by setting the ''driven'' attribute for signals that are driven from the user-defined code. In the example code above, note the following assignment:
+
+<code python>
+    nextCount.driven = "wire"
+</code>
+
+This specifies that the ''nextCount'' signal is driven as a Verilog wire from this module. The allowed values of the ''driven'' attribute are ''"wire"'' and ''"reg"''. The value specifies how the user-defined Verilog code drives the signal in Verilog. To decide which value to use, consider how the signal should be declared in Verilog after the user-defined code is inserted.
+
+
+===== Limitations =====
+
+It is not possible to use the ''%%__verilog__%%'' hook in a generator - it should be in a function. This is because functions are completely run (elaborated) before the conversion starts, while generators are not.

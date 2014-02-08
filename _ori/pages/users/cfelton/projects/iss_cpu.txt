@@ -1,0 +1,50 @@
+
+<code python>
+
+
+
+class Cpu():
+    INTMASK = 0xFFFFFFFF
+    
+    def __init__(self):
+        # @todo Created properties for the following
+        self.pc    = 0   # Program Counter
+        self.sp    = 0   # Stack Pointer
+        self.isp   = 0   # Internal Stack Pointer
+        self.instr = 0   # Current instruction (val @ pc)
+
+        # Emulated Instructions
+        self.emu_op = 0
+        self.emu_sp = 0
+        self.emulateInProgress = False
+        self.emulateOpcodeHistogram = [0] * 256
+        self.emulateOpcodeHistogramCycles = [0] * 256
+        #self.emulateCycles = 0
+        
+        self.istack = []  # Not sure??
+        
+
+    def Pop(self):
+        return self.istack.pop()
+
+    def Push(self, i):
+        self.istack.append(i)
+
+    def SetPc(self, pc):
+        # @todo Add memory exception
+        self.pc = pc
+
+    def GetPc(self):
+        return self.pc
+
+    def SetSp(self, sp):
+        # @todo Add size exception
+        self.sp = sp
+
+    def GetSp(self):
+        return self.sp
+    
+
+    #dumpHistorgram
+
+</code>

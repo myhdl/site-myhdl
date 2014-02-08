@@ -1,0 +1,9 @@
+====== myhdl.org ======
+
+^              MEP: | 102 |
+^           Author: | Jan Decaluwe |
+^           Status: |  |
+^          Created: |  |
+^    MyHDL-Version: | Undefined |
+
+This space is reserved for a proposal for a MyHDL web site. The draft is being developed [[dev:myhdl.org|here]].

@@ -1,0 +1,29 @@
+====== Using Python Dictionaries to Define Registers ======
+**Use at your own risk this is a project that has been started and currently in development.**
+
+The following shows how to define registers using dictionaries.  From a single dictionary definition all
+the information for a register set can be defined.  The register file for a particular bus interface
+can automatically be created.  From the same dictionary definition tests and software interfaces can 
+automatically be created.
+
+@TODO add coded and picture examples.
+
+This is an example creating a register definition using a dictionary.  The definition is used to automatically create the register interface (this example wishbone bus).  The dictionary is also used to automatically create user interface (wxWidgets) and documentation.
+<code python>
+RegDef["SPCR"] = {"addr" : 0x60, "width" : 8, "type" : "rw",
+                  "bits" : {"loop"   : {"b" : 0, "width" : 1, "comment" : "Internal loopback"} ,
+                            "spe"    : {"b" : 1, "width" : 1, "comment" : "System enable"} ,
+                            "cpol"   : {"b" : 3, "width" : 1, "comment" : "Clock Polarity"} ,
+                            "cpha"   : {"b" : 4, "width" : 1, "comment" : "Clock Phase"} ,
+                            "msse"   : {"b" : 5, "width" : 1, "comment" : "Manual slave select enable"},
+                            "freeze" : {"b" : 6, "width" : 1, "comment" : "freeze the core"},
+                            "wb_sel" : {"b" : 7, "width" : 1, "comment" : "1 = wishbone bus feeds the TX/RX fifo."+  
+                                                                          "Else the streaming interface feeds FIFOs"},
+                            },
+                  "default" : 0x98,  # CPOL = CPHA = WB_SEL = 1
+                  "comment" : "SPI Control register"
+                  }
+
+</code>
+
+Complete examples can be viewed at the [[users:cfelton:projects:usbp]].

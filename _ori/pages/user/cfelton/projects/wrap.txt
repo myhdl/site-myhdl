@@ -1,0 +1,39 @@
+======= intbv.wrap() Function ======
+  
+
+The following is a description of the proposed wrap() function.  The wrap function is intended to be used to model the inherent wrapping feature of a binary word.  Currently the intbv which is used to model binary words prohibits the wrapping property and checks bounds.  This is a good behavior, because often designers do not wish to have the wrap behavior and the bound checking will catch these issues.
+
+In some cases a designer wishes to have the wrap behavior.  With unsigned values this can be achieved with the mod operator.  As mentioned this is a good method because the wrap is explicitly stated.  Someone reading the code does not need to guess the behavior it is stated.
+
+For signed numbers the mod operator does not work and different method is required.  To handle this case it is proposed that a wrap() function be added.  The wrap function would expect an intbv (or Signal(intbv)) and if the value is greater than the current bounds the wrap function will adjust the value according to the behavior of a binary word.
+
+====== Modeling ======
+The wrap function will model the behavior of a binary word as described in the following table.
+
+| bin | unsigned | signed |
+| 000 |  0  | 0 |
+| 001 |  1  | 1 |
+| 010 |  2  | 2 |
+| 011 |  3  | 3 |
+| 100 |  4  | -4 |
+| 101 |  5  | -3 |
+| 110 |  6  | -2 |
+| 111 |  7  | -1 |
+
++1 wrap back to 0
+
+
+
+====== Conversion ======
+Conversion, the conversion methods will need to identify the wrap() function and ignore it.  The underlying Verilog/VHDL binary words, signed of unsigned, behave as intended in this case.
+ 
+
+====== Example ======
+x = intbv(0, min=-8, max=7)
+x[:] = x.wrap(x + 15)
+
+In the above case, the wrap function will be passed the result of addition the wrap function will examine the intbv type and determine if it is signed or unsigned and return the correct value based on the wrap behavior.  The result in this case should be -1;  For conversion, assuming a Signal is generated and the code is in a behavioral statement, the statement will simply be converted to x <= x + 15, for either type.
+
+====== Conclusion ======
+The wrap function will maintain the goals of MyHDL and require the explicit handling of the wrap behavior.  It will provide a means to exploit the signed two's complement wrapping behavior.
+ 

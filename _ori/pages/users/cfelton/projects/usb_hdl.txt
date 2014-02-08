@@ -1,0 +1,12 @@
+====== USB FPGA Design ======
+
+This page outlines the design of the FPGA logic.
+
+
+{{:users:cfelton:projects:usbp_design.png?480}}
+
+The colors indicate which blocks have been complete or there status.
+  * Green block is complete
+  * Orange block is in development
+  * Red block not started
+ 

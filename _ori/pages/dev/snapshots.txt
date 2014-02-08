@@ -1,0 +1,125 @@
+====== Development snapshots ======
+:!: **Development snapshots are now obsolete. You can
+track ongoing development using the [[:dev:repo]].**
+
+===== Rationale =====
+
+An open source project may benefit from early, frequent releases of development snapshots, in addition to the slower cycle of stable releases. However, the purpose and the target public of stable releases versus development snapshots is totally different. Therefore, it is meaningful to use different sites to make them available.
+
+The purpose of this web page is to make the MyHDL development snapshots available. The
+[[http://sourceforge.net/project/showfiles.php?group_id=91207|stable releases]] will remain on SourceForge.
+
+===== What (not) to expect =====
+
+Development snapshots are unstable or incomplete. Problems and inconsistencies
+should be anticipated. In particular:
+    * documentation, implementation and tests may be incomplete, outdated or incorrect
+    * experimental features may not be included in a stable release
+
+That having said, there are also a number of guarantees :
+    * all existing regression tests run without errors
+    * the snapshot release number is used to tag the CVS tree and to set ''myhdl.%%__%%version%%__%%''
+
+In contrast to official releases, development snapshots will be removed some time after a better release is available.
+
+===== When to use a snapshot =====
+
+When you are new to MyHDL, you should start with the latest
+[[http://sourceforge.net/project/showfiles.php?group_id=91207|stable release]].
+
+On the other hand, experienced MyHDL users are encouraged to try out development snapshots and to provide feedback. It is a great way to help development.
+
+Usually you will know when and why to use a snapshot based on support
+information. Typically such a snapshot will solve a blocking bug, add a crucial new
+feature, or you have agreed to test some new feature to provide feedback.
+
+===== Version naming conventions =====
+
+Each development snapshot is considered a step towards
+a subsequent stable release. It will be named by attaching
+a status indicator and a snapshot number to the
+release number. For example, ''0.5dev2'' would be the
+second development snapshot towards the ''0.5'' release.
+
+A number of status indicators may be used, according
+to the following table, in order of increasing stability:
+
+^   Status indicator   ^      Meaning                  ^
+|  ''dev ''            | on-going development snapshot |
+|   ''a''              | alpha version                 |
+|   ''b''              | beta version                  |
+|   ''c ''             | release candidate             |
+
+===== Development snapshots =====
+
+
+
+
+
+
+
+
+
+==== 0.6 snapshots ====
+
+**Aug 24, 2008**\\
+{{:dev:myhdl-0.6dev9.tar.gz|}}
+
+**Mar 26, 2008**\\
+{{:dev:myhdl-0.6dev8.tar.gz}}
+
+**Mar 18, 2008**\\
+{{:dev:myhdl-0.6dev7.tar.gz}}
+
+**Jan 9, 2008**\\
+{{:dev:myhdl-0.6dev6.tar.gz}}
+
+**Dec 18, 2007**\\
+{{:dev:myhdl-0.6dev5.tar.gz}}
+
+**Jun 17, 2007**\\
+{{:dev:myhdl-0.6dev4.tar.gz}}
+
+**Dec 13, 2006**\\
+{{:dev:myhdl-0.6dev3.tar.gz}}
+
+**Oct 19, 2006**\\
+{{:dev:myhdl-0.6dev2.tar.gz}}
+
+**Oct 4, 2006**\\
+{{:myhdl-0.6dev1.tar.gz}}
+
+==== 0.5.1 snapshots ====
+
+The 0.5.1 release is available on SourceForge.
+
+**Apr 14, 2006**\\
+{{:myhdl-0.5.1dev1.tar.gz}}
+
+==== 0.5 snapshots ====
+
+The 0.5 release is available on SourceForge.
+
+**Dec 27, 2005**\\
+{{:myhdl-0.5c1.tar.gz}}
+
+**Dec 19, 2005**\\
+{{:myhdl-0.5b1.tar.gz}}
+
+**Nov 28, 2005**\\
+{{:myhdl-0.5a1.tar.gz}}
+
+**Nov 21, 2005**\\
+{{:myhdl-0.5dev5.tar.gz}}
+
+**Nov 14, 2005**\\
+{{:myhdl-0.5dev4.tar.gz}}\\
+
+**Nov 4, 2005**\\
+{{:myhdl-0.5dev3.tar.gz}}
+
+**Oct 21, 2005**\\
+{{:myhdl-0.5dev2.tar.gz}}
+
+**Oct 10, 2005**\\
+{{myhdl-0.5dev1.tar.gz}}

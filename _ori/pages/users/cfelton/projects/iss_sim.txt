@@ -1,0 +1,280 @@
+
+<code python>
+
+import sys, os, shutil
+import commands, getopt, glob
+import time
+from array import array
+from binascii import hexlify, unhexlify
+
+
+from Stack import *
+from Mem import *
+from Cpu import *
+from Ops import *
+
+    
+class Simulator():
+    """
+    ZPU Simulator, this is the version of the CPU that only implements
+    11 instructions.  This is useful for a minimal size CPU that can be
+    used in an FPGA.
+    """
+
+    # Constant Defaults
+    INTMASK     =  0xFFFFFFFF    #    
+    ADDSP       = 16
+    LOADSP      = 64+32
+    STORESP     = 64
+    
+    def __init__(self):
+        """
+        Simulation Object
+        """
+        #print "Do Something Here"
+        self.cpu    = Cpu()
+        self.stack  = Stack()
+        self.imem   = Mem()
+        self.dmem   = Mem()
+    
+        #
+        self.cycles      = 0
+        self.iCount      = 0
+        self.breakNext   = 0
+        self.decodeMask  = False
+
+
+    def InstructionLoop(self):
+        """
+        """
+
+        while(True):
+            # try
+            self.ExecuteInstruction()
+        
+            # catch ...
+
+
+
+    def ExecuteInstruction(self):
+        """
+        """
+
+        # CheckHalt()
+        # CheckVector()
+        # CheckInterrupts()
+        # tracer.InstructionEvent()
+
+        commit  = False
+        savedSp = self.cpu.GetSp()
+        savedPc = self.cpu.GetPc()
+        savedDecodeMask = self.decodeMask
+        touchedPc = False
+
+        # @todo Change prints to logging
+        print 'PC: .................0x%04X  ==  0x%02X' % (self.cpu.GetPc(), self.imem.read8(self.cpu.GetPc()))
+        instruction = self.imem.read8(self.cpu.GetPc())
+        #self.cpu.SetInstr(instruction)
+        
+        #tick()
+
+        # All instructions are 8 bit, most instructions use stack postions
+        # as the operands.  A couple operands have 
+        if (instruction & 0x80) != 0:
+            
+            if self.decodeMask:
+                a = (self.stack.popInt() << 7) | (instruction & 0x7F)
+                self.stack.pushInt(a)
+            else:
+                self.stack.pushInt(instruction)
+
+            #self.decodeMask = True
+
+        else:
+            self.decodeMask = False
+            
+            if isAddSP(instruction):
+                offset  = instruction - self.ADDSP
+                valAddr = self.cpu.GetSp() + offset*4
+                a = self.stack.popInt()
+                self.stack.pushInt(self.stack.readLong(valAddr) + a)
+
+            elif instruction >= self.LOADSP and instruction < self.LOADSP + 0x20:
+                addr = self.cpu.GetSp()
+                offset = (instruction - self.LOADSP) ^ 0x10
+                addr = addr + (4 * offset)
+                self.stack.pushInt(self.stack.readLong(addr))
+                instruction = instruction & 0xE0
+
+            elif isStoreSP(instruction):
+                addr = self.cpu.GetSp()
+                offset = (instruction - self.STORESP)^0x10
+                addr = addr + (4 * offset)
+
+            else:
+
+                print "..,.",Ops[instruction]['func']
+
+                Ops[instruction]['func'](self.cpu, self.stack, self.dmem)
+
+        # Update information, total number cycles, etc
+        # Increment PC
+        self.cpu.SetPc(savedPc+1)
+
+        # Dump the stack
+        print self.stack
+
+
+def LoadBinFile(fname, sim):
+    """
+    load a .bin file
+    """
+    fp = open(fname, 'rb')
+    b = 0x00
+    while b is not None:
+        print "%02X " % (b)
+        b = fp.read(1)        
+        
+    #for b in fp:
+        #    sim.imem.write8(0, 0x85)   # IM  5   ;; push 5 onto stack
+        #print b
+        #print "%02X " % (b)
+
+
+def LoadHexFile(fname, sim):
+    """
+    load a .bin file
+    """
+    fp = open(fname, 'rU')
+
+    # Intel Hex Format
+    # :ccaaaarrddd...ddhh
+    #   : == start code
+    #   c == 8 bit byte count
+    #   a == 16 bit address
+    #   r == 8 bit record type
+    #   d == n bit data
+    #   h == 8 bit checksum
+    for s in fp:
+        s = s.strip('\r\n')
+        if s[0] == ':':
+            bin = array('B', unhexlify(s[1:]))
+            slen  = bin[0]
+            addr  = (bin[1] << 8) | bin[2]
+            rtype = bin[3]
+
+            #print "Loading Memory"
+            for n in range(slen):
+                #print "  %04X:  %02X" % (addr, bin[4+n])
+                sim.imem.write8(addr, bin[4+n])
+                addr +=1
+        #print b
+        #print "%02X " % (b)
+
+
+    
+def Usage():
+    
+    dsmg = \
+"""
+EZPU Instruction Set Simulator
+  >> python Simulator.py <program.hex>
+
+  The Simulator will load a hex file and simulate the hex file
+"""
+
+    print dmsg
+    
+def Main():
+    """
+    Get command line arguemnts, create simulator, run
+    """
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "h", ["load_mem"])
+    except getopt.GetoptError, err:
+        usage()
+        sys.exit(2)
+
+    # default options
+
+    # get command line options
+    for o, a in opts:
+        if o in ("-h"):
+            usage()
+            sys.exit()
+        else:
+            usage()
+            print "Unhandled Option"
+            sys.exit()
+
+    if len(args) == 1:
+        # @todo, determine if .bin, .asm, .elf, etc
+        fname = args[0]
+    else:
+        Usage()
+        sys.exit(2)
+        
+    # instantiate sim based on command line options
+    sim = Simulator()
+
+    # @todo load appropriate file
+    # load program
+    LoadHexFile(fname, sim)
+
+    # Execute Instructions
+    sim.InstructionLoop()
+
+if __name__ == '__main__':
+    # @todo call main
+    Main()
+    sys.exit(0)
+    sim = Simulator()
+
+    # Test some opcodes
+    sim.imem.write8(0, 0x85)   # IM  5   ;; push 5 onto stack
+    sim.imem.write8(1, 0x88)   # IM  8   ;; push 8 onto stack
+    sim.imem.write8(2, 0x05)   # ADD     ;; adds first 2 values on stack 
+
+    sim.ExecuteInstruction()
+    sim.ExecuteInstruction()
+    sim.ExecuteInstruction()
+
+    # @todo prompt to continue or exit
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Code Example
+    # /* simple program showing some interesting qualities of the ZPU toolchain */
+    # void bar(int);
+    # int j;
+    # void foo(int a, int b, int c)
+    # {
+    #     a++;
+    #     b+=a;
+    #     j=c;
+    #     bar(b);
+    # }
+    #        .org 0000
+    # 0000                    ;;
+    # ????   bar:
+    #            return       ;;
+    # ????   foo:
+    #            loadsp 4     ;; a is at memory location SP+4
+    #            im     1     ;;   
+    #            add          ;;
+    #            loadsp 12    ;; b is now at memory location SP+12
+    #            add          ;;
+    #            loadsp 16    ;; c is now at memory location SP+16
+    #            im     24    ;; j is at absolute memory location 24. 
+    #            ; Notice how the ZPU toolchain is using link-time relaxation
+    #            ; to squeeze the address into a single no-op
+    #            store        ;;
+    #            im     22    ;; the fn bar is at address 22
+    #            call         ;;
+    #            im     12    ;;
+    #            return       ;; 12 bytes of arguments + return from fn
+    
+
+    
+    
+
+</code>

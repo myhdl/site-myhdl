@@ -1,0 +1,383 @@
+<code python>
+#! /usr/bin/python
+
+""" 
+ -----------------------------------------------------------------------------
+     __  ___      __  ______  __       ____                   __            
+    /  |/  /_  __/ / / / __ \/ /      / __ )____  ____  _____/ /____  _____ 
+   / /|_/ / / / / /_/ / / / / /      / __  / __ \/ __ \/ ___/ __/ _ \/ ___/ 
+  / /  / / /_/ / __  / /_/ / /___   / /_/ / /_/ / /_/ (__  ) /_/  __/ /     
+ /_/  /_/\__, /_/ /_/_____/_____/  /_____/\____/\____/____/\__/\___/_/      
+        /____/                                                            
+                                                                                
+ MyHDL Booster Library                                                      
+                                                                            
+ George Pantazopoulos                                                       
+ http://www.gammaburst.net                                                  
+     
+ -----------------------------------------------------------------------------
+ 
+ myhdl.test (MyHDL regression test script)
+ -----------------------------------------
+ 
+ - Built-in alternative to py.test
+ 
+ - Recurses through subdirectories and runs all functions starting with "test"
+   as testbenches in a MyHDL Simulation
+   
+ - functions are run in the order that they are declared in the module file, 
+   just like py.test
+ 
+ - Displays number of tests passed/failed.
+ 
+ - Sets the exit code to non-zero if any tests failed.
+ 
+ Usage:
+     If started with no arguments, it will recurse into subdirectories
+     starting at the current dir
+     
+     If a directory is specified, it will recurse into that path
+     
+     If a python filename is specified, it will only operate on that file
+ 
+ Current limitations:
+ - Functions must not take any arguments
+ - test classes not supported yet
+ 
+ Known Bugs:
+ - Currently, if two files are named exactly the same but in seperate directories
+   and their functions are identically named, only the first module's functions
+   will actually be executed. The second module's functions will appear to run
+   but they are really the first module's functions running again
+ 
+"""
+
+__title__    =  "myhdl.test"
+__author__   =  "George Pantazopoulos http://www.gammaburst.net"
+
+__descr__    =  "Automated regression test runner for MyHDL.\n" \
+                "Part of the MyHDL Booster package"
+
+__version__  =  "0.3.4"
+__date__     =  "14 Oct 2006"
+
+import compiler
+import compiler.visitor
+from   compiler.visitor import ASTVisitor
+
+import sys
+import pprint
+import os.path
+
+from myhdl import Simulation, SimulationError
+
+## Walk through a directory structure and execute all test functions 
+## in each python file in the order they are declared in the file.
+##
+## For each python file, use the compiler module to process it into 
+## an ast tree. Then, walk the ast tree and collect the function instances
+##
+## Grab the function instance names.
+##
+## Then, import the python file as a module and 
+## call functions in that module (no args)
+##
+## References:
+## http://www.python.org/doc/2.4.3/lib/module-compiler.ast.html
+
+# ----------------------------------------------------------------------------
+
+def getFunctions(filename):
+    """
+    Parses a file and extracts AST nodes that are Functions
+    Returns them in a list
+    """
+
+    class FuncCollector(ASTVisitor):
+        def __init__(self):
+            ASTVisitor.__init__(self)
+            self.funcs = []
+            
+        def visitFunction(self, node):
+            self.funcs.append(node)
+
+        # We don't want class methods to end up in our function name list
+        # So when we visit a class we just do nothing
+        def visitClass(self, node):
+            pass
+
+        def get_funcs(self):
+            return self.funcs
+
+    # Parse the file into an AST object
+    ast = compiler.parseFile(filename)
+    
+    # Instantiate the ASTVisitor that will collect the function definitions
+    fc = FuncCollector()
+    
+    # Walk through the AST tree and collect the function definitions
+    compiler.walk(ast, fc)
+        
+    return fc.get_funcs()
+
+# ----------------------------------------------------------------------------
+
+def getFuncNames(funcnodes):
+    """
+    Given a list of AST Function nodes,
+    extract the function names into a list.
+    """
+    
+    funcnames = []
+    
+    for node in funcnodes:
+        funcnames.append(node.name)
+        
+    return funcnames
+
+# ----------------------------------------------------------------------------
+
+def importFromFile(pathname):
+    """
+    Loads a python file and imports it as a module.
+    Returns the module object
+    """
+    
+    # Add the module's dirname to sys.path so it can be imported later
+    sys.path.append(os.path.dirname(pathname))
+
+    # Get the basename of the python module file
+    module_basename = os.path.basename(pathname)
+    
+    # Make sure the file extension is ".py"
+    file_ext = '.py'
+    
+    if os.path.splitext(module_basename)[1] != file_ext:
+        raise Exception, \
+        "Filename " + module_basename + " lacks a '" \
+        + file_ext + "' extension."
+    
+    # Strip off the .py extension of the filename
+    module_name = os.path.splitext(module_basename)[0]
+        
+    # Import the module represented by this Python source file
+    module = __import__(module_name)
+    
+    return module
+
+# ----------------------------------------------------------------------------
+
+def execTestFuncsInFile(pathname, keep_going=False):
+    """
+    Identifies the test functions in a given python file and executes
+    them as a testbench in a MyHDL Simulation.
+    
+    The functions are executed in the order they are defined in the module
+    """
+    
+    
+    module = importFromFile(pathname)
+    #print "imported module " + "'" + module.__name__ + "'"
+    #print
+   
+    # Get the function names we extracted from the file
+    funcnames = getFuncNames(getFunctions(pathname))
+    
+
+    # Filter out the test function names
+    testfuncnames = []
+    
+    for name in funcnames:
+        if name.startswith('test'):
+            testfuncnames.append(name)
+    
+    num_passed = 0
+    num_failed = 0
+    
+    if len(testfuncnames) > 0:
+        print "File: " + pathname
+        print
+    
+        for name in testfuncnames:
+	        
+	        try:
+	            # Use that test function as the testbench in a Simulation
+	            sim = Simulation(module.__dict__[name].__call__())
+	            sim.run()
+	            
+	            # If there's no exception, then the test must have passed.
+	            print (name + '()').ljust(60,'.') + " PASS".ljust(15)
+	            
+	            num_passed += 1
+	            
+	        # ASCII Timing Spec code throws a generic 'Exception'
+	        except (Exception, SimulationError), info:
+	            print (name + '()').ljust(60,'.') + " FAIL".ljust(15)
+	            print " |"
+	            print " ---> " + str(info)
+	            print 
+	            
+	            num_failed += 1
+	            
+	            if keep_going == False:
+	                break
+	      
+        print "-" * 70
+            
+    stats = dict(num_passed=num_passed, num_failed=num_failed)
+    return stats
+            
+# ----------------------------------------------------------------------------
+
+def execTestFuncsInDirTree(path, keep_going=False):
+    """
+    Recurse into subdirectories starting in path 
+    and execute tests in any .py files.
+    """
+    num_passed = 0
+    num_failed = 0
+        
+    stats = dict(num_passed=num_passed, num_failed=num_failed)
+    
+    # Start in the given path and recurse into subdirs
+    for root, dirs, filenames in os.walk(path):
+        
+        # At each subdir, we're provided with a list of filenames
+        for filename in filenames:
+            
+            # Only operate on Python source files (.py extension)
+            if os.path.splitext(filename)[1] == '.py':
+                
+                # Reconstruct the full pathname
+                pathname = os.path.join(root, filename)
+                
+                # Execute all the test functions in this file
+                stats_this_file = execTestFuncsInFile(pathname=pathname, 
+                                                      keep_going=keep_going)
+                
+                # Add the stats from this file to the total stats
+                for k in stats_this_file.keys():
+                    stats[k] += stats_this_file[k]
+                
+                # If any tests failed, decide if we want to keep going
+                if stats_this_file['num_failed'] > 0:
+                    if keep_going == False:
+                        break
+                    
+    return stats
+            
+# ----------------------------------------------------------------------------
+
+if __name__ == '__main__':
+    
+    title    = globals()['__title__']
+    descr    = globals()['__descr__']
+    author   = globals()['__author__']
+    version  = globals()['__version__']
+    date     = globals()['__date__']
+    
+    def print_author():
+        print "Author: " + author
+    
+    def print_version():
+        print title + " " + version
+    
+    def print_usage():        
+        print
+        print_version()
+        print date
+        print
+        print descr
+        print
+        print "Usage: " + sys.argv[0] + " [options] [dir | path-to-.py-file]"
+        print
+        print "options:"
+        
+        print " -h, --help.......... print this help screen"
+        print " -v  --version....... show version info and exit"
+        print " -k, --keep-going.... continue running tests even if there were failures" 
+                
+        print
+        print_author()
+        
+    def is_dir_or_file(str):
+        return os.path.isdir(str) or os.path.isfile(str)
+    
+    keep_going   = False
+    path         = None
+    
+    # If this module is called as a script with no args
+    # then recurse through the subdirs starting from the current dir
+    if len(sys.argv) == 1:
+        path = '.'
+        keep_going = False
+    
+    # One argument
+    elif len(sys.argv) == 2:
+
+        # The single arg is not a file or dir. 
+        # Maybe it's an option with no args following it...
+        if not is_dir_or_file(sys.argv[1]):
+            
+            # Help request.
+            if sys.argv[1] in ['help', '-h', '-help', '--h', '--help']:
+                print_usage()
+                sys.exit(0)
+            
+            elif sys.argv[1] in ['-v', '--version']:
+                print_version()
+                sys.exit(0)
+            
+            # User specified -k with no args following it.
+            elif sys.argv[1] in ['-k', '--keep-going']:
+                keep_going = True
+                path = '.'
+            
+            else:
+                print "Unrecognized option: " + sys.argv[1]
+                print_usage()
+                sys.exit(1)
+            
+        else:
+            # A path or directory was specified as the single argument
+            keep_going = False
+            path = sys.argv[1]
+
+    # Two args
+    elif len(sys.argv) == 3:
+        
+        # This should be an option with a path or filename following it.
+        if not is_dir_or_file(sys.argv[1]):
+        
+            if sys.argv[1] in ['-k', '--keep-going']:
+                keep_going == True
+
+            else:
+                print "Unrecognized option: " + sys.argv[1]
+                sys.exit(1)
+                
+            if not is_dir_or_file(sys.argv[2]):
+                print "Second argument must be directory or filename"
+                print_usage()
+                sys.exit(1)
+            else:
+                path = sys.argv[2]
+        
+    # User parameter collection is complete here.
+    print ""
+    print "-" * 70
+    stats = execTestFuncsInDirTree(path=path, keep_going=keep_going)
+    
+    # Print statistics
+    print
+    print "Tests passed..... " + str(stats['num_passed'])
+    print "Tests failed..... " + str(stats['num_failed'])
+    print "-----------------"
+    print "Total tests run.. " + str(stats['num_passed']+ stats['num_failed'])
+
+    # if any tests failed, set the exit code to indicate abnormal exit
+    if stats['num_failed'] > 0:
+        sys.exit(1)
+    else:
+        sys.exit(0)
+</code>

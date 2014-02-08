@@ -1,0 +1,11 @@
+====== MyHDL implementation of Gnu Radio USRP Verilog ======
+
+**Use at your own risk this is a project that has been started and currently in development.**
+
+This is an implementation of the Gnu Radio USRP Verilog.  For the most part this is a direct
+port and not much attempt has been made to make it more pythonic.  But rather the old structure
+and names have been preserved to make it more friendly to those already familiar with the USRP verilog.
+
+
+==== Gnu Radio USRP SDR Lib ====
+@TODO add files

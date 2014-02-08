@@ -1,0 +1,294 @@
+====== Round-to-even-on-tie ======
+
+This article is about numerical rounding, more specific, about implementing the tie-breaking technique called "round-to-even" using MyHDL. There is a good article about [[http://en.wikipedia.org/wiki/Rounding|Numerical Rounding]] on [[http://en.wikipedia.org|Wikipedia]] for reference.
+
+The idea about the tie-breaking technique round-to-even is, to round a fractional number to the nearest even, in case the tie 0.500 appears. So the value 3.5 will be rounded to the integer number 4 and 2.5 will be rounded to the integer 2. A tie is considered the fractional part 0.5, as it is equal distances from the next bigger integer value as from its next lower integer value. To explain that with an example, 3.5 is equal distant to 4.0 as it is to 3.0. All other fractions are rounded as before, so 3.51 will be rounded to 4 as 3.49 will be rounded to 3.
+
+{{ :projects:equal_distance.png?300 |Equal distance with 3.5}}
+
+Now let's consider the binary implementation of the round-to-even. For that we consider an unsigned fixed-point number representation with 3 integer bits and 3 fractional bits and the number should be rounded to an unsigned integer of 3 bits. First we introduce some naming convention. Based on the value 3.5, as fixed-point number in binary form it is represented by 011.100.
+
+<code>
+  011.100
+    ^ ^--
+    | | |
+    | | + lsbs_frac
+    | +-- msb_frac
+    +---- lsb_int
+</code>
+
+  * lsbs_frac are the least-significant-bits of the fractional part
+  * msb_frac is the most-significant-bit of the fractional part
+  * lsb_int is the least-significant-bit of the integer part
+
+Note that it is necessary to consider all fractional bits, except for the msb and therefore it is called lsbs. But only the least-significant-bit of the integer part.
+
+Now there are two distinctions necessary:
+
+  * No tie --> just round as known
+  * Tie --> round-to-nearest-even
+
+===== Tie test =====
+
+A tie is considered 0.5, which in binary form means, the lsbs_frac are all zero and the msb_frac is one.
+
+==== Tie ====
+
+Let's say there is a tie, now the integer part needs to be increased if it is an odd value and stay if it is an even value. Odd and even numbers are identified by the lsb_int. Consider the bit values of an integer number. The first bit is 2^0 = 1, the second bit 2^1 = 2, the third bit 2^2 = 4, etc. Only bit zero has an odd bit value, all following bit values are even. To test an integer number whether it is odd or even, it is sufficient to test whether lsb is set.
+
+In our case, when lsb_int is set, it is an odd number and it needs to be increased by one. If lsb_int is not set it is an even number and the integer value remains.
+
+The simplest way to implement this functionality is just to add the lsb_int to the integer value in case of a tie.
+
+==== No tie ====
+
+No tie is considered if any of the least-significant-bits of the fractional part (lsbs_frac) is set. How does that come? Let's consider the values to understand that. The msb_frac has the value 2^-1 or 1/2. The first lsb_frac has the value 2^-2 or 1/4, etc. That means that the sum of all lsbs_frac is < 0.5. So we said that msb_frac has the value of 0.5 and adding all lsbs_frac to it will add a value < 0.5. That means that if msb_frac is set, the overall fractional value is > 0.5 and for rounding the integer value needs to be rounded up -- increased by one. In case msb_frac is not set, the overall fractional value is < 0.5 and the integer value will remain -- rounded down.
+
+As the msb_frac is the bit that considers the rounding up or remaining, the simplest way to implement it, is to add the msb_frac to the integer value, in case no tie occurred.
+
+===== Put it to work =====
+
+To put the previous ideas into an image, the following figure shows how the round-to-even-on-tie is implemented with logical building blocks.
+
+{{ :projects:round-to-even-on-tie.png?600 |Round-to-even-on-tie}}
+
+
+==== Testbench ====
+
+Here is the testbench testing a few corner cases.
+
+<code myhdl test_round_to_even.py>
+#!/usr/bin/env python
+ 
+import unittest
+from myhdl import *
+
+from round_to_even import round_to_even
+
+class TestRoundToEven(unittest.TestCase):
+
+  def test_rounding(self):
+    '''Test round-to-even-on-tie
+    '''
+
+    def bench():
+
+      width_i = 6
+      frac_bits = 3
+      width_o = width_i - frac_bits + 1
+      min_i = -2**(width_i-1)
+      max_i = 2**(width_i-1)
+      min_o = -2**(width_o-1)
+      max_o = 2**(width_o-1)
+      
+      data_i = Signal(intbv(0,min=min_i,max=max_i))
+      data_o = Signal(intbv(0,min=min_o,max=max_o))
+
+      round_to_even_inst = round_to_even(data_i, data_o, width_i,
+          frac_bits)
+
+      @instance
+      def stimulus():
+
+
+        #
+        # Tests with msb_frac set and tie
+        #
+        # 3,5 -> 4,0
+        data_i.next = intbv('011100')
+        yield delay(1)
+        # Test result is 4
+        self.assertEqual(data_o, intbv('0100'))
+        
+        # 2,5 -> 2,0
+        data_i.next = intbv('010100')
+        yield delay(1)
+        # Test result is 2
+        #self.assertEqual(data_o, intbv('0010'))
+        
+        # 1,5 -> 2,0
+        data_i.next = intbv('001100')
+        yield delay(1)
+        # Test result is 2
+        self.assertEqual(data_o, intbv('0010'))
+
+        #
+        # Tests with msb_frac set and no tie
+        #
+        
+        # 1,625 -> 2,0
+        data_i.next = intbv('001101')
+        yield delay(1)
+        # Test result is 2
+        self.assertEqual(data_o, intbv('0010'))
+        
+        # 1,75 -> 2,0
+        data_i.next = intbv('001110')
+        yield delay(1)
+        # Test result is 2
+        self.assertEqual(data_o, intbv('0010'))
+        
+        # 1,825 -> 2,0
+        data_i.next = intbv('001111')
+        yield delay(1)
+        # Test result is 2
+        self.assertEqual(data_o, intbv('0010'))
+        
+        
+        #
+        # Test some negative values
+        #
+       
+        # -1.25 -> -1.0
+        data_i.next = intbv('110110')[width_i:].signed()
+        yield delay(1)
+        # Test result is -1
+        self.assertEqual(data_o, intbv('1111')[width_o:].signed())
+        
+        # -1.50 -> -2.0
+        data_i.next = intbv('110100')[width_i:].signed()
+        yield delay(1)
+        # Test result is -2
+        self.assertEqual(data_o, intbv('1110')[width_o:].signed())
+
+        # -1.75 -> -2.0
+        data_i.next = intbv('110010')[width_i:].signed()
+        yield delay(1)
+        # Test result is -2
+        self.assertEqual(data_o, intbv('1110')[width_o:].signed())
+        
+
+        # -2.50 -> -2.0
+        data_i.next = intbv('101100')[width_i:].signed()
+        yield delay(1)
+        # Test result is -2
+        self.assertEqual(data_o, intbv('1110')[width_o:].signed())
+        
+        # -2.75 -> -3.0
+        data_i.next = intbv('101010')[width_i:].signed()
+        yield delay(1)
+        # Test result is -3
+        self.assertEqual(data_o, intbv('1101')[width_o:].signed())
+
+        #print bin(data_i), len(data_i), bin(data_o, len(data_o)), len(data_o)
+        raise StopSimulation
+
+      return instances()
+
+
+    #####################################
+    tb = bench()
+    #tb = traceSignals()
+    sim = Simulation(tb)
+    sim.run()
+ 
+ 
+########################################################################
+# main
+if __name__ == '__main__':
+  suite = unittest.TestLoader().loadTestsFromTestCase(TestRoundToEven)
+  unittest.TextTestRunner(verbosity=2).run(suite)
+
+
+
+
+</code>
+
+==== RTL Implementation ====
+
+The implementation looks as follows.
+
+<code myhdl round_to_even.py>
+#!/usr/bin/env python
+#
+# round_to_even.py
+#
+from myhdl import *
+ 
+ 
+def round_to_even(data_i, data_o, WIDTH, FRAC_BITS):
+
+  '''Round to even on tie
+ 
+  I/O pins:
+  =========
+ 
+  data_i        : data word input
+  data_o        : data word output
+  
+  Parameter:
+  ==========
+  WIDTH         : bit width of data_i. Output bit width will be
+                  WIDTH - FRAC_BITS + 1
+  FRAC_BITS     : number of fractional bits the data_i word contains
+ 
+  '''
+
+  WIDTH_O = WIDTH - FRAC_BITS + 1
+  min_a=-2**(WIDTH-FRAC_BITS-1)
+  max_a=-min_a
+  tie_indicator = Signal(bool(False))
+  add_a = Signal(intbv(0,min=min_a,max=max_a))
+  add_b = Signal(bool(False))
+ 
+  @always_comb
+  def misc_logic():
+    add_a.next = data_i[:WIDTH-FRAC_BITS]
+    # FRAC_BITS-1 = msb_frac
+
+    if data_i[FRAC_BITS-1] == 1 and data_i[FRAC_BITS-1:] == 0:
+      tie_indicator.next = True
+    else:
+      tie_indicator.next = False
+ 
+
+  @always_comb
+  def mux_logic():
+    if tie_indicator:
+      # on tie, add lsb_int
+      add_b.next = data_i[FRAC_BITS]
+    else:
+      # else, msb_frac
+      add_b.next = data_i[FRAC_BITS-1]
+  
+
+  @always_comb
+  def add():
+    data_o.next = add_a + add_b
+  
+  return instances()
+
+
+########################################################################
+def convert():
+
+  WIDTH_I = 6
+  FRAC_BITS = 3
+  WIDTH_O  = WIDTH_I - FRAC_BITS + 1
+
+  min_i = -2**(WIDTH_I-1)
+  max_i = 2**(WIDTH_I-1)
+  min_o = -2**(WIDTH_O-1)
+  max_o = 2**(WIDTH_O-1)
+      
+  data_i = Signal(intbv(0,min=min_i,max=max_i))
+  data_o = Signal(intbv(0,min=min_o,max=max_o))
+
+  toVerilog(round_to_even, 
+            data_i,
+            data_o,
+            WIDTH_I,
+            FRAC_BITS)
+ 
+  toVHDL(round_to_even,
+            data_i,
+            data_o,
+            WIDTH_I,
+            FRAC_BITS)
+ 
+ 
+if __name__ == '__main__':
+  convert()
+
+
+</code>

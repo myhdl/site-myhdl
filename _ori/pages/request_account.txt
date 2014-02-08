@@ -1,0 +1,28 @@
+====== Request an account ======
+
+===== Why you may need an account (or not) =====
+
+Would you like to contribute to this website? Thanks,
+that is very welcome. To do so, you will need an account.
+
+With an account, you will be able to edit most content and
+add your own.
+The purpose is to improve the MyHDL documentation
+and information for the community. Therefore, you should have
+a good level of experience with MyHDL.
+
+Note that to get support and discuss MyHDL issues, you do
+**not** need an account on this website. A website is
+not well suited for such purposes. The right medium is
+the [[:mailing_list]].
+
+
+===== How to get an account =====
+
+To request an account, please send an email
+to [[jan@jandecaluwe.com|Jan Decaluwe]].
+Please add some info that demonstrates your
+experience level with MyHDL.
+
+P.S. existing users that forgot their password can
+email me also :-)

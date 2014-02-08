@@ -1,0 +1,43 @@
+  * [[:start]]
+
+  * [[https://twitter.com/MyHDL|@MyHDL on Twitter]]
+
+  * [[:newsroom]]
+
+  * At a glance
+    * [[:overview]]
+    * [[:why]]
+    * [[:whatitisnot]]
+
+  * Documentation
+    * [[http://www.myhdl.org/doc/current|Manual]]
+    * [[:doc:pdf]]
+    * [[cookbook:intro|MyHDL by Example]]
+    * [[:faq]]
+    * [[:performance]]
+    * [[:doc_archive]]
+
+  * Resources
+    * [[http://www.fpgarelated.com/showarticle/25.php|FPGA Tutorial I]]
+    * [[http://www.fpgarelated.com/showarticle/34.php|FPGA Tutorial II]]
+    * [[:publications|Publications]]
+
+   * Software
+    * [[http://sourceforge.net/project/showfiles.php?group_id=91207|Download]]
+    * [[:instructions]]
+    * [[http://sourceforge.net/tracker/?group_id=91207&atid=596332|Bug Tracker]]
+
+  * Community & Support
+    * [[:mailing_list]]
+    * [[:logo]]
+    * [[:request_account]]
+    * [[:support]]
+
+  * [[:projects:intro]]     
+
+  * [[:dev:intro|The Development Zone]]
+
+  * [[:about]]
+
+
+  * [[:terms_of_use]]

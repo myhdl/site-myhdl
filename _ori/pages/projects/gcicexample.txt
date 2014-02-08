@@ -1,0 +1,440 @@
+====== Configurable CIC Filter ======
+
+=== Requirements ===
+  * This example requires version 0.6dev9 or later of MyHDL.
+==Following required for the testbench==
+  * numpy
+  * scipy
+  * matplotlib
+===== Introduction =====
+The following is an example of creating configurable modules via parameters in MyHDL.  This is similar to the generic and generate commands in VHDL and the parameter and generate in Verilog.  For more information on CIC filters see Richard Lyon's article in Embedded Systems [[http://www.embedded.com/columns/technicalinsights/160400592?_requestid=827714|Understanding cascaded integrator-comb filters]].  This module can generate Verilog and VHDL which can be synthesized for ASIC and FPGA. 
+
+For an introduction to parameters in MyHDL see the following manual pages:
+  - [[http://www.jandecaluwe.com/Tools/MyHDL/manual/model-conf.html|Conditional instantiation]]
+  - [[http://www.jandecaluwe.com/Tools/MyHDL/manual/model-instarray.html|Array of instances]] 
+
+===== Specification =====
+The CIC filter will expect a 2's compliment input and output the filtered 2's compliment number.  
+
+The parameters of the CIC filter are:
+  * M    --  Order of the CIC filter
+  * D    --  Number of delays in the comb section (controls the passband of the filter)
+  * R    --  The decimation or interpolation value
+  * Type --  'Dec' or 'Int', indicate if it is decimation, interpolation, or neither CIC filter
+  * Q    --  Input word size.
+
+The output word size will be equal to Q + Mlog2(D).  This filter is designed for multiple stages and full precision.  The output bit width will be large enough to hold the maximum gain which is equal to D^M (output max value 2^Q * D^M).  See the design and comments section for more information.
+
+<code myhdl>
+def cic(clk, rst, x, y, dvi, dvo, M=3, D=8, R=8, Q=7, Type=None):
+    """ Cascade Integrator-Comb (CIC) Filter
+
+    This module is an fixed-point implementation of CIC filter with configurable
+    parameters.
+
+    Ports:
+    ------
+    clk:    system clock
+    rst:    system reset
+    x:      2's compliment input
+    dvi:    data valid input strobe
+    y:      2's compliment filtered output
+    dvo:    data valid output strobe
+
+    Parameters:
+    -----------
+    M:      CIC order
+    D:      Comb delay
+    R:      Decimation/interpolation value
+    Q:      Input word size (7,15,31...)
+    Type:   'Dec', 'Int', or None
+    """
+</code>
+
+{{ :projects:cict.png?300 }}
+
+===== Unit Test =====
+The unit test for the CIC filter will generate frequency response plots.  This particular testbench/stimulus is not self checking but could be change to automatically compare the captured frequency response to the calculated frequency response.  See the next section on how to calculate the frequency response.  In the results section the generated plots are displayed.
+
+The testbench is divided into two main components.  The input signal generation and the output signal capture.  The input signal generation will create a random signal to be fed into the CIC filter.  
+
+=== Input Signal Generation ===
+<code myhdl>
+@always(clk.posedge)
+    def ist():
+        
+        # Generate Input samples
+        if xcnt >= N_CLK:
+            x.next = int(L*uniform(-1,1))
+            dvi.next = True
+            xcnt.next = 0
+        else:
+            x.next = 0
+            dvi.next = False
+            xcnt.next = xcnt + 1
+</code>
+
+=== Output Signal Capture ===
+<code myhdl>
+ @instance
+    def stimulus():
+        """
+        The following is a basic testbench to stimulate the CIC filter
+        and create some plots.
+        """
+
+        ysave = [0.0] * Nfft
+        favg  = np.zeros(Nfft)
+        xfavg = np.zeros(Nfft)
+        xs    = np.zeros(Nfft)
+
+        yield clk.posedge
+        rst.next = True
+        yield delay(10)
+        rst.next = False
+        yield delay(10)
+
+        for ii in range(Nloops):
+            for jj in range(Nfft):
+                xs[jj] = float(x)/L
+                if dvo:
+                    if y == 0:
+                        #Prevent any log(0) errors, startup zeros
+                        ysave[jj] = 10.0**-10
+                    else:
+                        ysave[jj] = float(y._val)/L  # Undo fix-point
+                yield clk.negedge
+                
+            favg = favg + abs(fft(ysave, Nfft)) / Nfft
+            xfavg = xfavg + abs(fft(xs))/Nfft
+            
+        favg = favg / Nloops
+        xfavg = xfavg / Nloops
+</code>
+
+
+The input samples and output samples are saved into a buffer and the FFT is calculated.  The FFT vector is averaged over Nloops FFT vectors.  The complete testbench can be view here [[gcicTestBench]].
+
+===== Algorithm =====
+The frequency response of a single order CIC filter can be calculated as
+
+H(z) = \frac{1-z^{-D}}{1-z^{-1}}  <-- ?? Math Syntax ??
+
+Plot can be generated from
+<code python>
+num = np.zeros(D+1)
+num[0] = 1
+num[D] = -1        
+den = [1, -1]
+w,H = freqz(num, den)
+</code>
+
+{{ :projects:freqz_cic_freq_response_m1_d5.png?400 }}
+
+The gain of a single stage CIC filter is equal to the delay of the  comb filter, D.  The gain can be removed from the above response by dividing by D.
+
+{{ :projects:freqz_cic_freq_response2_m1_d5.png?400 }}
+
+===== Design =====
+The design consists of 2 main parts.  First the filter block and second the interpolation and decimation blocks.
+
+==== Cascade Integrator-Comb Filter ====
+The cascaded integrator-comb filter consists of a comb and integrator as the name suggests.  
+{{ :projects:cic.png?320 }}
+
+In this particular design the comb filter will precede the integrator.  There are a couple of reasons why to configure the comb before the integrator. First, this is a general configuration for a cascaded filter (order greater than 1). Second, it allows the filter to be designed for full precision.  Many times filters that incorporate integrators will let the accumulator overflow with the intent that the accumulator (integrator) will underflow and return.  By letting the accumulator overflow a greater range can be achieved.    
+
+In this design the integrator will not be allowed to overflow in the design and simulation.  This is one of the nice features of MyHDL that the intbv will have a range and that range will be checked during simulation.
+
+
+The following figure illustrates the cascaded section.  The MyHDL module will automatically configure the filter sections per the parameters.
+
+<code myhdl> iCic = cic(clk,rst,x,dvi,y,dvo,M=3,D=5,R=5) </code>
+{{ :projects:cic3.png?600 }}
+
+=== Integrator / Accumulator ===
+<code myhdl>
+def accum(clk, rst, x, dvi, y, dvo):
+    """
+    Simple Integrator
+    """    
+    
+    @always(clk.posedge)
+    def rtl():
+        if rst:
+            y.next = 0
+        else:
+            if dvi:
+                y.next = y + x
+                dvo.next = True
+            else:
+                dvo.next = False
+
+    return rtl
+</code>
+
+=== Comb ===
+<code myhdl>
+def combd(clk, rst, x, dvi, y, dvo, D=5):
+    """
+    Simple Comb (difference) filter with parameterizable delay
+    """
+    Q = len(x)-1
+    L = 2**Q
+
+    dlyi = [None for i in range(D)]
+    dlyx = [Signal(intbv(0, min=-L, max=L)) for i in range(D)]
+    
+    subx = dlyx[D-1]
+    
+    for ii in range(D):
+        if ii == 0:
+            dlyi[ii] = cmb_dly(clk, x, dvi, dlyx[ii])
+        else:
+            dlyi[ii] = cmb_dly(clk, dlyx[ii-1], dvi, dlyx[ii])
+            
+    @always(clk.posedge)
+    def rtl():
+        if rst:
+            y.next = 0
+        else:
+            if dvi:
+                y.next   = x - subx
+                dvo.next = True
+            else:
+                dvo.next = False
+
+    return rtl, dlyi
+</code>
+
+=== CIC Filter ===
+<code myhdl>
+def cic(clk, rst, x, dvi, y, dvo, M=3, D=8, R=8, Q=7, Type=None):
+    """ Cascade Integrator-Comb (CIC) Filter
+
+    This module is an fixed-point implementation of CIC filter with configurable
+    parameters.
+
+    Ports:
+    ------
+    clk:  System clock, must be equal to or greater than the max
+          sample rate after interpolation or before decimation
+    rst:  System reset
+    x:    2's compliment input
+    dvi:  data valid input, flow control signal for the different rates
+    y:    2's compliment output
+    dvo:  data valid output, flow control signal for the different rates
+
+    Parameters:
+    -----------
+    M:      CIC order
+    D:      Comb delay
+    R:      Decimation/interpolation value
+    Q:      Input word size (7,15,31...)
+    Type:   'Dec', 'Int', or None
+    """
+    Qi = len(x)-1
+    Qo = len(y)-1
+    Li = 2**Qi
+    Lo = 2**Qo
+    
+    Cmbi = [None for i in range(M)]
+    Acci = [None for i in range(M)]
+    xcmb = [Signal(intbv(0, min=-Lo, max=Lo)) for i in range(M)]
+    xacc = [Signal(intbv(0, min=-Lo, max=Lo)) for i in range(M)]
+    xi   = Signal(intbv(0, min=-Lo, max=Lo))
+    
+    dvoi = Signal(False)
+    dvoc = [Signal(False) for i in range(M)]
+    dvoa = [Signal(False) for i in range(M)]
+    
+    # Add Interpolation, Up sample then filter
+    if Type == 'Int' :
+        Int = interploate(clk, rst, x, dvi, xi, dvoi, R)
+    else:
+        Int = pass_thru(x, dvi, xi, dvoi)
+        
+    # Create the Comb Stages
+    for ii in range(M):
+        if ii == 0:
+            Cmbi[ii] = combd(clk, rst, xi, dvoi, xcmb[ii], dvoc[ii], D)
+        else:
+            Cmbi[ii] = combd(clk, rst, xcmb[ii-1], dvoc[ii-1], xcmb[ii], dvoc[ii], D)
+
+    # Create the Integrator Stages
+    for ii in range(M):        
+        if ii == 0:
+            Acci[ii] = accum(clk, rst, xcmb[M-1], dvoc[M-1], xacc[ii], dvoa[ii])
+        else:
+            Acci[ii] = accum(clk, rst, xacc[ii-1], dvoa[ii-1], xacc[ii], dvoa[ii])
+
+    # Final Decimation Stage, filter then down sample
+    if Type == 'Dec':
+        Dec = decimate(clk, rst, xacc[M-1], dvoa[M-1], y, dvo, R)
+    else:
+        Dec = pass_thru(xacc[M-1], dvoa[M-1], y, dvo)
+    
+    return Cmbi, Acci, Dec, Int
+
+</code>
+
+==== Interpolation / Decimation ====
+The CIC filter is the component that filters out either the to be aliased data from decimation or filter out the images caused by interpolation.  The decimation block will keep every R samples and remove the rest.  The interpolation block will insert R-1 zeros between samples.  Decimation will lower the overall sample rate and interpolation will increase the sample rate.
+
+=== Decimation ===
+<code myhdl>
+def decimate(clk, rst, x, dvi, y, dvo, R=8):
+    """
+    """
+    Qc  = ceil(log2(R))
+    cnt = Signal(intbv(0, max=2**Qc))
+
+    @always(clk.posedge)
+    def rtl1():
+        if rst:
+            y.next = 0
+        else:
+            if cnt == 0:
+                y.next  = x
+                dv.next = True
+            else:
+                y.next  = 0
+                dv.next = False
+            
+
+    @always(clk.posedge)
+    def rtl2():
+        if rst:
+            cnt.next = 0
+        else:
+            if cnt == R-1:
+                cnt.next = 0
+            else:
+                cnt.next = cnt + 1
+
+
+    return rtl1, rtl2
+</code> 
+
+=== Interpolation ===
+<code myhdl>
+def interpolate(clk, rst, x, dvi, y, dvo, R=8):
+    """
+    """
+    Qc  = ceil(log2(R))
+    cnt = Signal(intbv(0, max=2**Qc))
+
+    @always(clk.posedge)
+    def rtl1():
+        if rst:
+            y.next = 0
+        else:
+            if dvi:
+                y.next  = x
+                dv.next = True
+            elif cnt > 0:
+                y.next  = 0
+                dv.next = True
+            else:
+                y.next  = 0
+                dv.next = False
+            
+
+    @always(clk.posedge)
+    def rtl2():
+        if rst:
+            cnt.next = 0
+        else:
+            if dvi:
+                cnt.next = R-1
+            elif cnt > 0:
+                cnt.next = cnt + 1
+
+
+    return rtl1, rtl2
+</code>
+
+
+=== The Latest Source ===
+
+{{ :projects:cic-0.3.tar.gz }}
+
+An //earlier// version of the complete design files [[gcicComplete]]
+
+===== Conversion to Verilog =====
+
+<code myhdl>
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Parameters / Globals
+    MaxGain = D**M        # Max gain of the CIC
+    L = 2**(Q)            # Max value for input
+    maxV = L * 2*MaxGain  # Max Value for output
+    minV = -maxV          # Min Value for output
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Signals
+    clk = Signal(False)
+    rst = Signal(False)
+
+    x = Signal(intbv(0, min=-L, max=L))
+    y = Signal(intbv(0, min=minV, max=maxV))
+
+    dvi = Signal(True)
+    dvo = Signal(False)
+
+    toVerilog(cic, clk, rst, x, dvi, y, dvo, M, D, R)
+</code>
+===== Results =====
+The following are the simulation results (frequency response), example of digital waveforms, and the converted Verilog and VHDL.
+
+== CIC M=1, D=5, R=5, Q=7 ==
+  
+{{ :projects:myhdl_cic_freq_response2_m1_d5_r0.png?400 }}
+
+Verilog Synthesis RTL Schematic for an FPGA.
+{{ :projects:cic_verilog_rtl_schematic2.jpg?800 }}
+
+[[projects:gciexample:m1d5r0Verilog|Verilog CIC Filter Conversion]]
+
+[[projects:gciexample:m1d5r0VHDL|VHDL CIC Filter Conversion]]
+
+
+== CIC M=3, D=8, R=8, Q=15 ==
+{{ :projects::myhdl_cic_freq_response2_m3_d8_r8.png?400 }}
+
+[[projects:gciexample:m3d8r8Verilog|Verilog CIC Filter Conversion]]
+
+[[projects:gciexample:m3d8r8VHDL|VHDL CIC Filter Conversion]]
+
+== CIC M=5, D=50, R=50, Q=31 ==
+{{ :projects:myhdl_cic_freq_response2_m3_d50_r50.png?400 }}
+
+[[projects:gciexample:m3d50r50Verilog|Verilog CIC Filter Conversion]]
+
+[[projects:gciexample:m3d50r50VHDL|VHDL CIC Filter Conversion]]
+
+
+CIC Decimator Table: MyHDL CIC Filter compared to the Xilinx FPGA CIC Compiler
+^                 ^ Rate (R) ^ Stages (M) ^ Input     ^ Output ^ Slices ^ LUTs ^ FFs ^ DSP48s ^ Fmax  ^ Target    ^
+^ Decimation      ^          ^            ^ Width (Q) ^ Width  ^        ^      ^     ^        ^ (MHz) ^ Device    ^    
+^ MyHDL           |  5       |  3         | 8         | 11     | 17     | 28   | 20  | 0      | 200   | Spartan 3 -5 ^
+^ MyHDL           |  5       |  3         | 8         | 11     | 17     | 28   | 20  | 0      | 400   | Virtex 4 -10 ^
+^ Xilinx CIC Cmp  |  4       |  3         | 8         | 14     | 49     | 41   | 93  | 4      | 400   | Virtex 4 -10^
+^ Xilinx CIC Cmp  |  4       |  5         | 18        | 28     | 58     | 8    | 112 | 10     | 361   | Virtex 4 -10^
+^ Xilinx CIC Cmp  |  64      |  3         | 18        | 36     | 115    | 98   | 216 | 4      | 399   | Virtex 4 -10^
+
+Note the above isn't an apples to apples comparison.  The Xilinx CIC compiler uses a different set
+of control signals etc.
+
+
+
+===== Comments =====
+
+This implementation of the CIC filter illustrates a couple useful features of MyHDL.  One, designing and implementing modular digital hardware.  And second, using the bound checking of the intbv to design fixed point DSP hardware.  These are two very useful features when designing DSP hardware.  
+
+CIC filters are commonly implemented differently to reduce hardware required.  In result table you can see as the rate change increases the hardware resources required versus other implementations increases.  This implementation of the CIC filter doesn't exploit the 2's complements wrap feature.  Common CIC filters with high rate changes will often have the order of the comb and integrator swapped.  The integrator has infinite gain at DC (high gain at low frequencies).  To accommodate this the 2's complement wrap properties is exploited so that lower bitwidths can be utilized.  This implementation is good for low rate changes and designs that may want to avoid using 2's compliment wrapping.  Later examples will cover the implementation with wrapping.
+
+===== References =====
+
+  * [[http://www.embedded.com/columns/technicalinsights/160400592?_requestid=827714|Understanding cascaded integrator-comb filters]]
+  * [[http://www.xilinx.com/support/documentation/ip_documentation/cic_compiler_ds613.pdf | Xilinx CIC Compiler Datasheet]]

@@ -1,0 +1,119 @@
+====== Users & Projects ======
+
+
+This page lists a number of MyHDL users and projects. The best thing you can do to support MyHDL is to add your project here and let people know about it! To make it easy to navigate to your projects, you can add the links to the [[projects:sidebar|sidebar]] page.
+
+[[:request_account]]
+
+
+===== Norbert Feurle =====
+
+  * [[projects:Continuous Wave Sinusgenerator]]
+  * [[projects:UART/RS232 Receiver Transmitter]]
+  * [[projects:Python Hardware Processor]]
+
+===== Jan Coombs =====
+
+I am working on processor cores suitable for SoC use.  Two have been translated from Verilog into MyHDL, these are:
+
+[[http://www.excamera.com/sphinx/fpga-j1.html|James Bowman's j1]]  a Novix style stack engine which supports multiple instructions in each 16b code word. 
+
+[[http://http://bernd-paysan.de/b16.html|Bernd Paysan's b16]]  which is derived from the work of Chuck Moore, and has been used in real silicon.  
+
+These processors are ideal for hardware exploration and debug using simple interactive tools. Potentially, the incremental software compiler and test environment can target the hardware, or the MyHDL model. 
+
+Actel/Microsemi Igloo Nano dev kit: MyHDL source available to access and play with LEDs, switches, and UART link on this low power board. 
+
+Please [[jan4myhdl@murray-microft.co.uk|email me]] for more info. 
+
+===== Dillon Engineering =====
+
+[[http://www.dilloneng.com|Dillon Engineering]] uses MyHDL in its verification flow. Read more
+about it [[http://www.dilloneng.com/ingenuity/verification|here]].
+
+===== Thomas Traber =====
+
+  * Using MyHDL and [[http://www.thedigitalmachine.net/eispice.html|eispice]]:[[projects:MixedModeSimulation]].
+  * [[projects:Cordic calculations]]: enhanced version of the cookbook example ([[cookbook:sinecomp]]).
+  * [[projects:Sinewave Generator]]: using [[projects:Cordic calculations]] and [[projects:dsx1000|DSX1000: Delta-Sigma DAC core]]
+  * [[projects:Cosimulation_with_quartus]]
+  * [[meps:mep-104]]: Proposal for syntax enhancement of MyHDL 
+  * [[projects:Interactive Simulation using IPython]]
+  * 
+===== Christopher L. Felton =====
+[[http://www.uccs.edu/cfelton|Christopher L. Felton]] has used MyHDL for student projects at the [[http://www.uccs.edu|University of Colorado, Colorado Springs]].  Using MyHDL for DSP algorithm to hardware implementations.  Also uses MyHDL in a [[http://www.fpgaz.com/usbp|USB FPGA]] project ([[users:cfelton:projects:usbp|MyHDL USB FPGA page]]).
+
+  * DesignWest 2013 {{:users:cfelton:esc-329paper_felton.pdf|white-paper}} and {{:users:cfelton:esc-329slides_felton_24apr2013.pdf|presentation}}
+  * [[projects:gCICExample]]
+  * [[users:cfelton:projects:recursivefft]] ([[ https://bitbucket.org/cfelton/examples/src/tip/rfft/ | source code]])
+  * [[users:cfelton:projects:fxintbv]] ([[ https://bitbucket.org/cfelton/fixed_point | source code]])
+  * [[http://www.fpgarelated.com/showarticle/7.php | IIR Filter]] ([[ https://bitbucket.org/cfelton/examples/src/tip/siir/ | source code]])
+  * [[ https://bitbucket.org/cfelton/examples/src/tip/rrs_modbv/ | Recursive running sum filter using modbv]]
+  * [[users:cfelton:projects:usbp]]
+  * [[http://www.fpgarelated.com/showarticle/25.php | MyHDL-FPGA Tutorial]]
+  * [[http://www.edaplayground.com/s/130/229 | Try MyHDL @EDAPLayground]]
+
+More examples/projects under development [[users:cfelton|here]].
+===== Guenter Dannoritzer =====
+
+  * [[projects:conste_encoder|Constellation encoder using intbv.signed()]]
+  * [[projects:cplx_math|Complex Math]]
+  * [[projects:rounding|Rounding]]
+  * [[projects:ft245r |FT245R interface]]
+  * MIPS32
+    * [[projects:mips32_asm|MIPS32 Assembler]]
+    * [[http://sourceforge.net/mailarchive/message.php?msg_id=26351006|MIPS32 Single Cycle Processor, Post on mailing list with MyHDL-code]]
+  * [[projects:ise_py]]
+
+
+===== Jan Decaluwe =====
+
+Jan Decaluwe is the creator and maintainer of MyHDL, and he uses MyHDL in
+his [[http://www.jandecaluwe.com/professional/intro.html|consultancy practice]]. 
+He also [[http://www.jandecaluwe.com/hdldesign/intro.html|writes]]
+about HDL-based design. 
+
+
+===== Jian Luo =====
+
+  * Link to SoftCore [[http://opencores.org/project,myblaze|myBlaze]] on [[http://OpenCores.org|OpenCores]]
+
+
+===== David Brochart =====
+
+David Brochart uses MyHDL in his open-source [[http://www.opencores.org/project,turbocodes|Turbo Decoder]]
+project.
+
+===== David MacQuigg =====
+
+[[http://wiki.python.org/moin/DavidMacQuigg| David MacQuigg]] uses MyHDL in a
+[[http://ece.arizona.edu/~edatools/Python/MyHDL|Lab Course]]
+at the [[http://www2.engr.arizona.edu/~edatools/home/|university of Arizona]].
+
+
+===== Jean Demartini =====
+
+[[http://jdwiki.dem-tech.net|Jean Demartini]] uses MyHDL to support a teaching course "Programmable Digital Processor Architecture" at the
+Engineering School of the University of Nice Sophia-Antipolis (ESINSA). 
+
+
+===== George Pantazopoulos=====
+
+[[http://www.gammaburst.net|George Pantazopoulos]] has built an digital/analog hybrid synthesizer (codenamed the [[projects:phoenixsid_65x81]]) based on the Commodore 64's 6581 'SID' sound chip.
+
+George has also released some open-source MyHDL IP cores, and has worked on an extension library to MyHDL.
+
+[[users:george_pantazopoulos|George's personal page]]
+
+===== Oscar Diaz =====
+
+I'm working on a project called [[https://github.com/dargor0/nocmodel|NoCmodel]]: MyHDL is used for verification and code generation.
+
+===== EDA Playground ====
+
+Run MyHDL simulations from your web browser. EDA Playground is specifically designed for small prototypes and examples.
+
+MyHDL examples on EDA Playground:
+  * [[http://www.edaplayground.com/s/example/226|DFF]]
+  * [[http://www.edaplayground.com/s/example/230|RAM]]
+  * [[http://www.edaplayground.com/s/example/227|Sine Computer]]

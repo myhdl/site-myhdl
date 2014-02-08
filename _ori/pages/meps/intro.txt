@@ -1,0 +1,46 @@
+====== Introduction ======
+
+These pages document the MyHDL Enhancement Proposals (MEPs) and their status.
+
+MEP stands for MyHDL Enhancement Proposal. A MEP is a design document
+providing information to the MyHDL community, or describing a new
+feature for MyHDL. The MEP should provide a concise technical
+specification of the feature and a rationale for the feature.
+
+We intend MEPs to be the primary mechanisms for proposing new features,
+for collecting community input on an issue, and for documenting the
+design decisions that have gone into MyHDL. The MEP author is
+responsible for building consensus within the community and documenting
+dissenting opinions.
+
+MEPs are maintained on the MyHDL wiki page. The page history resembles
+the development history of the document.
+
+Main responsibility of a MEP lies with its author. Before opening a new
+MEP, its idea should be discussed on the MyHDL mailing list.
+
+In the development phase, the MEP gets the status "Draft" assigned.
+Fully developed and provided with a functional implementation, the MEP
+can get the status "Final", documenting that the content of the MEP is
+ready to be implemented into MyHDL.
+
+The right to change the status of a MEP from "Draft" to "Final" belongs
+exclusively to Jan Decaluwe.
+
+Once the MEP has the status "Final" and its content got added to the
+source code, the MyHDL version will be added to the MEP document. From
+this time on, the text of the document will be frozen. A "Final" MEP
+should not be changed, except for spelling mistakes or language
+corrections from a neutral proofreader. It is intended to document the
+MyHDL development history for experts. The MyHDL language documentation
+for users is in the [[http://www.myhdl.org/doc/current/|manuals]].
+
+In case the functionality described in a MEP needs to be altered or
+extended, a new MEP shall be created, describing the new desired
+implementation. The new MEP will live through the same steps as the MEP
+process describes. The new MEP should cross reference the MEP its
+implementation is based on.
+
+In case the new MEP will replace an implementation of an existing MEP,
+the old MEP will achieve the status "Deprecated" as soon as the new MEP
+achieves the status "Final". Both MEPs should cross reference each other.

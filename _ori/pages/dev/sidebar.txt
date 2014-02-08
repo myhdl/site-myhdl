@@ -1,0 +1,18 @@
+  * [[:start]]
+
+  * **The Development Zone**
+    * [[dev:intro]]
+    * [[dev:patches]]
+    * [[dev:repo]]
+    * [[http://www.myhdl.org/doc/dev|Documentation (under development)]]
+    * [[dev:tasks]]
+    * [[dev:0.8]]
+    * Ideas and Draft Proposals
+      * [[dev:myhdl.org]]
+      * [[dev:vhdl_cosim]]
+      * [[dev:initial_values]]
+    * [[meps:intro|MyHDL Enhancement Proposals]]
+    * [[dev:archive]]
+    * [[:terms_of_use]]
+
+                                            

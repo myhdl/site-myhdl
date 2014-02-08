@@ -1,0 +1,43 @@
+
+
+<code python>
+
+from Utils import *
+
+class Stack():
+    """
+    The stack is a 32bit word stack, the stack is organized as
+    32bit addressable values.
+        0000:  xxxx_xxxx
+        0001:  xxxx_xxxx
+    """
+    def __init__(self, size=4096):
+        self.size = size / 4    # Size in bytes, stack org'd in 32bit values
+        self.mem  = []
+
+    # @todo deprecate pushInt, popInt
+    def pushInt(self, i):
+        self.push32(i)
+
+    def popInt(self):
+        return self.pop32()
+    
+    def push32(self, i):
+        self.mem.append(i)
+
+    def pop32(self):
+        return self.mem.pop()
+
+    def readLong(self, addr):
+        # if addr > len(self.mem) throw exception
+        return self.mem[addr]
+        
+    def __str__(self):
+        s =     'Stack Size......... %d\n' % (self.size)
+        s = s + 'Stack Used..........%d\n\n' % (len(self.mem))
+        s = s + 'Stack Dump:\n'
+        s = s + DumpMem32(self.mem)
+        
+        return s
+
+</code>

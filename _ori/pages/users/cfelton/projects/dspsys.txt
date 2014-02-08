@@ -1,0 +1,11 @@
+====== DSPSYS Simple DSP Testbenches ======
+
+This project shows how dspsys can be used to test/verify/analyze DSP 
+digital circuits.  The dspsys creates Signal Processing models simply.
+These models can be used to stimulate the circuit under test.  It allows 
+for easy stimulus creation (common signal processing inputs, sine, random, etc) 
+and analysis (plots, frequency plots, error variance).  Also allows for algorithm 
+comparison.  "Golden Models" (floating point model) can be run against the HDL 
+model in the same simulation.
+
+@TODO add examples

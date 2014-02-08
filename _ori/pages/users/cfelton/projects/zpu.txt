@@ -1,0 +1,29 @@
+====== MyHDL implementation of the ZPU processor ======
+
+**Use at your own risk this is a project that has been started and currently in development.**
+
+This project is a MyHDL and Python implementation of the [[http://opensource.zylin.com/zpu.htm|ZPU]] processor.  The ZPU processor 
+is a small (very small) stack processor with a Gnu toolchain.  It is ideal for embedded
+processor in FPGAs if one is needed.  
+
+This project was started basically for fun but seemed like a good opportunity to unite
+the ISS simulator and HDL in a single language.  The ZPU existing implementation the ISS simulator
+is written in java and the HDL in verilog.  This project unites them to the Python language.
+
+== ISS ==
+  * [[iss_sim|Simulator]]
+  * [[iss_cpu|CPU]]
+  * [[iss_ops|Ops]]
+  * [[iss_mem|Mem]]
+  * [[iss_stack|Stack]]
+  * [[iss_mema|MemoryAccessException]]
+  * [[iss_util|Utils]]
+
+== HDL ==
+  * [[zpu_small|ZPU Small]]
+  * [[zpu_pkg|ZPU Definitions]]
+  * [[zpu_idecode|ZPU Instruction Decode]]
+  * [[zpu_iram|ZPU IRAM]]
+
+
+

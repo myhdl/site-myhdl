@@ -1,0 +1,88 @@
+
+zpu_pkg.py
+
+<code myhdl>
+#
+# This file contains the definitions used in the ZPU implementation
+#
+
+from myhdl import enum
+
+# @TODO This should really be shared with the Simulation Table!  But the
+#       seperate (cross) verification of the different tables will be useful
+
+# Opcode decode constants
+# Note:  These are the basic opcodes, always implemented using hardware
+OPCODE_IM        =  int('10000000', 2)
+OPCODE_STORESP   =  int('01000000', 2)
+OPCODE_LOADSP    =  int('01100000', 2)
+OPCODE_EMULATE   =  int('00100000', 2)
+OPCODE_ADDSP     =  int('00010000', 2)
+OPCODE_SHORT     =  int('00000000', 2)
+
+OPCODE_BREAK     =  int('00000000', 2)
+OPCODE_SHIFTLEFT =  int('00000001', 2)
+OPCODE_PUSHSP    =  int('00000010', 2)
+OPCODE_PUSHINT   =  int('00000011', 2)
+
+OPCODE_POPPC     =  int('00000100', 2)
+OPCODE_ADD       =  int('00000101', 2)
+OPCODE_AND       =  int('00000110', 2)
+OPCODE_OR        =  int('00000111', 2)
+
+OPCODE_LOAD      =  int('00001000', 2)
+OPCODE_NOT       =  int('00001001', 2)
+OPCODE_FLIP      =  int('00001010', 2)
+OPCODE_NOP       =  int('00001011', 2)
+
+OPCODE_STORE     =  int('00001100', 2)
+OPCODE_POPSP     =  int('00001101', 2)
+OPCODE_COMPARE   =  int('00001110', 2)
+OPCODE_POPINT    =  int('00001111', 2)
+
+#  The following instructions are emulated in the small version and
+#  implmented as hardware in the full version.
+#  The constants correspond to the "emulated" instruction number
+OPCODE_EQ        =  46
+OPCODE_LOADB     =  51
+OPCODE_NEQBRANCH =  56
+OPCODE_PUSHSPADD =  61
+
+OPCODE_LESSTHAN  =  36
+OPCODE_ULESSTHAN =  38
+OPCODE_MULT      =  41
+OPCODE_STOREB    =  52
+OPCODE_CALLPCREL =  63
+OPCODE_SUB       =  49
+
+OPCODE_LESSTHAN_OREQUAL =  37
+OPCODE_ULESSTHANOREQUAL =  39
+OPCODE_CALL             =  45
+OPCODE_POPPCREL         =  57
+OPCODE_LSHIFTRIGHT      =  42
+
+#  The following opcodes are always emulated
+OPCODE_LOADH       =  34
+OPCODE_STOREH      =  35
+OPCODE_ASHIFTLEFT  =  43
+OPCODE_ASHIFTRIGHT =  44
+OPCODE_NEQ         =  47
+OPCODE_NEG         =  48
+OPCDOE_XOR         =  50
+OPCODE_DIV         =  53
+OPCODE_MOD         =  54
+OPCODE_EQBRANCH    =  55
+OPCODE_CONFIG      =  58
+OPCODE_PUSHPC      =  59
+
+# Enumeration for the CPU states
+state_t = enum('FETCH', 'WRITE_IO_DONE', 'EXECUTE', 'ADD', 'OR', 'AND', 'STORE',
+               'READ_IO', 'WRITE_IO', 'FETCH_NEXT', 'ADD_SP', 'DECODE', 'RESYNC')
+
+# Decode Opcode
+decode_t = enum('DEC_NOP', 'DEC_IM', 'DEC_LOAD_SP', 'DEC_STORE_SP', 'DEC_ADD_SP',
+                'DEC_EMULATE', 'DEC_BREAK', 'DEC_PUSH_SP', 'DEC_POP_PC', 'DEC_ADD',
+                'DEC_OR', 'DEC_AND', 'DEC_LOAD', 'DEC_NOT', 'DEC_FLIP', 'DEC_STORE',
+                'DEC_POP_SP', 'DEC_INTERRUPT')
+
+</code>

@@ -1,0 +1,434 @@
+<code myhdl>
+
+import sys, os
+
+import numpy as np
+from numpy import pi, sin, cos, log10, log2, ceil
+from numpy.random import uniform
+from numpy.fft import fft, fftshift
+from scipy.signal import freqz, step, lti
+
+from myhdl import *
+
+import pylab as plt
+
+Nloops  = 100
+Nfft    = 4096
+MaxGain = 1
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def pass_thru(x, dvi, y, dvo):
+    """
+    Place holder
+    """
+
+    @always_comb
+    def rtl():
+        y.next   = x
+        dvo.next = dvi
+
+    return rtl
+        
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def cmb_dly(clk, x, dvi, y):
+    """
+    Simple delay used with the comb filter
+    """
+
+    @always(clk.posedge)
+    def rtl():
+        if dvi:
+            y.next   = x
+
+    return rtl 
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def accum(clk, rst, x, dvi, y, dvo):
+    """
+    Simple Integrator
+    """    
+    
+    @always(clk.posedge)
+    def rtl():
+        if rst:
+            y.next = 0
+        else:
+            if dvi:
+                y.next = y + x
+                dvo.next = True
+            else:
+                dvo.next = False
+
+    return rtl
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def combd(clk, rst, x, dvi, y, dvo, D=5):
+    """
+    Simple Comb (difference) filter with parameterizable delay
+    """
+    Q = len(x)-1
+    L = 2**Q
+
+    dlyi = [None for i in range(D)]
+    dlyx = [Signal(intbv(0, min=-L, max=L)) for i in range(D)]
+    
+    subx = dlyx[D-1]
+    
+    for ii in range(D):
+        if ii == 0:
+            dlyi[ii] = cmb_dly(clk, x, dvi, dlyx[ii])
+        else:
+            dlyi[ii] = cmb_dly(clk, dlyx[ii-1], dvi, dlyx[ii])
+            
+    @always(clk.posedge)
+    def rtl():
+        if rst:
+            y.next = 0
+        else:
+            if dvi:
+                y.next   = x - subx
+                dvo.next = True
+            else:
+                dvo.next = False
+
+    return rtl, dlyi
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def decimate(clk, rst, x, dvi, y, dvo, R=8):
+    """
+    """
+    Qc  = ceil(log2(R))
+    cnt = Signal(intbv(0, max=2**Qc))
+
+    @always(clk.posedge)
+    def rtl1():
+        if rst:
+            y.next = 0
+        else:
+            if cnt == 0:
+                y.next  = x
+                dv.next = True
+            else:
+                y.next  = 0
+                dv.next = False
+            
+
+    @always(clk.posedge)
+    def rtl2():
+        if rst:
+            cnt.next = 0
+        else:
+            if cnt == R-1:
+                cnt.next = 0
+            else:
+                cnt.next = cnt + 1
+
+
+    return rtl1, rtl2
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def interpolate(clk, rst, x, dvi, y, dvo, R=8):
+    """
+    """
+    Qc  = ceil(log2(R))
+    cnt = Signal(intbv(0, max=2**Qc))
+
+    @always(clk.posedge)
+    def rtl1():
+        if rst:
+            y.next = 0
+        else:
+            if dvi:
+                y.next  = x
+                dv.next = True
+            elif cnt > 0:
+                y.next  = 0
+                dv.next = True
+            else:
+                y.next  = 0
+                dv.next = False
+            
+
+    @always(clk.posedge)
+    def rtl2():
+        if rst:
+            cnt.next = 0
+        else:
+            if dvi:
+                cnt.next = R-1
+            elif cnt > 0:
+                cnt.next = cnt + 1
+
+
+    return rtl1, rtl2
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def cic(clk, rst, x, dvi, y, dvo, M=3, D=8, R=8, Q=7, Type=None):
+    """ Cascade Integrator-Comb (CIC) Filter
+
+    This module is an fixed-point implementation of CIC filter with configurable
+    parameters.
+
+    Ports:
+    ------
+    clk:  System clock, must be equal to or greater than the max
+          sample rate after interpolation or before decimation
+    rst:  System reset
+    x:    2's compliment input
+    dvi:  data valid input, flow control signal for the different rates
+    y:    2's compliment output
+    dvo:  data valid output, flow control signal for the different rates
+
+    Parameters:
+    -----------
+    M:      CIC order
+    D:      Comb delay
+    R:      Decimation/interpolation value
+    Q:      Input word size (7,15,31...)
+    Type:   'Dec', 'Int', or None
+    """
+    Qi = len(x)-1
+    Qo = len(y)-1
+    Li = 2**Qi
+    Lo = 2**Qo
+    
+    Cmbi = [None for i in range(M)]
+    Acci = [None for i in range(M)]
+    xcmb = [Signal(intbv(0, min=-Lo, max=Lo)) for i in range(M)]
+    xacc = [Signal(intbv(0, min=-Lo, max=Lo)) for i in range(M)]
+    xi   = Signal(intbv(0, min=-Lo, max=Lo))
+    
+    dvoi = Signal(False)
+    dvoc = [Signal(False) for i in range(M)]
+    dvoa = [Signal(False) for i in range(M)]
+    
+    # Add Interpolation, Up sample then filter
+    if Type == 'Int' :
+        Int = interploate(clk, rst, x, dvi, xi, dvoi, R)
+    else:
+        Int = pass_thru(x, dvi, xi, dvoi)
+        
+    # Create the Comb Stages
+    for ii in range(M):
+        if ii == 0:
+            Cmbi[ii] = combd(clk, rst, xi, dvoi, xcmb[ii], dvoc[ii], D)
+        else:
+            Cmbi[ii] = combd(clk, rst, xcmb[ii-1], dvoc[ii-1], xcmb[ii], dvoc[ii], D)
+
+    # Create the Integrator Stages
+    for ii in range(M):        
+        if ii == 0:
+            Acci[ii] = accum(clk, rst, xcmb[M-1], dvoc[M-1], xacc[ii], dvoa[ii])
+        else:
+            Acci[ii] = accum(clk, rst, xacc[ii-1], dvoa[ii-1], xacc[ii], dvoa[ii])
+
+    # Final Decimation Stage, filter then down sample
+    if Type == 'Dec':
+        Dec = decimate(clk, rst, xacc[M-1], dvoa[M-1], y, dvo, R)
+    else:
+        Dec = pass_thru(xacc[M-1], dvoa[M-1], y, dvo)
+    
+    return Cmbi, Acci, Dec, Int
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def cmdLineTestBench(run='trace', M=1, D=5, R=50, Q=7, Type=None):
+    """
+    This is the simulation and conversion function for the CIC filter.
+
+    Inputs
+      run  --  Simulation or coversion type
+      M    --  Order of the CIC filter
+      D    --  Delay of the Comb Filter
+      R    --  Decimation/Interpolation size
+      Q    --  Quantization size of input word
+    """
+    global MaxGain
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Parameters / Globals
+    MaxGain = D**M        # Max gain of the CIC
+    L = 2**(Q)            # Max value for input
+    maxV = L * 2*MaxGain  # Max Value for output
+    minV = -maxV          # Min Value for output
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Signals
+    clk = Signal(False)
+    rst = Signal(False)
+
+    x = Signal(intbv(0, min=-L, max=L))
+    y = Signal(intbv(0, min=minV, max=maxV))
+
+    dvi = Signal(True)
+    dvo = Signal(False)
+
+    xcnt  = Signal(0)
+    N_CLK = 0
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Instantiate MyHDL simulation and coversion functions
+    if run == 'trace':
+        dut = traceSignals(cic, clk, rst, x, dvi, y, dvo, M, D, R)
+    elif run == 'ver':
+        toVerilog(cic, clk, rst, x, dvi, y, dvo, M, D, R)
+        return None
+    elif run == 'vhd':
+        toVHDL(cic, clk, rst, x, dvi, y, dvo, M, D, R)
+        return None
+    else:
+        dut = cic(clk, rst, x, dvi, y, dvo, M, D, R)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Stimulus
+    @always(delay(1))    
+    def clkgen():
+        clk.next = not clk
+
+    @always(clk.posedge)
+    def ist():
+        
+        # Generate Input samples
+        if xcnt >= N_CLK:
+            x.next = int(L*uniform(-1,1))
+            dvi.next = True
+            xcnt.next = 0
+        else:
+            x.next = 0
+            dvi.next = False
+            xcnt.next = xcnt + 1
+
+                     
+    @instance
+    def stimulus():
+        """
+        The following is a basic testbench to stimulate the CIC filter
+        and create some plots.
+        """
+
+        ysave = [0.0] * Nfft
+        favg  = np.zeros(Nfft)
+        xfavg = np.zeros(Nfft)
+        xs    = np.zeros(Nfft)
+
+        yield clk.posedge
+        rst.next = True
+        yield delay(10)
+        rst.next = False
+        yield delay(10)
+
+        for ii in range(Nloops):
+            for jj in range(Nfft):
+                xs[jj] = float(x)/L
+                if dvo:
+                    if y == 0:
+                        #Prevent any log(0) errors, startup zeros
+                        ysave[jj] = 10.0**-10
+                    else:
+                        ysave[jj] = float(y._val)/L  # Undo fix-point
+                yield clk.negedge
+                
+            favg = favg + abs(fft(ysave, Nfft)) / Nfft
+            xfavg = xfavg + abs(fft(xs))/Nfft
+            
+        favg = favg / Nloops
+        xfavg = xfavg / Nloops
+
+    
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # Plot responses
+        xa = 2*pi * np.arange(Nfft)/Nfft - pi
+        plt.ioff()
+        plt.plot(xa, fftshift(20*log10(favg/MaxGain)) )
+        plt.plot(xa, fftshift(20*log10(xfavg)) ) 
+        plt.title('CIC Filter Frequency Response')
+        plt.savefig('plots/myhdl_cic_freq_response_M%d_D%d_R%d.png' % (M,D,R) )
+        plt.close('all')
+
+        print MaxGain
+        xrsp = 20*log10(favg/MaxGain) - 20*log10(xfavg)
+        plt.plot(xa, fftshift(xrsp) )
+        #plt.plot(xa, fftshift(20*log10(xfavg)) ) 
+        plt.title('CIC Filter Frequency Response Gain Removed, Output * 1/D')
+        plt.ylabel('Amplitude dB')
+        plt.xlabel('Normailzed Frequency radians')
+        plt.axis([ -pi, pi, -60, 0])
+        plt.savefig('plots/myhdl_cic_freq_response2_M%d_D%d_R%d.png' % (M,D,R) )
+        plt.close('all')
+
+        # Plot the expected response
+        num = np.zeros(D+1)
+        num[0] = 1
+        num[D] = -1        
+        den = [1, -1]
+        print num, den
+        
+        w,H = freqz(num, den)
+        Hplt = 20*log10(abs(H[1:]))
+        plt.plot(w[1:],  Hplt)
+        plt.title('CIC Filter Frequency Response freqz')
+        plt.axis([ 0, pi, -60, max(Hplt) + 2])
+        plt.ylabel('Amplitude dB')
+        plt.xlabel('Normailzed Frequency radians')
+        plt.savefig('plots/freqz_cic_freq_response_M%d_D%d.png' % (M,D) )
+        plt.close('all')
+
+        Hplt = 20*log10(abs(H[1:]/D))
+        plt.plot(w[1:],  Hplt)
+        plt.title('CIC Filter Frequency Response freqz')
+        plt.axis([ 0, pi, -60, max(Hplt) + 2])
+        plt.ylabel('Amplitude dB')
+        plt.xlabel('Normailzed Frequency radians')
+        plt.savefig('plots/freqz_cic_freq_response2_M%d_D%d.png' % (M,D) )
+        plt.close('all')
+        
+        raise StopSimulation
+
+    return clkgen, stimulus, ist, dut
+ 
+        
+#-------------------------------------------------------------------------------
+# Script init
+#-------------------------------------------------------------------------------    
+if __name__ == "__main__":
+
+    if sys.argv[1] == 'ver':
+        cmdLineTestBench(sys.argv[1], M=1, D=5, R=5, Q=7, Type='Dec')
+        os.system('cp cic.v cic_M1_D5_R5_Q7_DEC.v')
+        cmdLineTestBench(sys.argv[1], M=3, D=8, R=8, Q=15, Type='Dec')
+        os.system('cp cic.v cic_M3_D8_R8_Q15_DEC.v')
+        cmdLineTestBench(sys.argv[1], M=5, D=50, R=50, Q=31, Type='Dec')
+        os.system('cp cic.v cic_M5_D50_R50_Q31_DEC.v')
+    else:
+        tb = cmdLineTestBench(sys.argv[1], M=5, D=5, R=0, Q=7)
+        sim = Simulation(tb)
+        sim.run()
+        
+        tb = cmdLineTestBench(sys.argv[1], M=1, D=5, R=5, Q=7, Type='Dec')
+        sim = Simulation(tb)
+        sim.run() 
+
+        tb = cmdLineTestBench(sys.argv[1], M=3, D=8, R=0, Q=15, Type='Dec')
+        sim = Simulation(tb)
+        sim.run()
+    
+        tb = cmdLineTestBench(sys.argv[1], M=3, D=8, R=8, Q=15, Type='Dec')
+        sim = Simulation(tb)
+        sim.run()
+
+        tb = cmdLineTestBench(sys.argv[1], M=5, D=50, R=50, Q=31)
+        sim = Simulation(tb)
+        sim.run()
+    
+        tb = cmdLineTestBench(sys.argv[1], M=5, D=50, R=50, Q=31)
+        sim = Simulation(tb)
+        sim.run()
+    
+
+</code>

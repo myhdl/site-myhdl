@@ -1,0 +1,128 @@
+==== Python Hardware Processor ====
+
+The Following is a implementation of a Hardware CPU in Myhdl. The CPU can directly execute something very similar to python bytecode (but only a very restricted instruction set).
+The Programm code for the CPU can be written directly in python (very restricted parts of python). This code is then converted by a small python programm to this restricted python bytecode. Since the hardware description is also in python, the slightly modified bytecode an then automatically loaded into the CPU design.
+
+Most "bytecode" instructions are executed in the Hardware CPU with one instruction per cycle.
+If you have enought hardware available you can simply instantiate more cores on an FPGA with different Programmcode to make them run in parallel.
+
+==== Why another Hardware Processor? ====
+
+Hardware description languages are good for particular problems (e.g parallel memory). But it is tough to handle sequential execution problems with them. For such problems the sequential execution of a programm often fits well. 
+A standard solution would be to use a Microcontroller Core (e.g. from Opencores written in VHDL). To programm this Microcontroller often the C programming language is used. The C code is converted to Assembler and the Assembler code is then loaded into the Microcontroller.
+To accomplish such a task you at least need a C programming environment and a VHDL programming enviroment and you need a chain between them create and load the Assembler.
+What if you could write your Microcontroller Code in the same environment where you describe your hardware.
+This is where the Python Hardware Processor together with Myhdl fits in.
+So the idea was to create a Python Hardware Processor that supports just enougth of the python language to handle sequential execution problems. Parallel array processing jobs and comparable, are then implemented in the hardware description language where they normaly nicely fit and perform well.
+
+
+==== General architectural overview ====
+
+{{ :projects:arch_overview_pycpu.png?nolink&600 |}}
+
+
+Due to the python nature of Myhdl and the Python Hardware Prozessor written with it, it
+allows you, to write a Programm for the prozessor, to simulate the Hardware Processor 
+and to convert the Processor to a valid hardware description (VHDL or Verilog) inside 
+a single python environment.
+
+==== Basic description or how it works ====
+
+
+{{:projects:cpu_transpng.png?600|}}
+==== Supported Python Code ====
+  * Int's (with x bits), no other python types only plane ints (it means no list,dict,tuple,etc..)
+  * If and while (comparisions with  <,>, >=, <=,!=,== ) 
+  * Assignments to globals or local varibles from const, globals or defined local variables
+  * Operators: +. -, ^ ,~, |, & ,<<,>>
+  * Simple Digital IOs access for Hardware PORTS (implemented through a distinct global varible)
+  * Function calls (with: consts, globals, or local vars as argument and one intager as return value), no default arguments, no keyword arguments,no functions or functioncalls as arguments
+  * nested while loops up to CONST_LOOP_DEPTH (Constant default value = 4)
+  * up to MAX_NUMBER_FUNCTION_ARGUMENTS (Constant default value = 10) arguments
+  * up to CONST_PC_STACK_DEPTH (Constant default value=5) number of nested function calls
+  * up to VAR_MEM_DEPTH (Constant default value=20) local variables
+
+==== Simple CPU Programmcode example ====
+
+The Following is a programm for the CPU if the CPU is instanciated with a Databitwidth of 8 bit.
+
+
+<code python>
+PREDEFINED_IO_ADDRESSES={'PORTA_IN':0,'PORTB_IN':1,'PORTC_OUT':2,'PORTD_OUT':3 } 
+
+def busywait(time):
+  x=0
+  while x<100:
+    td=0
+    x=x+1
+    while td<100:
+      td=td+1
+      ss=0
+      while ss<time:
+	ss=ss+1
+    
+def CPU_main():
+  global PORTA_IN,PORTB_IN,PORTC_OUT,PORTD_OUT
+  x=0
+  while 1:
+    PORTD_OUT=PORTD_OUT^16
+    busywait(20)
+    if (PORTB_IN & 0x01)==1:
+      PORTD_OUT=PORTD_OUT|0x20
+    else:
+      PORTD_OUT=PORTD_OUT&0xdf
+</code>
+
+
+
+==== Using the RS232 Receiver/Transmitter ====
+
+The Baudrate of the RS232 unit is defined in the Myhdl code. The processor tightly integrates the following RS232 module
+[[projects:UART/RS232 Receiver Transmitter]].
+The usage of the integrated RS232 Receiver Transmitter in the programmcode for the python Hardware processor is shown bellow.
+
+<code python>
+
+PREDEFINED_IO_ADDRESSES={'PORTA_IN':0,'PORTB_IN':1,'PORTC_OUT':2,'PORTD_OUT':3, \
+'RS232Data':4,'RS232_READ_ADDRESS':5,'RS232_RECEIVE_ADDRESS':6,'RS232_WRITEBUFFER_FULL':7 } 
+
+def CPU_main():
+  global PORTA_IN,PORTB_IN,PORTC_OUT,PORTD_OUT,RS232Data,RS232_READ_ADDRESS,RS232_RECEIVE_ADDRESS,RS232_WRITEBUFFER_FULL
+  x=0
+  RS232_READ_ADDRESS=0
+  while 1:
+    ##### RS232 Transmitting ######
+    # Only write something to the Transmit buffer if not full
+    if not RS232_WRITEBUFFER_FULL:
+      # Write the value of x to the RS232 Transmit 
+      # buffer, sending the Data is then started automatically
+      RS232Data=x    
+      x=x+1
+    
+    ##### RS232 Receiving ######
+    # Wait until a byte is received in the Receive-Buffer
+    if RS232_READ_ADDRESS!=RS232_RECEIVE_ADDRESS:  
+      # Read data from RS232 receive buffer at the RS232_READ_ADDRESS and
+      # write it to PORTD
+      PORTD_OUT=RS232Data    
+      # Set the Read address to the address where the next Data will 
+      # be received
+      RS232_READ_ADDRESS=RS232_RECEIVE_ADDRESS
+      
+</code>
+
+Advantages:
+  * Easier access to RS232 than in most Microcontrollers today
+  * Receive-/ and Transmit-Buffer (Buffersize is set in the hardware description)
+Disadvantages:
+  * No interrupt
+  * No dynamic baudrate configuration
+  * Only 8 Bit Mode, no parity bit 
+  * If you want more options you have to upgrade the hardware description
+
+==== Download ====
+
+You can get the current development files at:
+http://sourceforge.net/projects/pycpu/files/
+
+ 

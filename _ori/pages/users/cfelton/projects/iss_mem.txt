@@ -1,0 +1,55 @@
+
+
+<code python>
+import MemoryAccessException
+
+class Mem():
+
+    def __init__(self):
+        self.mem = [0xCD] * 2**14   # Generic Memory
+
+    def write8(self, addr, val):
+        assert val >= 0 and val <= 0xFF, "Memory Assertion Byte out of range addr %x val %x" % (addr, val)
+        self.mem[addr] = val
+
+    def read8(self, addr):
+        return self.mem[addr]
+
+    def write16(self, addr, val):
+
+        if (addr & 0x01) != 0:
+            raise MemoryAccessException
+
+        self.write8(addr, val >> 8)
+        self.write8(addr+1, val)
+
+    def read16(self, addr):
+        val =  self.read8(addr) << 8
+        val |= self.read8(addr+1)
+        return val
+
+
+    def write32(self, addr, val):
+        if (addr & 0x03) != 0:
+            raise MemoryAccessException
+        # Big endien mem org
+        self.write8(addr,   val >> 24)
+        self.write8(addr+1, val >> 16)
+        self.write8(addr+2, val >> 8)
+        self.write8(addr+3, val)
+
+    
+    def read32(self, addr):
+        val =  self.read8(addr)   << 24
+        val |= self.read8(addr+1) << 16
+        val |= self.read8(addr+2) << 8
+        val |= self.read8(addr+3)
+        return val
+
+    def writeWord(self, addr, val):
+        self.write32(addr, val)
+    
+    
+        
+
+</code>

@@ -1,0 +1,51 @@
+====== To do for MyHDL 0.5 ======
+
+===== To do for 0.5.1 =====
+
+0.5.1 has been released
+
+  * <del> solve bug with right shifting of negative numbers - use arithmetic shift in Verilog</del>
+
+  * <del> solve inconsistency bug with Python versions in setup.py</del>
+
+  * <del> toVerilog:</del>
+     * <del> review shortcutting boolean operations, may be too restrictive</del>
+     * <del> use if instead of case with a single test</del>
+
+  * <del> document undocumented feature to hide MyHDL code from the Verilog convertor, using "''if %%__%%debug%%__%%''" </del>
+
+===== To do for 0.5 =====
+
+0.5 has been released.
+
+  * <del> User-defined Verilog: error handling </del>
+    * <del> acceptable values of the ''driven'' attribute </del>
+    * <del> error messages when exceptions occur with user-defined code </del>
+    * <del> ''%%__toVerilog__%%'' not supported in generator functions </del>
+
+  * <del> signed arithmetic: </del>
+     * <del> investigate fine-grained approach </del>
+
+  * <del> use base classes for Enum and EnumItem, so that type-checking is possible </del>
+
+  * <del> miscellaneous: </del>
+      * <del> check typo bug with signal tracing </del>
+      * <del> check simulation suspend mechanism </del>
+
+  * <del> decorators: </del>
+    * <del> investigate approach to remove limitations on ''@always'' decorator </del>
+    * <del> infer specialized _Waiter class depending on sensitivity list </del> 
+
+  * <del> verification and error reporting: </del>
+    * <del> argument tests on ''@always'' </del>
+    * <del> test waiter inference for ''@always'' and ''@always_comb'' </del>
+    * <del> argument tests on ''@instance'' </del>
+
+  * <del> get feedback on style issues </del>
+    * <del> ''clk.posedge'' instead of ''posedge(clk)'' </del>
+    * <del> promoting general usage of decorators </del>
+
+  * <del> Update documentation ... </del>
+    * <del> update what's new document </del>
+    * <del> add note on positive numbers returned by slicing of intbv </del>
+    * <del> make full pass over manual with new info </del>

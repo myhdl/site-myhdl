@@ -1,0 +1,51 @@
+====== Call Xilinx ISE from Python ======
+
+Running Xilinx ISE implementation from a shell, with a script that has all the necessary parameters has the charm, that only the necessary settings are stored in a text file. On the [[http://dilloneng.com|Dillon Engineering]] web site a script named [[http://www.dilloneng.com/documents/downloads/gen_ise_sh/|gen_ise_sh.py]] can be found, that creates a Makefile to run synthesis and the implementation tools, like place and route, from the command line.
+
+Another way, implemented in later ISE versions, is to have a TCL script, that performs all the necessary settings and runs the implementation. For possible commands used in the TCL script, see the [[http://www.xilinx.com/products/design_tools/logic_design/implementation/ise_qrefguide.pdf|TCL Quickreference]] from Xilinx. Volker Stumpen has a nice tutorial about [[http://strumpen.net/xilinx/tut82i/isetcl.html|creating TCL scripts for ISE]] on the web page of IBM's [[http://www.research.ibm.com/arl|Austin Research Laboratory]].
+
+As this page is about MyHDL and Python, a nice thing to have would be a Python wrapper for this functionality, that allows to run the implementation tools from a Python script. [[projects:ise_py:_xilinx_py|_xilinx.py]] is a script that contains two classes trying to cover the tool run in an object oriented way. The two classes are:
+
+  * Xilinx
+  * Fpga
+
+===== Xilinx =====
+
+The class Xilinx will wrap the Xilinx tool calls. This is done by creating a TCL-script with the necessary settings and then run the script.
+
+===== Fpga =====
+
+The class Fpga contains the function around the .ucf-file. It is possible to specify which signal is connected to what FPGA pin and what parameters the pin should get associated with.
+
+===== Example usage =====
+
+Here is an example how to use it. The _xilinx.py file is put under a folder called ''tools'', which is added to the PYTHONPATH. So it can be used with the import statement.
+
+<code python>
+from tools import *
+
+
+if __name__ == '__main__':
+  
+  path = 'syn/spartan2'
+  # set up pin configuration for the FPGA
+  fpga = Fpga()
+  fpga.setPin('clk50', 'P80')
+  fpga.setPin('led', 'P71')
+  fpga.setPin('btn', 'P77')
+  fpga.setDevice('spartan2', 'xc2s200', 'pq208', '-5')
+  print fpga
+
+
+  # set up path
+  imp = Xilinx(path, 'led')
+  imp.setFpga(fpga)
+  imp.addHdl(('counter.v','led.v'))
+  imp.createTcl()
+  imp.run()
+</code>
+
+
+===== Status =====
+
+The script is in an early state of development. I decided to publish it anyway, in hope it is useful for someone.

@@ -1,0 +1,88 @@
+====== Matplotlib Plotter ======
+
+<code myhdl>
+#!/usr/bin/python
+"""
+plotting functions for myhdl
+"""
+
+import pylab
+from pylab import *
+import traceback
+from myhdl import *
+
+colors="rgbm"
+
+def append(*items):
+    global data
+    global time
+    time.append(now())
+    for i in range(len(items)):
+        if len(data)<=i:
+            data.append([])
+        data[i].append(float(items[i]))
+
+
+def plot(subplots=True,twinx=False):
+    pylab.clf()
+    for i,(k,d) in enumerate(data.items()):
+        if len(d)==0: continue
+        if subplots:
+            pylab.subplot("%i1%i"%(len(data),i+1))
+            print "%i1%i"%(len(data),i+1)
+            pylab.grid(1) 
+        pylab.plot (time,d,"%c"%colors[i%len(colors)],label=k)
+        if subplots:
+            pylab.legend(loc="lower right")
+        ymin=min(d)
+        ymax=max(d)
+        dy=ymax-ymin
+        ymin-=0.1*dy
+        ymax+=0.1*dy
+        pylab.ylim((ymin,ymax))
+        if twinx:
+            if not subplots:
+                pylab.legend(loc=i%4+1)
+            pylab.twinx()
+        pylab.xlabel("Time")
+    if not subplots and not twinx:
+        pylab.legend(loc="lower right")
+
+def monitor(**sig):
+    global data
+    global time
+   
+    time=[]
+    data={}
+
+    for k in sig.keys():
+        if not data.has_key(k):
+            data[k]=[]
+
+    @always(*sig.values())
+    def savedata():
+        global data
+        global time
+        try:
+            time.append(now())
+            for i,(k,v) in enumerate(sig.items()):
+                if v==None:
+                    data[k].append(0)
+                else:
+                    data[k].append(float(v))                
+        except:
+            traceback.print_exc()
+    return savedata                
+
+def showplot(**kwargs):
+    plot(**kwargs)
+    pylab.show()
+
+def saveplot(filename,**kwargs):
+    plot(**kwargs)
+    pylab.savefig(filename,dpi=80)
+
+savefig=saveplot    
+show=showplot
+</code>        
+

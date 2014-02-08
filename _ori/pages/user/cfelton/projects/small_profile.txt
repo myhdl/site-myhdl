@@ -1,0 +1,89 @@
+
+====== MyHDL Performance Comparison intbv return types ======
+
+==== intbv returns type(int) for math operations ====
+
+Intbv Math returns Int Type
+
+--------------Start Test Loop--------------
+
+--------------End Test Loop----------------
+
+10935715 function calls (10900641 primitive calls) in 26.753 CPU seconds
+
+   Ordered by: standard name
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000   26.753   26.753 <string>:1(<module>)
+       10    0.000    0.000    0.000    0.000 _Signal.py:155(_clear)
+   351088    2.770    0.000    4.089    0.000 _Signal.py:162(_update)
+   351088    1.268    0.000   14.802    0.000 _Signal.py:191(_set_next)
+    35070    0.036    0.000    0.036    0.000 _Signal.py:204(_get_negedge)
+    70250    0.107    0.000    0.107    0.000 _Signal.py:235(_setNextBool)
+   280838    2.165    0.000   12.916    0.000 _Signal.py:245(_setNextIntbv)
+   140496    0.157    0.000    0.157    0.000 _Signal.py:282(__nonzero__)
+    69447    0.270    0.000    0.463    0.000 _Signal.py:300(__add__)
+    70148    0.296    0.000    0.466    0.000 _Signal.py:308(__sub__)
+    35074    0.166    0.000    0.264    0.000 _Signal.py:316(__mul__)
+    35074    0.118    0.000    0.172    0.000 _Signal.py:420(__int__)
+    35074    0.072    0.000    0.271    0.000 _Signal.py:437(__cmp__)
+        1    0.000    0.000    0.000    0.000 _Simulation.py:72(_finalize)
+        1    2.196    2.196   26.753   26.753 _Simulation.py:92(run)
+    70249    0.295    0.000    1.320    0.000 _Waiter.py:123(next)
+    70250    0.247    0.000   15.794    0.000 _Waiter.py:136(next)
+    35073    0.338    0.000    2.967    0.000 _Waiter.py:51(next)
+   140499    0.270    0.000   16.513    0.000 _always.py:98(genfunc)
+        2    0.000    0.000    0.000    0.000 _delay.py:29(__init__)
+   563219    0.421    0.000    0.421    0.000 _intbv.py:105(__nonzero__)
+    69447    0.110    0.000    0.149    0.000 _intbv.py:187(__add__)
+    70148    0.114    0.000    0.140    0.000 _intbv.py:195(__sub__)
+    35074    0.071    0.000    0.083    0.000 _intbv.py:203(__mul__)
+   279149    1.902    0.000    3.267    0.000 _intbv.py:36(__init__)
+    35074    0.054    0.000    0.054    0.000 _intbv.py:406(__int__)
+   315912    0.671    0.000    0.981    0.000 _intbv.py:424(__cmp__)
+   559987    1.387    0.000    1.387    0.000 _intbv.py:76(_checkBounds)
+   279149    0.584    0.000    3.851    0.000 _intbv.py:95(__deepcopy__)
+
+ 
+
+==== intbv returns type(intbv) for math operations ====
+
+Intbv Math returns Intbv Type
+--------------Start Test Loop--------------
+--------------End Test Loop----------------
+11460400 function calls (11425326 primitive calls) in 28.543 CPU seconds
+
+   Ordered by: standard name
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000   28.543   28.543 <string>:1(<module>)
+       10    0.000    0.000    0.000    0.000 _Signal.py:155(_clear)
+   351088    2.758    0.000    4.080    0.000 _Signal.py:162(_update)
+   351088    1.286    0.000   14.785    0.000 _Signal.py:191(_set_next)
+    35070    0.034    0.000    0.034    0.000 _Signal.py:204(_get_negedge)
+    70250    0.114    0.000    0.114    0.000 _Signal.py:235(_setNextBool)
+   280838    2.050    0.000   12.881    0.000 _Signal.py:245(_setNextIntbv)
+   140496    0.169    0.000    0.169    0.000 _Signal.py:282(__nonzero__)
+    69447    0.269    0.000    0.984    0.000 _Signal.py:300(__add__)
+    70148    0.296    0.000    0.983    0.000 _Signal.py:308(__sub__)
+    35074    0.159    0.000    0.530    0.000 _Signal.py:316(__mul__)
+    35074    0.117    0.000    0.175    0.000 _Signal.py:420(__int__)
+    35074    0.070    0.000    0.281    0.000 _Signal.py:437(__cmp__)
+        1    0.000    0.000    0.000    0.000 _Simulation.py:72(_finalize)
+        1    2.175    2.175   28.543   28.543 _Simulation.py:92(run)
+    70249    0.285    0.000    1.291    0.000 _Waiter.py:123(next)
+    70250    0.258    0.000   17.623    0.000 _Waiter.py:136(next)
+    35073    0.321    0.000    2.976    0.000 _Waiter.py:51(next)
+   140499    0.248    0.000   18.311    0.000 _always.py:98(genfunc)
+        2    0.000    0.000    0.000    0.000 _delay.py:29(__init__)
+   563215    0.417    0.000    0.417    0.000 _intbv.py:105(__nonzero__)
+    69447    0.231    0.000    0.672    0.000 _intbv.py:187(__add__)
+    70148    0.229    0.000    0.657    0.000 _intbv.py:195(__sub__)
+    35074    0.132    0.000    0.356    0.000 _intbv.py:203(__mul__)
+    35074    0.115    0.000    0.343    0.000 _intbv.py:261(__rshift__)
+   488891    2.733    0.000    4.493    0.000 _intbv.py:36(__init__)
+    35074    0.057    0.000    0.057    0.000 _intbv.py:406(__int__)
+   315912    0.674    0.000    0.992    0.000 _intbv.py:424(__cmp__)
+   769729    1.710    0.000    1.710    0.000 _intbv.py:76(_checkBounds)
+   279148    0.606    0.000    3.890    0.000 _intbv.py:95(__deepcopy__)
+

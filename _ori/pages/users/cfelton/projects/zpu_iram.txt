@@ -1,0 +1,25 @@
+
+zpu_iram.py
+
+<code myhdl>
+from myhdl import *
+
+def RAM(dout, din, addr, we, clk, WORD_SZ=8, DEPTH=16384):
+    """
+    
+    """
+
+    mem = [Signal(intbv(0)[WORD_SZ:]) for i in range(DEPTH)]
+
+    @always(clk.posedge)
+    def write():
+        if we:
+            mem[int(addr)].next = din
+
+    @always_comb
+    def read():
+        dout.next = mem[int(addr)]
+
+    return write, read
+
+</code>

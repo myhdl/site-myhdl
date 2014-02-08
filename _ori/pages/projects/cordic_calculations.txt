@@ -1,0 +1,313 @@
+====== Cordic Calculations ======
+
+Originating from the [[cookbook:sinecomp]] example in the cookbook this code here also calculates the magnitude and the phase of a vector given it's I- and Q-components. Also it works within the 360° range instead of 180° as in the cookbook.
+
+The plotting is done using matplotlib. [[projects:matplotlib_plotter]] is a small script to monitor and plot the data.
+
+===== Sine and Cosine Calculation =====
+
+{{projects:test_sincos.png|}}
+
+Cosine and sine values for the given input angle are calculated. The angle ranges from -180° to +180° which spans the full integer range for the given width. 
+ 
+
+===== Vector Calculation =====
+
+{{projects:test_vectorcalc.png|}}
+
+Given the I- and Q-compenent of a vector the magnitude and phase is calculated. 
+
+===== Code =====
+
+<code myhdl>
+#!/usr/bin/env python
+
+INTWIDTH = 16
+INTMAX = 2**(INTWIDTH-1)-1
+INTMIN = -2**(INTWIDTH-1)
+
+TODO = """
+- Tests
+- Scaling Optimisation
+- Iteration Optimisation
+"""
+
+
+import sys, os
+from os import system
+import plotter
+from math import atan, sqrt, ceil, floor, pi, sin, cos
+
+from myhdl import *
+
+class Plot:
+    x=[]
+    y=[]
+    z=[]
+pl=Plot
+
+t_State = enum("WAITING", "CALCULATING")
+
+calcmode = enum("VECTOR","ROTATE")
+
+def Cordic(x_out, y_out, done, x0, y0, z0, start, clock, reset, mode=calcmode.VECTOR):
+    
+    """ General Cordic computer
+
+    Ports:
+    -----
+    x_out -- cosine of the input angle
+    y_out -- sine of the input angle
+    done -- output flag indicating completion of the computation
+    z0 -- input angle; -pi/2 <= z0 <= pi/2
+    start -- input that starts the computation on a posedge
+    clock -- clock input
+    reset -- reset input
+
+    """
+    M = 2 ** (INTWIDTH-1)/pi 
+    MpiH = 2 **(INTWIDTH-2)
+    # nr of iterations equals nr of significant input bits
+    N = INTWIDTH
+    
+    An = 1.0
+    for i in range(N):
+        An *= (sqrt(1 + 2**(-2*i)))
+    X0 = int(round(M*1/An))
+    
+    # tuple with elementary angles
+    angles = tuple([int(round(M*atan(2**(-i)))) for i in range(N)])
+    
+    # iterative cordic processor
+    @instance
+    def processor():
+        
+        x = intbv(0, min=x_out.min, max=x_out.max)
+        y = intbv(0, min=y_out.min, max=y_out.max)
+        z = intbv(0,min=x0.min, max=x0.max)
+        dz = intbv(0, min=x0.min, max=x0.max)
+        dx = intbv(0, min=x_out.min, max=x_out.max)
+        dy = intbv(0, min=x_out.min, max=x_out.max)
+        i = intbv(0, min=0, max=N)
+        state = t_State.WAITING
+
+        while True:
+            yield clock.posedge, reset.posedge
+
+            if reset:
+                state = t_State.WAITING
+                done.next = False
+                x[:] = 0
+                y[:] = 0
+                z[:] = 0
+                i[:] = 0
+            else:
+                if state == t_State.WAITING:
+                    if start:
+                        if mode == calcmode.ROTATE:
+                                if z0 > MpiH:
+                                    z[:] = z0 - MpiH
+                                    y[:] = X0
+                                    x[:] = 0
+                                elif z0 < -MpiH:
+                                    z[:] = z0 + MpiH
+                                    y[:] = -X0
+                                    x[:] = 0
+                                else:                                    
+                                    x[:] = X0
+                                    y[:] = 0
+                                    z[:] = z0
+                        else:
+                            if x0>= 0:
+                                x[:] = x0
+                                y[:] = y0
+                                z[:] = z0
+                            else:
+                                x[:] = -x0
+                                y[:] = -y0
+                                z[:] = -z0      # TODO: is this correct!?
+                            
+                        i[:] = 0
+                        done.next = False
+                        state = t_State.CALCULATING
+
+                elif state == t_State.CALCULATING:
+                    dx[:] = y >> i
+                    dy[:] = x >> i
+                    dz[:] = angles[int(i)]
+                    if mode == calcmode.ROTATE:
+                        if (z >= 0):
+                            x -= dx
+                            y += dy
+                            z -= dz
+                        else:
+                            x += dx
+                            y -= dy
+                            z += dz
+                    else:
+                        if (y < 0):
+                            x -= dx
+                            y += dy
+                            z -= dz
+                        else:
+                            x += dx
+                            y -= dy
+                            z += dz
+                    if i == N-1:
+                        if mode == calcmode.ROTATE:
+                            x_out.next = y          
+                            y_out.next = x         
+                        else:                            
+                            x_out.next = x
+                            y_out.next = z
+                        state = t_State.WAITING
+                        done.next = True
+                    else:
+                        i += 1
+
+    return processor
+
+
+def VectorCalc(mag,phase,done,i_input,q_input,start,clock,reset):
+    """
+    calcuclate vector magnitude and vector angle from i and q component
+
+    i -- inphase input
+    q -- quadrature phase input
+    mag -- magnitude output
+    phase -- phase output
+    """
+    return Cordic(mag,phase,done,i_input,q_input,0,start,clock,reset,mode=calcmode.VECTOR)
+
+def VectorCalc_v(mag,phase,done,i_input,q_input,start,clock,reset):
+    toVerilog(VectorCalc,mag,phase,done,i_input,q_input,start,clock,reset)
+    #conversion.analyze(VectorCalc,mag,phase,done,i_input,q_input,start,clock,reset)
+    cmd = "cver -q +loadvpi=./myhdl_vpi:vpi_compat_bootstrap VectorCalc.v tb_VectorCalc.v"
+    os.system ("iverilog -o tb_VectorCalc.vvp VectorCalc.v tb_VectorCalc.v")
+    cmd = "vvp -v -m ./myhdl tb_VectorCalc.vvp"
+    return Cosimulation(cmd,**locals())          
+
+def SinCos(sin_out, cos_out,done,amplitude,angle,start,clock,reset):
+    """
+    calculate sine and cosine multiplied by amplitude
+    """
+    return Cordic(sin_out, cos_out, done, amplitude, 0, angle, start, clock, reset, mode=calcmode.ROTATE)
+
+def SinCos_v(sin_out, cos_out,done,amplitude,angle,start,clock,reset):
+    """
+    calculate sine and cosine multiplied by amplitude
+    """
+    toVerilog(SinCos,sin_out,cos_out,done,amplitude,angle,start,clock,reset)
+    #cmd = "cver -q +loadvpi=./myhdl_vpi:vpi_compat_bootstrap SinCos.v tb_SinCos.v"
+    os.system("iverilog -o tb_SinCos.vvp SinCos.v tb_SinCos.v")
+    cmd = "vvp -v -m ./myhdl tb_SinCos.vvp"
+    return Cosimulation(cmd,**locals())
+
+def normalize(f):
+    return int(f * (INTMAX/2-1))               
+
+def _test_vectorcalc():
+
+    print "test_vectorcalc"
+
+    clock = Signal(bool(0))
+    reset = Signal(bool(1))
+    start = Signal(bool(0))
+    done  = Signal(bool(0))
+    i     = Signal(intbv(0,min=INTMIN,max=INTMAX))
+    q     = Signal(intbv(0,min=INTMIN,max=INTMAX))
+    mag   = Signal(intbv(0,min=INTMIN,max=INTMAX))
+    phase = Signal(intbv(0,min=INTMIN,max=INTMAX))
+
+    vcalc = VectorCalc_v(mag,phase,done,i,q,start,clock,reset)
+    #vcalc = VectorCalc(mag,phase,done,i,q,start,clock,reset)
+
+    @always(delay(1))
+    def clockgen():
+         clock.next = not clock
+    
+    @instance
+    def check():
+        yield clock.negedge
+        reset.next = 0
+        for angle in range(0,360,5):
+            yield clock.negedge
+            angle=float(angle)
+            i.next = normalize(sin(angle/180*pi))
+            q.next = normalize(cos(angle/180*pi))
+            start.next=1
+            yield clock.posedge
+            start.next=0
+            yield done.posedge
+            print "i=",i,"\tq=",q,"\tMag=",sqrt(i*i + q*q),"\tmag=",mag,"\tphase=",phase
+            
+        yield clock.negedge
+        raise StopSimulation                 
+    moni=plotter.monitor(I_Voltage=i,Q_Voltage=q,Magnitude=mag,Phase=phase)
+    return instances()
+    
+def test_vectorcalc(n=None):
+    Simulation(_test_vectorcalc()).run(n)
+    #plotter.show()
+    plotter.saveplot("test_vectorcalc.png")
+
+def trace_vectorcalc(n=None):
+    tb = traceSignals(_test_vectorcalc)
+    Simulation(tb).run(n)
+
+def _test_sincos():
+
+    print "test_sincos"
+
+    clock = Signal(bool(0))
+    reset = Signal(bool(1))
+    start = Signal(bool(0))
+    done  = Signal(bool(0))
+    amplitude = Signal(intbv(0,min=-2**15,max=2**15 -1))
+    angle     = Signal(intbv(0,min=-2**15,max=2**15 -1))
+    sin_out   = Signal(intbv(0,min=-2**15,max=2**15 -1))
+    cos_out   = Signal(intbv(0,min=-2**15,max=2**15 -1))
+
+    sincos = SinCos(sin_out, cos_out,done,amplitude,angle,start,clock,reset)
+    #sincos = SinCos_v(sin_out, cos_out,done,amplitude,angle,start,clock,reset)
+
+    @always(delay(1))
+    def clockgen():
+         clock.next = not clock
+
+    @instance
+    def check():
+        yield clock.negedge
+        reset.next = 0
+        for iangle in range(-180,180,1):
+            yield clock.negedge
+            angle.next=int((iangle*1.0/180*2**(INTWIDTH-1)))
+            start.next=1
+            yield clock.posedge
+            start.next=0
+            yield done.posedge
+        raise StopSimulation                 
+
+    moni = plotter.monitor(Angle=angle,Sinus=sin_out,Cosinus=cos_out)
+    return instances()
+
+def test_sincos():
+    Simulation(_test_sincos()).run()
+    #plotter.show()
+    plotter.saveplot("test_sincos.png")
+
+def trace_sincos():
+    tb = traceSignals(_test_sincos)
+    Simulation(tb).run(1000)
+
+if __name__=="__main__":
+
+   test_vectorcalc()
+   #trace_vectorcalc()
+   #trace_sincos()
+   #test_sincos()
+</code>
+
+===== References =====
+
+http://www.andraka.com/cordic.htm

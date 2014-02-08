@@ -1,0 +1,79 @@
+====== MIPS32 Assembler ======
+
+Below is a Python implementation for an Assembler Compiler for the MIPS32 processor. It implements only a minimum set of Mnemonics that allows to create a program. Further down is a section that lists all the implemented Mnemonics. The implemented Mnemonics resembles those implemented in the MyHDL implementation of a MIPS32 Single Cycle processor, as posted on the [[http://sourceforge.net/mailarchive/forum.php?thread_name=1285878837.1761.12.camel%40Leuven&forum_name=myhdl-list|MyHDL Mailing list]] in September 2010.
+
+The program reads the source code from a file and creates a binary output in form of a text file that can be used to initialize ROM used with Xilinx ISE.
+
+For help on the usage call the program with ''-h'' option:
+
+<code>
+> asm.py -h
+
+Usage: asm.py [options] arg
+
+MIPS32 Assembler
+
+Compiles MIPS32 assembler code into machine code.
+
+arg: text file with mips32 assembler mnemonic to compile. 
+At the moment only one file is accepted. File can be avoided with -m option
+
+Options:
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  -m, --show-mnemonic   show the supported mnemonic and exit. Requires no
+                        argument
+  -o OUT_FILE, --out-file=OUT_FILE
+                        store the machine code in the output file.
+                        [default='mips32out.dat']
+
+  Output file specific options:
+    -p PAD, --pad=PAD   pad the generated machine code to the specified length
+                        with zero values. If e.g. the generated machine code
+                        only needs 30 entries a '-p 32' will padd the file
+                        with 2 zero values. Xilinx ISE e.g. requires all
+                        entries in a ROM to be initalized. In case the machine 
+                        code needs more space than specified by the pad 
+                        option, a ValueError is raised, telling how many 
+                        entries the machine code requires.
+
+  Linker specific options:
+    --data=DATA_ORG     specify the start of the .data segment. [default=0x0]
+    --text=TEXT_ORG     specify the start of the .text segment. [default=0x0]
+</code>
+
+===== Input file format of source code =====
+
+The file format of the source code is in the form:
+<code>
+[label:] [operation] [operands] [#comments]
+</code>
+
+^ Option ^ Explanation ^
+| label: | Text label that can be used as operand for jump commands. Needs to end with a colon ':' |
+| operation | Any of the below listed, implented Mnemonics |
+| operands | Operands needed for the used operation |
+| comments | Comments start with a '#' and the remaining text in that line is ignored by the compiler|
+
+===== Implemented Mnemonics =====
+
+^ ^
+|add|
+|addi|
+|and|
+|beq|
+|j|
+|lw|
+|or|
+|slt|
+|sub|
+|sw|
+
+===== Required Python Module =====
+
+  * [[http://pyparsing.wikispaces.com|PyParsing]]
+
+===== Code =====
+
+Download the [[projects:mips32_asm:asm_py|asm.py]] file.
+

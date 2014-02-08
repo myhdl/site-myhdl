@@ -1,0 +1,96 @@
+====== Newsroom ======
+
+**24-Apr-2013**\\
+[[https://twitter.com/MyHDL|Follow @MyHDL on Twitter!]]
+
+**24-Dec-2010**\\
+[[http://www.myhdl.org/doc/0.7/whatsnew/0.7.html|MyHDL 0.7]] released!
+
+**9-Jan-2009**\\
+[[http://www.myhdl.org/doc/0.6/whatsnew/0.6.html|MyHDL 0.6]] released!
+
+**2-Oct-2008**\\
+Domain name moved to www.myhdl.org
+
+**20-Jun-2008**\\
+MyHDL now has a public [[:dev:repo]].
+
+**8-Jun-2007**\\
+MyHDL now has a [[:logo]].
+
+**14-Nov-2006**\\
+Open-source [[:projects:dsx1000|DSX1000 ΔΣ DAC core]] with full tutorial released.
+
+**26-Sep-2006**\\
+[[:projects:phoenixsid_65x81|PhoenixSID 65X81]] news updated.
+
+**1-May-2006**\\
+[[http://sourceforge.net/project/showfiles.php?group_id=91207|MyHDL 0.5.1]] released.
+
+**24-Mar-2006**\\
+Added a [[cookbook:stopwatch]] example to the Cookbook. Basically, this is the Xilinx ISE tutorial design revisited in MyHDL.
+
+**1-Mar-2006**\\
+Added new pictures and sound samples of the [[:projects:phoenixsid_65x81]] digital/analog music synthesizer!
+
+**6-Feb-2006**\\
+Added the first sound samples of the [[:projects:phoenixsid_65x81]] digital/analog music synthesizer
+
+**23-Jan-2006**\\
+EETimes publishes an [[http://eetimes.com/news/design/showArticle.jhtml?articleID=177101584|article]] about MyHDL.
+
+**29-Dec-2005**\\
+[[http://sourceforge.net/project/showfiles.php?group_id=91207|MyHDL 0.5]] released.
+
+**19-Dec-2005**\\
+[[http://www.gammaburst.net|George Pantazopoulos]] updated his PhoenixSID 65X81 digital/analog music synth in the [[:projects:phoenixsid_65x81]] page.
+
+**26-Sep-2005**\\
+New MyHDL website launched, using [[doku>wiki:dokuwiki|dokuwiki]] as its content
+management system. 
+
+**21-Feb-2005**\\
+Added a page with a list of MyHDL [[:projects:intro]].
+
+**31-Jan-2005**\\
+Opening of
+[[http://www.python.org/moin/MyHDL|the MyHDL Wiki]]
+for collaborative documentation development.
+
+**29-Dec-2004**\\
+MyHDL 0.4.1 released - a maintenance release that adds
+cosimulation support for the cver Verilog simulator.
+
+**Nov-2004**\\
+The November 2004 issue of the Linux Journal has published
+[[http://www.linuxjournal.com/article/7542|an article on MyHDL]], 
+in which I describe its main features.
+
+**4-Feb-2004**\\
+[[http://www.jandecaluwe.com/Tools/MyHDL/whatsnew04/whatsnew04.html|MyHDL 0.4]]
+released. From Python to FPGA!
+
+**1-Oct-2003**\\
+MyHDL starts using SourceForge services. A
+[[http://sourceforge.net/mail?group_id=91207|mailing list]]
+has been created, and the file download area has been moved.
+
+**30-Aug-2003**\\
+MyHDL 0.3 released, with several
+[[http://www.jandecaluwe.com/Tools/MyHDL/whatsnew03/whatsnew03.html|new features]].
+
+**21-May-2003**\\
+MyHDL manual now [[http://www.jandecaluwe.com/Tools/MyHDL/manual/MyHDL.html|online]].
+
+**19-May-2003**\\
+MyHDL 0.2 released.
+Write your test benches in Python!
+
+**3-May-2003**\\
+Added a note on printing problems.
+
+**7-Mar-2003**\\
+MyHDL 0.1 released.
+
+**28-Feb-2003**\\
+Web site goes on line.

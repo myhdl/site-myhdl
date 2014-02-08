@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Why MyHDL?</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Bootstrap -->
+    <link href="/css/bootstrap-flatly.min.css" rel="stylesheet" media="screen">
+    <link href="/css/site.css" rel="stylesheet" media="screen">
+    <link href="/css/syntax.css" rel="stylesheet" media="screen">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">MyHDL</a>
+        </div>
+        <div class="navbar-collapse collapse">
+
+          <ul class="nav navbar-nav navbar-left">
+ 
+            <li class="active" class="dropdown">
+              <a href="/start/" class="dropdown-toggle" data-toggle="dropdown">Start <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/start/overview.html">Overview</a></li>    
+                <li><a href="/start/why.html">Why MyHDL?</a></li>    
+                <li><a href="/start/whatitisnot.html">What MyHDL is not</a></li>    
+              </ul>
+            <li><a href="http://doc.myhdl.org/en/latest/">Manual</a></li>
+          </ul>
+
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/site-info.html">Site info</a></li>
+          </ul>
+
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+
+<div class="container">
+
+    <ol class="breadcrumb">
+       <li><a href="/">Home</a></li>
+       <li><a href="/start/">Start</a></li>
+       <li class="active">Why MyHDL?</li>
+    </ol>
+
+    <div class="page-header">
+ 
+<h1>Why MyHDL?
+</h1>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-3" role="navigation"> 
+ 
+            <div class="sidebar" data-spy="affix" 
+                 data-offset-top="80" 
+                 data-offset-bottom="60">
+                <div class="well">
+                    <a href="#"><em>Why MyHDL?</em></a>
+                    <div class="toc">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#new-to-digital-hardware-design">New to digital hardware design</a></li>
+<li><a href="#using-scripting-languages-intensively">Using scripting languages intensively</a></li>
+<li><a href="#modern-software-development-techniques">Modern software development techniques</a></li>
+<li><a href="#algorithm-development-and-implementation-in-a-single-environment">Algorithm development and implementation in a single environment</a></li>
+<li><a href="#developing-for-both-verilog-and-vhdl">Developing for both Verilog and VHDL</a></li>
+<li><a href="#vhdl-is-too-verbose">VHDL is too verbose</a></li>
+<li><a href="#systemverilog-is-too-complicated">SystemVerilog is too complicated</a></li>
+<li><a href="#confusion-about-blocking-and-non-blocking-assignments">Confusion about blocking and non-blocking assignments</a></li>
+<li><a href="#confusion-about-signal-assignments">Confusion about signal assignments</a></li>
+<li><a href="#vhdl-requires-too-many-conversion-functions">VHDL requires too many conversion functions</a></li>
+<li><a href="#confusion-about-signed-arithmetic">Confusion about signed arithmetic</a></li>
+</ul>
+</div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6" data-spy="scroll" data-target="#sidenav" role="main">
+             
+<a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+<!-- Place this tag where you want the +1 button to render. -->
+<div class="g-plusone" data-size="medium"></div>
+
+<!-- Place this tag after the last +1 button tag. -->
+<script type="text/javascript">
+window.__gcfg = {
+    lang: 'en-US'
+};
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>
+            <h2 id="introduction">Introduction</h2>
+<p>Why MyHDL? Here is a good reason: MyHDL is open-source software that you can
+use for free.  However, there are many other good reasons why MyHDL is worth
+considering.  This page describes a number of common situations and opinions,
+and how MyHDL addresses them. If you recognize them, MyHDL may be a good
+solution for you.</p>
+<h2 id="new-to-digital-hardware-design">New to digital hardware design</h2>
+<p>Let's be honest about it: there's a lot to learn and it will be hard work.
+However, choosing the right development language can make the task
+significantly easier. Python is one of the easiest programming languages to
+learn, and MyHDL aims to achieve the same for hardware design.</p>
+<p>Moreover, with MyHDL you can convert your designs automatically to both Verilog
+and VHDL. So you keep all your options open.</p>
+<h2 id="using-scripting-languages-intensively">Using scripting languages intensively</h2>
+<p>If you're a practicing hardware designer, you're probably using so-called
+"scripting" languages in your workflow already. For example, tcl is popular for
+tool control.  Also, many designers use perl to glue things together. Others
+use ruby or Python for that purpose.</p>
+<p>It is clear that these high-level dynamic languages play an essential role in
+modern digital design. Verilog or VHDL alone is not enough. Many designers even
+prefer those languages over their <abbr title="Hardware Description Language">HDL</abbr>, because they can get things done quickly
+with them.</p>
+<p>Wouldn't it be great if one could use such a language directly to design
+hardware?  That's exactly what MyHDL offers.</p>
+<h2 id="modern-software-development-techniques">Modern software development techniques</h2>
+<p>In the software methodology world, a lot of innovation is going on, with
+buzzwords such as "agile", "rapid application development", "scrum", and
+"test-driven development".  This is not just hype. The new ideas and techniques
+offer real improvements to the development processes. Naturally, they are
+emerging in the communities of modern software languages, such as Python.</p>
+<p>As <abbr title="Hardware Description Language">HDL</abbr>-based design has many similarities with software development, the new
+ideas are potentially quite relevant. Nevertheless, the hardware design world
+seems detached from them. </p>
+<p>By using MyHDL, the newest software development techniques are readily
+available to the hardware designer, thanks to its Python foundation.  For
+example, you can use a Python unit test framework to do test-driven development
+for hardware design.</p>
+<h2 id="algorithm-development-and-implementation-in-a-single-environment">Algorithm development and implementation in a single environment</h2>
+<p>Python is an ideal language for algorithm development and many engineers use it
+for this purpose.  Commonly this work and a subsequent <abbr title="Hardware Description Language">HDL</abbr> implementation are
+done by different engineers.  They use a different set of tools that require a
+specialized level of knowledge.</p>
+<p>MyHDL is a big step towards the unification of the two domains.  With
+Python/MyHDL an algorithm or model designer can explore <abbr title="Hardware Description Language">HDL</abbr> implementation and
+an <abbr title="Hardware Description Language">HDL</abbr> designer can explore algorithm and model design, all within the same
+environment.  Of course, the conversion from algorithm to an <abbr title="Hardware Description Language">HDL</abbr> implementation
+still requires knowledge of <abbr title="Hardware Description Language">HDL</abbr>-based design. But being able to do this while
+staying in the powerful Python environment can be a significant boost to
+quality and productivity.  For example, the verification work can directly be
+reused between both design domains.</p>
+<h2 id="developing-for-both-verilog-and-vhdl">Developing for both Verilog and VHDL</h2>
+<p>The usage of Verilog versus VHDL differs significantly between regions and
+sectors.  However, there is every indication that the overall ratio is about
+fifty-fifty, and will remain so in the forseeable future. Consequently, it is
+often desirable that a design be available in the "other" language also. For IP
+developers, this may even be an explicit design goal.</p>
+<p>Using MyHDL is a solution. A MyHDL design can be automatically converted to
+equivalent code in both Verilog and VHDL.  Actually, using MyHDL and conversion
+is probably the best solution available for language-neutral design. It is
+obviously superior to manual conversion. Moreover, direct convertors between
+Verilog and VHDL don't work very well. Using a syntactically simple language
+like Python as the starting point is an easier way to a create a high-quality
+conversion tool.</p>
+<h2 id="vhdl-is-too-verbose">VHDL is too verbose</h2>
+<p>VHDL has many virtues, but conciseness is not one of them. Many feel that the
+syntax is verbose and even redundant, and even experts need a manual nearby to
+get the syntax right.</p>
+<p>Python is different. It is concise. One reason is that it is a dynamic language
+without declarations. But the major reason is its well thought out design.
+Moreover, it achieves this without resorting to "magic".  The code remains
+explicit, but the syntax has been reduced to the essence. Python has been
+called executable pseudocode, and that's actually a quite accurate description.</p>
+<h2 id="systemverilog-is-too-complicated">SystemVerilog is too complicated</h2>
+<p>SystemVerilog has been called a "dumping ground" for any feature ever dreamed
+up by an EDA company. Through the process of "donations", the language contains
+an ever increasing pile of builtin constructs and features. Of course, not all
+of them can be equally important or well designed. The experience can be
+overwhelming.</p>
+<p>One might think that language complexity is a necessary consequence of feature
+complexity. However, a language like Python shows that this is not true.  The
+core Python language is actually very small. However, it is designed for
+extensibility and modularity. Most of the action happens in libraries, with the
+core language serving as a common ground. There is an extensive standard
+library that comes with the distribution. In addition, there is a vast amount
+of third-party libraries available for all kinds of functionality. MyHDL is an
+example.</p>
+<p>Python's modular structure explicitly separates the essential from the
+secondary.  After learning the small core language, you only need to study and
+import those libraries that contain the functionality that you need.  This is a
+superior and scalable way of dealing with complexity.</p>
+<h2 id="confusion-about-blocking-and-non-blocking-assignments">Confusion about blocking and non-blocking assignments</h2>
+<p>If you are <em>not</em> confused about blocking and non-blocking assignments, you
+probably don't have enough experience :-).</p>
+<p>Here is the problem. The semantics of blocking (<code>=</code>) versus non-blocking (<code>&lt;=)</code>
+assignments are radically different. So different in fact that a language like
+VHDL (and MyHDL) uses dedicated objects called signals to implement
+non-blocking semantics. However, in Verilog, you can use and mix the two types
+of assignments on any object.</p>
+<p>In many cases, Verilog's permissiveness on this matter is senseless and
+confusing.  Consequently, most designers follow guidelines on acceptable use
+patterns. Unfortunately, as a testimony to the initial confusion, such
+guidelines can be overly restrictive.  For example, a commonly used guideline
+basically forbids variable semantics in clocked synthesizable processes
+completely!</p>
+<p>MyHDL follows the sensible example of VHDL. It has dedicated signal objects and
+signal assignments that correspond to the semantics of Verilog non-blocking
+assignments. The clear separation between signals and variables avoids the
+confusion about the two types of assignment.</p>
+<h2 id="confusion-about-signal-assignments">Confusion about signal assignments</h2>
+<p>Hardware Description Languages need a way to describe racefree communication
+between parallel hardware blocks. This is the purpose of VHDL signal
+assignments and Verilog non-blocking assignments. In both languages, these
+assignments are implemented using a special assignment symbol, which happens to
+be identical: <code>&lt;=</code>.  We will refer to "signal assignments" in the following
+discussion.</p>
+<p>As signal assignments are not natively present in software languages, <abbr title="Hardware Description Language">HDL</abbr>
+newcomers often have problems with them. While this is a normal part of the
+learning process, the VHDL and Verilog approach doesn't help.  Consider the
+following pseudocode snippet of signals assignments:</p>
+<div class="codehilite"><pre>a &lt;= b
+b &lt;= a
+</pre></div>
+
+
+<p>Even when this code is inside procedural code, the semantics are concurrent. In
+particular, the value of <code>a</code> used on the second line is <em>not</em> the one assigned
+to <code>a</code> on the first. The value used is the current value, while the value
+assigned is the future value of <code>a</code>.</p>
+<p>MyHDL uses a different approach. Instead of a special assignment symbol for
+signals, it uses attribute assignment to the special attribute <code>next</code>.
+Attribute assignment is common in object-oriented languages.  Our example
+becomes:</p>
+<div class="codehilite"><pre>a.next = b
+b.next = a
+</pre></div>
+
+
+<p>In this way, it is explicitly clear that the assigment on the first line isn't
+modifying the current value, but the next value of the signal.</p>
+<p>A MyHDL designer merely has to learn that a signal's future value should be
+modified by assigning to its <code>next</code> attribute. From there on, the semantics are
+clear from the code.</p>
+<h2 id="vhdl-requires-too-many-conversion-functions">VHDL requires too many conversion functions</h2>
+<p>When writing synthesizable VHDL code, you typically use the signed and unsigned
+types for arithmetic operations. These are "representational" types that focus
+on bit representation and bit width. The operators defined for such types have
+stringent requirements on the types and bit widths of operands and results.  As
+a result, you typically need a lot of conversion functions and resizings.  Many
+designers take this for granted and view it as a result of VHDL's strong
+typing. In reality, it is a consequence of using low-level types.</p>
+<p>MyHDL follows a different path, but one that has actually been shown by VHDL in
+the first place. It has the <code>intbv</code> type, which is an integer-like type whose
+values can be constrained like in VHDL. However, unlike VHDL, there are no
+artificial limits on the minimum and maximum values it can take.  Moreover, and
+again unlike VHDL, the type has an indexing and slicing interface to access the
+representation if required.</p>
+<p>The result is that in synthesizable MyHDL, you can basically do arithmetic
+using integers. Therefore, all issues with signed/unsigned representations
+simply disappear.  The convertor to VHDL infers the required conversions and
+resizings automatically, thereby automating a cumbersome task.</p>
+<h2 id="confusion-about-signed-arithmetic">Confusion about signed arithmetic</h2>
+<p>Signed arithmetic in Verilog can be quite confusing. The reason is that when
+you mix signed and unsigned operands, the operation is done in unsigned mode.
+This is the opposite of what should be done to get the normally expected
+results. To avoid this, operands should be explicitly cast to signed.</p>
+<p>In MyHDL, these issues do not exist, because you can basically use integers for
+arithmetic, using the <code>intbv</code> type presented in the previous section.  The
+convertor to Verilog infers the required casts and bit extensions
+automatically.</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p class="text-center"> Content licensed under the
+           <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a> license.
+           See <a href="/terms-of-use.html">Terms of Use</a>.
+        </p> 
+    </div>
+</div> 
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/js/bootstrap.min.js"></script>
+
+  </body>
+</html>

@@ -1,0 +1,159 @@
+======  PhoenixSID 65x81  ======
+
+
+
+===== Overview =====
+
+{{:python-powered-w-140x56.png }}
+
+[[http://www.gammaburst.net|George Pantazopoulos]] is building a hardware digital/analog music synthesizer (codenamed the [[projects:phoenixsid_65x81]]) in the spirit of the Commodore 64's [[http://en.wikipedia.org/wiki/MOS_Technology_SID|SID sound chip]] (6581 and 8580). 
+
+This unique effort combines an FPGA with a real analog filter for the best possible sound. 
+
+The digital portion of the SID chip is implemented on an FPGA (Field-Programmable Gate Array) and the analog portion is done on real analog circuits. The design is based on interviews with the SID's creator Bob Yannes, original datasheets, and (soon) comparisons with real SID chips.
+
+**Interface**
+
+PhoenixSID can be controlled in realtime by a host computer via a USB2.0 connection. A drop-in replacement for the original SID is also feasible. 
+
+**Use of Python**
+
+PhoenixSID's hardware design, drivers, tests, and demos are all done using the [[http://www.python.org|Python]] programming language. This approach has made me more productive than I thought possible, and I'm having a great time. Python and MyHDL rock!
+
+**The Briefcase**
+
+The "Launch Control" briefcase contains a road-worthy setup that's been demoed live at UMass Lowell. Yes, I plan on shrinking it down 8-)
+
+===== Contact =====
+{{:projects:gp_email.png}}
+
+===== Photos =====
+{{:projects:phoenixsid_briefcase3.jpg?600x450 | Road-friendly briefcase version. NOT airport friendly!}}
+{{:projects:s3board_plus_usb_int_g2_1400.PNG?600x450 |FPGA dev board connected to USB-to-FIFO interface (background)}}
+{{:projects:gjp_phoenixsid_workspace_1024.png?600x450 |PhoenixSID workspace}}
+{{:projects:usb_int_g2_1400.png?600x450 | FT245BM USB-to-FIFO interface board generation 2 (connected to Spartan3 board)}}
+
+
+===== Sound samples =====
+
+=== 25 Feb 2006 ===
+
+  * {{:projects:dtDemo_highreso.mp3 | dtDemo_highreso.mp3}} - Bassy detuned dual saw waves with resonant filter sweep.
+  * {{:projects:noise_filtersweep_highreso.mp3 | noise_filtersweep_highreso.mp3}} - Windy-sounding noise with resonant filter sweep.
+  * {{:projects:rmTest1.mp3 | rmTest1.mp3}} - Ring mod. Sounds like a boring sampling synth.. after it got run over by a bus, that is!
+  * {{:projects:rmTest2.mp3 | rmTest2.mp3}} - Ring mod. Space madness!
+  * {{:projects:rmTest3.mp3 | rmTest3.mp3}} - Ring mod. Hypno ray!
+  * {{:projects:syncDemo1.mp3 | syncDemo1.mp3}} - Hard sync, or power sander?
+
+=== 5 Feb 2006 ===
+  * {{:projects:bleepstorm1.mp3 | bleepstorm1.mp3}}
+  * {{:projects:blipstrip.mp3 | blipstrip.mp3}}
+  * {{:projects:crazytape.mp3 | crazytape.mp3}}
+  * {{:projects:detunedtest1.mp3 | detunedtest1.mp3}}
+  * {{:projects:detunedtest2_fs.mp3 | detunedtest2_fs.mp3}}
+  * {{:projects:pwsweep.mp3 | pwsweep.mp3}}
+  * {{:projects:ripetomatosplat.mp3 | ripetomatosplat.mp3}}
+  
+
+===== Platform =====
+  * [[http://www.digilentinc.com/|Digilent]] Xilinx Spartan3 starter board with XC3S1000 (1M equiv. gates)
+  * FT245BM USB-to-FIFO adapter board (allows realtime control of the PhoenixSID over USB2.0)
+  * External breadboard for analog circuits.
+  * Python 2.4.3, MyHDL 0.5.1, Icarus Verilog 0.8.2, [[http://www.cs.manchester.ac.uk/apt/projects/tools/gtkwave/| GTKWave]] on Cygwin, Xilinx ISE 8.1.03i on Windows XP (1.5GB RAM)
+  * Python is not only used to describe the hardware, but also for drivers, tests and exploring new sounds
+
+===== News and Results =====
+
+
+==== 26 Sep 2006 ====
+
+    * I took a good break, now I'm hungry to work on PhoenixSID again. In the downtime I've sharpened my skills in Python **big time** by working on [[http://www.gammaburst.net/xrs|MegaPOV XRS, a parallel 3D rendering system]].
+
+    * Not only that, but I've had an epiphany regarding hardware design, FPGA's and MyHDL. I think it happened sometime after I made a fun little VGA video controller and simultaneously wrote demos for it (in Python, of course). I used my USB-FIFO to blast pixels directly into the FPGA's framebuffer in realtime, all inside the Python demo, and I could easily get over 60 frames/sec in my starfield and ParticleFury demos :) In my FPGA I use a special "bytestream protocol to ram" block that translates my serial protocol into RAM writes. My bytestream protocol can handle 1,2,3 and 4 byte addresses.
+
+    * Creating the hardware in tandem with your demo is t3h l33tn355 ;-). Believe it or not, I had an easier time making my own freaking video card while simultaneously writing a graphics demo for it than I did learning to use Microsoft MFC!
+
+    * I've also been doing some fun experiments wrapping Verilog cores for use with MyHDL (such as the sasc uart from [[http://www.opencores.org| opencores.org]]). 
+
+    * Not only that, but I've been getting acquainted with the [[http://en.wikipedia.org/wiki/Wishbone_(computer_bus)|Wishbone Bus]]. I've created some basic, reusable building blocks (such as a MASTER and SLAVE SINGLE WRITE core, and MASTER and SLAVE wrapper). MyHDL makes it possible to mix and match them like Lego blocks in a very awesome and fun way. 
+
+    * For example, I made a core that generates wait states for a SINGLE READ Slave that I can just plug in to any Wishbone Slave I create. Since the actual core lives in one place, it can be easily tested and used in many modules. Similarly, I've got a Wishbone SINGLE WRITE Master bus cycle generator plug-in module. 
+
+    * I even managed to easily wrap some of my existing modules with a Wishbone interface. So far I've got:
+          * 8-bit Wishbone-compatible Slave Output port
+          * Dumb Wishbone data-out Master.
+          * MyHDL-wrapped Verilog SASC UART core wrapped again with my Wishbone MASTER interface! 
+          * Connected Wishbone UART Master to the Wishbone Slave Output port. Drove the LED's on my FPGA board from the Slave Output Port. It worked correctly with zero and 50,000,000 wait states :-)
+
+    * Now I want to go back and do some more testing and verification, and try talking to another Wishbone core from opencores.org
+
+    * Wishbone rocks! It solves so many problems and is compatible with other open source cores. That's just what I need to take it to the next level, baby!
+
+==== 5 Apr 2006 ====
+
+    * Gave a successful presentation and live demo of PhoenixSID in front of Fred Martin's Robot Design class at UMass Lowell! I worked hard to prepare and it was worth it; the audience loved it! One audience member was very familiar with the SID/C64 and was in heaven ;) I feel great after rising to the challenge and pulling this off.
+
+====  5 Mar 2006 ====
+
+    * Wired up new, much neater and more reliable FT245 interface breadboard from scratch.
+    * Redesigned the MyHDL FT245 FIFO interface and created a full unit test suite. Now is rock solid and much faster than before.
+
+    * (26 Sep 2006) In retrospect, I found that my original FT245 interface worked fine. It was //Windows XP or the VCP driver// that got confused when I unplugged it and plugged it back in! I'm still glad I rewrote it because I'm now more confident in modifying it because of the unit test suite.
+
+====  25 Feb 2006 ====
+
+    * The noise waveform is back for good! It now works as Bob Yannes describes.
+    * Added hard sync and ring mod support, and wrote demos in python.. sounds crazy! (see new sound samples)
+    * Revamped the internal logic's reset path, which fixed several problems in one shot.
+    * Overhauled the internal audio path. Now, the full dynamic range (26 bits!) is preserved as the intermediate waveforms are modulated and mixed. Bit depth reduction is done just before the DAC.
+    * Upgraded audio DAC to 18-bit. (I noticed an improvement in sound quality over the previous 12-bit DACs.)
+
+====  22 Feb 2006 ====
+
+    * Upgraded Analog Board to support electronically controlled filter cutoff and resonance.
+    * Added flashy sound level meter in time for my presentation at UMass Lowell :-)
+
+==== 18 Feb 2006 ====
+
+    * Analog Board Generation 2 is up and running! Operates from a single 9V supply with the new virtual ground system (previous board needed a dual-rail +/- 9V supply). 
+
+====   5 Feb 2006 ====
+
+    * Unshackled the system from dependence on a 1.8432MHz crystal! Now the myHDL code will automatically divide the crystal clock down to the correct speed of 1.0MHz with any power-of-two speed crystal :) Also, for improved sound quality, the raw crystal clock is sent to the Sigma-Delta DACs. Tried 8MHz and 16MHz crystals successfully.
+    * Upgraded to the very latest Xilinx tools (ISE 8.1.01i) and tested successfully.. still works!
+    * Filter cutoff frequency is now fully controllable in real time (currently using LED/photoresistor)
+    * Greatly improved write speed to synth (hardware/software fix)
+    * Discovered some cool video-game like sound effects while playing with the Python shell!
+    * Broke the noise waveform :(
+
+==== 30 Dec 2005 ====
+
+    * Improved the ADSR envelope. Now it functions closer to what Bob Yannes described in his interviews. Still need to handle exponential falloff.
+    * upgraded DAC from an accumulator to a Sigma Delta design 
+    * Scrapped UART softcore (too much debugging). Replaced with FTDI FT245BM USB-to-FIFO chip. This is faster, simpler, and makes my synth a USB device! 
+    * Built a real analog state-variable filter using CMOS inverters (for that retro SID sound!)
+    * Successfully wrote Python code that controls my synth from the PC over the USB connection. Got it to emit sweet sounding ramps and pulse sweeps :)
+
+==== Oct/Nov 2005 ====
+
+   * All SID voices (saw, pulse, noise, triangle) w/Frequency control
+   * Pulse waveform has variable duty cycle
+   * Envelope generators create ADSR envelope (linear falloff) and modulate the voices
+   * Voices are mixed and output using a DAC synthesized in the FPGA
+   * All sorts of cool retro-synth sounds are already coming out of the Spartan3 FPGA :)
+   * Receive side of UART worked at 57600 baud!
+
+===== In progress =====
+
+  * Better method to control the analog state-variable filter's cutoff and resonance from the FPGA
+
+===== To do =====
+
+  * Support the Test bit
+  * Support multiple waveforms being selected for the same voice
+  * Create a micro-tracker using Python and play a song :)
+  * Exponential falloff for the ADSR envelope
+
+  * Replicate bugs in the 6581
+  * Connect to some sid player software and use to play real sid tunes
+  * Make the analog audio path closer to the SID'

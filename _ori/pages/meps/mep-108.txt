@@ -1,0 +1,108 @@
+====== Conversion of Top-Level Class Methods ======
+
+^              MEP: | 108 |
+^           Author: | Christopher Felton |
+^           Status: | Draft |
+^          Created: | 10-Feb-2012 |
+^    MyHDL-Version: | 0.8 | 
+
+
+===== Introduction =====
+This MEP is intended to add support for top-level class methods in conversion.  
+Using classes/objects to organize digital hardware can be a natural
+and useful development approach for complex highly modular IP.  
+
+In the latest release version, 0.7, top-level class methods are not convertible
+by the existing conversion code because the object reference (self) is treated
+as a port.  Modifications to the conversion code need to be added
+to ignore the object reference argument in class methods.
+
+==== Example (existing function conversion) ====
+The "ports" are the signals that connect different HDL functions.
+The converter code identifies the arguments of Signal type to an 
+HDL function and adds them to the port list.  The
+converter also assumes that the "ports" are the first arguments, i.e. no
+parameters before or inter-mixed with the ports.
+
+<code myhdl>
+def adder(x,y,z)
+   @always_comb
+   def hdl():
+      z.next = x + y
+   return hdl
+</code>      
+
+To convert the function
+<code python>
+>>> toVerilog(adder, x, y, z)
+>>> toVHDL(adder, x, y, z)
+</code>
+
+
+===== Proposed Enhancement =====
+As mentioned the enhancement proposed is to add a top-level class method 
+conversion support.  This means that a class 
+method has the same capabilities of a current function.  The 
+class method needs a set of defined ports, internal signals, 
+and generators.
+
+Using the brief examples above a top-level convertible class method might 
+look like the following.
+
+<code myhdl>
+class Adder():
+   def __init__(self):
+      pass
+   def hdl(self, x, y, z):
+      @always_comb
+      def _hdl():
+         z.next = x + y
+      return _hdl
+</code>
+       
+The above example isn't a good example why a class would be used
+to create, what is often consider a piece of IP.  But it is 
+sufficient as an example for class method conversion.
+
+For the above example this is how 
+
+<code python>
+>>> MyAddr = Adder()
+>>> toVerilog(MyAddr.hdl, x, y, z)
+>>> toVHDL(MyAddr.hdl, x, y, z)
+</code>
+   
+In the above example with the existing (0.7) conversion code the
+"self" argument in the "hdl" class method will be converted to a 
+port in the lower-level Verilog/VHDL.
+
+
+===== Implementation Comments =====
+This enhancement proposal is intended to modify the conversion code to support
+top-level class methods, so that the object reference (the first argument in a class 
+method) is not used.  
+
+==== Top Function Visitor ====
+The use of the "self" argument, is only an issue for the top-level 
+class method parsing.  This is because the parser flattens the 
+design.  A top-level function / class method is passed to 
+the converter code, in the function
+
+   _AnalyzeTopFuncVisitor.visit_FunctionDev(...)
+
+This is where the modifications are made.  The 
+modifications only add arguments to the port list if the argument
+is of type SignalType.  This avoids the issue of the object reference
+being used as port.  The modifications also make it possible for 
+parameters (non type(SignalType arguments) and ports (type(SignalType) 
+arguments) to be inter-mixed.
+
+==== Extract Hierarchy ====
+Also, the extract hierarchy needs to be modified to identify the class methods
+that describe hardware and determine if the verilog or vhdl function/method 
+attributes are present.  The current implementation checks for the an 
+argument named "self".  Although this is common practice to use "self" it
+is not enforced by the Python interrupter.
+
+
+

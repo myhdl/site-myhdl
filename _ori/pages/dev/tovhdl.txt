@@ -1,0 +1,67 @@
+====== The toVHDL project ======
+
+**Warning: The following text is obsolete with MyHDL 0.6. It is kept here for background reading.**
+
+===== Introduction =====
+
+MyHDL code can be converted to Verilog using the ''toVerilog'' function. Several users are using this successfully using to implement MyHDL descriptions in silicon.
+
+However, there is also a significant demand for a VHDL backend, especially from the FPGA world. Several people have offered help in the development of a ''toVHDL'' function.
+
+This page is used to define, specify and steer the development of ''toVHDL''. 
+
+At this point, there are still many open issues. This page will document them, feed the discussion and be kept up-to-date with the status.
+
+ --- //[[jan@jandecaluwe.com|Jan Decaluwe]] 2005/11/14 15:53//
+
+===== Why is it not there yet? =====
+
+To start, it may be enlightening to explain why ''toVHDL'' is not there yet. I will list the reasons, in order of increasing significance, as well as their current status.
+
+Developing ''toVerilog'' was a significant effort. Afterwards, it seemed appropriate to wait for some time to see how it would work in practice. At this point, it seems to work fine.
+
+Secondly, I was not satisfied with certain aspects of the implementation. I thought it would be best to have a mature ''toVerilog'' implementation before starting ''toVHDL''. In the mean time, things have improved. In particular, MyHDL 0.5 (still in development) has a much cleaner and more general method for hierarchy extraction, and it adds support for signed representations of negative numbers.
+
+Thirdly, implementing ''toVHDL'' felt like doing a similar thing again. It was not clear that there would be a significant need for it. It seemed more appropriate to address other MyHDL issues. In practice however, the question for VHDL support keeps popping up. At the time I also thought that perhaps someone would jump in and implement ''toVHDL''. There have indeed been indications of such projects. But it's not a minor undertaking. Moreover, some important issues (see further) need to be solved, regardless of who does the work. In any case: it's not there at this point.
+
+Finally, the most important issue is yet to be solved: the verification strategy. This will be discussed in the next section. The overall status is that if we can solve that issue, we are ready to move ahead.
+
+===== The verification problem =====
+
+==== The Verilog conversion approach ====
+
+Before starting an implementation, we need to have a verification strategy in place. It should be powerful enough to develop unit tests for every aspect of the conversion. The whole feature set should be covered with a comprehensive test suite. This is the only way to get the number of bugs down to an acceptable level, and to make later changes and add new features with an acceptable degree of confidence.
+
+Verilog conversion is currently verified by using co-simulation with an open-source Verilog simulator. A MyHDL model that uses a specific feature is converted to Verilog. Co-simulation using the same MyHDL test bench is used to verify that the Verilog model has the same behavior as the MyHDL model.
+
+An obvious strategy would be to use co-simulation with VHDL in the same way. But it's not that simple. What is needed is a VHDL simulator with a powerful C API interface, because co-simulation requires a relatively sophisticated C interface. At this point, I don't know of an open-source VHDL simulator that has the required support. GHDL has a C API, but according to reports its capabilities are limited. On the other hand, using commercial VHDL simulators doesn't seem possible either. At this point, the MyHDL project cannot afford a commercial license. The alternative of accessing commercial licenses from other users may have legal problems. Finally, using evaluation licences is not an option either: one should be able to verify at at any time when changes are made, bugs fixed, or features added.
+
+For a long time, I thought that we were stuck here. But in fact the real question should be: is there a way to do verification without co-simulation? Perhaps there is.
+
+==== Verification without co-simulation? ====
+
+So, to make progress, we should investigate whether we can do verification without co-simulation.
+
+//From this point on all issues are open. I will describe my current thinking but I won't actively work on the project until 0.5 is released. So if anyone wants to jump in, I think here's a good starting point to make progress.//
+
+//Please don't use this wiki page for discussions. Use the mailing list/newsgroup for that purpose. This page will be kept up to date with the status.//
+
+A first thing to note is that, as experience with ''toVerilog'' shows, we can convert much more than just a synthesizable subset. It should be possible to convert test benches of some complexity. For that reason, we don't necessarily need co-simulation to provide stimulus and check results. We can just convert more code, including the test bench.
+
+Of course, we still have to verify that the 2 testbenches do the same thing. At some point I thought that perhaps the ''py.test'' project could help. Basically, ''py.test'' permits to create unit tests in a much simpler way than the standard ''unittest'' module. With ''py.test'', it is not necessary to subclass special test classes: any kind of python code with ''assert'' statements can be a unit test. By converting such a piece of MyHDL code to VHDL, we would have an equivalent VHDL test bench.
+
+However, while ''py.test'' is clearly a useful project, it doesn't solve our problem. We don't have to check that the MyHDL or VHDL test bench is **correct**, but rather that they do the **same** thing. Functional correctness can be verified using ''assert'' statements, but conversion correctness can not. For example, suppose that for some reasons no Python ''assert'' statements would be converted into VHDL. The VHDL test bench would not report errors, but of course the conversion would have failed.
+
+Instead, what we have to do is log every interesting aspect of a MyHDL test, and compare it with the log of the converted VHDL test. For logging, we could use Python ''print'' statements, or the ''logging'' module, and convert these statements to ''report'' statements in VHDL. For example, to verify operators, we would log each result. To verify loops, we could log each time we enter the loop and an iteration number. To verify FSMs, we could log each state that we enter and leave. And so on.
+
+Some implementation ideas:
+
+  * Ideally, no files should be used. We would capture the standard output of both simulations in memory buffers, and compare them.
+
+  * The tests should be embedded in a unit test class. The actual log comparison and check should be done in a generic ''tearDown'' method that can be defined in a superclass. If the tests fails, a detailed trace is printed.
+
+If we get it to work, the method actually has an advantage over co-simulation. We don't compare port values, but detailed logs of the internal workings of the simulations. This is a more direct method that may make debugging easier.
+
+The verification method can and should be developed before the implementation of ''toVHDL'' itself. Even better, it seems possible to develop the whole test suite before that. It seems it could be largely independent of the target language, so the existing ''toVerilog'' function could be used in developing it.
+ 
+

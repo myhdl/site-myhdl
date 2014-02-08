@@ -1,0 +1,227 @@
+====== Conversion of Attribute Signal Containers ======
+
+^              MEP: | 107 |
+^           Author: | Christopher Felton |
+^           Status: | Draft |
+^          Created: | 19-Jan-2012 |
+^    MyHDL-Version: | 0.9 | 
+
+===== Introduction =====
+
+The following is a proposal to add conversion support for attribute Signal containers.
+Attributes are anything to the right of the "dot" in an expression.  This proposal is to add the feature 
+of unique name creation in the converted code when an attribute is a convertible type.
+It is important to state that using attributes is fully supported in MyHDL 0.7 for 
+modeling and simulation., except for 
+"containers as sensitivity lists" as discussed in the mailing-list. 
+
+For more information on Python classes and attributes see the following: 
+[[http://docs.python.org/tutorial/classes.html|[1]]].
+
+The rest of this
+enhancement proposal will outline the addition of attributes 
+to the MyHDL convertible subset of the Python programming language.
+Through the rest of this document the term "container(s)" will be used to
+refer to attributes of a convertible type.
+
+
+The desired approach is to generate a unique name for a Signal that is part
+of a container.  If an expression includes a "container" a unique net name will be 
+generated for the Signal, example:
+
+<code=Python>
+myObject.x.next = yourObject.y + silly.sams.object.z
+</code>
+
+The conversion utilities would determine if 
+the type referenced is a Signal and then create a unique name for the Signal.
+The following is an example of the name mangling. 
+
+<code=Python>
+myObject_x = yourObject_y + silly_sams_object_z
+</code>
+
+The converter will simply use the container's reference name as part of the 
+net name.  The same rules that apply to hierarchy naming will be included.  
+The above might be converted to something like the following to avoid 
+name collisions.
+
+<code=Python>
+mod1_mod2_myObject_x = mod1_mod2_yourObject_y + mod1_mod2_silly_sams_object_z
+</code>
+
+In other cases a data structure might not contain a Signal but a constant 
+(literals).  In this case the conversion methods will dig down to find the 
+constant and use the constant value.
+
+Required support:
+ 
+  * Expansion of Signal container names
+  * Containers as ports
+  * Containers as sensitivity lists
+  * Resolution of data in data structures 
+
+
+In general, containers can be used, as long as the final
+referenced object is a convertible type (Signal, int, long, bool, intbv).  
+All of the above is supported for modeling in MyHDL 0.7, except for 
+"containers as sensitivity lists" as discussed in the mailing-list.
+
+This feature is similar to the VHDL record and SystemVerilog struct.  The
+idea is that signals can be logically grouped.  This can be very useful to a 
+designer to logically group signals in large complex designs.
+ 
+
+===== Classes =====
+Classes that contain Signals or a hierarchy of classes that eventually
+contain a Signal should be converted.  Classes should be converted 
+according to the following rules:
+
+
+  - The attribute referenced is a convertible type
+    - Left hand side : Signal of type intbv or bool
+    - Right hand side : int, long, bool, intbv or a Signal of type int, long, bool, intbv
+  - The object being referenced will be represented in the converted code as a long-net-name.  Long-net-names are derived by
+    - Hierarchy name rules (which are?)
+    - Class path name, example : 
+<code>
+  class.refObj <converted to> class_refObj
+  class1.class2.refObj <converted to> class1_class2_refObj
+</code>
+
+==== Example 1 ====
+
+<code=python>
+  class MyObj(object):
+     def __init__(self):
+        self.x = Signal(intbv(0)[8:])
+        self.y = Signal(intbv(0)[4:])
+        self.z = Signal(intbv(0)[9:])
+
+  def ex1(clk, srst, xyz):
+
+     @always(clk.posedge)
+     def hdl():
+	xyz.z.next = xyz.x + xyz.y
+
+     return hdl
+
+  if __name__ == '__main__':
+     clk = Signal(False)
+     xyz = MyObj()
+     toVerilog(foo, clk, xyz)
+</code>
+
+Verilog example conversion for the above.
+
+<code=Verilog>
+   module ex1
+   (
+     input  wire  clk,
+     input  wire  [7:0] MyObj_x,
+     input  wire  [3:0] MyObj_y,
+     output wire  [8:0] MyObj_z
+  ):
+
+     always @(posedge clk) begin
+        MyObj_z <= MyObj_x + MyObj_y
+     end  
+
+  endmodule
+</code>     
+
+VHDL conversion example.
+<code=VHDL>
+
+    entity ex1 is
+         port (
+             clk: in std_logic;
+             MyObj_x: in unsigned(7 downto 0);
+             MyObj_y: in unsigned(3 downto 0);
+             MyObj_z: out unsigned(8 downto 0)
+         );
+    end entity ex1;
+
+    architecture MyHDL of ex1 is
+
+    begin
+
+         RTL: process(clk) is
+         begin
+             if rising_edge(clk) then
+                 MyObj_z<= MyObj_x + MyObj_y
+             end if;
+         end process RTL;
+
+    end architecture MyHDL;
+
+</code>
+
+
+==== Example 2 ====
+Another common example would be the use of an embedded bus
+in a design.  The Wishbone bus definition is one such bus that
+could be contained in a class definition.
+
+<code=python>
+class WishboneBus(object):
+     def __init__(self, DataWidth=8, AddressWidth=16):
+         self.DataWidth = DataWidth
+         self.AddressWidth = AddressWidth
+         self.clk = Signal(False)
+	 self.rst = Signal(False)
+	 self.cyc = Signal(False)
+         self.stb = Signal(False)
+         self.adr = Signal(intbv(0)[AddressWeidth:])
+         self.we = Signal(False)
+         self.sel = Signal(intbv(0)[int(DataWidth/8)])
+         self.ack = Signal(False)
+         
+         # The data buses are a slightly special case.  The
+         # dat_o is broadcast to a the device (peripherals) 
+         # and dat_i is an or of all the device buses.  This 
+         # class will have a generator that will or all the buses
+         # together.
+         self.dat_i = Signal(intbv(0)[DataWidth:])
+         self.dat_o = Signal(intbv(0)[DataWidth:])
+         self.dev_dats = []
+         
+    def DeviceBusses(self):
+        @always_comb
+        def hdl_or_combine():
+            for bus in self.dev_datas:
+                self.dat_i.next = self.dat_i or bus
+                
+        return hdl_or_combine
+
+def WbGpio(wb_bus, outs, ints, BaseAddress=0x0000):
+    gpio_dat_i = Signal(intbv(0)[wb_bus.DataWidth:])
+    wb_bus.AddDevBus(gpio_dat_i)
+    
+    @always(wb_bus.clk.posedge)
+    def hdl_write():
+        if not wb_bus.rst:
+            outs.next = 0
+        else:
+            if wb_bus.cyc and wb_bus.stb and wb_bus.we:
+                outs.next = wb_bus.dat_o
+
+     wb_bus = WishboneBus()
+     outs = Signal(intbv(0)[8:])
+     ints = Signal(intbv(0)[8:])
+     
+iCtlr = WbCtlr(wb_bus)
+iBusOr = iCtlr.DeviceBusses()
+iGpio = WbGpio(wb_bus, outs, ins)
+     
+</code>
+
+
+===== Conclusion =====
+The Signal Containers provides a powerful tool to abstract signals
+and to group signals that are associated.  The straight-forward 
+net-name extraction creates a unique net in the lower-level HDLs 
+that can be mapped back to the Signal in a data structure.  This 
+MEP only addresses using the structures mentioned to "contain" 
+signals.
+ 

@@ -1,0 +1,295 @@
+====== FPGA Synthesis report ======
+
+<code>
+Release 8.1.02i - xst I.26
+Copyright (c) 1995-2005 Xilinx, Inc.  All rights reserved.
+--> 
+Parameter TMPDIR set to ./xst/projnav.tmp
+CPU : 0.00 / 0.07 s | Elapsed : 0.00 / 1.00 s
+ 
+--> 
+Parameter xsthdpdir set to ./xst
+CPU : 0.00 / 0.07 s | Elapsed : 0.00 / 1.00 s
+ 
+--> 
+Reading design: Array8Sorter.prj
+
+TABLE OF CONTENTS
+  1) Synthesis Options Summary
+  2) HDL Compilation
+  3) HDL Analysis
+  4) HDL Synthesis
+     4.1) HDL Synthesis Report
+  5) Advanced HDL Synthesis
+     5.1) Advanced HDL Synthesis Report
+  6) Low Level Synthesis
+  7) Final Report
+     7.1) Device utilization summary
+     7.2) TIMING REPORT
+
+
+=========================================================================
+*                      Synthesis Options Summary                        *
+=========================================================================
+---- Source Parameters
+Input File Name                    : "Array8Sorter.prj"
+Input Format                       : mixed
+Ignore Synthesis Constraint File   : NO
+
+---- Target Parameters
+Output File Name                   : "Array8Sorter"
+Output Format                      : NGC
+Target Device                      : xc3s100e-5-tq144
+
+---- Source Options
+Top Module Name                    : Array8Sorter
+Automatic FSM Extraction           : YES
+FSM Encoding Algorithm             : Auto
+FSM Style                          : lut
+RAM Extraction                     : Yes
+RAM Style                          : Auto
+ROM Extraction                     : Yes
+Mux Style                          : Auto
+Decoder Extraction                 : YES
+Priority Encoder Extraction        : YES
+Shift Register Extraction          : YES
+Logical Shifter Extraction         : YES
+XOR Collapsing                     : YES
+ROM Style                          : Auto
+Mux Extraction                     : YES
+Resource Sharing                   : YES
+Multiplier Style                   : auto
+Automatic Register Balancing       : No
+
+---- Target Options
+Add IO Buffers                     : YES
+Global Maximum Fanout              : 500
+Add Generic Clock Buffer(BUFG)     : 8
+Register Duplication               : YES
+Slice Packing                      : YES
+Pack IO Registers into IOBs        : auto
+Equivalent register Removal        : YES
+
+---- General Options
+Optimization Goal                  : Speed
+Optimization Effort                : 1
+Keep Hierarchy                     : NO
+RTL Output                         : Yes
+Global Optimization                : AllClockNets
+Write Timing Constraints           : NO
+Hierarchy Separator                : /
+Bus Delimiter                      : <>
+Case Specifier                     : maintain
+Slice Utilization Ratio            : 100
+Slice Utilization Ratio Delta      : 5
+
+---- Other Options
+lso                                : Array8Sorter.lso
+Read Cores                         : YES
+cross_clock_analysis               : NO
+verilog2001                        : YES
+safe_implementation                : No
+Optimize Instantiated Primitives   : NO
+use_clock_enable                   : Yes
+use_sync_set                       : Yes
+use_sync_reset                     : Yes
+
+=========================================================================
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling verilog file "/home/jand/dev/myhdl/example/cookbook/bitonic/Array8Sorter.v" in library work
+Module <Array8Sorter> compiled
+No errors in compilation
+Analysis of file <"Array8Sorter.prj"> succeeded.
+ 
+
+=========================================================================
+*                            HDL Analysis                               *
+=========================================================================
+Analyzing top module <Array8Sorter>.
+Module <Array8Sorter> is correct for synthesis.
+ 
+
+=========================================================================
+*                           HDL Synthesis                               *
+=========================================================================
+
+Synthesizing Unit <Array8Sorter>.
+    Related source file is "/home/jand/dev/myhdl/example/cookbook/bitonic/Array8Sorter.v".
+    Found 4-bit comparator greater for signal <$n0000> created at line 128.
+    Found 4-bit comparator greater for signal <$n0002> created at line 164.
+    Found 4-bit comparator greater for signal <$n0003> created at line 173.
+    Found 4-bit comparator greater for signal <$n0004> created at line 182.
+    Found 4-bit comparator greater for signal <$n0005> created at line 197.
+    Found 4-bit comparator greater for signal <$n0006> created at line 218.
+    Found 4-bit comparator greater for signal <$n0012> created at line 302.
+    Found 4-bit comparator greater for signal <$n0013> created at line 311.
+    Found 4-bit comparator greater for signal <$n0014> created at line 320.
+    Found 4-bit comparator greater for signal <$n0015> created at line 329.
+    Found 4-bit comparator greater for signal <$n0016> created at line 338.
+    Found 4-bit comparator greater for signal <$n0017> created at line 347.
+    Found 4-bit comparator greater for signal <$n0018> created at line 356.
+    Found 4-bit comparator greater for signal <$n0019> created at line 371.
+    Found 4-bit comparator greater for signal <$n0020> created at line 386.
+    Found 4-bit comparator greater for signal <$n0021> created at line 395.
+    Found 4-bit comparator greater for signal <$n0022> created at line 404.
+    Found 4-bit comparator greater for signal <$n0023> created at line 419.
+    Found 4-bit comparator greater for signal <$n0024> created at line 149.
+    Found 4-bit comparator greater for signal <$n0025> created at line 239.
+    Found 4-bit comparator greater for signal <$n0026> created at line 254.
+    Found 4-bit comparator greater for signal <$n0027> created at line 263.
+    Found 4-bit comparator greater for signal <$n0028> created at line 272.
+    Found 4-bit comparator greater for signal <$n0029> created at line 287.
+    Summary:
+	inferred  24 Comparator(s).
+Unit <Array8Sorter> synthesized.
+
+
+=========================================================================
+HDL Synthesis Report
+
+Macro Statistics
+# Comparators                                          : 24
+ 4-bit comparator greater                              : 24
+
+=========================================================================
+
+=========================================================================
+*                       Advanced HDL Synthesis                          *
+=========================================================================
+
+
+=========================================================================
+Advanced HDL Synthesis Report
+
+Macro Statistics
+# Comparators                                          : 24
+ 4-bit comparator greater                              : 24
+
+=========================================================================
+
+=========================================================================
+*                         Low Level Synthesis                           *
+=========================================================================
+Loading device for application Rf_Device from file '3s100e.nph' in environment /home/jand/Xilinx.
+
+Optimizing unit <Array8Sorter> ...
+
+Mapping all equations...
+Building and optimizing final netlist ...
+Found area constraint ratio of 100 (+ 5) on block Array8Sorter, actual ratio is 19.
+
+=========================================================================
+*                            Final Report                               *
+=========================================================================
+Final Results
+RTL Top Level Output File Name     : Array8Sorter.ngr
+Top Level Output File Name         : Array8Sorter
+Output Format                      : NGC
+Optimization Goal                  : Speed
+Keep Hierarchy                     : NO
+
+Design Statistics
+# IOs                              : 64
+
+Cell Usage :
+# BELS                             : 262
+#      LUT2                        : 6
+#      LUT3                        : 186
+#      LUT4                        : 70
+# IO Buffers                       : 64
+#      IBUF                        : 32
+#      OBUF                        : 32
+=========================================================================
+
+Device utilization summary:
+---------------------------
+
+Selected Device : 3s100etq144-5 
+
+ Number of Slices:                     150  out of    960    15%  
+ Number of 4 input LUTs:               262  out of   1920    13%  
+ Number of bonded IOBs:                 64  out of    108    59%  
+
+
+=========================================================================
+TIMING REPORT
+
+NOTE: THESE TIMING NUMBERS ARE ONLY A SYNTHESIS ESTIMATE.
+      FOR ACCURATE TIMING INFORMATION PLEASE REFER TO THE TRACE REPORT
+      GENERATED AFTER PLACE-and-ROUTE.
+
+Clock Information:
+------------------
+No clock signals found in this design
+
+Timing Summary:
+---------------
+Speed Grade: -5
+
+   Minimum period: No path found
+   Minimum input arrival time before clock: No path found
+   Maximum output required time after clock: No path found
+   Maximum combinational path delay: 40.629ns
+
+Timing Detail:
+--------------
+All values displayed in nanoseconds (ns)
+
+=========================================================================
+Timing constraint: Default path analysis
+  Total number of paths / destination ports: 9434976 / 32
+-------------------------------------------------------------------------
+Delay:               40.629ns (Levels of Logic = 26)
+  Source:            a0<1> (PAD)
+  Destination:       z2<2> (PAD)
+
+  Data Path: a0<1> to z2<2>
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     IBUF:I->O             3   1.106   0.923  a0_1_IBUF (a0_1_IBUF)
+     LUT4:I0->O            1   0.612   0.833  _n0000148_SW0 (N1681)
+     LUT3:I0->O            1   0.612   0.833  _n0000148 (N364)
+     LUT3:I0->O            6   0.612   1.005  _n0000183 (N375)
+     LUT3:I0->O            3   0.612   0.923  sort_loSort_loSort_merge_loMerge_feed_a<1>1 (sort_loSort_loSort_merge_loMerge_feed_a<1>)
+     LUT4:I0->O            1   0.612   0.750  _n0002142 (N1454)
+     LUT3:I1->O            1   0.612   0.833  _n0002160 (N1465)
+     LUT4:I0->O            6   0.612   1.005  _n0002186 (N1469)
+     LUT3:I0->O            3   0.612   0.923  sort_loSort_merge_loMerge_comp_0_a1<1>1 (sort_loSort_merge_loMerge_comp_0_a1<1>)
+     LUT4:I0->O            1   0.612   0.833  _n0004148_SW0 (N1683)
+     LUT3:I0->O            1   0.612   0.833  _n0004148 (N415)
+     LUT3:I0->O            6   0.612   1.005  _n0004183 (N426)
+     LUT3:I0->O            3   0.612   0.923  sort_loSort_merge_loMerge_loMerge_feed_a<1>1 (sort_loSort_merge_loMerge_loMerge_feed_a<1>)
+     LUT4:I0->O            1   0.612   0.750  _n0012138 (N1510)
+     LUT3:I1->O            1   0.612   0.684  _n0012156 (N1521)
+     LUT4:I3->O            6   0.612   1.005  _n0012196 (N1539)
+     LUT3:I0->O            3   0.612   0.923  sort_merge_loMerge_comp_0_a1<1>1 (sort_merge_loMerge_comp_0_a1<1>)
+     LUT4:I0->O            1   0.612   0.833  _n0016148_SW0 (N1693)
+     LUT3:I0->O            1   0.612   0.833  _n0016148 (N670)
+     LUT3:I0->O            6   0.612   1.005  _n0016183 (N681)
+     LUT3:I0->O            3   0.612   0.923  sort_merge_loMerge_hiMerge_comp_0_a1<1>1 (sort_merge_loMerge_hiMerge_comp_0_a1<1>)
+     LUT4:I0->O            1   0.612   0.833  _n0019148_SW0 (N1691)
+     LUT3:I0->O            1   0.612   0.833  _n0019148 (N619)
+     LUT3:I0->O            6   0.612   1.005  _n0019183 (N630)
+     LUT3:I0->O            1   0.612   0.681  sort_merge_loMerge_hiMerge_hiMerge_feed_a<0>1 (z3_0_OBUF)
+     OBUF:I->O                 2.910          z3_0_OBUF (z3<0>)
+    ----------------------------------------
+    Total                     40.629ns (18.704ns logic, 21.925ns route)
+                                       (46.0% logic, 54.0% route)
+
+=========================================================================
+CPU : 16.89 / 16.98 s | Elapsed : 20.00 / 21.00 s
+ 
+--> 
+
+
+Total memory usage is 95264 kilobytes
+
+Number of errors   :    0 (   0 filtered)
+Number of warnings :    0 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+</code>

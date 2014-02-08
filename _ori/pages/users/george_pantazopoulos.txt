@@ -1,0 +1,131 @@
+===== George Pantazopoulos =====
+
+**I really love MyHDL!**
+
+**Tools I currently use**
+
+  * __Electronic Design Automation__
+    * MyHDL
+    * Xilinx WebPACK ISE 8.1.03i
+    * Cadsoft Eagle Layout Editor (circuit board design)
+    * Digilent Sparatan3 Development board
+    * Tektronix 2215 60MHz oscilloscope
+  * __Python Programming__
+    * Python 2.4.3 (on cygwin)
+    * PyGtk
+    * Eclipse IDE 
+      * PyDev and PyDev Extensions (these Eclipse plugins **rock**. I just paid for a PyDev Extensions license)
+  * __Graphic design and Photography__
+    * The Gimp
+    * Inkscape
+    * [[http://www.povray.org|POV-Ray]] & [[http://www.gammaburst.net/xrs|MegaPOV XRS]] (3D raytracing)
+      * Check out [[http://www.matwei.de/doku.php?id=en:eagle3d:eagle3d|Eagle3D]]. It lets you export Eagle board layouts into POV-Ray and render a 3-D version of your (populated) board design!
+    * Canon Powerhshot SD450 digital camera (5 Megapixel, ultracompact)
+
+**Bio**
+
+Graduated from UMass Lowell Winter 2004 with a degree in Computer Science. Now living in the Boston area in Massachusetts (USA)
+
+**Music**
+
+Music is very important in my life. I enjoy combining my love of engineering with love of music. I play the guitar, keyboards, and sing, as well as write music. My favorite band is and always will be [[http://www.judaspriest.com/|Judas Priest]], and while metal is my favorite style, I also love punk, blues, electronica, 80's Freestyle, rock'n'roll, [[http://www.chiptune.com/|chiptunes]] and videogame music. Other bands I like include Nightwish, Stevie Ray Vaughan, Depeche Mode, STP, Green Day, Franz Ferdinand and much more. Also, check out [[http://www.slayradio.org/|SLAY Radio]] (C64 remixes!) when you get the chance 8-)
+
+**See also**
+
+[[http://www.gammaburst.net|www.gammaburst.net, My main project website (Robotics, Graphics, Music and more)]]
+
+===== PhoenixSID 65X81 =====
+
+George is working on [[projects:phoenixsid_65x81|The PhoenixSID 65X81 SID-inspired music synth]]
+
+
+
+
+
+
+
+
+===== Open-source IP cores =====
+  * [[projects:dsx1000|DSX1000: Delta-Sigma DAC core]]
+
+  * [[users:george_pantazopoulos:projects:oss_ip_cores:lfsr_sid|LFSR6581: Pseudorandom number generator from the MOS6581/8580 'SID' sound chip]]
+
+
+===== MyHDL Booster =====
+{{projects:myhdl_booster_logo_trans.png}} 
+
+== Background ==
+As I work on taking PhoenixSID to the next level, I've been inventing techniques to streamline the creation of a complex design and make it much more fun.
+
+These homegrown techniques are synergistic, and I've decided to collect them together under the title "MyHDL Booster", which is inspired by the excellent Boost C++ libraries.
+
+== Description ==
+MyHDL Booster is a set of Python tools and classes that simplify the design and verification of complex hardware in a way users of Verilog and VHDL can only dream of.
+
+MyHDL Booster is intended to work as an add-on to MyHDL.
+
+== Goals ==
+  * Streamline the design and verification of systems-on-a-chip.
+    * Eliminate redundancy and automate as much as possible.
+    * Do away with long, cumbersome argument lists and signal name clashes in large systems
+    * Be able to construct WISHBONE systems the MyHDL way
+
+  * Work as an add-on to MyHDL
+    * Require no modifications to MyHDL itself (unless there is a compelling reason)
+    * Establish "existing practice" and provide reference implementations, similar to the [[http://www.boost.org|Boost C++ Libraries]]
+
+  * Reduce or eliminate dependence on vendor-specific, proprietary tools.
+
+  * Drive the evolution of MyHDL Booster by working on real, implementation-oriented designs
+
+  * Get feedback from MyHDL users and developers to further improvement.
+
+== Functionality in development ==
+
+    * **Port grouping**
+      * Streamlines the interconnection of modules with many ports
+      * Anticipates MyHDL support for bidirectional ports
+      * Making port grouping work with toVerilog and co-simulation
+
+    * **Signal grouping**
+      
+    * **Using classes in hardware modelling**
+      * Synergistically ties together port grouping and Ascii Port Spec
+      * Can provide more friendly error messages than MyHDL alone
+
+    * **Ascii Timing Spec**
+      * ASCII-art timing diagrams that serve a dual purpose. 
+        * Easily readable documentation
+        * The very same diagrams can be parsed and used to drive inputs and verify outputs during regression tests.
+          * Eliminates redundancy and comment drift
+
+    * **Ascii Port Spec**
+      * Plain-text port specification that is embedded in the docstring of a Hardware Module
+      * Easily readable documentation of the ports and port groups that belong to a Hardware Module.
+      * That very same documentation block can be parsed and used to automatically generate ports and port groups at instantiation time.
+        * Eliminates redundancy and comment drift
+
+    * **Multi-stage unit tests**
+      * Support reusable stages
+      * Combine traditional stages with ASCII Port Spec-driven stages
+      * Made possible by combining generators 
+      * May benefit from small change to MyHDL so MyHDL can work with Python itertools objects, which are **//not//** of type GeneratorType
+
+    * **Regression tests without needing py.test**
+
+== Demonstration code ==
+
+[[users:george_pantazopoulos:demo_1|Experimental demonstration of conversion to Verilog using classes as hardware modules and ASCII Port Spec]]
+
+[[users:george_pantazopoulos:myhdl.test|Beta version of myhdl.test, to be part of the MyHDL Boosters package (simliar to py.test, but tailored to MyHDL]]
+
+
+===== WISHBONE & Opencores for MyHDL =====
+
+    * Wrapping Verilog cores from opencores.org for use in MyHDL
+
+    * Creating WISHBONE Bus components 
+      * Creating a parts library of reliable, plug-n-play components much like Lego(tm) blocks
+
+===== MyHDL Logo Work In Progress =====
+{{users:myhdl_logo_snakey_draft_1.png|Snakey Draft 1}}

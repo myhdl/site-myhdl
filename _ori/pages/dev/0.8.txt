@@ -1,0 +1,10 @@
+====== MyHDL 0.8 ======
+
+Major new features:
+
+   * modular bit vector types
+   * ''always_seq'' decorator that infers the reset functionality automatically
+
+Minor new features:
+   * ''timescale'' directive for ''traceSignals'', to set timescale in VCD file
+   * ''toVHDL.library'' setting

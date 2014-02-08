@@ -1,0 +1,50 @@
+======  To the memory of George  ======
+
+George Pantazopoulos has died on April 23, 2007, at the age of 29.
+
+I have never met George, or spoken to him. So it goes with open source
+projects. You work together with people that you only know indirectly
+from their internet presence.  The cooperation is informal, so you
+don't really worry when you don't hear from them for a while.
+Yet George's death, now that I found out about it, feels like a
+personal loss.
+
+George must have the been the first one to do a complete project with
+MyHDL, from spec to hardware implementation and system test. To me
+this has been very important. It validated the concepts behind
+MyHDL. It showed that the tool and its documentation were
+mature enough for independent usage.
+
+To complete such a project successfully, one needs exceptional
+skills. Of course George was technically very strong. But
+more importantly: he was open-minded and innovative, and
+had a can-do attitude. Above all he was passionate about
+his projects.
+
+George was the kind of person that one would like to have
+in the team for any kind of venture.
+
+I am keeping George's pages here like they were when he last
+edited them.
+
+Jan Decaluwe\\
+ --- //[[jan@jandecaluwe.com|Jan Decaluwe]] 2008/06/29 03:53//
+
+----
+
+
+I learned a lot from George - and I am still doing.
+
+Time is an illusion.
+
+George, I am glad that you are with me.
+
+ --- //Thomas Traber 2008/07/01 02:14//
+----
+
+
+Peace be to you, George.  Your memory will live on,
+and your contributions will continue to inspire.
+
+ --- //Brendan Rankin 2008/07/04 12:04//
+

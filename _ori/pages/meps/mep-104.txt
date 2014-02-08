@@ -1,0 +1,224 @@
+^              MEP: | 104 |
+^           Author: | Thomas Traber |
+^           Status: | Draft |
+^          Created: | June 11, 2008 |
+^    MyHDL-Version: |  |
+
+====== Get rid of the Signal ======
+
+Often Signals as seperate entities are not needed.
+
+Assume we have a functional block datasource and a block datasink.
+
+<code myhdl>
+line = Signal(bool(0))
+
+datasource(line)
+datasink(line)
+</code>
+
+In classic myhdl you don't know about the signal direction without inspecting the source codes of datassource and datasink.
+In more complex designs it is also difficult to follow the signal path itself.
+
+The following is an object oriented approach which avoids the signal definition in the top level code.
+<code myhdl>
+datasink.input = datasource.output
+</code>
+
+In case of only one output of the source block the syntax will be even simpler.
+<code myhdl>
+datasink(datasource)
+</code>
+
+Also chains are possible
+<code myhdl>
+datasink(dataprocessor(datasource))
+</code>
+
+====== Examples ======
+
+== Creating a Clock Source ==
+
+<code myhdl>
+
+class ClockGenerator(Block):
+
+    output = Signal(bool())
+   
+    def __init__(self,period=2):
+        self.period = period
+        Block.__init__(self,*args,**kwargs)
+
+    @instance
+    def clockgen(self):
+        while(1):
+            yield delay(self.period//2)
+            self.output = not self.output
+
+</code>
+
+== And Gate ==
+
+<code myhdl>
+class And(Block):
+
+    output = Signal(bool())
+
+    @always_comb
+    def logic(self):
+        self.output = self.a and self.b
+</code>
+
+
+== Toggle Flip Flop ==
+
+<code myhdl>
+class ToggleFF(Block):
+
+    q = Signal(bool(0))
+    output = q
+                           # Input a is not defined at the time we are instantiating the class. 
+    @always("a.posedge")   # Therefore we use the string.
+    def toggleff(self):
+        self.q = not self.q
+</code>
+
+== Connecting the Blocks ==
+
+<code myhdl>
+clockgen = ClockGenerator(2)
+tff = ToggleFF()
+and_gate = And(clockgen, tff)
+</code>
+
+Or:
+
+<code myhdl>
+and_gate = And(
+               ClockGenerator(period=2),
+               ToggleFF()
+               )
+</code>
+
+Or even:
+
+<code myhdl>
+and_gate = ClockGenerator(period=2) & ToggleFF()
+</code>
+
+===== Comparison of Classic MyHDL to Proposed Extension =====
+
+^Feature       ^ Extended Syntax - formal  ^ Extended Syntax - simple ^ Classical Syntax ^ Comments / Description
+^Definition of Functional Blocks | <code myhdl>
+class A(Block):
+
+    out = Signal(...)
+    
+    @instance
+    def do():
+        ...
+</code> | <code mydhl>
+# See left
+
+
+
+
+
+
+
+</code> | <code myhdl>
+def A(in, out):
+     
+    @instance
+    def do():
+        ...
+    return do()   
+
+
+</code> |
+^Instantiation of Functional Blocks | <code myhdl>
+a = A()
+b = B()
+</code> | <code myhdl>
+a = A()
+b = B(a)
+</code> | <code myhdl>
+a = A(com)
+b = B(com)           
+</code> |  
+^ Connecting Ports | <code myhdl>
+b.in  = a.out
+
+
+
+</code> | <code myhl> 
+b = B(a)   # see above
+
+
+
+</code> | <code myhl> 
+com = Signal(...)
+a = A(com)
+b = B(com)
+</code> |
+^Top Level Design | <code myhdl>
+from lib import A,B,..,Z
+
+a = A()
+b = B()
+...
+y = Y()
+z = Z()
+
+a.in = b.out
+b.in = c.out
+...
+x.in = y.out
+y.in = z.out
+</code> | <code myhdl> 
+from lib import A,B,..,Z
+
+a = A(B(C(..(Y(Z()))..)))
+
+
+
+
+
+
+
+
+
+
+
+</code> | <code myhdl> 
+from lib import A,B,...Z
+
+com_a = Signal(..)
+com_b = Signal(..)
+...
+com_y = Signal(..)
+com_z = Signal(..)
+
+a = A(com_a)
+b = B(com_a,com_b)
+...
+y = Y(com_x, com_y)
+z = Z(com_y, com_z)
+</code> |
+
+
+==== Advantages of Extended Syntax ====
+
+  * No signal definition neccessary in top level design
+  * Every signal of the functional subblock can be accessed from top level without source code modification of the subblock
+
+  
+
+====== Experimental Implementation ======
+
+===== Basic Block Object =====
+
+
+
+==== Simulator ====
+

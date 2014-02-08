@@ -1,0 +1,10 @@
+====== Commercial support ======
+
+
+===== Jan Decaluwe =====
+
+Jan Decaluwe, MyHDL's creator and maintainer, is available for commercial MyHDL support. In particular, I am available for consulting and contract work on **MyHDL-based design projects**.
+
+On [[http://www.jandecaluwe.com|my personal website]] you find more information about me and the projects I am working on.
+
+To discuss commercial projects, send an email to [[jan@jandecaluwe.com|Jan Decaluwe]]. (Please don't send me emails with questions and issues about MyHDL itself. I may not even answer. Use the [[:mailing_list]] instead.)

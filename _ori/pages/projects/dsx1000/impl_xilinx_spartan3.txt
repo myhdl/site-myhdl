@@ -1,0 +1,563 @@
+===== DSX1000 ΔΣ DAC Spartan3 FPGA Implementation =====
+{{:users:george_pantazopoulos:xilinx_spartan3_1000_closeup_gimp_320x221.png|Xilinx Spartan(tm) 3 FPGA }}
+
+Tested successfully (ie. it made cool sounds :-D) on the Digilent Spartan3 dev board
+(Xilinx Spartan3 FPGA XC3S1000-4FT256)
+
+**Tools used**
+
+  * Python 2.4.3 (on cygwin)
+  * MyHDL 0.5.1 
+  * Eclipse IDE w/PyDev and PyDev Extensions
+  * Xilinx WebPACK ISE 8.1.03i 
+  * Digilent Spartan3 Starter board with -1000 option
+
+===== I/O mapping for Digilent Spartan3 board =====
+
+<code>
+
+# s3board_audio.ucf
+# Constraints file for Digilent Spartan3 board.
+# Supports the DSX1000 Delta-Sigma DAC test harness.
+#
+# George Pantazopoulos http://www.gammaburst.net
+# 14 Nov 2006
+
+NET "clk" IOSTANDARD=LVCMOS33 | SLEW = FAST;
+NET "clk"  LOC = "D9";
+
+NET "pdm_o" IOSTANDARD = LVCMOS33;
+NET "pdm_o" LOC = "C10";
+
+
+</code>
+
+===== Synthesis Report =====
+
+<code>
+Release 8.1.03i - xst I.27
+Copyright (c) 1995-2005 Xilinx, Inc.  All rights reserved.
+--> Parameter TMPDIR set to ./xst/projnav.tmp
+CPU : 0.00 / 2.02 s | Elapsed : 0.00 / 2.00 s
+ 
+--> Parameter xsthdpdir set to ./xst
+CPU : 0.00 / 2.02 s | Elapsed : 0.00 / 2.00 s
+ 
+--> Reading design: dsx1000.prj
+
+TABLE OF CONTENTS
+  1) Synthesis Options Summary
+  2) HDL Compilation
+  3) HDL Analysis
+  4) HDL Synthesis
+     4.1) HDL Synthesis Report
+  5) Advanced HDL Synthesis
+     5.1) Advanced HDL Synthesis Report
+  6) Low Level Synthesis
+  7) Final Report
+     7.1) Device utilization summary
+     7.2) TIMING REPORT
+
+
+=========================================================================
+*                      Synthesis Options Summary                        *
+=========================================================================
+---- Source Parameters
+Input File Name                    : "dsx1000.prj"
+Input Format                       : mixed
+Ignore Synthesis Constraint File   : NO
+
+---- Target Parameters
+Output File Name                   : "dsx1000"
+Output Format                      : NGC
+Target Device                      : xc3s1000-4-ft256
+
+---- Source Options
+Top Module Name                    : dsx1000
+Automatic FSM Extraction           : YES
+FSM Encoding Algorithm             : Auto
+FSM Style                          : lut
+RAM Extraction                     : Yes
+RAM Style                          : Auto
+ROM Extraction                     : Yes
+Mux Style                          : Auto
+Decoder Extraction                 : YES
+Priority Encoder Extraction        : YES
+Shift Register Extraction          : YES
+Logical Shifter Extraction         : YES
+XOR Collapsing                     : YES
+ROM Style                          : Auto
+Mux Extraction                     : YES
+Resource Sharing                   : YES
+Multiplier Style                   : auto
+Automatic Register Balancing       : No
+
+---- Target Options
+Add IO Buffers                     : YES
+Global Maximum Fanout              : 500
+Add Generic Clock Buffer(BUFG)     : 8
+Register Duplication               : YES
+Slice Packing                      : YES
+Pack IO Registers into IOBs        : auto
+Equivalent register Removal        : YES
+
+---- General Options
+Optimization Goal                  : Speed
+Optimization Effort                : 1
+Keep Hierarchy                     : NO
+RTL Output                         : Yes
+Global Optimization                : AllClockNets
+Write Timing Constraints           : NO
+Hierarchy Separator                : /
+Bus Delimiter                      : <>
+Case Specifier                     : maintain
+Slice Utilization Ratio            : 100
+Slice Utilization Ratio Delta      : 5
+
+---- Other Options
+lso                                : dsx1000.lso
+Read Cores                         : YES
+cross_clock_analysis               : NO
+verilog2001                        : YES
+safe_implementation                : No
+Optimize Instantiated Primitives   : NO
+use_clock_enable                   : Yes
+use_sync_set                       : Yes
+use_sync_reset                     : Yes
+
+=========================================================================
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling verilog file "D:/cygwin/home/themaxx/myhdl_booster_repository_layout/examples/dac_sigma_delta/dsx1000.v" in library work
+Module <dsx1000> compiled
+No errors in compilation
+Analysis of file <"dsx1000.prj"> succeeded.
+ 
+
+=========================================================================
+*                            HDL Analysis                               *
+=========================================================================
+Analyzing top module <dsx1000>.
+Module <dsx1000> is correct for synthesis.
+ 
+
+=========================================================================
+*                           HDL Synthesis                               *
+=========================================================================
+
+Synthesizing Unit <dsx1000>.
+    Related source file is "D:/cygwin/home/themaxx/myhdl_booster_repository_layout/examples/dac_sigma_delta/dsx1000.v".
+    Found 1-bit register for signal <pdm_o>.
+    Found 24-bit adder for signal <$n0000> created at line 66.
+    Found 11-bit comparator greater for signal <$n0001> created at line 53.
+    Found 10-bit subtractor for signal <_DAC_diff_o>.
+    Found 10-bit up accumulator for signal <_DAC_reg_o>.
+    Found 24-bit register for signal <_PCM_SRC_accum>.
+    Summary:
+	inferred   1 Accumulator(s).
+	inferred  25 D-type flip-flop(s).
+	inferred   2 Adder/Subtractor(s).
+	inferred   1 Comparator(s).
+Unit <dsx1000> synthesized.
+
+
+=========================================================================
+HDL Synthesis Report
+
+Macro Statistics
+# Adders/Subtractors                                   : 2
+ 10-bit subtractor                                     : 1
+ 24-bit adder                                          : 1
+# Accumulators                                         : 1
+ 10-bit up accumulator                                 : 1
+# Registers                                            : 2
+ 1-bit register                                        : 1
+ 24-bit register                                       : 1
+# Comparators                                          : 1
+ 11-bit comparator greater                             : 1
+
+=========================================================================
+
+=========================================================================
+*                       Advanced HDL Synthesis                          *
+=========================================================================
+
+
+=========================================================================
+Advanced HDL Synthesis Report
+
+Macro Statistics
+# Adders/Subtractors                                   : 2
+ 10-bit subtractor                                     : 1
+ 24-bit adder                                          : 1
+# Accumulators                                         : 1
+ 10-bit up accumulator                                 : 1
+# Registers                                            : 25
+ Flip-Flops                                            : 25
+# Comparators                                          : 1
+ 11-bit comparator greater                             : 1
+
+=========================================================================
+
+=========================================================================
+*                         Low Level Synthesis                           *
+=========================================================================
+Loading device for application Rf_Device from file '3s1000.nph' in environment D:\Xilinx.
+
+Optimizing unit <dsx1000> ...
+
+Mapping all equations...
+Building and optimizing final netlist ...
+Found area constraint ratio of 100 (+ 5) on block dsx1000, actual ratio is 0.
+
+=========================================================================
+*                            Final Report                               *
+=========================================================================
+Final Results
+RTL Top Level Output File Name     : dsx1000.ngr
+Top Level Output File Name         : dsx1000
+Output Format                      : NGC
+Optimization Goal                  : Speed
+Keep Hierarchy                     : NO
+
+Design Statistics
+# IOs                              : 2
+
+Cell Usage :
+# BELS                             : 137
+#      GND                         : 1
+#      INV                         : 8
+#      LUT1                        : 19
+#      LUT2_D                      : 1
+#      LUT2_L                      : 18
+#      LUT4_L                      : 2
+#      MUXCY                       : 45
+#      VCC                         : 1
+#      XORCY                       : 42
+# FlipFlops/Latches                : 35
+#      FD                          : 35
+# Clock Buffers                    : 1
+#      BUFGP                       : 1
+# IO Buffers                       : 1
+#      OBUF                        : 1
+=========================================================================
+
+Device utilization summary:
+---------------------------
+
+Selected Device : 3s1000ft256-4 
+
+ Number of Slices:                      28  out of   7680     0%  
+ Number of Slice Flip Flops:            35  out of  15360     0%  
+ Number of 4 input LUTs:                40  out of  15360     0%  
+ Number of bonded IOBs:                  2  out of    173     1%  
+ Number of GCLKs:                        1  out of      8    12%  
+
+
+=========================================================================
+TIMING REPORT
+
+NOTE: THESE TIMING NUMBERS ARE ONLY A SYNTHESIS ESTIMATE.
+      FOR ACCURATE TIMING INFORMATION PLEASE REFER TO THE TRACE REPORT
+      GENERATED AFTER PLACE-and-ROUTE.
+
+Clock Information:
+------------------
+-----------------------------------+------------------------+-------+
+Clock Signal                       | Clock buffer(FF name)  | Load  |
+-----------------------------------+------------------------+-------+
+clk                                | BUFGP                  | 35    |
+-----------------------------------+------------------------+-------+
+
+Timing Summary:
+---------------
+Speed Grade: -4
+
+   Minimum period: 10.294ns (Maximum Frequency: 97.144MHz)
+   Minimum input arrival time before clock: No path found
+   Maximum output required time after clock: 7.165ns
+   Maximum combinational path delay: No path found
+
+Timing Detail:
+--------------
+All values displayed in nanoseconds (ns)
+
+=========================================================================
+Timing constraint: Default period analysis for Clock 'clk'
+  Clock period: 10.294ns (frequency: 97.144MHz)
+  Total number of paths / destination ports: 3384 / 35
+-------------------------------------------------------------------------
+Delay:               10.294ns (Levels of Logic = 18)
+  Source:            _DAC_reg_o_0 (FF)
+  Destination:       _DAC_reg_o_9 (FF)
+  Source Clock:      clk rising
+  Destination Clock: clk rising
+
+  Data Path: _DAC_reg_o_0 to _DAC_reg_o_9
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FD:C->Q               2   0.720   1.216  _DAC_reg_o_0 (_DAC_reg_o_0)
+     LUT4_L:I0->LO         1   0.551   0.000  Mcompar__n0001_norlut (N12)
+     MUXCY:S->O            1   0.500   0.000  Mcompar__n0001_norcy (Mcompar__n0001_nor_cyo)
+     MUXCY:CI->O           1   0.064   0.000  Mcompar__n0001_norcy_rn_0 (Mcompar__n0001_nor_cyo1)
+     MUXCY:CI->O           1   0.064   0.000  Mcompar__n0001_norcy_rn_1 (Mcompar__n0001_nor_cyo2)
+     MUXCY:CI->O           9   0.303   1.319  Mcompar__n0001_gecy (Mcompar__n0001_ge_cyo)
+     LUT2_L:I1->LO         1   0.551   0.000  dsx1000__DAC_diff_o<0>lut (N17)
+     MUXCY:S->O            1   0.500   0.000  dsx1000__DAC_diff_o<0>cy (dsx1000__DAC_diff_o<0>_cyo)
+     MUXCY:CI->O           1   0.064   0.000  dsx1000__DAC_diff_o<1>cy (dsx1000__DAC_diff_o<1>_cyo)
+     MUXCY:CI->O           1   0.064   0.000  dsx1000__DAC_diff_o<2>cy (dsx1000__DAC_diff_o<2>_cyo)
+     MUXCY:CI->O           1   0.064   0.000  dsx1000__DAC_diff_o<3>cy (dsx1000__DAC_diff_o<3>_cyo)
+     MUXCY:CI->O           1   0.064   0.000  dsx1000__DAC_diff_o<4>cy (dsx1000__DAC_diff_o<4>_cyo)
+     MUXCY:CI->O           1   0.064   0.000  dsx1000__DAC_diff_o<5>cy (dsx1000__DAC_diff_o<5>_cyo)
+     MUXCY:CI->O           1   0.064   0.000  dsx1000__DAC_diff_o<6>cy (dsx1000__DAC_diff_o<6>_cyo)
+     MUXCY:CI->O           1   0.064   0.000  dsx1000__DAC_diff_o<7>cy (dsx1000__DAC_diff_o<7>_cyo)
+     XORCY:CI->O           1   0.904   0.996  dsx1000__DAC_diff_o<8>_xor (_DAC_diff_o<8>)
+     LUT2_L:I1->LO         1   0.551   0.000  dsx1000_Result<8>lut (N33)
+     MUXCY:S->O            0   0.500   0.000  dsx1000_Result<8>cy (dsx1000_Result<8>_cyo)
+     XORCY:CI->O           1   0.904   0.000  dsx1000_Result<9>_xor (Result<9>)
+     FD:D                      0.203          _DAC_reg_o_9
+    ----------------------------------------
+    Total                     10.294ns (6.763ns logic, 3.531ns route)
+                                       (65.7% logic, 34.3% route)
+
+=========================================================================
+Timing constraint: Default OFFSET OUT AFTER for Clock 'clk'
+  Total number of paths / destination ports: 1 / 1
+-------------------------------------------------------------------------
+Offset:              7.165ns (Levels of Logic = 1)
+  Source:            pdm_o (FF)
+  Destination:       pdm_o (PAD)
+  Source Clock:      clk rising
+
+  Data Path: pdm_o to pdm_o
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FD:C->Q               1   0.720   0.801  pdm_o (pdm_o_OBUF)
+     OBUF:I->O                 5.644          pdm_o_OBUF (pdm_o)
+    ----------------------------------------
+    Total                      7.165ns (6.364ns logic, 0.801ns route)
+                                       (88.8% logic, 11.2% route)
+
+=========================================================================
+CPU : 10.19 / 12.34 s | Elapsed : 10.00 / 12.00 s
+ 
+--> 
+
+Total memory usage is 152268 kilobytes
+
+Number of errors   :    0 (   0 filtered)
+Number of warnings :    0 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+
+
+</code>
+
+===== Map Report =====
+<code>
+Release 8.1.03i Map I.27
+Xilinx Mapping Report File for Design 'dsx1000'
+
+Design Information
+------------------
+Command Line   : D:\Xilinx\bin\nt\map.exe -ise
+D:/cygwin/home/themaxx/myhdl_booster_repository_layout/examples/dac_sigma_delta/
+xilinx/sigma_delta_dac_test1/sigma_delta_dac_test1.ise -intstyle ise -p
+xc3s1000-ft256-4 -cm area -pr b -k 4 -c 100 -o dsx1000_map.ncd dsx1000.ngd
+dsx1000.pcf 
+Target Device  : xc3s1000
+Target Package : ft256
+Target Speed   : -4
+Mapper Version : spartan3 -- $Revision: 1.34 $
+Mapped Date    : Tue Nov 14 21:27:21 2006
+
+Design Summary
+--------------
+Number of errors:      0
+Number of warnings:    0
+Logic Utilization:
+  Number of Slice Flip Flops:          34 out of  15,360    1%
+  Number of 4 input LUTs:              28 out of  15,360    1%
+Logic Distribution:
+  Number of occupied Slices:                           24 out of   7,680    1%
+    Number of Slices containing only related logic:      24 out of      24  100%
+    Number of Slices containing unrelated logic:          0 out of      24    0%
+      *See NOTES below for an explanation of the effects of unrelated logic
+Total Number 4 input LUTs:             46 out of  15,360    1%
+  Number used as logic:                 28
+  Number used as a route-thru:          18
+  Number of bonded IOBs:                2 out of     173    1%
+    IOB Flip Flops:                     1
+  Number of GCLKs:                     1 out of       8   12%
+
+Total equivalent gate count for design:  712
+Additional JTAG gate count for IOBs:  96
+Peak Memory Usage:  152 MB
+
+NOTES:
+
+   Related logic is defined as being logic that shares connectivity - e.g. two
+   LUTs are "related" if they share common inputs.  When assembling slices,
+   Map gives priority to combine logic that is related.  Doing so results in
+   the best timing performance.
+
+   Unrelated logic shares no connectivity.  Map will only begin packing
+   unrelated logic into a slice once 99% of the slices are occupied through
+   related logic packing.
+
+   Note that once logic distribution reaches the 99% level through related
+   logic packing, this does not mean the device is completely utilized.
+   Unrelated logic packing will then begin, continuing until all usable LUTs
+   and FFs are occupied.  Depending on your timing budget, increased levels of
+   unrelated logic packing may adversely affect the overall timing performance
+   of your design.
+
+Table of Contents
+-----------------
+Section 1 - Errors
+Section 2 - Warnings
+Section 3 - Informational
+Section 4 - Removed Logic Summary
+Section 5 - Removed Logic
+Section 6 - IOB Properties
+Section 7 - RPMs
+Section 8 - Guide Report
+Section 9 - Area Group Summary
+Section 10 - Modular Design Summary
+Section 11 - Timing Report
+Section 12 - Configuration String Information
+Section 13 - Additional Device Resource Counts
+
+Section 1 - Errors
+------------------
+
+Section 2 - Warnings
+--------------------
+
+Section 3 - Informational
+-------------------------
+INFO:MapLib:562 - No environment variables are currently set.
+INFO:MapLib:535 - The following Virtex BUFG(s) is/are being retargetted to
+   Virtex2 BUFGMUX(s) with input tied to I0 and Select pin tied to constant 0:
+   BUFGP symbol "clk_BUFGP" (output signal=clk_BUFGP)
+INFO:LIT:244 - All of the single ended outputs in this design are using slew
+   rate limited output drivers. The delay on speed critical single ended outputs
+   can be dramatically reduced by designating them as fast outputs in the
+   schematic.
+
+Section 4 - Removed Logic Summary
+---------------------------------
+   3 block(s) optimized away
+
+Section 5 - Removed Logic
+-------------------------
+
+Optimized Block(s):
+TYPE 		BLOCK
+LUT1 		N2_rt
+GND 		XST_GND
+VCC 		XST_VCC
+
+To enable printing of redundant blocks removed and signals merged, set the
+detailed map report option and rerun map.
+
+Section 6 - IOB Properties
+--------------------------
+
++------------------------------------------------------------------------------------------------------------------------+
+| IOB Name                           | Type    | Direction | IO Standard | Drive    | Slew | Reg (s)  | Resistor | IOB   |
+|                                    |         |           |             | Strength | Rate |          |          | Delay |
++------------------------------------------------------------------------------------------------------------------------+
+| clk                                | IOB     | INPUT     | LVCMOS33    |          |      |          |          |       |
+| pdm_o                              | IOB     | OUTPUT    | LVCMOS33    | 12       | SLOW | OFF1     |          |       |
++------------------------------------------------------------------------------------------------------------------------+
+
+Section 7 - RPMs
+----------------
+
+Section 8 - Guide Report
+------------------------
+Guide not run on this design.
+
+Section 9 - Area Group Summary
+------------------------------
+No area groups were found in this design.
+
+Section 10 - Modular Design Summary
+-----------------------------------
+Modular Design not used for this design.
+
+Section 11 - Timing Report
+--------------------------
+This design was not run using timing mode.
+
+Section 12 - Configuration String Details
+--------------------------
+Use the "-detail" map option to print out Configuration Strings
+
+Section 13 - Additional Device Resource Counts
+----------------------------------------------
+Number of JTAG Gates for IOBs = 2
+Number of Equivalent Gates for Design = 712
+Number of RPM Macros = 0
+Number of Hard Macros = 0
+DCIRESETs = 0
+CAPTUREs = 0
+BSCANs = 0
+STARTUPs = 0
+DCMs = 0
+GCLKs = 1
+ICAPs = 0
+18X18 Multipliers = 0
+Block RAMs = 0
+Total Registers (Flops & Latches in Slices & IOBs) not driven by LUTs = 33
+IOB Dual-Rate Flops not driven by LUTs = 0
+IOB Dual-Rate Flops = 0
+IOB Slave Pads = 0
+IOB Master Pads = 0
+IOB Latches not driven by LUTs = 0
+IOB Latches = 0
+IOB Flip Flops not driven by LUTs = 1
+IOB Flip Flops = 1
+Unbonded IOBs = 0
+Bonded IOBs = 2
+XORs = 42
+CARRY_INITs = 24
+CARRY_SKIPs = 1
+CARRY_MUXes = 45
+Shift Registers = 0
+Static Shift Registers = 0
+Dynamic Shift Registers = 0
+16x1 ROMs = 0
+16x1 RAMs = 0
+32x1 RAMs = 0
+Dual Port RAMs = 0
+MUXFs = 0
+MULT_ANDs = 0
+4 input LUTs used as Route-Thrus = 18
+4 input LUTs = 28
+Slice Latches not driven by LUTs = 0
+Slice Latches = 0
+Slice Flip Flops not driven by LUTs = 32
+Slice Flip Flops = 34
+SliceMs = 0
+SliceLs = 24
+Slices = 24
+F6 Muxes = 0
+F5 Muxes = 0
+F8 Muxes = 0
+F7 Muxes = 0
+Number of LUT signals with 4 loads = 0
+Number of LUT signals with 3 loads = 0
+Number of LUT signals with 2 loads = 23
+Number of LUT signals with 1 load = 5
+NGM Average fanout of LUT = 1.82
+NGM Maximum fanout of LUT = 2
+NGM Average fanin for LUT = 1.8929
+Number of LUT symbols = 28
+
+</code>

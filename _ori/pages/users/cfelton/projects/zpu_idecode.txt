@@ -1,0 +1,99 @@
+
+zpu_idecode.py
+
+<code myhdl>
+#
+# This module contains the instruction decode.  This decodes the instruction
+# to an enumeration for the execution unit.
+#
+
+from myhdl import *
+
+from zpu_pkg import *
+
+def zpu_idecode(
+    pc_r,       #  Program Counter (instruction memory address)
+    i_data,     #  Instruction data
+    opcode,     #  Decode opcode
+    BYTE_BITS=3 # 
+    ):
+    """
+
+    """
+
+    topcode  = Signal(intbv(0)[8:])
+    d_opcode = decode_t.DEC_NOP
+    
+    # Each instruction is only 8bits but the instruction ROM data
+    # width can be 32, 16, or 8
+    @always_comb
+    def i_sel():
+        a = pc_r[BYTE_BITS:]
+
+        if a == 0:
+            topcode.next = i_data[32:24]
+        elif a == 1:
+            topcode.next = i_data[24:16]
+        elif a == 2:
+            topcode.next = i_data[16:8]
+        else:  # a == 3
+            topcode.next = i_data[8:0]
+
+
+    @always_comb
+    def decode_control():
+
+        opcode.next = d_opcode
+        
+        if topcode[7] == OPCODE_IM:
+            d_opcode = decode_t.DEC_IM
+        elif topcode[8:5] == OPCODE_STORESP:
+            d_opcode = decode_t.DEC_LOAD_SP
+        elif topcode[8:5] == OPCODE_LOADSP:
+            d_opcode = decode_t.DEC_LOAD_SP
+        elif topcode[8:5] == OPCODE_EMULATE:
+            d_opcode = decode_t.DEC_EMULATE
+        elif topcode[8:5] == OPCODE_ADDSP:
+            d_opcode = decode_t.DEC_ADD_SP
+        else:
+            if topcode[4:0] == OPCODE_BREAK:
+                d_opcode = decode_t.DEC_BREAK
+            elif topcode[4:0] == OPCODE_PUSHSP:
+                d_opcode = decode_t.DEC_PUSH_SP
+            elif topcode[4:0] == OPCODE_POPPC:
+                d_opcode = decode_t.DEC_POP_PC
+            elif topcode[4:0] == OPCODE_ADD:
+                d_opcode = decode_t.DEC_ADD
+            elif topcode[4:0] == OPCODE_OR:
+                d_opcode = decode_t.DEC_OR
+            elif topcode[4:0] == OPCODE_AND:
+                d_opcode = decode_t.DEC_AND
+            elif topcode[4:0] == OPCODE_LOAD:
+                d_opcode = decode_t.DEC_LOAD
+            elif topcode[4:0] == OPCODE_NOT:
+                d_opcode = decode_t.DEC_NOT
+            elif topcode[4:0] == OPCODE_FLIP:
+                d_opcode = decode_t.DEC_FLIP
+            elif topcode[4:0] == OPCODE_STORE:
+                d_opcode = decode_t.DEC_STORE
+            elif topcode[4:0] == OPCODE_POPSP:
+                d_opcode = decode_t.DEC_POP_SP
+            else:
+                d_opcode = decode_t.DEC_NOP
+                
+                
+
+    return instances()
+    
+        
+if __name__ == '__main__':
+
+    pc_r   = Signal(intbv(0)[2:])     # Input, emulated 
+    i_data = Signal(intbv(0)[32:])    # Instruction data
+    opcode = Signal(decode_t.DEC_NOP) # Decoded Opcode, Enum
+
+    dut = zpu_idecode(pc_r, i_data, opcode)
+
+    
+
+</code>

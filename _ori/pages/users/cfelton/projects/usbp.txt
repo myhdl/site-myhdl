@@ -1,0 +1,96 @@
+====== USB FPGA Development Boards ======
+This is a project in development.  The project pages are incomplete and source is under development (incomplete).
+
+===== Introduction =====
+This project includes the development of an interface to the Cypress FX2 high speed USB controller.  The FX2 controller is popular in many FPGA development boards.  These boards include, 
+[[http://www.dsptronics.com/ | DSPtronics]], 
+[[http://www.fpgaz.com/usbp | USBP]], 
+[[http://www.opalkelly.com  | OpalKelly]],
+[[http://www.digilentinc.com/Products/Detail.cfm?NavPath=2,648,413&Prod=USB2 | Digilent]],
+[[http://gnuradio.org/trac/wiki/USRP | GnuRadio USRP]],
+[[http://www.ztex.de/usb-fpga-1/usb-fpga-1.2.e.html | ZTEX]],
+[[http://www.orangetreetech.com/usb_board_products.html | Zest]],
+and others.  The interface includes a streaming pipe and a pipe that commands a wishbone controller.  These provide high speed (30MBytes / sec) data and control communication to the FPGA.  The [[http://www.fpgaz.com/usbp | USBP]] firmware is used for the FX2 controller.  This firmware provides two CDC/ACM (virtual comm port) one for each of the pipes. 
+
+This project will encompass a USB interface framework for FPGA development boards.  The design and implementation is covered in the following sections.
+
+[[usb_model | USB Controller Model]]
+
+[[usb_hdl   | FPGA USB Interface Design]]
+
+
+===== Latest Developments =====
+^ Revision ^ Comment ^
+^ 0.9pre | Added the Xilinx xise files for 11.x ISE versions |
+^ 0.8pre | General enhancements/fixes to USB interface.  Added external audio CODEC interfaces |
+
+===== Setup and Install =====
+This section describes how to install the various MyHDL (Python) packages to simulate and synthesize 
+this design.  Installing the drivers and host software is beyond the scope of this page.  For
+more information on the driver and host installation see [[http://www.fpgaz.com/usbp | USBP]]
+
+
+**Downloads**  \\
+Moving to repo, check back soon or post to newsgroup for questions.
+
+
+To run this project first download the above archive and unzip.
+
+This will extract to the following directory structure.
+<code>
+  - usbp -+ 
+          - fpga_projects
+          - open_cores
+          - top_levels/
+                  - usbp_myhdl/usbp_myhdl.py
+          - usbp_cores    
+</code>
+
+
+Then run **>> python setup.py install**.  This will install the open_cores and usbp_cores Python packages.  
+
+This project has been broken up to a couple different Python packages and directories.
+  * USBP cores :  This package includes the modules for the USB interface.  Includes the Wishbone controller and streaming interface.
+    
+  * Open cores :  This package is the MyHDL implementation of modules freely available.  All these modules are Wishbone compatible.
+    
+  * Top levels : This includes the top-level HDL and top-level testbenches.
+    
+  * FPGA project files :  This includes example FPGA vendor tool projects.
+
+
+To run the top-level testbench
+
+<code>
+>> cd usbp/top_levels/usbp_myhdl/
+>> python test_usbp.py
+</code>
+
+The testbench will generate a VCD file which can be viewed with GTKWave.
+
+{{:users:cfelton:projects:usbp_wave_sc1.png?480|GTKWave VCD View}}
+
+To generate **Verilog** and **VHDL**
+
+<code>
+>> python usbp_myhdl.py
+</code>
+
+=== Synthesizing the Design ===
+To synthesize and PAR the design simply open the Xilinx ISE project(s) in the fpga_projects/ise 
+directory.  Currently the usbp/fpga_projects/ise/my_usbp/my_usbp_111/ is an 11.1 ISE project
+for the [[http://www.fpgaz.com/usbp | USBP UFO-400]] board.
+
+==== Get the Code ====
+
+The MyHDL code (cores) have been slowly moving to https://github.com/cfelton/minnesota.
+And I intend to use the fpgalink software, http://www.makestuff.eu/wordpress/software/fpgalink/.
+
+==== (OLD) Revision History ====
+The following are older revisions.  See above for the latest code and links to revisions.
+
+^ Revision ^ Comment |
+^ 0.8pre | General enhancements/fixes to USB interface.  Added external audio CODEC interfaces |
+^ 0.5pre | Created a single distribution archive |
+^ 0.3pre | Fixed an issue with the distribution, not all packages were included. |
+^ 0.2pre | Embedded a simple ramp generator into the design.  This can be used as a simple verification method during run-time. |

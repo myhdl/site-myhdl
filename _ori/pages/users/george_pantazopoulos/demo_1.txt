@@ -1,0 +1,433 @@
+<code python>
+from myhdl import *
+
+# myhdl_signal_and_port_groups_with_wishbone.py
+# George Pantazopoulos
+# 10 Oct 2006
+
+# Key concepts:
+#
+
+# Hardware Module: aka "module". Different meaning than a Python module.
+
+# Signal: A connection between one or more modules.
+#         A Signal may be driven by only one module at a time
+
+# Signal Group: A connection of related signals
+
+
+# Port:   A module's connection to the world outside it.
+#         To connect a module, connect signals to its ports
+
+
+# Port Group: A collection of related ports
+
+
+# TODO: Break out ASCII Port Spec parser into own class
+
+class Port(object):
+
+	def __init__(self,name, direction, descr=""):
+
+	    self.name 	= name
+	    self.signal = None
+
+	    directions = ['in', 'out', 'inout']
+
+	    if direction not in directions:
+		   raise Exception, \
+		   "Direction needs to be one of " + str(directions)
+
+	    self.dir 	= direction
+	    self.descr 	= descr
+
+	def connect_to(self, signal):
+	    """
+	    signal should be of type <class 'myhdl_.Signal.Signal'>
+	    """
+	    self.signal = signal
+
+	def get_name(self):
+	    return self.name
+	   
+	def get_descr(self):
+		return self.descr
+
+	def sig(self):
+	    """
+	    """
+	    # It's helpful to error here if the 'signal'
+	    # is not set. Otherwise the errors in MyHDL are confusing
+
+	    # TODO: is this the right place for this?
+	    # Maybe if we just return the None value it can cause an
+	    # exception elsewhere
+	    if self.signal == None:
+		   raise Exception, \
+		   "port '" + str(self.name) + "' has no signal connected to it"
+
+
+	    return self.signal
+
+	
+# generic record-keeping class
+class rec:
+
+	def __getattr__(self, attrname):
+		return self.__dict__[attrname]
+	
+	def __setattr__(self, attr, value):
+		self.__dict__[attr] = value	
+
+	def __repr__(self):
+		s = ""
+		for key in self.__dict__:
+			s += key + ": " + repr(self.__dict__[key])
+			s += '\n'
+		return s
+
+
+
+class HardwareModule:
+
+	def __init__(self):
+			
+		# A collection of port groups
+		self.__dict__['port_groups'] = rec()
+		
+		
+	def __getattr__(self, attrname):
+				
+		if attrname == 'ports':
+			return self.__dict__['port_groups']
+			
+		else:
+			raise AttributeError, attrname
+		
+	
+	def __setattr__(self, attr, value):
+		
+		if attr == 'ports':
+			self.__dict__[attr] = value
+			
+		else:
+			self.__dict__[attr] = value
+						
+	
+	def add_port_group(self, name):
+		"""
+		Add an empty port group
+		"""
+		
+		self.port_groups.__setattr__(name, rec())
+			
+	
+	def connect(self, port, sig):
+		"""
+		Connect a port in the design to an external signal
+		
+		Must qualify port name within a port group with a '.'
+		
+		Eg.
+		
+		clk = Signal(bool(0))
+		
+		uc = UpCounter()
+		uc.connect('wishbone.clk_i', clk)
+		
+		"""
+		
+		# The port name will be qualified with the port group
+		fqpn = port.split('.')
+		
+		self.ports.__getattr__(fqpn[0]).__getattr__(fqpn[1]).connect_to(sig)
+		
+	def parse_portspec(self, s):
+	    """
+	    Automatically parses an Ascii Port Specification
+	    and generates port groups that contain the correct ports.
+	    
+	    Example portspec:
+	    -----------------
+	    
+	    Begin portspec
+	    ----------------------------------------------------------
+	    Name    Dir   Width         Group           Descr         
+	    ----------------------------------------------------------
+	    clk_i   in    1             wishbone        clock   input
+	    rst_i   in    1             wishbone        reset   input
+	    count_o out   count_width   non_wishbone    counter output
+
+	    End portspec
+	    
+	    In the port attribute line there must be at least one char whitespace
+	    between port attributes. Currently only spaces are supported, not tabs.
+	    """
+	    
+	    __version__ = "0.2.0"
+	    
+	    beginstr = "Begin portspec"
+	    endstr   = "End portspec"
+	
+	    # It's a assumed that a docstring will be inputted.
+	    
+	    # Break up the string into seperate lines
+	    lines = s.splitlines()
+	
+	    def find_in_str_list(str_list, substr):
+		   """
+		   Given a list of strings, return the list index
+		   of the string containing the first occurence
+		   of substr.
+	
+		   If not found, returns -1
+		   """
+	
+		   index = -1
+	
+		   # For each string in the list
+		   for i in range(len(str_list)):
+	
+			  # look for substr
+			  hindex = str_list[i].find(substr)
+	
+			  # if found, break.
+			  # We dont care about the horizontal position of the substring
+			  if hindex != -1:
+				 index = i
+				 break
+			  
+		   return index
+	
+	    # Search for the begin string
+	    beginstr_line = find_in_str_list(lines, beginstr)
+	
+	    # If no begin string found, then error
+	    if beginstr_line == -1:
+		   raise Exception, \
+		   "port specification must begin with: " + beginstr + "on its own line"
+	
+	    # Search for the end string
+	    endstr_line   = find_in_str_list(lines, endstr)
+	
+	    # If no begin string found, then error
+	    if endstr_line == -1:
+		   raise Exception, \
+		   "port specification must end with: " + endstr + "on its own line"
+	
+	    min_num_lines = 4
+	    if endstr_line - beginstr_line < min_num_lines:
+		   raise Exception, "\n" + \
+		  "There must be at least " + str(min_num_lines) + \
+		  "lines between the begin and end strings"		    
+	
+	    # ignore the next line
+	
+	    # The following line should contain the port attribute types
+	    # Name,Dir, Width, Class, Descr
+	    pat_str_line = beginstr_line + 2
+	    pat_str = lines[pat_str_line]    
+	
+	    pats = dict(		 _name  = 'Name',
+						  _dir   = 'Dir',
+						  _width = 'Width',
+						  _group = 'Group',
+						  _descr = 'Descr')
+	
+	    pat_indices =    dict( _name  = -1,
+						  _dir   = -1,
+						  _width = -1,
+						  _group = -1,
+						  _descr = -1)
+	    
+	    # Find all of these and record their horizonal indices
+	
+	
+	    for pat in pats:
+		   ps = pats[pat]
+		   idx = pat_str.find(ps)
+	
+		   # If even one of them is not found, it's an error
+		   if idx == -1:
+			  raise Exception, \
+			  "Could not find " + ps + " in Port Attribute Types line"
+	    
+		   # Record its horizontal index
+		   pat_indices[pat] = idx
+	
+	
+	    import pprint
+	    #pprint.pprint(pat_indices)
+	
+	    # Enforce a particular order for the port attribute types
+	    pat_order = \
+	    [pats['_name'], pats['_dir'], pats['_width'], pats['_group'], pats['_descr']]
+	
+	    # Split the given port attribute string into a list of seperate strings
+	    # and compare the it against the reference order list
+	
+	    if pat_str.split() != pat_order:
+	
+		   # Build an example string to show the user
+		   example_str = ""
+		   for s in pat_order:
+			  example_str += s
+			  example_str += " "
+	
+		   # Note, this exception may also be raised if an extra column was added
+		   raise Exception, \
+		   "\nInvalid port attribute types line: (line #" + \
+		   str(pat_str_line) + " of docstring)\n" +\
+		   "'" + pat_str + "'" + \
+		   "\nOnly these port attribute types must be present " + \
+		   "and be in the following order:\n" + \
+		   "'" + example_str + "'"
+		   
+	    
+	    # ignore the next line
+	    first_port_attr_line = pat_str_line + 2
+	    last_port_attr_line  = endstr_line - 1
+	
+	    pa_dicts = dict()
+	    for line in lines[first_port_attr_line:last_port_attr_line]:
+	
+		   # Skip this line if it consists entirely of whitespace
+		   if len(line.split()) <= 0:
+			  continue
+	    
+		   # Each port attribute is supposed to be lined up horizontally
+		   # with each port attribute type up top.
+		   
+		   # For each user port attribute type, grab
+		   # the user port attribute string that is lined up beneath it
+		   
+		   pa_dict = dict()
+		   for pat in pat_indices:
+			  pat_index = pat_indices[pat]
+	
+			  # from the user port attribute line, extract a substring
+			  # starting at the column of the port attribute type above it
+			  # and going to the end of the line
+			  pa_plus_rest_of_line = line[pat_index-1:]
+	
+			  # Split this portion into tokens and take the first one
+			  pa = pa_plus_rest_of_line.split()[0]
+			  
+	
+			  # For each port attribute line
+			  # Create a dictionary containing all the user-supplied
+			  # port attributes
+			  # eg. foo = dict('_name'='clk_i', '_dir'='inout')
+	
+			  pa_dict[pat] = pa
+			  
+		   # To associate all the port attributes with a port name
+		   # stuff that dictionary inside another dictionary with the
+		   # key being the port's given name.
+		   # eg
+		   # bar = dict(foo['name']=foo)
+	
+		   port_name = pa_dict['_name']
+		   pa_dicts[port_name]=pa_dict
+	
+	
+	
+	    # For each port attribute 'group' found, create a port group
+	    # They are attributes of a simple record-keeping class
+	    port_groups = rec()
+	    for port_name in pa_dicts:
+	
+		   port_groupname = pa_dicts[port_name]['_group']
+		   port_groups.__setattr__(port_groupname, rec())
+	    
+	
+	    # Now that we have our port groups, put each port in the correct
+	    # port group
+	    
+	    for port_name in pa_dicts:
+		   
+		   port_dir			= pa_dicts[port_name]['_dir']
+		   port_groupname 	= pa_dicts[port_name]['_group']
+		   port_descr		= pa_dicts[port_name]['_descr']
+	
+		   # Create a port
+		   # TODO: support more attributes or use dict directly
+		   p = Port(name=port_name, direction=port_dir, descr=port_descr)
+	
+		   # Add it to the correct port group
+		   port_groups.__getattr__(port_groupname).__setattr__(port_name, p)
+	
+	    return port_groups
+
+	
+class UpCounter(HardwareModule):
+	"""
+	Begin portspec
+	----------------------------------------------------------
+	Name    Dir   Width         Group           Descr         
+	----------------------------------------------------------
+	clk_i   in    1             wishbone        clock   input
+	rst_i   in    1             wishbone        reset   input
+	count_o out   count_width   non_wishbone    counter output
+
+	End portspec
+	"""
+	
+	# TODO: Have portspec parser handle tabs
+	# TODO: Also, spaces and tabs should be allowed for Descr
+	
+	def __init__(self):
+		
+		# Need to initialize superclass
+		HardwareModule.__init__(self)
+		
+		# Auto-generated ports and port groups! 
+		# TODO: make error messages more friendly
+		# (eg. "Could not parse port spec")
+		self.ports = self.parse_portspec(self.__doc__)
+		
+	def up_counter(self, clk_i, rst_i, count_o):
+		"""
+		up-counter MyHDL implementation
+		"""
+
+		@always(clk_i.posedge)
+		def proc():
+		  if rst_i:
+			 count_o.next = 0
+
+		  else:
+			 count_o.next = count_o + 1
+
+		return instances()	
+	  	
+	def hw_inst(self):
+		"""
+		Connects the ports of the implementation to the Signals
+		in each class-level port and returns the connected unit.
+		"""
+						
+		return self.up_counter(clk_i   = self.ports.wishbone.clk_i.sig(), 
+							   rst_i   = self.ports.wishbone.rst_i.sig(), 
+							   count_o = self.ports.non_wishbone.count_o.sig())
+		
+def top(clk, rst):
+		
+	count = Signal(intbv(0)[3:])
+	
+	uc = UpCounter()
+	
+	uc.connect('wishbone.clk_i', clk)
+	uc.connect('wishbone.rst_i', rst)
+	uc.connect('non_wishbone.count_o', count)
+	
+	UC_INST = uc.hw_inst()
+	
+	return instances()
+
+clk = Signal(bool(0))
+rst = Signal(bool(0))
+
+
+toVerilog(top, clk, rst)
+</code>

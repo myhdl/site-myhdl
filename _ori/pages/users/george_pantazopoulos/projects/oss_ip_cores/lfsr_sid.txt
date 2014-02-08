@@ -1,0 +1,117 @@
+===== LFSR6581 Pseudo-Random Number Generator =====
+
+Linear feedback Shift Register for generating pseudorandom noise.
+This module is based on the design used in the MOS6581/8580 'SID' sound chip.
+
+
+===== LFSR Overview =====
+
+{{:users:george_pantazopoulos:projects:oss_ip_cores:lfsr.gif|:users:george_pantazopoulos:projects:oss_ip_cores:lfsr.gif}}
+
+**Figure 1: General principle behind LFSR operation (courtesy of Matt Crypto)**
+
+**More Information**
+
+[[http://en.wikipedia.org/wiki/Linear_feedback_shift_register|Linear Feedback Shift Register (Wikipedia)]]
+
+===== Contact and License Info =====
+Free for non-commercial use. Please mention my name, website and contribution(s) in your documentation. For other license arrangements, please contact me.
+
+Have a great time and feel free to write me -- [[http://www.gammaburst.net|George Pantazopoulos]]
+
+{{:projects:gp_email.png|:projects:gp_email.png}} 
+
+
+===== MyHDL Implementation =====
+
+<code python>
+"""                                                                            
+lfsr6581_hd.py
+MOS6581/8580 Linear Feedback Shift Register hardware description
+
+MyHDL implementation by George Pantazopoulos http://www.gammaburst.net   
+Nov 2006
+"""
+
+from myhdl import *
+
+# ----------------------------------------------------------------------------
+
+def lfsr6581(clk_i, rst_i, rnd_o):
+    """    
+    Linear feedback Shift Register for generating pseudorandom noise.
+    This module is based on the one used in the MOS6581/8580 'SID' sound chip.
+    
+    Inputs:
+    -------
+    clk_i - clock signal
+    rst_i - active-high reset
+    
+    Outputs:
+    --------
+    rnd_o - 8-bit pseudorandom number; updated each clock cycle.
+    
+    Notes:
+    While the SID's clock is ~1.0MHz, to get audible noise from this shift
+    register, it needs to be clocked much slower than this.
+    
+    In the SID, the LFSR is clocked by bit 19 of the phase accumulator 
+    register. (From reSID and interview with Bob Yannes. Thanks, Dag Lem)
+    
+    George Pantazopoulos http://www.gammaburst.net
+    
+    License
+    -------
+    Free for non-commercial use. 
+    Please mention my name, website and contribution(s) in your documentation.
+
+    For other license arrangements, please contact me.
+    
+    Thanks to:
+    Bob Yannes
+    The SID homepage
+    The sidplay2 project
+    Dag Lem and The reSID project
+    """
+    
+    __author__    = "George Pantazopoulos http://www.gammaburst.net"
+    __version__   = "0.8.2"
+    __revision__  = ""
+    __date__      = "15 Nov 2006"    
+    
+    # The SID's shift register is 23 bits wide.
+    LFSR_WIDTH=23
+    lfsr = Signal(intbv(0)[LFSR_WIDTH:])
+    
+    @always(clk_i.posedge)
+    def LFSRProcess():
+        if rst_i:
+            lfsr.next = 0x7FFFF8
+        
+        else:
+            # Left shift: The next lfsr output will consist of 
+            # Bits 21 down to 0 (written as lfsr[22:0] due to MyHDL's slicing rules)
+            # followed by bit22 XOR bit17 
+            lfsr.next = concat(lfsr[LFSR_WIDTH-1:0], lfsr[22] ^ lfsr[17])
+        
+    @always(clk_i.posedge)
+    def OutProc():
+        if rst_i:
+            rnd_o.next = 0
+        
+        else:
+            # Extract selected bits from the lfsr and concatenate them into
+            # an 8-bit output value. According to my sources, the SID uses
+            # these specific bits from the lfsr.
+            rnd_o.next = concat(lfsr[22], lfsr[20], lfsr[16], lfsr[13],
+                                lfsr[11], lfsr[7],  lfsr[4],  lfsr[2])
+        
+    return instances()
+
+</code>
+
+===== Test Harness and Synthesis-related code =====
+Coming soon...
+
+===== Unit Tests =====
+Coming soon...

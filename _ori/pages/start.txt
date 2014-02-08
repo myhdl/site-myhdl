@@ -1,0 +1,19 @@
+====== Welcome to MyHDL ======
+
+
+**MyHDL - From Python to Silicon!**
+
+Welcome to the MyHDL website. MyHDL is an open source Python package that lets you go from Python to silicon.  With MyHDL, you can use Python as a [[http://en.wikipedia.org/wiki/Hardware_description_language|hardware description]] and [[http://en.wikipedia.org/wiki/Hardware_verification_language|verification language]]. Furthermore, you can convert MyHDL code, that was developed towards implementation, to Verilog and VHDL automatically, and take it to a silicon implementation from there. 
+
+On this website, you will find everything you need to get started - and to keep going - with MyHDL. Have fun!
+\\
+\\
+----
+\\
+**20-May-2013** [[https://sourceforge.net/projects/myhdl/files/myhdl|MyHDL 0.8 released!]]
+\\
+\\
+**24-Apr-2013** [[https://twitter.com/MyHDL|Follow @MyHDL on Twitter!]]
+
+[[:newsroom|News archive >>]]
+----

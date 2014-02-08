@@ -1,0 +1,149 @@
+====== Open tasks ======
+
+===== Introduction =====
+
+If you would like to help with the MyHDL project, there are several ways. The best idea is
+probably to do your own MyHDL designs, and describe them on the [[:projects:intro]] page.
+
+If you would like to help with MyHDL development itself, that is welcome also. This page
+describes a number of open tasks. 
+===== Policy =====
+
+ --- //[[jan@jandecaluwe.com|Jan Decaluwe]] 2009/05/12 06:15//
+
+I'm looking for help that permits to accomplish much more in less time. I'm not
+sollicating a role as thesis advisor or educator. Therefore, please choose a
+task in accordance with your skills. Easier tasks are no less valuable than
+harder ones.
+
+It is normal that the tasks contain unresolved
+issues, some of which will require hard thinking and hard work. Use the mailing list/newsgroup
+to communicate about your difficulties and ideas to get feedback and help from
+the community.
+
+When developing code, make sure you understand the [[:dev:repo]]
+and the policy for [[:dev:patches]]. Take into account that
+the most difficult part of a task may be writing the unit test, not necessarily the
+feature implementation. It is unlikely that I will accept changesets without unit tests,
+as this typically makes my life as a developer more difficult.
+
+The tasks are related to new features. Therefore, development for them is on the default
+branch. Currently, this implies that Python 2.6 is required. Also, the conversion
+code in MyHDL 0.6 cannot be used as a basis, as the ''compiler'' package is
+obsolete and has been replaces by ''ast''.
+
+===== Open Tasks: Modelling =====
+
+==== Easier way to use intbv or Signal as an array index ====
+
+^          Status: | Completed, 0.7 |
+^      Complexity: | Easy |
+^   Requirements : |   -  |
+
+Currently, you can't directly use a Signal or an intbv to index
+an array. Such objects have to be converted explicitly using ''int()'' first.
+Probably, this can be solved with the ''%%__index__%%()'' special method.
+This should be tried out both for indexing and slicing.
+
+===== Open Tasks: Simulation =====
+
+
+===== Open Tasks: Conversion =====
+
+==== Initial values support ====
+
+^          Status: | Open |
+^      Complexity: | Easy to medium |
+^   Requirements : | Access to (Altera?) synthesis  |
+
+Currently, there are often problems at the start of simulation with
+converted code. For many data types, Verilog and VHDL start at ''X'',
+but MyHDL doesn't have that concept.
+
+To have a better match, it would be preferable to use initial value
+syntax in Verilog and VHDL based on the initial value of the Signal
+or intbv in MyHDL. The only reason why this is not yet done is that
+some synthesis tools didn't support this syntax some years ago, in
+particular Altera synthesis. It should be checked whether this is
+still the case.
+
+Note that the requirement is *not* that synthesis tools do something
+meaningful with the initial value. Proper reset at the gate level
+should be done with an explicit reset. The only goal is to have a
+better match at the RTL level.
+
+An option could be to make this functionality programmable, using
+an attribute of ''toVerilog()'' and ''toVHDL()''.
+
+Lists of signals and intbv's require special attention.
+
+==== Support for tristates ====
+
+^          Status: | Completed, 0.7 |
+^      Complexity: | medium to hard|
+^   Requirements : | Access to a synthesis tool |
+
+[[meps:mep-103]] describes a proposal for doing tristates in MyHDL. The
+distribution already contains a reference implementation for modelling
+and simulation.
+
+What should be investigated is whether and how this proposal can be made
+convertible to Verilog and VHDL, and what the possible restrictions are.
+
+==== More general support of indexed constants ====
+
+^          Status: | Open |
+^      Complexity: | medium to hard|
+^   Requirements : | Access to a synthesis tool  |
+
+Currently, indexing into a tuple of constants is supported by
+conversion in a limited way. The code has to written so that
+the indexing operations can be expanded in-place into a
+case statement. This is mapped to ROMs by some synthesis tools,
+such as Xilinx synthesis.
+
+It would be nicer to be able to use indexing into a tuple of
+constants in a general way. This could be done by mapping the
+tuple access to a function in Verilog and VHDL, with the index
+as the parameter. The function call could then be used and
+converted without restrictions. 
+
+The question is what synthesis tools do with this. For example,
+suppose you call the function multiple times with different
+indices in the same expression. Some restrictions would be
+acceptable, as long as the basic ROM mapping feature still
+works.
+
+It may be best to include tuples of constants in the hierarchical
+extraction process to give them an unique name, like is done
+for signals and lists of signals.
+
+==== Support for conditional expressions ====
+
+^          Status: | Completed |
+^      Complexity: | medium |
+^   Requirements : |  -   |
+
+Python 2.5 introduced conditional expressions. The task is to add conversion
+support for them.
+
+It should be possible to map the simplest cases to a single assign
+statement in Verilog, as is currently done for simple signal assignments.
+
+
+===== Open Tasks: Installation =====
+
+
+==== RPM package for Fedora ====
+
+^          Status: | Completed |
+^      Complexity: | ?|
+^   Requirements : |  Linux, RPM skills |
+
+Fedora Electronic Lab suggests to create an RPM package for Fedora.
+For more information, and help to get started, see the MyHDL newsgroup.
+(Search for 'fedora' in the subject.)
+
+This task has been completed, it is available in Fedora and Fedora Electronic Lab.
+
+''$sudo yum install python-myhdl''

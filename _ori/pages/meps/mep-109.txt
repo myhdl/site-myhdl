@@ -1,0 +1,182 @@
+====== Automatic inference of the reset behavior ======
+
+^              MEP: | 109 |
+^           Author: | Jan Decaluwe|
+^           Status: | Draft |
+^          Created: | 3-Jul-2012 |
+^    MyHDL-Version: | 0.8 | 
+
+
+===== Introduction =====
+
+In classical synthesizable RTL coding, the reset behavior is described explicitly. This has a number of significant disadvantages. This document contains a proposal to resolve those disadvantages by inferring the reset structure automatically.
+===== Example of the issues =====
+The issues with classical reset behavior coding are best explained with an example.
+
+Consider the following example of an uart transmitter, coded
+in synthesizable MyHDL.
+
+<code python>
+def uart_tx(tx_bit, tx_valid, tx_byte, tx_clk, tx_rst):
+    
+    index = Signal(intbv(0, min=0, max=8))
+    st = enum('IDLE', 'START', 'DATA')
+    state = Signal(st.IDLE)
+    
+    @always(tx_clk.posedge, tx_rst.negedge)
+    def fsm():
+        if tx_rst == 0:
+            tx_bit.next = 1
+            index.next = 0
+            state.next = st.IDLE
+        else:
+            if state == st.IDLE:
+                tx_bit.next = 1
+                if tx_valid: # a pulse
+                    state.next = st.START
+            elif state == st.START:
+                tx_bit.next = 0
+                index.next = 7
+                state.next = st.DATA
+            elif state == st.DATA:
+                tx_bit.next = tx_byte[index]
+                if index == 0:
+                    state.next = st.IDLE
+                else:
+                    index.next = index - 1
+                    
+    return fsm
+</code>
+
+Let us examine the characteristics of the code dedicated to the reset behavior code.
+
+The reset behavior is described using a the top-level ''if-else'' structure with a number of assignments under the ''if''. A significant piece of code at a prominent location is therefore dedicated to "non-functional" behavior.
+
+Reset behavior coding is error-prone. For a proper gate-level implementation, most if not all registers should typically be reset. However, it is easy to forget some reset assignments. Such bugs are not necessarily easily detected during RTL or gate-level simulations.
+
+In the example, the edge that asserts reset is in the sensitivity list. It is easy to forget this, and in that case the reset will not behave asynchronously as intended but synchronously. Note also that it is somewhat strange to specify an sensitivity to an edge when describing asynchronous behavior.
+
+In MyHDL signals are declared using a value. This value serves both as the type specification for the underlying value of the signal, and as the initial value. This initial value is similar in nature to the reset value: it specifies the signal value at simulation start-up. Note that in the reset assignments, the signals are reset to the same value of their initial value. In particular, it is hard to imagine a useful case where the initial value and the reset value would be different.
+
+The uart in the example would be used in higher level code as follows:
+
+<code python>
+    tx_bit = Signal(bool(1))
+    tx_valid = Signal(bool(0))
+    tx_byte = Signal(intbv(0)[8:])
+    tx_clk = Signal(bool(0))
+    tx_rst = Signal(bool(1))
+   
+    uart_tx_inst = uart_tx(tx_bit, tx_valid, tx_byte, tx_clk, tx_rst)
+</code>
+Note again that the initial value of ''tx_bit'' is the same as its reset value, '''1''', as required by typical uart systems.
+
+In summary: the code to describe the reset behavior is significant and error-prone, and the separate specification of initial values and reset values seems redundant.
+
+===== Proposed solution =====
+
+To solve the disadvantages described in the previous section, a technique is proposed to infer the reset behavior automatically.
+
+The main idea is to use the initial values of signals as the specification of reset values.
+The solution is implemented with two new MyHDL constructs. The first one is a new decorator called ''@always_seq''. Using this decorator, code with identical behavior as in the previous section can be described as follows:
+
+<code python>
+def uart_tx_2(tx_bit, tx_valid, tx_byte, tx_clk, tx_rst):
+    
+    index = Signal(intbv(0, min=0, max=8))
+    st = enum('IDLE', 'START', 'DATA')
+    state = Signal(st.IDLE)
+    
+    @always_seq(tx_clk.posedge, reset=tx_rst)
+    def fsm():
+        if state == st.IDLE:
+            tx_bit.next = 1
+            if tx_valid: # a pulse
+                state.next = st.START
+        elif state == st.START:
+            tx_bit.next = 0
+            index.next = 7
+            state.next = st.DATA
+        elif state == st.DATA:
+            tx_bit.next = tx_byte[index]
+            if index == 0:
+                state.next = st.IDLE
+            else:
+                index.next = index - 1
+                    
+    return fsm
+</code>
+The ''@always_seq'' decorator takes two arguments: a clock edge and a reset signal. It inspects the code to find the registers, and uses the initial values to construct the reset behavior.
+
+The second construct is a specialized signal subclass called ''ResetSignal''. It is used as follows:
+
+<code python>
+    tx_bit = Signal(bool(1))
+    tx_valid = Signal(bool(0))
+    tx_byte = Signal(intbv(0)[8:])
+    tx_clk = Signal(bool(0))
+    tx_rst = ResetSignal(1, active=0, async=True)
+
+    uart_tx_inst = uart_tx_2(tx_bit, tx_valid, tx_byte, tx_clk, tx_rst)
+</code>
+The ''ResetSignal'' constructor has three arguments: the initial value as normal, an ''active'' argument with the active level, and a ''async'' argument that specifies whether the reset style is asynchronous or synchronous.
+
+===== Solution discussion =====
+
+The proposed solution has some very desirable features.
+
+Explicit reset behavior coding is no longer necessary. Code reviewers are thus no longer distracted by "non-functional" code. It is sufficient to check the initial values to verify whether the reset value is correctly specified. Moreover, one indentation level is saved for functional coding.
+
+Even more importantly, the reset structure is correct by construction. All registers are automatically included in the reset behavior, and the sensitivity list is automatically correct according to the reset style.
+
+Traditionally, the reset behavior is spread out over all sequential processes. Therefore, it has to be debugged by investigating all those processes. Even worse, if a change in style or active level is required, all processes are affected. In contrast, with the proposed technique all reset features are specified at single location in the ''ResetSignal'' constructor. Changes are trivial. For example, to change to an active high synchronous reset one merely has to change the constructor as follows:
+
+<code python>
+    tx_rst = ResetSignal(1, active=1, async=False)
+</code>
+
+Occasionally, it is useful to have registers without reset at all. The proposed technique is also useful in that case. In particular, the ''@always_seq'' decorator accepts ''None'' as the reset argument:
+
+<code python>
+     @always_seq(tx_clk.posedge, reset=None)
+</code>
+
+A reviewer will have no doubt what the intention is. In contrast, in the case of a traditional always block, the reviewer may think
+that the designer has delayed the detailed reset coding for later and then forgotten about it.
+
+
+
+===== Conversion to Verilog and VHDL =====
+
+As modeling the reset behavior is a typical task in synthesizable RTL coding, the proposed technique is fully convertible to Verilog and VHDL.
+
+===== Limitations =====
+
+==== All registers in a process are reset ====
+
+All registers in a process are automatically included in the reset behavior. If it is the intention that some registers should not be reset, those registers and the corresponding code should be factored out in a separate process.
+
+Actually, this is not really a limitation but a feature. If some registers in a process are reset and others not, a synthesis tool may generate undesirable feedback loops that are active during the reset condition. This is not good practice and probably not the intention.
+
+==== Register inferencing from variables is not supported ====
+
+An important limitation is that the proposed technique is limited to registers inferred from signals. Registers inferred from variables are not supported, because such state variables cannot be described in classic functions (in particular the functions required by MyHDL decorators such as ''@always_seq'' and ''@always'').
+
+In fact, the reason is a Python2 limitation. Currently, to infer registers from variables, one has to use the ''@instance'' decorator and declare the state variables outside an infinite ''while True'' loop.
+
+In Python3, this limitation can be lifted with the introduction of the ''nonlocal'' declaration. This will make it possible for functions to modify variables in the enclosing scope. It should be possible to adapt the ''@always_seq'' and ''@always'' decorators to support such variables.
+
+===== Design remarks =====
+
+Those who like the proposed solution will probably come up with the following question: why is something like this is not available in Verilog and VHDL?
+
+The reason is the concept behind initial values. In Verilog, all signals in synthesizable code are initialized to an "unknown" value '''X''' by default. VHDL has a mixed approach. For lower level types, the initial value is the "unknown" value '''U'''. For higher level types, such as integers and enums, it is the "leftmost" value in the type specification. In this case, it is typically the same as the reset value.
+
+MyHDL takes the radical approach to avoid "unkown" values altogether. All variables and signals are constructed using a defined initial value.
+The rationale behind this design decision is beyond the scope of this document. However, regardless of its merit, it can be used to our advantage in this case by making the proposed technique possible. Conversely, it is unlikely that something similar will be available for Verilog or VHDL anytime soon.
+
+Note that the proposed technique nullifies an argument often heard in favor of unknown initial values: the detection of registers that are not reset, by simulation techniques. It basically turns the concept on its head by using initial values as reset values and avoiding such registers in the first place.
+
+The name ''@always_seq'' was chosen in analogy with ''@always_comb''. Like ''@always_comb'' for combinatorial logic, it infers some relevant behavior automatically for sequential logic, avoiding error-prone explicit coding.
+
+

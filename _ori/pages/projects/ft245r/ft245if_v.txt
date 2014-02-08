@@ -1,0 +1,49 @@
+Go back to the [[projects:ft245r|FT245R page]]
+
+<code verilog>
+
+module ft245if( clk,
+                rxf_n_i txe_n_i rd_n_o, wr_o, d_io,
+                rxf_n_o, txe_n_o, rd_n_i, wr_i, d_read_o, d_write_i);
+
+  input         clk;
+
+  // interface to USB module
+  input         rxf_n_i;
+  input         txe_n_i;
+  output        rd_n_o;
+  output        wr_o;
+  inout   [7:0] d_io;
+
+  // interface to MyHDL logic
+  output        rxf_n_o;
+  output        txe_n_o;
+  input         rd_n_i;
+  input         wr_i;
+  output  [7:0] d_read_o;
+  input   [7:0] d_write_i;
+
+
+  reg [7:0] d_write_reg;
+  reg [7:0] d_io_reg;
+
+  // signals from USB module
+  assign rxf_n_o = rxf_n_i;
+  assign txe_n_o = txe_n_i;
+
+  // signals to USB module
+  assign wr_o = wr_i;
+  assign rd_n_o = rd_n_i;
+
+  assign d_io = (wr_i & rd_n_i) ? d_write_reg : 8'bz;
+
+  always@(posedge clk) begin
+    d_write_reg <= d_write_i;
+    d_io_reg <= d_io;
+  end
+
+endmodule
+
+</code>
+
+Go back to the [[projects:ft245r|FT245R page]]

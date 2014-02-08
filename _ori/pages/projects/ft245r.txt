@@ -1,0 +1,51 @@
+====== FT245R ======
+
+===== Introduction =====
+
+Inspired by [[users:george_pantazopoulos|George's]] use of the FT245 module in the [[phoenixsid_65x81|PhoenixSID]] project I decided to give it a try to interface a FPGA board and exchange data between FPGA and PC.
+
+This document describes the implementation of the MyHDL code to interface the FT245R module.
+
+===== FT245R FIFO interface =====
+
+The FT245R has a bidirectional 8-bit parallel FIFO interface, shown in the following figure:
+
+{{ :projects:ft245_fifo_if.png |FT245R FIFO interface}}
+
+The table below describes the signals of the FIFO interface:
+
+^  Signal        ^  Description                 ^
+| DATA    | Bidirectional data bus              |
+| TXE#    | Transmit FIFO ready to write data   |
+| RXE#    | Data in receive FIFO ready for read |
+| RD#     | Read enable                         |
+| WR      | Write enable                        |
+
+The first challenge to this interface is the bidirectional data bus. There is an enhancement proposal [[meps:mep-103|MEP 103 "Tristate and bidirectional signals"]] that describes a possible MyHDL solution to this, but it is only implemented for simulation so far. Another approach is to provide some Verilog or VHDL code that splits up the bidirectional bus into a read and a write bus. That is the approach used in this case. The [[projects:ft245r:ft245if_v]] file contains the Verilog code to provide the bus split as shown in the following figure:
+
+{{ :projects:ft245:bidir_bus.png |Bidirectional bus to read and write bus conversion}}
+
+===== Write cycle =====
+
+In the next step the MyHDL logic for the write cycle is created. Based on the datasheet the FIFO write cycle timing looks as follows:
+
+{{ :projects:ft245:ft245_fifo_write_timing.png |FT245R write FIFO timing}}
+
+Part of the timing diagram is already a partitioning for the state machine that performs the write cycle, shown with dotted lines. There are three states.
+
+The first is the state that waits for the TXE# to get active.
+
+If TXE# is active the write cycle starts, which is the second state. In that state WR is asserted and data are written on the data bus. The data need to be valid for at least T9 = 20ns. But there is also a second constraint, which is that the write pulse WR needs to be active for at least T7 = 50ns. Thus the length of the write data state is determined based on T7. There is a data hold time T10 specified, but according to the datasheet the minimum time is 0ns and no maximum value is specified.
+
+The third state is now the write to write cycle inactive time. There are two concurrent timing constraints here. One is the T11 + T12 for the TXE# signal and the second is the T8 for the WR signal being inactive. The worst case for T11 + T12 is 25ns + 80ns = 105ns before TXE# will get active again after a falling edge of the WR signal. However, it could go active as soon as 5ns + 80ns = 85ns. The second time is that the WR signal can go active the earliest after T8 = 50ns. When waiting T8 = 50ns after the write data state, that is the earliest time a new write cycle can happen and TXE# would already be inactive at that time (T11 max = 25ns). So after 50ns the WR2WR wait state will change into the first state again, with the TXE# being inactive at that time and the first state taking over with the waiting until TXE# becomes active again, signaling that a new write cycle can happen.
+
+The following figure shows the finite state machine that results from this timing diagram:
+
+{{ :projects:ft245:fsm_write3.png?574x616 | Write cycle finite state machine}}
+
+The states **write_data** and **wait_WR2WR** need some timing constraints that are satisfied with a counter. Depending on the system clock the counter values WRWAIT and WR2WRWAIT are used for the respective states **write_data** and **wait_WR2WR**.
+
+===== Reference =====
+
+  * [[http://www.ftdichip.com/Products/FT245R.htm|FTDI's  FT245R page]]
+  * [[http://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT245R.pdf|FT245R datasheet]]

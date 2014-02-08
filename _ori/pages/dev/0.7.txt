@@ -1,0 +1,23 @@
+====== MyHDL 0.7 ======
+
+Requirement: Python 2.6.
+
+MyHDL 0.7 has been released.
+
+New features:
+
+  * deprecated compiler package -> ast package to prepare for the future.
+  * shadow signals and applications
+  * better support of list of signals in always_comb
+  * doc strings in output, both "official" and other ones
+  * new options to control Verilog output
+  * docstrings to conversion output, both official and non-official ones
+  * support for ternary operator in conversion, requires VHDL 2008 within processes
+  * use ''%%__%%index%%__ %%'' method to use Signals and intbv's directly for indexing
+  * function attributes as an alternative to magic variables in conversion
+  * function attribute to request an instantiation, to make hierarchy support much easier
+  * Decide which new Verilog options to keep, add support for VHDL if applicable: custom header
+  * re-evaluate initial value for intbv
+
+
+ --- //[[jan@jandecaluwe.com|Jan Decaluwe]] 2010/10/17 14:54//

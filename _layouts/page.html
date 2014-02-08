@@ -1,0 +1,63 @@
+{% extends "_base.html" %}
+
+{% block body %}
+
+<div class="container">
+
+    <ol class="breadcrumb">
+       <li><a href="/">Home</a></li>
+       {% for bc in this.breadcrumbs[:-1] %}
+       <li><a href="{{bc.url}}">{{bc.title}}</a></li>
+       {% endfor %}
+       {% block breadcrumb %}
+       <li class="active">{{this.breadcrumbs[-1].title}}</li>
+       {% endblock %}
+    </ol>
+
+    <div class="page-header">
+        {% block title %} 
+        <h1>{{this.title}}</h1>
+        {% endblock %}
+    </div>
+
+    <div class="row">
+
+        {% block sidebar %}
+        <div class="col-md-3" role="navigation"> 
+            {% if this.toc %} 
+            <div class="sidebar" data-spy="affix" 
+                 data-offset-top="80" 
+                 data-offset-bottom="60">
+                <div class="well">
+                    <a href="#"><em>{{this.title}}</em></a>
+                    {{this.toc}}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endblock %}
+
+        <div class="col-md-6" data-spy="scroll" data-target="#sidenav" role="main">
+             
+            {% block sharing %}
+            {% endblock %}
+            {% if this.lastedit|d %}
+            <p><em>{{this.lastedit}}</em></p>
+            {% endif %}
+            {% block preamble %}
+            {% endblock %}
+
+            {{this.body}}
+        </div>
+    </div>
+
+    <div class="footer">
+        <p class="text-center"> Content licensed under the
+           <a href="{{site.reflinks.license.url}}">{{site.reflinks.license.title}}</a> license.
+           See <a href="{{site.reflinks['/terms-of-use'].url}}">Terms of Use</a>.
+        </p> 
+    </div>
+</div> 
+
+{% endblock %}
+

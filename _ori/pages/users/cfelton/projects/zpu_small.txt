@@ -1,0 +1,87 @@
+
+zpu_small.py
+<code myhdl>
+
+from myhdl import *
+
+from zpu_pkg import *
+from zpu_iram import *
+from zpu_irom import *
+from zpu_idecode import *
+
+def ZPUSmallCore(
+    clk_i,       # Input system sync clock
+    rst_i,       # Input system sync reset
+    int_i,       # Input, interrupt
+    break_o,     # Output, Breakpoint opcode executed
+    dbg_o,       # Output, Debug outputs (i.e. trace log)
+
+    # External Memory Bus and Memory mapped I/O
+    mem_busy_i,  # Input,
+    data_i,      # Input, data
+    data_o,      # Output
+    addr_o,      # Output address
+    write_en_o,  # Output, Write strobe
+    read_en_o,   # Output, Read strobe
+
+    # Parameters
+    STACK_SZ = 4046,   # Stack Memory Size
+    IRAM_SZ  = 16384,  # iRAM Size
+    IROM_SZ  = 16384   # iROM Size, Instruction ROM
+    IWORD_SZ = 32,     # Instruction width 16/32
+    DWORD_SZ = 32,     # Data width, WORD size
+    ADDR_W   = 16,     # Total address space width (incl. I/O)
+    MEM_W    = 15      # Memory (data)
+    ):
+    """
+    ZPU minimal implementation.
+    """
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Constants
+    MAX_ADDR_BIT  =  ADDR_W-2      # Max data addres (non I/O)
+    BYTE_BITS     =  IWORD_SZ/16   # Number of bits in a word that address bytes
+    SP_START      =  2**MEM_W - 8  # Stack Pointer initial value: BRAM size-8
+    IO_BIT        =  ADDR_W-1      # Address bit to determine this is an I/O
+    OPCODE_W      =  8             # Opcode width is always 8
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Internal Signals
+    
+    # Program counter
+    pc_r   = Signal(intbv(0)[MAX_ADDR_BIT:])
+    # Stack pointer
+    sp_r   = Signal(intbv(SP_START)[MAX_ADDR_BIT:])
+    idim_r = Signal(False)
+
+    # Internal memory bus
+
+    # State machine    
+    state = Signal(state_t.RESYNC)
+    
+
+    d_opcode_r  =  Signal(decode_t.NOP)
+    d_opcode    =  Signal(decode_t.NOP)
+    
+    opcode      =  Signal(intbv(0)[OPCODE_W:])
+    opcode_r    =  Signal(intbv(0)[OPCODE_W:])
+
+    in_irq_r    =  Signal(False)
+    addr_r      =  Signal(intbv(0)[ADDR_W:])
+
+    
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Instantiations
+    
+    # Instruction ROM memory
+
+    # Stack Memory
+
+    # Internal Memory
+
+    
+    # Instruction Decoder
+    
+
+</code>

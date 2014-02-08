@@ -1,0 +1,311 @@
+====== Recursive FFT ======
+
+
+===== Introduction =====
+This page illustrates how modules can be designed using MyHDL recursive structures.  Also see the cookbook example [[cookbook:bitonic]] for more information on recursive designs.  
+
+More information and non-HDL example @ [[http://www.dsprelated.com/showcode/16.php | Code Snippets]].
+
+
+===== Unit Test ===== 
+
+
+<code myhdl>
+def cmdLineTestBench(run='run', N=128, Q=23):
+    """
+    """
+    L=2**Q
+
+    clk = Signal(False)
+    rst = Signal(False)
+
+    dv_i  = Signal(intbv(0)[1:])
+    dv_o = Signal(intbv(0)[1:])
+    
+    xr  = [Signal(intbv(0, min=-L-1, max=L+1)) for i in range(N)]
+    xi  = [Signal(intbv(0, min=-L-1, max=L+1)) for i in range(N)]
+
+    Xr  = [Signal(intbv(0, min=-N*L, max=N*L)) for i in range(N)]
+    Xi  = [Signal(intbv(0, min=-N*L, max=N*L)) for i in range(N)]
+
+    if run == 'trace':
+        dut = traceSignals(fft_core, clk, rst, xr, xi, Xr, Xi, dv_i, dv_o, Q)
+    else:
+        dut = fft_core(clk, rst, xr, xi, Xr, Xi, dv_i, dv_o, Q)
+
+    # Clock Generation
+    @always(delay(1))
+    def clkgen():
+        clk.next = not clk
+
+
+    nstart   = N-1        # Note Aliased signal included
+    nstep    = 1          # samples per period step
+    pstep    = pi/4       # Phase step size
+    limErr   = 2          # Error limit to check
+    maxErr   = 0          # max difference
+    
+    @instance
+    def stimulus():
+        TEST1 = False
+        print 'Start TestBench'
+        maxErr = 0
+        zFFT   = [None]*N
+        zFFTP  = zeros(N)
+        yield clk.posedge
+        rst.next = 1
+        yield delay(10)
+        rst.next = 0
+        yield delay(10)
+        
+        if TEST1:
+            yield(clk.negedge)
+            xin  = [1,-1,1,-1]
+            xFFT = myFFTRr2(xin)
+            for i in range(N):
+                xr[i].next = int(xin[i] * L)
+                xi[i].next = 0
+            yield(delay(80))
+            yield(clk.negedge)
+            print Xr
+            print Xi
+        else:
+            for s in arange(nstart, N+nstep, nstep):
+                for p in arange(0, pi+pstep, pstep):
+                    yield(clk.negedge)
+                    xin  = genSinArray(N, s, p)
+                    xFFT = myFFTRr2(xin)
+                    # Compare Output To Original
+                    for i in range(N):
+                        xr[i].next = int(xin[i] * L)
+                        xi[i].next = 0
+
+                    yield(delay(80))
+
+                    for i in range(N):
+                        zFFT[i] = (float(Xr[i]) + float(Xi[i])*1j)/L
+
+                    for i in range(N):
+                        zFFTP[i] = round(abs(zFFT[i]), 3)
+                    
+                    rmsErr = sqrt(mean(abs(r_[zFFT] - r_[xFFT]))**2)
+
+                    if rmsErr > limErr:
+                        print "Error!", rmsErr
+                        raw_input('Error try again')
+                    
+                    if rmsErr > maxErr:
+                        maxErr = rmsErr
+                        zFFTErr = zFFT
+                        xFFTErr = xFFT
+
+                    print 'Max RMS Error = ', maxErr
+                    for i in range(N):
+                        xFFTErr[i] = round(abs(xFFTErr[i]), 3)
+                        zFFTErr[i] = round(abs(zFFTErr[i]), 3)
+                    print xFFTErr
+                    print zFFTErr
+        
+        raise StopSimulation
+
+    return clkgen, stimulus, dut
+</code>
+
+The following plot was generated from the testbench
+{{ :users:cfelton:projects:my_fft_n128_s8_p2.png?500 }}
+
+===== Algorithm =====
+The following is a Python implementation of a recursive radix 2 FFT.
+
+<code python>
+def myFFTRr2(x):
+    
+    n = len(x)
+
+    if (n == 1):
+	return x
+
+    w = getTwiddle(n)
+    m = n/2;
+    X = ones(m, float)*1j
+    Y = ones(m, float)*1j
+    
+    for k in range(m):
+        X[k] = x[2*k]
+        Y[k] = x[2*k + 1] 
+
+    X = myFFTRr2(X)  # w**2
+    Y = myFFTRr2(Y)  # w**2
+
+    F = ones(n, float)*1j
+    for k in range(n):
+        i = (k%m)
+        F[k] = X[i] + w[k] * Y[i]
+
+    return F
+</code>
+
+This will be used to verify the HDL design.
+
+===== Design =====
+
+
+<code myhdl>
+def fft_core(
+    clk,      #
+    rst,      #
+    xr,       # Real input list of signals
+    xi,       # Imaginary input list of signals
+    zr,       # Real output list of signals
+    zi,       # Imaginary output list of signals
+    dv_i,     # Data Valid input (start FFT)
+    dv_o,     # Data Valid output 
+    Q=8):
+    """
+        x  --  List of Signals
+        w  --  List of Ints (Tuple of Ints?)
+        z  --  List of Signals output
+        Nfft -- 
+    """
+    
+    
+    n = len(xr) 
+    
+    m = n/2;
+    L = 2**(Q + int(log2(n)) )
+    
+    comp  = [None for i in range(n)]
+    
+    if m > 0:
+        Xir   = [Signal(intbv(0, min=-L, max=L)) for i in range(m)]
+        Xii   = [Signal(intbv(0, min=-L, max=L)) for i in range(m)]
+        Yir   = [Signal(intbv(0, min=-L, max=L)) for i in range(m)]
+        Yii   = [Signal(intbv(0, min=-L, max=L)) for i in range(m)]
+        Xor   = [Signal(intbv(0, min=-L, max=L)) for i in range(m)]
+        Xoi   = [Signal(intbv(0, min=-L, max=L)) for i in range(m)]
+        Yor   = [Signal(intbv(0, min=-L, max=L)) for i in range(m)]
+        Yoi   = [Signal(intbv(0, min=-L, max=L)) for i in range(m)]
+        dvl   = [Signal(intbv(0)[1:]) for i in range(n)]
+
+    dv_o1 = Signal(intbv(0)[1:])
+    dv_o2 = Signal(intbv(0)[1:])
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Next twiddles
+    Wr    = [0]*n
+    Wi    = [0]*n
+    Wn = getTwiddle(n)
+    for i in range(n):
+        Wr[i] = int(round(Wn[i].real * 2**Q)) 
+        Wi[i] = int(round(Wn[i].imag * 2**Q)) 
+
+    Wr = tuple(Wr)
+    Wi = tuple(Wi)
+
+        
+    ##  HDL Generation
+    if n > 1:
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # Split even and odd
+        for k in range(m):
+            Xir[k] = xr[2*k]
+            Xii[k] = xi[2*k]
+            Yir[k] = xr[2*k + 1]
+            Yii[k] = xi[2*k + 1] 
+
+        fft1 = fft_core(clk, rst, Xir, Xii, Xor, Xoi, dv_i, dv_o1, Q)
+        fft2 = fft_core(clk, rst, Yir, Yii, Yor, Yoi, dv_i, dv_o2, Q)
+        for k in range(n):
+            i = (k%m)
+            
+            comp[k] = twiddle(clk, rst, Xor[i], Xoi[i], Yor[i], Yoi[i],
+                              Wr[k], Wi[k], zr[k], zi[k], dv_o1, dvl[k], Q)
+            dv = dataValid(dvl, dv_o)
+            
+        return fft1, fft2, comp, dv
+    else:
+        feed = feedthru(clk, rst, xr[0], xi[0], zr[0], zi[0], dv_i, dv_o)
+        return feed
+</code>
+
+===== Conversion to Verilog =====
+
+<code myhdl>
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def fft_core_N8(clk, rst,
+                xr0, xr1, xr2, xr3, xr4, xr5, xr6, xr7,
+                xi0, xi1, xi2, xi3, xi4, xi5, xi6, xi7,
+                Xr0, Xr1, Xr2, Xr3, Xr4, Xr5, Xr6, Xr7,
+                Xi0, Xi1, Xi2, Xi3, Xi4, Xi5, Xi6, Xi7,
+                Q=7):
+    """
+    Need a small wrapper for each order FFT that will be converted to Verilog/VHDL.
+    """
+
+    top_mod = fft_core(clk, rst,
+                       [xr0, xr1, xr2, xr3, xr4, xr5, xr6, xr7],
+                       [xi0, xi1, xi2, xi3, xi4, xi5, xi6, xi7],
+                       [Xr0, Xr1, Xr2, Xr3, Xr4, Xr5, Xr6, Xr7],
+                       [Xi0, Xi1, Xi2, Xi3, Xi4, Xi5, Xi6, Xi7])
+
+    return top_mod
+    
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def genFFT_N8(Q=7):
+    """
+
+    """
+    N = 8
+    L=2**Q
+    
+    clk = Signal(False)
+    rst = Signal(False)
+    
+    xr0 = Signal(intbv(0, min=-L, max=L))
+    xr1 = Signal(intbv(0, min=-L, max=L))
+    xr2 = Signal(intbv(0, min=-L, max=L))
+    xr3 = Signal(intbv(0, min=-L, max=L))
+    xr4 = Signal(intbv(0, min=-L, max=L))
+    xr5 = Signal(intbv(0, min=-L, max=L))
+    xr6 = Signal(intbv(0, min=-L, max=L))
+    xr7 = Signal(intbv(0, min=-L, max=L))
+
+    xi0 = Signal(intbv(0, min=-L, max=L))
+    xi1 = Signal(intbv(0, min=-L, max=L))
+    xi2 = Signal(intbv(0, min=-L, max=L))
+    xi3 = Signal(intbv(0, min=-L, max=L))
+    xi4 = Signal(intbv(0, min=-L, max=L))
+    xi5 = Signal(intbv(0, min=-L, max=L))
+    xi6 = Signal(intbv(0, min=-L, max=L))
+    xi7 = Signal(intbv(0, min=-L, max=L))
+
+    Xr0 = Signal(intbv(0, min=-N*L, max=N*L))
+    Xr1 = Signal(intbv(0, min=-N*L, max=N*L))
+    Xr2 = Signal(intbv(0, min=-N*L, max=N*L))
+    Xr3 = Signal(intbv(0, min=-N*L, max=N*L))
+    Xr4 = Signal(intbv(0, min=-N*L, max=N*L))
+    Xr5 = Signal(intbv(0, min=-N*L, max=N*L))
+    Xr6 = Signal(intbv(0, min=-N*L, max=N*L))
+    Xr7 = Signal(intbv(0, min=-N*L, max=N*L))
+
+    Xi0 = Signal(intbv(0, min=-N*L, max=N*L))
+    Xi1 = Signal(intbv(0, min=-N*L, max=N*L))
+    Xi2 = Signal(intbv(0, min=-N*L, max=N*L))
+    Xi3 = Signal(intbv(0, min=-N*L, max=N*L))
+    Xi4 = Signal(intbv(0, min=-N*L, max=N*L))
+    Xi5 = Signal(intbv(0, min=-N*L, max=N*L))
+    Xi6 = Signal(intbv(0, min=-N*L, max=N*L))
+    Xi7 = Signal(intbv(0, min=-N*L, max=N*L))
+
+    toVerilog(fft_core_N8, clk, rst,
+              xr0, xr1, xr2, xr3, xr4, xr5, xr6, xr7,
+              xi0, xi1, xi2, xi3, xi4, xi5, xi6, xi7,
+              Xr0, Xr1, Xr2, Xr3, Xr4, Xr5, Xr6, Xr7,
+              Xi0, Xi1, Xi2, Xi3, Xi4, Xi5, Xi6, Xi7)
+
+    toVHDL(fft_core_N8, clk, rst,
+              xr0, xr1, xr2, xr3, xr4, xr5, xr6, xr7,
+              xi0, xi1, xi2, xi3, xi4, xi5, xi6, xi7,
+              Xr0, Xr1, Xr2, Xr3, Xr4, Xr5, Xr6, Xr7,
+              Xi0, Xi1, Xi2, Xi3, Xi4, Xi5, Xi6, Xi7)
+</code>

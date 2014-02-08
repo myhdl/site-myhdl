@@ -1,0 +1,24 @@
+====== Cosimulation using Quartus Simulator ======
+
+The following code snippet is used in [[projects:cordic_calculations]] to verify the convertered myhdl code.
+
+<code python>
+    system("quartus_map VectorCalc --generate_functional_sim_netlist")
+    system("quartus_sim VectorCalc --mode=functional --vector_source=%s --simulation_results_format=VCD --check_outputs=on"%vectorsource)
+</code>
+
+
+The quartus simulator takes the vcd file which was created using traceSignals(). Unfortunately this only works with the top hierarchy level. Therefore the patch described in the Hierarchy Depth Feature Request (http://sourceforge.net/tracker/index.php?func=detail&aid=1837169&group_id=91207&atid=596335 ) must be applied and the traceSignal hierarchy dept then reduced by adding 
+<code python>
+traceSignals.hierdepth=1
+</code>
+
+
+What you finally get from quartus_sim is something like that:
+<code>
+Info: Simulation results from db/VectorCalc.sim.vcd (0 ps to 2.452 us) match expected results from vector source file VectorCalc.vcd
+Info: Quartus II Simulator was successful. 0 errors, 2 warnings
+    Info: Processing ended: Fri Nov 23 19:05:57 2007
+    Info: Elapsed time: 00:00:22
+</code>
+

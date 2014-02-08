@@ -1,0 +1,126 @@
+====== How to connect eispice and MyHDL ======
+
+[[http://www.thedigitalmachine.net/eispice.html|eispice]] is a analog circuit simulator with Python interface. 
+
+eispice provides a python callback component called PyB. 
+
+PyB.model will be called by the simulator with the current simulation time and the node voltages. PyB.model either returns a current or a voltage to the simulator.
+
+The idea is, to do the next simulation step of MyHDL every time the eispice simulator reaches the MyHDL simulation time. 
+Charles Eidness the author of eispice has improved the eispice interface, so since eispice-0.11.3 we don't need the complicated threading interface any more. It is also possible to read any node voltages or device currents with 
+
+<code python>
+ cir.voltage('node name')
+ cir.current('device name')
+</code>
+
+This means we don't need PyB callback devices for FPGA input ports.
+
+
+
+
+===== First Experiment =====
+
+In this first example we use a MyHDL clock generator to trigger a  resonant circuit with a current pulse. At the same port we read the voltage back to MyHDL (adc). In MyHDL we look if the adc voltage execeeds our limit and deliver and set the detector output voltage of the seconde PyB device to 100V.
+
+{{eispice-myhdl-plot.png| Eispice Simulation Plot}}
+
+
+<code python>
+
+#!/usr/bin/env python
+"""
+Combined MyHDL and eispice Simulation
+"""
+
+from myhdl import *
+import eispice
+
+triggerfrequency = 10e6
+myhdl_timestep = 0.2e-9 
+eispice_step = 0.05e-9
+
+simulationlen = 100e-9
+
+myhdl_time = 0
+
+class EispicePort(eispice.PyB):
+
+
+    def __init__(self, pNode, nNode,function,outputtype):
+        global devicecnt
+        eispice.PyB.__init__(self, pNode, nNode, outputtype,self.v(pNode), self.v(nNode), eispice.Time)
+        self.output=0
+        self.myhdl=function
+        
+    def model(self, vP, vN, time):
+        self.output=self.myhdl(vP,vN,time)
+        return self.output            
+
+    def myhdl(vP,vN):
+        return 0 
+
+
+def triggerout(vP,vN, time):        
+        output = float(clk.val)
+        adc.next = 2**15+int(vP-vN)
+        return output
+
+def detectorout(vP,vN, time):
+        return 100*float(detector.val) 
+
+def circuit():
+        cir  = eispice.Circuit("Mixed Mode Test")
+        #cir.Vx = eispice.V(1,0,4)
+        cir.L = eispice.L(1,0,27e-9)
+        cir.R = eispice.R(1,0,820)
+        cir.C = eispice.C(1,0,47e-12) 
+        cir.Rout = eispice.R(2,0,100)
+        cir.TriggerOut = EispicePort(1,0,triggerout,eispice.Current)
+        cir.DetectorOut = EispicePort(2,0,detectorout,eispice.Voltage)
+        return cir
+
+
+
+            
+def mixedmode():
+    global clk,adc,detector
+    clk=Signal(bool(0))
+    detector = Signal(bool(0))
+    adc = Signal(intbv(0)[16:])
+    cir = circuit()
+
+    @instance
+    def clkgen():
+        clk.next=0
+        yield delay(1)
+        while (1):
+            clk.next = not clk
+            yield delay(int(1.0/myhdl_timestep/triggerfrequency/2))
+
+    @always(adc)
+    def detection():
+        if adc > 2**15-10:
+            detector.next=1
+        else:
+            detector.next=0
+
+    @instance
+    def timer():
+        global myhdl_time
+        while (myhdl_time < simulationlen):
+            myhdl_time+=myhdl_timestep
+            cir.tran(eispice_step,myhdl_time,restart=False)
+            yield delay(1)
+
+    cir.tran(eispice_step, myhdl_timestep,restart=True)
+    Simulation(instances()).run(int(simulationlen/myhdl_timestep))
+    eispice.plot(cir)
+    
+    
+
+mixedmode()
+
+
+
+</code>

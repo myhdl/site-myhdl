@@ -1,0 +1,78 @@
+====== Source code repository ======
+
+===== The repository =====
+
+MyHDL code development is managed on bitbucket
+using [[http://www.selenic.com/mercurial|mercurial]].
+
+The public repository resides here:
+
+[[https://bitbucket.org/jandecaluwe/myhdl]]
+
+Bitbucket offers an excellent interface to through the repository and its history. 
+
+===== Tracking development =====
+
+If you have mercurial installed, 
+you can use the repository url to track the latest development.
+
+First, use the instructions on Bitbucket to
+clone the repository to a local repository on
+your machine.
+
+In that directory you can now do the following
+at any future time:
+
+  $ hg in
+
+to check if there are new changesets.
+
+  $ hg pull
+
+to get new changesets.
+
+  $ hg update
+
+to update the workspace with new changesets.
+
+===== Named branches =====
+
+The repository contains multiple named branches. Each branch corresponds to a
+development line with a specific purpose. Before using the repository to install
+MyHDL or to develop your own changesets, make sure you are on the correct branch.
+
+To find out what branches are available, use:
+
+   $ hg branches
+
+Currently, the following branches are active:
+
+^   Branch name   ^  Purpose                  ^  Policy                                                           ^
+|     default  | Stable  | 0.8 release + bug fixes |
+|     0.8-dev  | Development | 0.9 new features  |
+
+To switch to a particular branch, use:
+ 
+   $ hg update -C <branch-name>
+
+BE CAREFUL! The -C options also discards local changes. Only switch branches when
+everything you need is committed.
+
+
+===== Using the repository code =====
+
+To use the repository code the simplest way is to adjust the **PYTHONPATH** variable of the used shell. Let's assume you have checked out the MyHDL code from the mercurial repository to $HOME/dev/myhdl. Then insert that path as the first entry to the PYTHONPATH variable. That way when doing the **'from myhdl import *'** import, the myhdl package in the $HOME/dev/myhdl path will be found first. This works even when you have a stable version of MyHDL installed in one of the Python's site-package/ paths.
+
+For convenience you can put the change of the PYTHONPATH variable in a script and then, in case of a bash shell e.g., just source it from the shell you want to use the repository from. The script for bash could look like this:
+
+  PYTHONPATH="$HOME/dev/myhdl:${PYTHONPATH}"
+  export PYTHONPATH
+
+Assuming this script got saved e.g. as myhdl.sh, to source it in a bash shell, call:
+
+  source myhdl.sh
+
+===== Creating your own changesets =====
+
+You can also make changesets from your own changesets and contribute them
+to the development. This process is described here: [[dev:patches]].

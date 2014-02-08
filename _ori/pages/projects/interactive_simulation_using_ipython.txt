@@ -1,0 +1,427 @@
+====== Interactive Simulation with IPython ======
+
+===== Introduction =====
+
+[[http://ipython.scipy.org/moin/|IPython]] is an enhanced python shell. The script shown here uses IPython as a shell for interactive MyHDL simulation.
+
+===== Basic Usage =====
+
+After starting breakpointdemo.py we get:
+
+<code>
+    Interactive MyHDL Simulator
+
+    Commands:
+    --------
+    step
+    cont
+    break
+    tbreak
+    clear 
+    quit
+
+    and the full power of IPython
+
+0>
+</code>
+''0>'' is the input prompt and shows the simulation time, e.g. what you will get when typing ''now()''.
+
+The simulation is not running yet. We can examine the initial state of our variables and objects.
+
+<code myhdl>
+0> count
+0: Signal(intbv(0L))
+0>
+</code>
+''count'' is the counter register.
+
+''0:'' is the output prompt.
+
+So far it is the same behaviour as the python shell.
+
+We can also examine the state of the ''clk'' and ''out'' signal:
+
+<code myhdl>
+0> clk   
+0: Signal(False)
+0> out
+0: Signal(False)
+0>
+</code>
+
+Now we start the simulation:
+
+<code myhdl>
+0> step
+Breakpoint at time == 1
+1> 
+</code>
+
+''step'' means: simulate one timestep. Therefore we get the message ''
+Breakpoint at time == 1''. Also we have the new time at our prompts.
+
+Courious what our MyHDL code has done?
+
+<code myhdl>
+1> clk 
+1: Signal(True)
+1> count
+1: Signal(intbv(1L))
+1> out
+1: Signal(True)
+1> 
+</code>
+
+Mostly we do not want to step through the simulation like this.
+Let's say we want to stop at simulation time 42:
+
+<code myhdl>
+1> until 42
+Breakpoint at  time == 42
+42> 
+</code>
+
+Let's verify that the prompt is correct:
+
+<code myhdl>
+42> now()
+42: 42
+42> 
+</code>
+
+Now we want to proceed until our counter reaches the value of 123.
+
+<code myhdl>
+42> until count==123
+Breakpoint at count==123
+123>count
+123: Signal(intbv(123L))
+123> 
+</code>
+
+Unfortunately our counter counts synchronous to the simulation time.
+As the counter wraps around, we should get different numbers when triggering for the next count==123. But we don't want to type in the condition every time. Therefore we will set a permanent breakpoint. (Of course we can also use the input history of IPython to save typing.)
+
+<code myhdl>
+123> break count==123
+123> cont
+Breakpoint at count==123
+379> cont
+Breakpoint at count==123
+635> 
+</code>
+
+After ''break'' the simulation does not automatically continue - to give let us add some more breakpoints. We have to continue with ''cont''.
+The simulator stops at the next ocurrence of the breakpoint condition.
+
+Yes, we want to see 123 every time it occurs, but we want to see also 155, but only once. Therefore we set a temporary breakpoint with ''tbreak''.
+
+<code myhdl>
+635> tbreak count==155
+635> cont
+Breakpoint at count==155
+667> cont
+Breakpoint at count==123
+891> cont
+Breakpoint at count==123
+1147> 
+</code>
+
+Every time the counter wraps around our ''out'' signal toggles.
+
+Now we only want to stop when ''out'' is ''1'' and the counter value is ''123''. First we have to ''clear'' the existent breakpoints.
+
+<code myhdl>
+1147> clear
+1147> break out==1 and count==123
+1147> cont
+Breakpoint at out==1 and count==123
+1659> out
+1659: Signal(True)
+1659> count
+1659: Signal(intbv(123L))
+1659> 
+</code>
+
+To stop the simulation we could raise as StopSimulation exception.
+
+<code myhdl>
+1659> raise StopSimulation
+Simulation Stopped
+1659>
+</code>
+
+The magic function ''stop'' does exactly this.
+
+<code myhdl>
+1659> stop
+Simulation Stopped
+1659>
+</code>
+
+===== Requirements =====
+
+  * IPython 0.8.4 
+  * Python 2.4 or 2.5
+  * MyHDL 0.6
+
+===== Setup and Configuration =====
+
+IPython uses GNU Readline. So the settings in ~/.inputrc are also effective for myhdl_ipshell.py.
+
+The IPython configuraton files i.e ~/.ipython/ipythonrc or ~/.ipython/ipy_user_conf.py are also effective.
+Some options are reconfigured in myhdl_ipshell.py.
+
+Put 
+<code myhdl>
+dbg = myhdl_ipshell.debugger(**locals())
+</code> 
+in the function you want to debug.
+
+
+
+===== Bugs =====
+
+  * Unusual behaviour of Ctrl-C and Ctrl-D
+  * Unsusual behaviour quit and exit
+  * Replaying of logfiles does not work
+  * no testfiles available
+
+===== Wishlist =====
+  * Prompt should show a userdefinable set of variables and their values in different color when the values have changed since last break.
+  * Breakpoints at signal edges
+  * Simulation of on the fly typed code
+  * Interactive conversion 
+  * Generator namespace inspection
+
+===== breakpointdemo.py =====
+
+<code myhdl>
+#!/usr/bin/env python
+"""
+demo for interactive simulation
+"""
+
+from myhdl import *
+from myhdl_ipshell import debugger
+
+clk = Signal(bool(0))
+count = Signal(intbv(0)[8:])
+out = Signal(bool(0))
+
+
+@instance
+def clockgenerator():
+    """
+    generate a clock signal at the clk output
+    """
+    while(1):
+        clk.next = not clk
+        yield delay(1)
+
+
+@always(clk)
+def counter():
+    """
+    count the transitions at the clk input
+    """
+    count.next = (count + 1)%256
+    if count == 0:
+        out.next = not out.next
+
+
+dbg = debugger(**locals())
+
+Simulation(instances()).run()
+
+</code>
+
+===== myhdl_ipshell.py =====
+
+<code myhdl>
+from IPython.Shell import IPShellEmbed
+ipshell = IPShellEmbed()
+
+import os,sys
+from IPython import ipapi, Prompts
+import myhdl
+from myhdl import *
+
+__breakpoints__={}
+__conditions__=[]
+
+
+def startshell(text=""):
+    return ipshell(text + """
+    Interactive MyHDL Simulator
+
+    Commands:
+    --------
+    step
+    cont
+    break
+    tbreak
+    clear 
+    quit
+
+    and the full power of IPython
+    """)
+
+
+def myhdl_inputprompt(self, cont):
+    """
+    create an informative input prompt for myhdl
+    """
+    ip = self.api
+    colors = Prompts.PromptColors[""].colors
+    if cont:
+        return "%s%s%s> " % ( \
+            colors.in_prompt2,
+            "."*(4+1+1),
+            colors.normal)
+    else:
+        return "%s%s%s> " % ( \
+            colors.in_prompt,
+            now(),
+            colors.normal)
+
+
+def myhdl_outputprompt(self):
+    """
+    create an informative output prompt for myhdl
+    """
+    ip = self.api
+    colors = Prompts.PromptColors[""].colors
+    prompt = "%s%s:%s " % ( \
+        colors.out_prompt,
+        now(),
+        colors.normal)
+    return prompt
+
+
+def stopsimulation(*args):
+    """
+    code for the %stop 
+    """
+    raise StopSimulation
+
+
+def cont(*arg):
+    """
+    continue simulation
+    """
+    exit()
+
+
+def step(shell,*arg):
+    """
+    continue to next time step
+    """
+    __conditions__.append(("t","time == %s"%(now()+1)))
+    exit()
+
+
+def breakp(mode,arg):
+    """
+    process breakpoint settings
+    mode -- t|b      t will be deleted after first hit
+    arg  -- breakpoint condition
+    """
+    global __conditions__
+    try:
+        eval(arg)
+    except:
+        raise
+    arg = arg.strip()
+    if arg[0]=="+" and arg[1:].isdigit():
+            cond = "time == %s"%(now() + int(arg))
+    elif arg.isdigit():
+            cond = " time == %s"%int(arg)
+    else:            
+            cond = arg
+    __conditions__.append((mode,cond)) 
+
+
+def until(shell,condition):
+    """
+    continue simulation until condition is true 
+    """
+    breakp("t",condition)
+    exit()
+
+
+def tbreakpoint(shell,condition):
+    """
+    Set temporary breakpoint for condition .
+    Will be deleted after first hit.
+    """
+    breakp("t",condition)
+
+
+def breakpoint(shell,arg):
+    """
+    set breakpoint for condition
+    """
+    breakp("b",arg)
+
+
+def clear(shell,arg):
+    """
+    delete all breakpoints
+    """
+    global __conditions__
+    while len(__conditions__)>0:
+        __conditions__.pop()
+
+
+def debugger(**kwargs):
+    """
+    initialization of the debugger
+    """
+    global __conditions__
+    globals().update(kwargs)
+
+    startshell()
+
+    @instance
+    def Debugger():
+        while (1):
+                yield delay(1)
+                time = now()
+                for m,condition in __conditions__:
+                    if eval(condition):
+                        if m == "t":
+                            __conditions__.remove((m,condition))
+                        ipshell("Breakpoint at %s"%condition,local_ns=kwargs)
+
+    return Debugger 
+
+
+def custom_exit(*args,**kwargs):
+    ipshell("Simulation Stopped")
+    sys.exit()
+
+
+ip=ipapi.get()
+ip.options.confirm_exit=0                               
+ip.options.autocall=1
+ip.options.automagic=1
+ip.set_custom_exc((StopSimulation,),custom_exit)
+ip.expose_magic("stop",stopsimulation)
+ip.expose_magic("quit",stopsimulation)
+ip.expose_magic("cont",cont)
+ip.expose_magic("step",step)
+ip.expose_magic("until",until)
+ip.expose_magic("tbreak",tbreakpoint)
+ip.expose_magic("break",breakpoint)
+ip.expose_magic("clear",clear)
+    
+### Shortcuts similar to Python Debugger ###        
+ip.expose_magic("b",breakpoint)
+ip.expose_magic("s",step)
+ip.expose_magic("c",cont)
+
+ip.set_hook("generate_prompt", myhdl_inputprompt)
+ip.set_hook("generate_output_prompt", myhdl_outputprompt)
+</code>
+

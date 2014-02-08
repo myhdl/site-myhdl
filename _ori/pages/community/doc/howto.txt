@@ -1,0 +1,262 @@
+====== Hardware design with MyHDL ======
+
+====== Abstract =====
+
+<code myhdl>
+from math import pi, sin, cos
+import random
+
+from myhdl import *
+
+from SineComputer import SineComputer
+
+def bench(N=16, errorMargin=16, nrTests=1000):
+
+    # scaling factor
+    M = 2**N
+
+    # maximum angle
+    ZMAX = int(round(M*pi/2))
+
+    # signals
+    cos_z0 = Signal(intbv(0, min=-M, max=M+N))
+    sin_z0 = Signal(intbv(0, min=-M, max=M+1))
+    z0 = Signal(intbv(0, min=-ZMAX, max=ZMAX+1))
+    done = Signal(False)
+    start = Signal(False)
+    clock = Signal(bool(0))
+    reset = Signal(True)
+
+    # design under test
+    dut = SineComputer(cos_z0, sin_z0, done, z0, start, clock, reset, N)
+
+    # clock generator
+    @always(delay(10))
+    def clockgen():
+        clock.next = not clock
+
+    # test vector setup
+    testAngles = [-pi/2, -pi/4, 0.0, pi/4, pi/2]
+    testAngles.extend([random.uniform(-pi/2, pi/2) for i in range(nrTests)])
+   
+    # actual test 
+    @instance
+    def check():
+        yield clock.negedge
+        reset.next = False
+        yield clock.negedge
+        for z in testAngles:
+            yield clock.negedge
+            z0.next = int(round(M*z))
+            start.next = True
+            yield clock.negedge
+            start.next = False
+            yield done.posedge
+            exp_cos_z0 = int(round(cos(z)*M))
+            exp_sin_z0 = int(round(sin(z)*M))
+            assert abs(cos_z0 - exp_cos_z0) < errorMargin
+            assert abs(sin_z0 - exp_sin_z0) < errorMargin
+
+        raise StopSimulation
+
+    return dut, clockgen, check
+
+def test_bench():
+    sim = Simulation(bench())
+    sim.run()
+</code>
+
+
+<code myhdl>
+from math import atan, sqrt, ceil, floor, pi
+
+from myhdl import *
+
+t_State = enum("WAITING", "CALCULATING")
+
+def SineComputer(cos_z0, sin_z0, done, z0, start, clock, reset, N=16):
+    
+    # calculate x0
+    An = 1.0
+    for i in range(N):
+        An *= (sqrt(1 + 2**(-2*i)))
+
+    # scaling factor
+    M = 2**N
+
+    # X0
+    X0 = int(round(M*1/An))
+    
+    # tuple with elementary angles
+    angles = tuple([int(round(M*atan(2**(-i)))) for i in range(N)])
+
+    # maximal angle
+    ZMAX = int(round(M*pi/2))
+
+    # iterative cordic processor
+    @instance
+    def processor():
+        
+        x = intbv(0, min=-M, max=M+N)
+        y = intbv(0, min=-M, max=M+1)
+        z = intbv(0, min=-ZMAX, max=ZMAX+1)
+        dx = intbv(0, min=-M, max=M+1)
+        dy = intbv(0, min=-M, max=M+1)
+        dz = intbv(0, min=-ZMAX, max=ZMAX)
+        i = intbv(0, min=0, max=N)
+        state = t_State.WAITING
+
+        while True:
+            yield clock.posedge, reset.posedge
+
+            if reset:
+                state = t_State.WAITING
+                cos_z0.next = 1
+                sin_z0.next = 0
+                done.next = False
+                x[:] = 0
+                y[:] = 0
+                z[:] = 0
+                i[:] = 0
+
+            else:
+                if state == t_State.WAITING:
+                    if start:
+                        x[:] = X0
+                        y[:] = 0
+                        z[:] = z0
+                        i[:] = 0
+                        done.next = False
+                        state = t_State.CALCULATING
+
+                elif state == t_State.CALCULATING:
+                    dx[:] = y >> i
+                    dy[:] = x >> i
+                    dz[:] = angles[int(i)]
+                    if (z >= 0):
+                        x -= dx
+                        y += dy
+                        z -= dz
+                    else:
+                        x += dx
+                        y -= dy
+                        z += dz
+                    if i == N-1:
+                        cos_z0.next = x
+                        sin_z0.next = y
+                        state = t_State.WAITING
+                        done.next = True
+                    else:
+                        i += 1
+
+    return processor
+</code>
+
+
+<code verilog>
+module SineComputer (
+    cos_z0,
+    sin_z0,
+    done,
+    z0,
+    start,
+    clock,
+    reset
+);
+
+output signed [17:0] cos_z0;
+reg signed [17:0] cos_z0;
+output signed [17:0] sin_z0;
+reg signed [17:0] sin_z0;
+output done;
+reg done;
+input signed [17:0] z0;
+input start;
+input clock;
+input reset;
+
+
+
+always @(posedge clock or posedge reset) begin: _SineComputer_processor
+    reg [4-1:0] i;
+    reg [1-1:0] state;
+    reg signed [18-1:0] dz;
+    reg signed [18-1:0] dx;
+    reg signed [18-1:0] dy;
+    reg signed [18-1:0] y;
+    reg signed [18-1:0] x;
+    reg signed [18-1:0] z;
+    if (reset) begin
+        state = 1'b0;
+        cos_z0 <= 1;
+        sin_z0 <= 0;
+        done <= 0;
+        x = 0;
+        y = 0;
+        z = 0;
+        i = 0;
+    end
+    else begin
+        // synthesis parallel_case full_case
+        casez (state)
+            1'b0: begin
+                if (start) begin
+                    x = 39797;
+                    y = 0;
+                    z = z0;
+                    i = 0;
+                    done <= 0;
+                    state = 1'b1;
+                end
+            end
+            1'b1: begin
+                dx = (y >> $signed({1'b0, i}));
+                dy = (x >> $signed({1'b0, i}));
+                // synthesis parallel_case full_case
+                case (i)
+                    0: dz = 51472;
+                    1: dz = 30386;
+                    2: dz = 16055;
+                    3: dz = 8150;
+                    4: dz = 4091;
+                    5: dz = 2047;
+                    6: dz = 1024;
+                    7: dz = 512;
+                    8: dz = 256;
+                    9: dz = 128;
+                    10: dz = 64;
+                    11: dz = 32;
+                    12: dz = 16;
+                    13: dz = 8;
+                    14: dz = 4;
+                    default: dz = 2;
+                endcase
+                if ((z >= 0)) begin
+                    x = x - dx;
+                    y = y + dy;
+                    z = z - dz;
+                end
+                else begin
+                    x = x + dx;
+                    y = y - dy;
+                    z = z + dz;
+                end
+                if ((i == (16 - 1))) begin
+                    cos_z0 <= x;
+                    sin_z0 <= y;
+                    state = 1'b0;
+                    done <= 1;
+                end
+                else begin
+                    i = i + 1;
+                end
+            end
+        endcase
+    end
+end
+
+endmodule
+</code>
+
+
+

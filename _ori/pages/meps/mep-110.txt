@@ -1,0 +1,58 @@
+====== Keep hierarchy in conversion ======
+
+^              MEP: | 110 |
+^           Author: | Oscar Diaz |
+^           Status: | Draft |
+^          Created: | 06-May-2013 |
+^    MyHDL-Version: | 0.8 | 
+
+
+===== Introduction =====
+MyHDL structural descriptions support an arbitrary complex hierarchy for code conversion. As described in the [[:faq|FAQ]], hierarchy is flattened because conversion is based on an elaborated design.
+
+However, there are some situations which is desirable to have an equivalent structural description in the generated code. Usually, this structural description consists of a top module that instantiates several components previously defined.
+
+One particular use case is floorplanning in FPGA, in which each component in a structural description is allocated to fixed resources. 
+
+As thoroughly discussed in the mail list, hierarchy conversion could be useful in cases which a structural description is needed for synthesis and post-synthesis processes.
+
+===== Analysis =====
+Structural descriptions in MyHDL are based on functions that returns a list of generators. Those functions can be mapped to component definitions, and function calls to component instantiations.
+
+Looking at the returned value from a structural description, information about hierarchy is keep as a list-of-lists of generators, and flattened later for simulation and conversion.
+
+===== Proposed solution =====
+Hierarchical conversion can be supported by recursive calling to converter function for each function present in the top-level description, so the conversion functions can be used the same way as described in the [[http://www.myhdl.org/doc/current|documentation]].
+
+==== Depth on hierarchical conversion ====
+
+In order to keep control of the recursion call depth, a new attribute for the conversion functions is proposed:
+
+Attribute ''maxdepth'': controls the maximum depth which the converter is recursively called.
+
+  * ''0'': Don't do recursive calling. This is equivalent to default conversion (hierarchy flattening).
+
+  * ''1'': Make only one recursive call. That means keep hierarchy only from top module. Components are converted as default hierarchy flattening conversion 
+
+  * ''> 1'': Make recursive calls as deep as ''maxdepth'' value. 
+
+  * ''None'': Unlimited recursion depth. That means the converter will try to use component instantiation as possible.
+
+==== File generation ====
+
+Given that the converter is called recursively several times, multiple files are generated. If the components code are stable enough and previously converted, this recursive calls can be avoided to speed up conversion. A new attribute is proposed:
+
+Attribute ''no_component_files'' : 
+  * ''False'' : all components code is saved to disk.
+  * ''True'' : skip components code generation, only save top-module file.
+
+===== Limitations =====
+
+==== Component conversion ====
+
+All instantiated components must be top-module convertible. That means its ports should be well-defined (for instance, don't read output only ports), otherwise component declaration could use incorrect or unexpected attributes (port direction, bit widths, etc.)
+
+==== Component parameters ====
+
+Since converter doesn't support parameters in output code at top-module level, conversion has to "hard-code" them into several component declarations.
+Each time converter detect different parameters (and also different bit widths in signals), it generates a numbered component declaration for each different parameter value.

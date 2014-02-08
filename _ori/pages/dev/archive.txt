@@ -1,0 +1,10 @@
+====== Development Archive ======
+
+This is an archive for obsolete development pages. They are kept
+here for historical purposes and background reading.
+
+  * [[dev:0.7]]
+  * [[dev:todo:0.6]]
+  * [[dev:tovhdl]]
+  * [[dev:todo:0.5]]
+  * [[dev:snapshots]]

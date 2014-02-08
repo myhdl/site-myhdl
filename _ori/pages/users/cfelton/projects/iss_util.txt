@@ -1,0 +1,50 @@
+
+
+<code python>
+
+
+from math import ceil
+
+def DumpMem32(memList):
+    """
+    Return a formatted string of the emulated memory
+    """
+    llen = len(memList)
+    ll   = int(ceil(llen / 4.))
+    addr = 0
+    s = "  "
+    for ii in range(ll):
+        s = s + "%04X :  " % (addr)
+        for jj in range(4):
+            if (ii*4 + jj) < llen:
+                s = s + "%08X " % (memList[ii*8+jj])
+            else:
+                s = s + "00000000 "
+
+        for jj in range(4):
+            if (ii*4 + jj) < llen:
+                cm = [0] * 4
+                cm[3] = (memList[ii*8+jj]>>24) & 0xFF
+                cm[2] = (memList[ii*8+jj]>>16) & 0xFF
+                cm[1] = (memList[ii*8+jj]>>8) & 0xFF
+                cm[0] = (memList[ii*8+jj]) & 0xFF
+                for ii in range(4):
+                    if cm[ii] <= 0x20 or cm[ii] >= 0x5E:
+                        cm[ii] = '.'
+                    else:
+                        cm[ii] = chr(cm[ii])
+                s = s + "%c%c%c%c" % (cm[3], cm[2], cm[1], cm[0])
+            else:
+                s = s + "...."
+
+        addr += 16
+        s = s + "\n"
+        
+    s = s + "\n"
+
+    return s
+        
+        
+
+
+</code>

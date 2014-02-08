@@ -1,0 +1,148 @@
+====== Sine Wave Generator using Sigma Delta DAC ======
+
+===== Description =====
+
+This is a sinewave generator using a SigmaDelta DAC, i.e. it uses only one ouput bit and does not need external hardware beside the low pass filter.
+The [[projects:dsx1000|Delta-Sigma DAC core]] was created by [[users:george_pantazopoulos|George Pantazopoulos]]. For speed reasons we use a [[projects:sinewave_generator:highspeed_sigma_delta_dac|modified version]]. The [[projects:Cordic calculations| sine calculation]] is a modified version of the [[cookbook:sinecomp| MyHDL Cookbook Example]].
+
+===== Code =====
+
+<code myhdl>
+
+#!/usr/bin/env python
+
+"""                                                                            
+Sinewave generator using George Pantazopoulos' Sigma Delta DAC.
+"""
+ 
+from myhdl import *
+from math import log, ceil
+ 
+from dac_dsx1000_hd import dac_dsx1000
+from cordic import SinCos
+ 
+# ----------------------------------------------------------------------------
+ 
+def top(clk, pdm_o, CLK_HZ):
+    """
+    Top-level module.
+    Sine wave generator
+    """
+    __author__    = "Thomas Traber (orgin: George Pantazopoulos http://www.gammaburst.net)"
+ 
+    OUTPUT_FREQ_HZ = 10000.0
+    PHASE_RESOLUTION = 16 
+    PHASE_INC = int( OUTPUT_FREQ_HZ / CLK_HZ * 2**PHASE_RESOLUTION)
+
+    print "CLK_HZ = ", CLK_HZ
+    print "OUTPUT_FREQ_HZ = ", OUTPUT_FREQ_HZ
+ 
+    # Reset signal
+    rst = Signal(bool(0))
+
+    # PCM Audio signal. 
+    # Note that we control the (theoretical) resolution of the converter
+    # by setting the bit width of this signal.
+    DAC_RESOLUTION = 16
+    pcmi = Sigint(min=-2**DAC_RESOLUTION/2,max=2**DAC_RESOLUTION/2-1)
+    pcmq = Sigint(min=-2**DAC_RESOLUTION/2,max=2**DAC_RESOLUTION/2-1)
+    pcm_data = Sigint(N=DAC_RESOLUTION)
+
+    ampl = Sig(3,min=-2**15,max=2**15-1)
+    done = Sigbool(0)
+    samplingclk = Sigbool(0)
+    start = Sigbool(0)
+
+    # Dummy reset driver
+    @always_comb
+    def rstDrv():
+                rst.next = False
+ 
+    phase_accu = Sigint(min=-2**(PHASE_RESOLUTION-1),max=2**(PHASE_RESOLUTION-1)-1)
+    sinegen = SinCos(pcmi,pcmq,done,ampl,phase_accu,clk,clk,rst)
+
+    @always(done.posedge)
+    def sampler():
+        if done:
+            pcm_data.next = pcmi + 2**(DAC_RESOLUTION-1)            
+
+    @always(clk.posedge)
+    def PhaseAccumulator():
+        if phase_accu >= phase_accu.max - PHASE_INC:
+            phase_accu.next = phase_accu.min
+        else:            
+            phase_accu.next = phase_accu + PHASE_INC
+
+    # Instantiation of our Delta-Sigma DAC
+    DAC = dac_dsx1000(clk_i=clk, rst_i=rst, pcm_i=pcm_data, pdm_o=pdm_o)
+     
+    return instances()
+
+# ----------------------------------------------------------------------------
+
+def Datasaver(clk,pdm):
+    global outfile
+    outfile = file("sinewave.dat","w")
+
+    @always(clk.posedge)
+    def save_data():
+        outfile.write("%s\n"%(int(pdm)))
+
+    return instances()
+
+# ----------------------------------------------------------------------------
+
+if __name__=="__main__":
+    
+
+    # Set this to your FPGA's clock frequency
+    CLK_HZ = 81000000
+
+    if __name__=="__main__":
+        import sys
+
+        # Signals connected to the FPGA/CPLD
+        clk   = Signal(bool(0))
+        pdm_o = Signal(bool(0))
+
+        if sys.argv[1]=="v":
+            # MyHDL to Verilog conversion
+            toVerilog.name = "dsx1000"
+            toVerilog(top, clk, pdm_o, CLK_HZ)
+        else:
+            from testenv import *
+            clkgen = Clkgen(clk,2)
+            datasaver = Datasaver(clk,pdm_o)
+            simulate(2**18,top(clk,pdm_o,CLK_HZ),clkgen,datasaver)
+
+</code>
+
+===== Results =====
+
+==== Simulation ====
+
+Datasaver in the code above saves the simulation data in a file which is examined afterwords using matplotlib.
+
+The low frequency spectrum looks pretty good:
+
+{{:projects:sinewave_generator:sdspectrum.png|}}
+
+
+At higher frequencies the Sigma Delta Noise can be seen. This is filtered out by the analog low pass filter in hardware.
+
+{{:projects:sinewave_generator:sdnoisespectrumlow.png|}}
+ 
+
+The noise step at very high frequencies is supposed to be caused by the non constant sampling rate of the sinewave. The function ''sampler'' in the  code above samples the sine wave, whenever the cordic calculator signals ''done''.
+
+{{:projects:sinewave_generator:sdnoisespectrumhigh.png|}}
+
+
+==== Measurements ====
+
+The above code was compiled using quartus and programmed into a cycloneII.
+The system clock was 81MHz but the internal PLL was used to double the clock.
+
+{{:projects:sinewave_generator:screenshot_measured_spectrum.jpg|}}
+
+The level of the harmonics is much worse than in simulation, only -27 dB below the fundamental.
