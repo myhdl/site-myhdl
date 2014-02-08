@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="model-rtl.html">
+<LINK REL="previous" href="model.html">
+<LINK REL="up" href="model.html">
+<LINK REL="next" href="model-conf.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="3.1 Structural modeling ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>3.1 Structural modeling </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model-conf.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model.html">3. Modeling techniques</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model.html">3. Modeling techniques</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model-conf.html">3.1.1 Conditional instantiation</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION004100000000000000000">&nbsp;</A>
+<a name="l2h-8">&nbsp;</a>
+<BR>
+3.1 Structural modeling 
+</H1>
+
+<P>
+Hardware descriptions need to support the concepts of module
+instantiation and hierarchy.  In MyHDL, an instance is recursively
+defined as being either a sequence of instances, or a generator.
+Hierarchy is modeled by defining instances in a higher-level
+function, and returning them.  The following is a schematic example
+of the basic case.
+
+<P>
+<div class="verbatim"><pre>
+def top(...):
+    ...
+    instance_1 = module_1(...)
+    instance_2 = module_2(...)
+    ...
+    instance_n = module_n(...)
+    ... 
+    return instance_1, instance_2, ... , instance_n
+</pre></div>
+
+<P>
+Note that MyHDL uses conventional procedural techniques
+for modeling structure. This makes it straightforward
+to model more complex cases.
+
+<P>
+
+<p><hr>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></a>
+
+<UL CLASS="ChildLinks">
+<LI><A href="model-conf.html">3.1.1 Conditional instantiation</a>
+<LI><A href="model-instarray.html">3.1.2 Arrays of instances</a>
+<LI><A href="model-infer-instlist.html">3.1.3 Inferring the list of instances</a>
+</ul>
+<!--End of Table of Child-Links-->
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model-conf.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model.html">3. Modeling techniques</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model.html">3. Modeling techniques</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model-conf.html">3.1.1 Conditional instantiation</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on February 4, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

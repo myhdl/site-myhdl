@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="previous" href="model-comb-templ.html">
+<LINK REL="up" href="model-comb.html">
+<LINK REL="next" href="model-seq.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="3.2.1.2 Example ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>3.2.1.2 Example </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model-comb-templ.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model-comb.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model-seq.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model-comb-templ.html">3.2.1.1 Template</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model-comb.html">3.2.1 Combinatorial logic</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model-seq.html">3.2.2 Sequential logic</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION004212000000000000000">&nbsp;</A>
+<BR>
+3.2.1.2 Example 
+</H3>
+
+<P>
+The following is an example of a combinatorial multiplexer:
+
+<P>
+<div class="verbatim"><pre>
+from myhdl import Signal, Simulation, delay, always_comb
+
+def Mux(z, a, b, sel):
+
+    """ Multiplexer.
+    
+    z -- mux output
+    a, b -- data inputs
+    sel -- control input: select a if asserted, otherwise b
+
+    """
+
+    @always_comb
+    def muxLogic():
+        if sel == 1:
+            z.next = a
+        else:
+            z.next = b
+
+    return muxLogic
+</pre></div>
+
+<P>
+To verify it, we will simulate the logic with some random patterns. The
+<code>random</code> module in Python's standard library comes in handy for
+such purposes. The function <code>randrange(<var>n</var>)</code> returns a random
+natural integer smaller than <var>n</var>. It is used in the test bench
+code to produce random input values:
+
+<P>
+<div class="verbatim"><pre>
+from random import randrange
+
+z, a, b, sel = [Signal(0) for i in range(4)]
+
+mux_1 = Mux(z, a, b, sel)
+
+def test():
+    print "z a b sel"
+    for i in range(8):
+        a.next, b.next, sel.next = randrange(8), randrange(8), randrange(2)
+        yield delay(10)
+        print "%s %s %s %s" % (z, a, b, sel)
+
+test_1 = test()
+
+sim = Simulation(mux_1, test_1)
+sim.run()
+</pre></div>
+
+<P>
+Because of the randomness, the simulation output varies between runs
+<A NAME="tex2html6"
+  HREF="#foot793"><SUP>3.2</SUP></A>. One particular run produced the following
+output:
+
+<P>
+<div class="verbatim"><pre>
+% python mux.py
+z a b sel
+6 6 1 1
+7 7 1 1
+7 3 7 0
+1 2 1 0
+7 7 5 1
+4 7 4 0
+4 0 4 0
+3 3 5 1
+StopSimulation: No more events
+</pre></div>
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot793">... runs</A><A
+ href="model-comb-ex.html#tex2html6"><SUP>3.2</SUP></A></DT>
+<DD>It also possible to have a reproducible random output, by
+explicitly providing a seed value. See the documentation of the
+<code>random</code> module.
+
+</DD>
+</DL>
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model-comb-templ.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model-comb.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model-seq.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model-comb-templ.html">3.2.1.1 Template</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model-comb.html">3.2.1 Combinatorial logic</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model-seq.html">3.2.2 Sequential logic</A>
+<hr>
+<span class="release-info">Release 0.5, documentation updated on December 29, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

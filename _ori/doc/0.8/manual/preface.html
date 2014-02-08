@@ -1,0 +1,169 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Overview &mdash; MyHDL 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/myhdl.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="MyHDL 0.8 documentation" href="../index.html" />
+    <link rel="up" title="The MyHDL manual" href="index.html" />
+    <link rel="next" title="Background information" href="background.html" />
+    <link rel="prev" title="The MyHDL manual" href="index.html" /> 
+  </head>
+  <body>
+<div style="background-color: white; text-align: left; padding: 5px 5px 2px 15px">
+<a href="http://www.myhdl.org">
+    <img src="../_static/myhdl_logo_header.png" border=0 alt="MyHDL" />
+</a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="background.html" title="Background information"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="The MyHDL manual"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">The MyHDL manual</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">The MyHDL manual</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="background.html"
+                        title="next chapter">Background information</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/manual/preface.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<p>The goal of the MyHDL project is to empower hardware designers with
+the elegance and simplicity of the Python language.</p>
+<p>MyHDL is a free, open-source package for using Python as a
+hardware description and verification language. Python is a very high
+level language, and hardware designers can use its full power to model
+and simulate their designs.  Moreover, MyHDL can convert a design to
+Verilog or VHDL. This provides a path into a traditional design flow.</p>
+<p><em>Modeling</em></p>
+<p>Python&#8217;s power and clarity make MyHDL an ideal solution for high level
+modeling.  Python is famous for enabling elegant solutions to complex
+modeling problems.  Moreover, Python is outstanding for rapid
+application development and experimentation.</p>
+<p>The key idea behind MyHDL is the use of Python generators to model
+hardware concurrency. Generators are best described as resumable
+functions.  MyHDL generators are similar to always blocks in Verilog
+and processes in VHDL.</p>
+<p>A hardware module is modeled as a function that returns
+generators. This approach makes it straightforward to support features
+such as arbitrary hierarchy, named port association, arrays of
+instances, and conditional instantiation.  Furthermore, MyHDL provides
+classes that implement traditional hardware description concepts. It
+provides a signal class to support communication between generators, a
+class to support bit oriented operations, and a class for enumeration
+types.</p>
+<p><em>Simulation and Verification</em></p>
+<p>The built-in simulator runs on top of the Python interpreter. It supports
+waveform viewing by tracing signal changes in a VCD file.</p>
+<p>With MyHDL, the Python unit test framework can be used on hardware designs.
+Although unit testing is a popular modern software verification technique, it is
+still uncommon in the hardware design world.</p>
+<p>MyHDL can also be used as hardware verification language for Verilog
+designs, by co-simulation with traditional HDL simulators.</p>
+<p><em>Conversion to Verilog and VHDL</em></p>
+<p>Subject to some limitations, MyHDL designs can be converted to Verilog
+or VHDL.  This provides a path into a traditional design flow,
+including synthesis and implementation.  The convertible
+subset is restricted, but much wider than the standard synthesis subset.
+It includes features that can be used for high level modeling and test benches.</p>
+<p>The converter works on an instantiated design that has been
+fully elaborated. Consequently, the original design structure can be
+arbitrarily complex. Moreover, the conversion limitations apply only
+to code inside generators. Outside generators, Python&#8217;s full power can
+be used without compromising convertibility.</p>
+<p>Finally, the converter automates a number of tasks that are hard in
+Verilog or VHDL directly. A notable feature is the automated handling of
+signed arithmetic issues.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="background.html" title="Background information"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="The MyHDL manual"
+             >previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" >The MyHDL manual</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Jan Decaluwe.
+      Last updated on May 20, 2013.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

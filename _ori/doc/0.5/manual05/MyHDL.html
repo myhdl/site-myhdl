@@ -1,0 +1,331 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="contents.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="The MyHDL manual">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>The MyHDL manual</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A HREF="../Overview.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="contents.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="../Overview.html">Overview</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="contents.html">Contents</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<P>
+
+<link rel='up' href='../Overview.html' title='Overview'>
+<div class="titlepage">
+<center>
+<h1>The MyHDL manual</h1>
+<p><b><font size="+2">Jan Decaluwe</font></b></p>
+<p>
+Email: <span class="email">jan@jandecaluwe.com</span>
+</p>
+<p><strong>Release 0.5</strong><br>
+<strong>December 29, 2005</strong></p>
+<p>
+</center>
+</div>
+
+<P>
+Copyright &#169; 2003-2005 Jan Decaluwe.
+All rights reserved.
+
+<P>
+
+<H3>Abstract:</H3>
+<DIV CLASS="ABSTRACT">
+
+<P>
+
+<P>
+The goal of the MyHDL project is to empower hardware designers with
+the elegance and simplicity of the Python language.
+
+<P>
+MyHDL is a free, open-source (LGPL) package for using Python as a
+hardware description and verification language. Python is a very high
+level language, and hardware designers can use its full power to model
+and simulate their designs. Moreover, MyHDL can convert a design to
+Verilog. In combination with an external synthesis tool, it provides a
+complete path from Python to a silicon implementation.
+
+<P>
+<i>Modeling</i>
+
+<P>
+Python's power and clarity make MyHDL an ideal solution for high level
+modeling. Python is famous for enabling elegant solutions to complex
+modeling problems. Moreover, Python is outstanding for rapid
+application development and experimentation.
+
+<P>
+The key idea behind MyHDL is the use of Python generators to model
+hardware concurrency. Generators are best described as resumable
+functions. In MyHDL, generators are used in a specific way so that
+they become similar to always blocks in Verilog or processes in VHDL.
+
+<P>
+A hardware module is modeled as a function that returns any number of
+generators. This approach makes it straightforward to support features
+such as arbitrary hierarchy, named port association, arrays of
+instances, and conditional instantiation.
+
+<P>
+Furthermore, MyHDL provides classes that implement traditional
+hardware description concepts. It provides a signal class to support
+communication between generators, a class to support bit oriented
+operations, and a class for enumeration types.
+
+<P>
+<i>Simulation and Verification</i>
+
+<P>
+The built-in simulator runs on top of the Python interpreter. It
+supports waveform viewing by tracing signal changes in a VCD file.
+
+<P>
+With MyHDL, the Python unit test framework can be used on hardware
+designs. Although unit testing is a popular modern software
+verification technique, it is not yet common in the hardware design
+world, making it one more area in which MyHDL innovates.
+
+<P>
+MyHDL can also be used as hardware verification language for VHDL and
+Verilog designs, by co-simulation with traditional HDL simulators.
+
+<P>
+<i>Conversion to Verilog</i>
+
+<P>
+The converter to Verilog works on an instantiated design that has been
+fully elaborated. Consequently, the original design structure can be
+arbitrarily complex.
+
+<P>
+The converter automates certain tasks that are tedious or hard in
+Verilog directly. Notable features are the possibility to choose
+between various FSM state encodings based on a single attribute, the
+mapping of certain high-level objects to RAM and ROM descriptions, and
+the automated handling of signed arithmetic issues.
+
+<P>
+</DIV>
+<P>
+
+<P>
+
+<p><hr>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"></a>
+
+<UL CLASS="ChildLinks">
+<LI><A href="contents.html">Contents</a>
+<LI><A href="background.html">1. Background information</a>
+<UL>
+<LI><A href="prerequisites.html">1.1 Prerequisites</a>
+<LI><A href="tutorial.html">1.2 A small tutorial on generators</a>
+<LI><A href="deco.html">1.3 About decorators</a>
+</ul>
+<LI><A href="intro.html">2. Introduction to MyHDL</a>
+<UL>
+<LI><A href="intro-basic.html">2.1 A basic MyHDL simulation</a>
+<LI><A href="intro-conc.html">2.2 Signals, ports, and concurrency</a>
+<LI><A href="intro-hier.html">2.3 Parameters and hierarchy</a>
+<LI><A href="intro-bit.html">2.4 Bit oriented operations</a>
+<UL>
+<LI><A href="intro-indexing.html">2.4.1 Bit indexing</a>
+<LI><A href="intro-slicing.html">2.4.2 Bit slicing</a>
+</ul>
+<LI><A href="intro-python.html">2.5 Some remarks on MyHDL and Python</a>
+<LI><A href="intro-summary.html">2.6 Summary and perspective</a>
+</ul>
+<LI><A href="model.html">3. Modeling techniques</a>
+<UL>
+<LI><A href="model-structure.html">3.1 Structural modeling</a>
+<UL>
+<LI><A href="model-conf.html">3.1.1 Conditional instantiation</a>
+<LI><A href="model-instarray.html">3.1.2 Arrays of instances</a>
+<LI><A href="model-infer-instlist.html">3.1.3 Inferring the list of instances</a>
+</ul>
+<LI><A href="model-rtl.html">3.2 RTL modeling</a>
+<UL>
+<LI><A href="model-comb.html">3.2.1 Combinatorial logic</a>
+<LI><A href="model-seq.html">3.2.2 Sequential logic</a>
+<LI><A href="model-fsm.html">3.2.3 Finite State Machine modeling</a>
+</ul>
+<LI><A href="model-hl.html">3.3 High level modeling</a>
+<UL>
+<LI><A href="model-bfm.html">3.3.1 Modeling with bus-functional procedures</a>
+<LI><A href="model-mem.html">3.3.2 Modeling memories with built-in types</a>
+<LI><A href="model-err.html">3.3.3 Modeling errors using exceptions</a>
+<LI><A href="model-obj.html">3.3.4 Object oriented modeling</a>
+</ul>
+</ul>
+<LI><A href="unittest.html">4. Unit testing</a>
+<UL>
+<LI><A href="unittest-intro.html">4.1 Introduction</a>
+<LI><A href="unittest-why.html">4.2 The importance of unit tests</a>
+<LI><A href="unittest-dev.html">4.3 Unit test development</a>
+<UL>
+<LI><A href="unittest-req.html">4.3.1 Defining the requirements</a>
+<LI><A href="unittest-first.html">4.3.2 Writing the test first</a>
+<LI><A href="unittest-impl.html">4.3.3 Test-driven implementation</a>
+<LI><A href="unittest-change.html">4.3.4 Changing requirements</a>
+</ul>
+</ul>
+<LI><A href="cosim.html">5. Co-simulation with Verilog and VHDL</a>
+<UL>
+<LI><A href="cosim-intro.html">5.1 Introduction</a>
+<LI><A href="cosim-hdl.html">5.2 The HDL side</a>
+<LI><A href="cosim-myhdl.html">5.3 The MyHDL side</a>
+<LI><A href="cosim-restr.html">5.4 Restrictions</a>
+<UL>
+<LI><A href="cosim-pass.html">5.4.1 Only passive HDL can be co-simulated</a>
+<LI><A href="cosim-race.html">5.4.2 Race sensitivity issues</a>
+</ul>
+<LI><A href="cosim-impl.html">5.5 Implementation notes</a>
+<UL>
+<LI><A href="cosim-icarus.html">5.5.1 Icarus Verilog</a>
+<LI><A href="cosim-cver.html">5.5.2 Cver</a>
+<LI><A href="cosim-impl-verilog.html">5.5.3 Other Verilog simulators</a>
+<LI><A href="cosim-impl-syscalls.html">5.5.4 Interrupted system calls</a>
+<LI><A href="cosim-impl-vhdl.html">5.5.5 VHDL</a>
+</ul>
+</ul>
+<LI><A href="conv.html">6. Conversion to Verilog</a>
+<UL>
+<LI><A href="conv-intro.html">6.1 Introduction</a>
+<LI><A href="conv-solution.html">6.2 Solution description</a>
+<LI><A href="conv-features.html">6.3 Features</a>
+<UL>
+<LI><A href="conv-features-elab.html">6.3.1 The design is converted after elaboration</a>
+<LI><A href="conv-features-struc.html">6.3.2 The structural description can be arbitrarily complex and hierarchical</a>
+<LI><A href="conv-features-gen.html">6.3.3 Generators are mapped to Verilog always or initial blocks</a>
+<LI><A href="conv-features-intf.html">6.3.4 The Verilog module interface is inferred from signal usage</a>
+<LI><A href="conv-features-func.html">6.3.5 Function calls are mapped to a unique Verilog function or task call</a>
+<LI><A href="conv-features-if.html">6.3.6 If-then-else structures may be mapped to Verilog case statements</a>
+<LI><A href="conv-features-enum.html">6.3.7 Choice of encoding schemes for enumeration types</a>
+<LI><A href="conf-features-ram.html">6.3.8 Support for RAM inference</a>
+<LI><A href="conf-features-rom.html">6.3.9 Support for ROM memory</a>
+<LI><A href="conf-features-signed.html">6.3.10 Support for signed arithmetic</a>
+<LI><A href="conf-features-udfv.html">6.3.11 Support for user-defined Verilog code</a>
+</ul>
+<LI><A href="conv-subset.html">6.4 The convertible subset</a>
+<UL>
+<LI><A href="conv-subset-intro.html">6.4.1 Introduction</a>
+<LI><A href="conv-subset-style.html">6.4.2 Coding style</a>
+<LI><A href="conv-subset-types.html">6.4.3 Supported types</a>
+<LI><A href="conv-subset-statements.html">6.4.4 Supported statements</a>
+</ul>
+<LI><A href="conv-meth.html">6.5 Methodology notes</a>
+<UL>
+<LI><A href="conv-meth-sim.html">6.5.1 Simulation</a>
+<LI><A href="conv-meth-conv.html">6.5.2 Conversion output verification</a>
+<LI><A href="conv-meth-assign.html">6.5.3 Assignment issues</a>
+</ul>
+<LI><A href="conv-usage.html">6.6 Converter usage</a>
+<UL>
+<LI><A href="conv-usage-small.html">6.6.1 A small sequential design</a>
+<LI><A href="conv-usage-gen.html">6.6.2 A small combinatorial design</a>
+<LI><A href="conv-usage-hier.html">6.6.3 A hierarchical design</a>
+<LI><A href="conv-usage-fsm.html">6.6.4 Optimizations for finite state machines</a>
+<LI><A href="conf-usage-RAM.html">6.6.5 RAM inference</a>
+<LI><A href="conf-usage-ROM.html">6.6.6 ROM inference</a>
+<LI><A href="conf-usage-custom.html">6.6.7 User-defined Verilog code</a>
+</ul>
+<LI><A href="conv-issues.html">6.7 Known issues</a>
+</ul>
+<LI><A href="ref-misc.html">7. Reference</a>
+<UL>
+<LI><A href="ref-sim.html">7.1 Simulation</a>
+<UL>
+<LI><A href="ref-simclass.html">7.1.1 The <tt class="class">Simulation</tt> class</a>
+<LI><A href="ref-simsupport.html">7.1.2 Simulation support functions</a>
+<LI><A href="ref-trace.html">7.1.3 Waveform tracing</a>
+</ul>
+<LI><A href="ref-model.html">7.2 Modeling</a>
+<UL>
+<LI><A href="ref-sig.html">7.2.1 The <tt class="class">Signal</tt> class</a>
+<LI><A href="ref-gen.html">7.2.2 MyHDL generators and trigger objects</a>
+<LI><A href="ref-deco.html">7.2.3 Decorator functions</a>
+<LI><A href="ref-intbv.html">7.2.4 The <tt class="class">intbv</tt> class</a>
+<LI><A href="ref-model-misc.html">7.2.5 Miscellaneous modeling support functions</a>
+</ul>
+<LI><A href="ref-cosim.html">7.3 Co-simulation</a>
+<UL>
+<LI><A href="ref-cosim-myhdl.html">7.3.1 MyHDL</a>
+<LI><A href="ref-cosim-verilog.html">7.3.2 Verilog</a>
+<LI><A href="ref-cosim-vhdl.html">7.3.3 VHDL</a>
+</ul>
+<LI><A href="ref-conv.html">7.4 Conversion to Verilog</a>
+<UL>
+<LI><A href="ref-conv-conv.html">7.4.1 Conversion</a>
+<LI><A href="ref-conv-user.html">7.4.2 User-defined Verilog code</a>
+</ul>
+</ul>
+<LI><A href="genindex.html">Index</a>
+<LI><A href="about.html">About this document ...</a>
+</ul>
+<!--End of Table of Child-Links-->
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A HREF="../Overview.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="contents.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="../Overview.html">Overview</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="contents.html">Contents</A>
+<hr>
+<span class="release-info">Release 0.5, documentation updated on December 29, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

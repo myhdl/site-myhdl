@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="deco.html">
+<LINK REL="previous" href="prerequisites.html">
+<LINK REL="up" href="background.html">
+<LINK REL="next" href="deco.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="1.2 A small tutorial on generators ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>1.2 A small tutorial on generators </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="prerequisites.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="background.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="deco.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="prerequisites.html">1.1 Prerequisites</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="background.html">1. Background information</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="deco.html">1.3 About decorators</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION002200000000000000000">&nbsp;</A>
+<a name="l2h-1">&nbsp;</a>
+<BR>
+1.2 A small tutorial on generators 
+</H1>
+
+<P>
+Generators are a relatively recent Python feature. They
+were introduced in Python&nbsp;2.2.
+Because generators are the key concept in
+MyHDL, a small tutorial is included a here.
+
+<P>
+Consider the following nonsensical function:
+
+<P>
+<div class="verbatim"><pre>
+def function():
+    for i in range(5):
+        return i
+</pre></div>
+
+<P>
+You can see why it doesn't make a lot of sense. As soon as the first
+loop iteration is entered, the function returns:
+
+<P>
+<div class="verbatim"><pre>
+&gt;&gt;&gt; function()
+0
+</pre></div>
+
+<P>
+Returning is fatal for the function call. Further loop iterations
+never get a chance, and nothing is left over from the function call
+when it returns.
+
+<P>
+To change the function into a generator function, we replace
+<tt class="keyword">return</tt> with <tt class="keyword">yield</tt>:
+
+<P>
+<div class="verbatim"><pre>
+def generator():
+    for i in range(5):
+        yield i
+</pre></div>
+
+<P>
+Now we get:
+
+<P>
+<div class="verbatim"><pre>
+&gt;&gt;&gt; generator()
+&lt;generator object at 0x815d5a8&gt;
+</pre></div>
+
+<P>
+When a generator function is called, it returns a generator object. A
+generator object supports the iterator protocol, which is an expensive
+way of saying that you can let it generate subsequent values by
+calling its <tt class="function">next()</tt> method:
+
+<P>
+<div class="verbatim"><pre>
+&gt;&gt;&gt; g = generator()
+&gt;&gt;&gt; g.next()
+0
+&gt;&gt;&gt; g.next()
+1
+&gt;&gt;&gt; g.next()
+2
+&gt;&gt;&gt; g.next()
+3
+&gt;&gt;&gt; g.next()
+4
+&gt;&gt;&gt; g.next()
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in ?
+StopIteration
+</pre></div>
+
+<P>
+Now we can generate the subsequent values from the for loop on demand,
+until they are exhausted. What happens is that the
+<tt class="keyword">yield</tt> statement is like a
+<tt class="keyword">return</tt>, except that it is non-fatal: the generator remembers
+its state and the point in the code when it yielded. A higher order
+agent can decide when to get the next value by calling the
+generator's <tt class="function">next()</tt> method. We say that generators are
+<i class="dfn">resumable functions</i>.
+
+<P>
+If you are familiar with hardware description languages, this may ring
+a bell. In hardware simulations, there is also a higher order agent,
+the Simulator, that interacts with such resumable functions; they are
+called 
+<i class="dfn">processes</i> in VHDL and 
+<i class="dfn">always blocks</i> in
+Verilog.  Similarly, Python generators provide an elegant
+and efficient method to model concurrency, without having to resort to
+some form of threading.
+
+<P>
+The use of generators to model concurrency is the first key concept in
+MyHDL. The second key concept is a related one: in MyHDL, the
+yielded values are used to specify the conditions on which the
+generator should wait before resuming. In other words, <tt class="keyword">yield</tt>
+statements work as general 
+sensitivity lists. 
+
+<P>
+For more info about generators, consult the on-line Python
+documentation, e.g. at <a class="url" href="http://www.python.org/doc/2.2.2/whatsnew">http://www.python.org/doc/2.2.2/whatsnew</a>. 
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="prerequisites.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="background.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="deco.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="prerequisites.html">1.1 Prerequisites</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="background.html">1. Background information</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="deco.html">1.3 About decorators</A>
+<hr>
+<span class="release-info">Release 0.5.1, documentation updated on May 1, 2006.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

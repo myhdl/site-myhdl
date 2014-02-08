@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="whatsnew03.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="whatsnew03.html" title='What's New in MyHDL 0.3'>
+<link rel="contents" href="contents.html" title="Contents"><link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="section-concat.html">
+<LINK REL="previous" href="section-processes.html">
+<LINK REL="up" HREF="whatsnew03.html">
+<LINK REL="next" href="section-concat.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="6 Class intbv enhancements">
+<META NAME="keywords" CONTENT="whatsnew03">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>6 Class intbv enhancements</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="section-processes.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A HREF="whatsnew03.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="section-concat.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">What's New in MyHDL 0.3</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="section-processes.html">5 Inferring the list</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew03.html">What's New in MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="section-concat.html">7 Function concat()</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000700000000000000000">&nbsp;</A>
+<BR>
+6 Class <tt class="class">intbv</tt> enhancements
+</H1>
+
+<P>
+Class <tt class="class">intbv</tt> has been enhanced with new features.
+
+<P>
+It is now possible to leave the left index of a slicing operation
+unspecified. The meaning is to access ``all'' higher order bits. For
+example:
+
+<P>
+<div class="verbatim"><pre>
+&gt;&gt;&gt; from myhdl import intbv
+&gt;&gt;&gt; n = intbv()
+&gt;&gt;&gt; hex(n)
+'0x0'
+&gt;&gt;&gt; n[:] = 0xde
+&gt;&gt;&gt; hex(n)
+'0xde'
+&gt;&gt;&gt; n[:8] = 0xfa
+&gt;&gt;&gt; hex(n)
+'0xfade'
+&gt;&gt;&gt; n[8:] = 0xb4
+&gt;&gt;&gt; hex(n)
+'0xfab4'
+</pre></div>
+
+<P>
+<tt class="class">intbv</tt> objects now have <var>min</var> and <var>max</var> attributes
+that can be specified at construction time. The meaning is that
+only values within <code>range(min, max)</code> are permitted. The default
+value for these attributes is <var>None</var>, meaning ``infinite''. For
+example (traceback output shortened for clarity):
+
+<P>
+<div class="verbatim"><pre>
+&gt;&gt;&gt; n = intbv(min=-17, max=53)
+&gt;&gt;&gt; n
+intbv(0)
+&gt;&gt;&gt; n.min
+-17
+&gt;&gt;&gt; n.max
+53
+&gt;&gt;&gt; n[:] = 28
+&gt;&gt;&gt; n
+intbv(28)
+&gt;&gt;&gt; n[:] = -18
+Traceback (most recent call last):
+    ....
+ValueError: intbv value -18 &lt; minimum -17
+&gt;&gt;&gt; n[:] = 53
+Traceback (most recent call last):
+    ....
+ValueError: intbv value 53 &gt;= maximum 53
+</pre></div>
+
+<P>
+When a slice is taken from an <tt class="class">intbv</tt> object, the return value
+is a new <tt class="class">intbv</tt> object with a defined bit width. As in
+Verilog, the value of the new <tt class="class">intbv</tt> object is always
+positive, regardless of the sign of the original value. In addition,
+the <var>min</var> and <var>max</var> attributes are set implicitly:
+
+<P>
+<div class="verbatim"><pre>
+&gt;&gt;&gt; v = intbv()[6:]
+&gt;&gt;&gt; v
+intbv(0)
+&gt;&gt;&gt; v.min
+0
+&gt;&gt;&gt; v.max
+64
+</pre></div>
+
+<P>
+Lastly, a small change was implemented with regard to 
+binary operations. In previous versions, both numeric
+and bit-wise operations always returned a new <tt class="class">intbv</tt>
+object, even in mixed-mode operations with <tt class="class">int</tt>
+objects. This has changed: numeric operations 
+return an <tt class="class">int</tt>, and bitwise operations return
+a <tt class="class">intbv</tt>. In this way, the return value corresponds
+better to the nature of the operation.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="section-processes.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A HREF="whatsnew03.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="section-concat.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">What's New in MyHDL 0.3</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="section-processes.html">5 Inferring the list</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew03.html">What's New in MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="section-concat.html">7 Function concat()</A>
+<hr>
+<span class="release-info">Release 0.3.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

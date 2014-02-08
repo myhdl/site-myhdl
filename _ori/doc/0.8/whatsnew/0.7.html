@@ -1,0 +1,518 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>What’s new in MyHDL 0.7 &mdash; MyHDL 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/myhdl.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="MyHDL 0.8 documentation" href="../index.html" />
+    <link rel="next" title="What’s new in MyHDL 0.6" href="0.6.html" />
+    <link rel="prev" title="What’s new in MyHDL 0.8" href="0.8.html" /> 
+  </head>
+  <body>
+<div style="background-color: white; text-align: left; padding: 5px 5px 2px 15px">
+<a href="http://www.myhdl.org">
+    <img src="../_static/myhdl_logo_header.png" border=0 alt="MyHDL" />
+</a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0.6.html" title="What’s new in MyHDL 0.6"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0.8.html" title="What’s new in MyHDL 0.8"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">What&#8217;s new in MyHDL 0.7</a><ul>
+<li><a class="reference internal" href="#conversion-to-vhdl-verilog-rewritten-with-the-ast-module">Conversion to VHDL/Verilog rewritten with the <tt class="docutils literal"><span class="pre">ast</span></tt> module</a></li>
+<li><a class="reference internal" href="#shadow-signals">Shadow signals</a><ul>
+<li><a class="reference internal" href="#background">Background</a></li>
+<li><a class="reference internal" href="#introducing-shadow-signals">Introducing shadow signals</a></li>
+<li><a class="reference internal" href="#concrete-shadow-signal-subclasses">Concrete shadow signal subclasses</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-signal-and-intbv-objects-as-indices">Using <tt class="docutils literal"><span class="pre">Signal</span></tt> and <tt class="docutils literal"><span class="pre">intbv</span></tt> objects as indices</a></li>
+<li><a class="reference internal" href="#new-configuration-attributes-for-conversion-file-headers">New configuration attributes for conversion file headers</a></li>
+<li><a class="reference internal" href="#conversion-propagates-docstrings">Conversion propagates docstrings</a></li>
+<li><a class="reference internal" href="#new-method-to-specify-user-defined-code">New method to specify user-defined code</a></li>
+<li><a class="reference internal" href="#more-powerful-mapping-to-case-statements">More powerful mapping to case statements</a></li>
+<li><a class="reference internal" href="#small-changes">Small changes</a><ul>
+<li><a class="reference internal" href="#signaltype-as-the-base-class-of-signals"><tt class="docutils literal"><span class="pre">SignalType</span></tt> as the base class of Signals</a></li>
+<li><a class="reference internal" href="#default-value-of-intbv-objects">Default value of <tt class="docutils literal"><span class="pre">intbv</span></tt> objects</a></li>
+<li><a class="reference internal" href="#combinatorial-always-blocks-use-blocking-assignments">Combinatorial always blocks use blocking assignments</a></li>
+<li><a class="reference internal" href="#no-synthesis-pragmas-in-verilog-output">No synthesis pragmas in Verilog output</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#python-version">Python version</a></li>
+<li><a class="reference internal" href="#acknowledgments">Acknowledgments</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="0.8.html"
+                        title="previous chapter">What&#8217;s new in MyHDL 0.8</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="0.6.html"
+                        title="next chapter">What&#8217;s new in MyHDL 0.6</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/whatsnew/0.7.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="what-s-new-in-myhdl-0-7">
+<span id="new07"></span><h1>What&#8217;s new in MyHDL 0.7<a class="headerlink" href="#what-s-new-in-myhdl-0-7" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Author:</th><td class="field-body">Jan Decaluwe</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="conversion-to-vhdl-verilog-rewritten-with-the-ast-module">
+<h2>Conversion to VHDL/Verilog rewritten with the <tt class="docutils literal"><span class="pre">ast</span></tt> module<a class="headerlink" href="#conversion-to-vhdl-verilog-rewritten-with-the-ast-module" title="Permalink to this headline">¶</a></h2>
+<p>The most important code change is a change that hopefully no-one will
+notice :-).  The conversion code is now based on the <tt class="docutils literal"><span class="pre">ast</span></tt> package
+instead of the <tt class="docutils literal"><span class="pre">compiler</span></tt> package.  Since Python 2.6, the
+<tt class="docutils literal"><span class="pre">compiler</span></tt> package is deprecated and replaced by the new <tt class="docutils literal"><span class="pre">ast</span></tt>
+package in the standard library. In Python 3, the <tt class="docutils literal"><span class="pre">compiler</span></tt> package
+is no longer available.</p>
+<p>This was a considerable effort, spent on re-implementing existing
+behavior instead of on new interesting features.  This was
+unfortunate, but it had to be done with priority.  Now the conversion
+code is ready for the future.</p>
+</div>
+<div class="section" id="shadow-signals">
+<h2>Shadow signals<a class="headerlink" href="#shadow-signals" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="background">
+<h3>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h3>
+<p>Compared to HDLs such as VHDL and Verilog, MyHDL signals are less
+flexible for structural modeling. For example, slicing a signal
+returns a slice of the current value. For behavioral code, this is
+just fine. However, it implies that you cannot use such as slice in
+structural descriptions. In other words, a signal slice cannot be used
+as a signal.  To solve these issues, a new concept was introduced:
+shadow signals.</p>
+<p>The whole reasoning behind shadow signals is explained in more detail in
+<a class="reference external" href="http://www.myhdl.org/doku.php/meps:mep-105">mep-105</a>.</p>
+</div>
+<div class="section" id="introducing-shadow-signals">
+<h3>Introducing shadow signals<a class="headerlink" href="#introducing-shadow-signals" title="Permalink to this headline">¶</a></h3>
+<p>A shadow signal is related to another signal or signals as a shadow
+to its parent object. It follows any change to its parent signal
+or signals directly. However, it is not the same as the original:
+in particular, the user cannot assign to a shadow signal. Also,
+there may be a delta cycle delay between a change in the original
+and the corresponding change in the shadow signal. Finally, to
+be useful, the shadow signal performs some kind of transformation
+of the values of its parent signal or signals.</p>
+<p>A shadow signal is convenient because it is directly constructed
+from its parent signals. The constructor infers everything that&#8217;s needed:
+the type info, the initial value, and the transformation of the
+parent signal values. For simulation, the transformation is defined by
+a generator which is automatically created and added to the list of
+generators to be simulated. For conversion, the constructor defines
+a piece of dedicated Verilog and VHDL code which is automatically
+added to the convertor output.</p>
+<p>Currently, three kinds of shadow signals have been implemented.  The
+original inspiration for shadow signals was to have solution for
+structural slicing. This is the purpose of the <a class="reference internal" href="../manual/reference.html#myhdl._SliceSignal" title="myhdl._SliceSignal"><tt class="xref py py-class docutils literal"><span class="pre">_SliceSignal</span></tt></a>
+subclass. The opposite is also useful: a signal that shadows a
+composition of other signals. This is the purpose of the
+<a class="reference internal" href="../manual/reference.html#myhdl.ConcatSignal" title="myhdl.ConcatSignal"><tt class="xref py py-class docutils literal"><span class="pre">ConcatSignal</span></tt></a> subclass.</p>
+<p>As often is the case, the idea of shadow signals had some useful side
+effects.  In particular, I realized that the <a class="reference internal" href="../manual/reference.html#myhdl.TristateSignal" title="myhdl.TristateSignal"><tt class="xref py py-class docutils literal"><span class="pre">TristateSignal</span></tt></a>
+proposed in <a class="reference external" href="http://www.myhdl.org/doku.php/meps:mep-103">mep-103</a>  could be interpreted as a shadow signal of
+its drivers. With the machinery of the shadow signal in place, it
+became easier to support this for simulation and conversion.</p>
+</div>
+<div class="section" id="concrete-shadow-signal-subclasses">
+<h3>Concrete shadow signal subclasses<a class="headerlink" href="#concrete-shadow-signal-subclasses" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descname">_SliceSignal</tt><big>(</big><em>sig</em>, <em>left</em><span class="optional">[</span>, <em>right=None</em><span class="optional">]</span><big>)</big></dt>
+<dd></dd></dl>
+
+<p>This class implements read-only structural slicing and indexing. It creates a new
+signal that shadows the slice or index of the parent signal <em>sig</em>. If the
+<em>right</em> parameter is omitted, you get indexing instead of slicing.
+Parameters <em>left</em>  and <em>right</em> have the usual meaning for slice
+indices: in particular, <em>left</em> is non-inclusive but <em>right</em>
+is inclusive. <em>sig</em> should be appropriate for slicing and indexing, which
+means it should be based on <a class="reference internal" href="../manual/reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> in practice.</p>
+<p>The class constructors is not intended to be used explicitly. Instead,
+regular signals now have a call interface that returns a <a class="reference internal" href="../manual/reference.html#myhdl._SliceSignal" title="myhdl._SliceSignal"><tt class="xref py py-class docutils literal"><span class="pre">_SliceSignal</span></tt></a>:</p>
+<dl class="method">
+<dt>
+<tt class="descclassname">Signal.</tt><tt class="descname">__call__</tt><big>(</big><em>left</em><span class="optional">[</span>, <em>right=None</em><span class="optional">]</span><big>)</big></dt>
+<dd></dd></dl>
+
+<p>Therefore, instead of:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sl</span> <span class="o">=</span> <span class="n">_SliceSignal</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>you can do:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sl</span> <span class="o">=</span> <span class="n">sig</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Obviously, the call interface was intended to be similar to a slicing interface. Of course,
+it is not exactly the same which may seem inconvenient. On the other hand, there are Python
+functions with a similar slicing functionality and a similar interface, such as the
+<tt class="docutils literal"><span class="pre">range</span></tt> function.
+Moreover, the call interface conveys the notion that something is being constructed, which
+is what really happens.</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descname">ConcatSignal</tt><big>(</big><em>*args</em><big>)</big></dt>
+<dd></dd></dl>
+
+<p>This class creates a new signal that shadows the concatenation
+of its parent signal values. You can pass an arbitrary number
+of signals to the constructor. The signal arguments should be bit-oriented
+with a defined number of bits.</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descname">TristateSignal</tt><big>(</big><em>val</em><big>)</big></dt>
+<dd><blockquote>
+<div>This class is used to construct a new tristate signal. The
+underlying type is specified by the <em>val</em>
+parameter.
+It is a Signal subclass and has the usual attributes, with
+one exception: it doesn&#8217;t support the <tt class="docutils literal"><span class="pre">next</span></tt>
+attribute. Consequently, direct signal assignment to a tristate
+signal is not supported.
+The initial value is the tristate value <tt class="docutils literal"><span class="pre">None</span></tt>.
+The current value of a tristate is determined by resolving the
+values from its drivers. When exactly one driver value is
+different from <tt class="docutils literal"><span class="pre">None</span></tt>, that is the resolved value; otherwise
+it is <tt class="docutils literal"><span class="pre">None</span></tt>. When more than one driver value is different
+from <tt class="docutils literal"><span class="pre">None</span></tt>, a contention warning is issued.</div></blockquote>
+</dd></dl>
+
+<p>This class has the following method:</p>
+<dl class="method">
+<dt>
+<tt class="descname">driver</tt><big>(</big><big>)</big></dt>
+<dd><blockquote>
+<div>Returns a new driver to the tristate signal. It is initialized
+to <tt class="docutils literal"><span class="pre">None</span></tt>.
+A driver object is an instance of a special <a class="reference internal" href="../manual/reference.html#myhdl.SignalType" title="myhdl.SignalType"><tt class="xref py py-class docutils literal"><span class="pre">SignalType</span></tt></a>
+subclass. In particular, its <tt class="docutils literal"><span class="pre">next</span></tt> attribute can be used to
+assign a new value to it.</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<p>A typical application of shadow signals is conversion of
+list of signals to bit vectors and vice versa.</p>
+<p>For example, suppose we have a system with N requesters that
+need arbitration. Each requester has a <tt class="docutils literal"><span class="pre">request</span></tt> output
+and a <tt class="docutils literal"><span class="pre">grant</span></tt> input. To connect them in the system, we can
+use list of signals. For example, a list of request signals
+can be constructed as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">request_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">())</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>Suppose that an arbiter module is available that is
+instantiated as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">arb</span> <span class="o">=</span> <span class="n">arbiter</span><span class="p">(</span><span class="n">grant_vector</span><span class="p">,</span> <span class="n">request_vector</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">request_vector</span></tt> input is a bit vector that can have
+any of its bits asserted. The <tt class="docutils literal"><span class="pre">grant_vector</span></tt> is an output
+bit vector with just a single bit asserted, or none.
+Such a module is typically based on bit vectors because
+they are easy to process in RTL code. In MyHDL, a bit vector
+is modeled using the <a class="reference internal" href="../manual/reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> type.</p>
+<p>We need a way to &#8220;connect&#8221; the list of signals to the
+bit vector and vice versa. Of course, we can do this with explicit
+code, but shadow signals can do this automatically. For
+example, we can construct a <tt class="docutils literal"><span class="pre">request_vector</span></tt> as a
+<a class="reference internal" href="../manual/reference.html#myhdl.ConcatSignal" title="myhdl.ConcatSignal"><tt class="xref py py-class docutils literal"><span class="pre">ConcatSignal</span></tt></a> object:</p>
+<div class="highlight-python"><pre>request_vector = ConcatSignal(*reversed(request_list)</pre>
+</div>
+<p>Note that we reverse the list first. This is done because the index range
+of lists is the inverse of the range of <a class="reference internal" href="../manual/reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> bit vectors.
+By reversing, the indices correspond to the same bit.</p>
+<p>The inverse problem exist for the <tt class="docutils literal"><span class="pre">grant_vector</span></tt>. It would be defined as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">grant_vector</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="n">M</span><span class="p">:])</span>
+</pre></div>
+</div>
+<p>To construct a list of signals that are connected automatically to the
+bit vector, we can use the <a class="reference internal" href="../manual/reference.html#myhdl.Signal" title="myhdl.Signal"><tt class="xref py py-class docutils literal"><span class="pre">Signal</span></tt></a> call interface to construct
+<a class="reference internal" href="../manual/reference.html#myhdl._SliceSignal" title="myhdl._SliceSignal"><tt class="xref py py-class docutils literal"><span class="pre">_SliceSignal</span></tt></a> objects:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">grant_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">grant_vector</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>Note the round brackets used for this type of slicing. Also, it may not be
+necessary to construct this list explicitly. You can simply use
+<tt class="docutils literal"><span class="pre">grant_vector(i)</span></tt> in an instantiation.</p>
+<p>To decide when to use normal or shadow signals, consider the data
+flow. Use normal signals to connect to <em>outputs</em>. Use shadow signals to
+transform these signals so that they can be used as <em>inputs</em>.</p>
+</div>
+</div>
+<div class="section" id="using-signal-and-intbv-objects-as-indices">
+<h2>Using <a class="reference internal" href="../manual/reference.html#myhdl.Signal" title="myhdl.Signal"><tt class="xref py py-class docutils literal"><span class="pre">Signal</span></tt></a> and <a class="reference internal" href="../manual/reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> objects as indices<a class="headerlink" href="#using-signal-and-intbv-objects-as-indices" title="Permalink to this headline">¶</a></h2>
+<p>Previously, it was necessary convert <a class="reference internal" href="../manual/reference.html#myhdl.Signal" title="myhdl.Signal"><tt class="xref py py-class docutils literal"><span class="pre">Signal</span></tt></a> and <a class="reference internal" href="../manual/reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> objects
+explicitly to <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt> when using them as indices for
+indexing and slicing. This conversion is no longer required;
+the objects can be used directly.
+The corresponding classes now have an <tt class="xref py py-func docutils literal"><span class="pre">__index__()</span></tt> method
+that takes care of the type conversion automatically.
+This feature is fully supported by the VHDL/Verilog convertor.</p>
+</div>
+<div class="section" id="new-configuration-attributes-for-conversion-file-headers">
+<h2>New configuration attributes for conversion file headers<a class="headerlink" href="#new-configuration-attributes-for-conversion-file-headers" title="Permalink to this headline">¶</a></h2>
+<p>New configuration attributes are available to control the file
+headers of converted output files.</p>
+<dl class="attribute">
+<dt id="myhdl.toVerilog.no_myhdl_header">
+<tt class="descclassname">toVerilog.</tt><tt class="descname">no_myhdl_header</tt><a class="headerlink" href="#myhdl.toVerilog.no_myhdl_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies that MyHDL conversion to Verilog should not generate a
+default header. Default value is <em>False</em>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="myhdl.toVHDL.no_myhdl_header">
+<tt class="descclassname">toVHDL.</tt><tt class="descname">no_myhdl_header</tt><a class="headerlink" href="#myhdl.toVHDL.no_myhdl_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies that MyHDL conversion to VHDL should not generate a
+default header. Default value is <em>False</em>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="myhdl.toVerilog.header">
+<tt class="descclassname">toVerilog.</tt><tt class="descname">header</tt><a class="headerlink" href="#myhdl.toVerilog.header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies an additional custom header for Verilog output.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="myhdl.toVHDL.header">
+<tt class="descclassname">toVHDL.</tt><tt class="descname">header</tt><a class="headerlink" href="#myhdl.toVHDL.header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies an additional custom header for VHDL output.</p>
+</dd></dl>
+
+<p>The value for the custom headers should be a string
+that is suitable for the standard <a class="reference external" href="http://docs.python.org/library/string.html#string.Template" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">string.Template</span></tt></a> constructor.
+A number of variables (indicated by a <tt class="docutils literal"><span class="pre">$</span></tt> prefix)
+are available for string interpolation.
+For example, the standard header is defined as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">myhdl_header</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s">-- File: $filename</span>
+<span class="s">-- Generated by MyHDL $version</span>
+<span class="s">-- Date: $date</span>
+<span class="s">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>The same interpolation variables are available in custom headers.</p>
+</div>
+<div class="section" id="conversion-propagates-docstrings">
+<h2>Conversion propagates docstrings<a class="headerlink" href="#conversion-propagates-docstrings" title="Permalink to this headline">¶</a></h2>
+<p>The convertor now propagates comments under the form of Python
+docstrings.</p>
+<p>Docstrings are typically used in Python to document certain objects in
+a standard way. Such &#8220;official&#8221; docstrings are put into the converted
+output at appropriate locations.  The convertor supports official
+docstrings for the top level module and for generators.</p>
+<p>Within generators, &#8220;nonofficial&#8221; docstrings are propagated also. These
+are strings (triple quoted by convention) that can occur anywhere
+between statements.</p>
+<p>Regular Python comments are ignored by the Python parser, and they are
+not present in the parse tree. Therefore, these are not
+propagated. With docstrings, you have an elegant way to specify which
+comments should be propagated and which not.</p>
+</div>
+<div class="section" id="new-method-to-specify-user-defined-code">
+<h2>New method to specify user-defined code<a class="headerlink" href="#new-method-to-specify-user-defined-code" title="Permalink to this headline">¶</a></h2>
+<p>The current way to specify user-defined code for conversion is through
+the <tt class="docutils literal"><span class="pre">__vhdl__</span></tt> and <tt class="docutils literal"><span class="pre">__verilog__</span></tt> hooks.  This method has a number
+of disadvantages.</p>
+<p>First, the use of &#8220;magic&#8221; variables (whose names start and end with
+double underscores) was a bad choice.  According to Python
+conventions, such variables should be reserved for the Python language
+itself.  Moreover, when new hooks would become desirable, we would
+have to specify additional magic variables.</p>
+<p>A second problem that standard Python strings were used to define
+the user-defined output. These strings can contain the signal
+names from the context for interpolation. Typically, these are
+multiple-line strings that may be quite lengthy. When something
+goes wrong with the string interpolation, the error messages may
+be quite cryptic as the line and column information is not present.</p>
+<p>For these reasons, a new way to specify user-defined code has
+been implemented that avoids these problems.</p>
+<p>The proper way to specify meta-information of a function is by using
+function attributes. Suppose a function <tt class="xref py py-func docutils literal"><span class="pre">&lt;func&gt;()</span></tt> defines
+a hardware module. We can now specify user-defined code for it
+with the following function attributes:</p>
+<dl class="attribute">
+<dt>
+<tt class="descname">&lt;func&gt;.vhdl_code</tt></dt>
+<dd><p>A template string for user-defined code in the VHDL output.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">&lt;func&gt;.verilog_code</tt></dt>
+<dd><p>A template string for user-defined code in the Verilog output.</p>
+</dd></dl>
+
+<p>When such a function attribute is defined, the normal conversion
+process is bypassed and the user-defined code is inserted instead.
+The template strings should be suitable for the standard
+<a class="reference external" href="http://docs.python.org/library/string.html#string.Template" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">string.Template</span></tt></a> constructor. They can contain interpolation
+variables (indicated by a <tt class="docutils literal"><span class="pre">$</span></tt> prefix) for all signals in the
+context. Note that the function attribute can be defined anywhere where
+<tt class="xref py py-func docutils literal"><span class="pre">&lt;func&gt;()</span></tt> is visible, either outside or inside the function
+itself.</p>
+<p>The old method for user-defined code is still available but
+is deprecated and will be unsupported in the future.</p>
+</div>
+<div class="section" id="more-powerful-mapping-to-case-statements">
+<h2>More powerful mapping to case statements<a class="headerlink" href="#more-powerful-mapping-to-case-statements" title="Permalink to this headline">¶</a></h2>
+<p>The convertor has become more powerful to map if-then-else structures
+to case statements in VHDL and Verilog. Previously, only
+if-then-else structures testing enumerated types were considered.
+Now, integer tests are considered also.</p>
+</div>
+<div class="section" id="small-changes">
+<h2>Small changes<a class="headerlink" href="#small-changes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="signaltype-as-the-base-class-of-signals">
+<h3><a class="reference internal" href="../manual/reference.html#myhdl.SignalType" title="myhdl.SignalType"><tt class="xref py py-class docutils literal"><span class="pre">SignalType</span></tt></a> as the base class of Signals<a class="headerlink" href="#signaltype-as-the-base-class-of-signals" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference internal" href="../manual/reference.html#myhdl.Signal" title="myhdl.Signal"><tt class="xref py py-func docutils literal"><span class="pre">Signal()</span></tt></a> has become a function instead of
+a class. It returns different Signal subtypes
+depending on parameters. This implies that you
+cannot use <a class="reference internal" href="../manual/reference.html#myhdl.Signal" title="myhdl.Signal"><tt class="xref py py-func docutils literal"><span class="pre">Signal()</span></tt></a> for type checking.</p>
+<p>The base type of all Signals is now <a class="reference internal" href="../manual/reference.html#myhdl.SignalType" title="myhdl.SignalType"><tt class="xref py py-class docutils literal"><span class="pre">SignalType</span></tt></a>.
+This type can be used to check whether an object
+is a Signal instance.</p>
+</div>
+<div class="section" id="default-value-of-intbv-objects">
+<h3>Default value of <a class="reference internal" href="../manual/reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> objects<a class="headerlink" href="#default-value-of-intbv-objects" title="Permalink to this headline">¶</a></h3>
+<p>The default initial value of an <a class="reference internal" href="../manual/reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> object has been
+changed from <em>None</em> to <tt class="docutils literal"><span class="pre">0</span></tt>. Though this is backward-incompatible,
+the <em>None</em> value never has been put to good use, so this is
+most likely not an issue.</p>
+</div>
+<div class="section" id="combinatorial-always-blocks-use-blocking-assignments">
+<h3>Combinatorial always blocks use blocking assignments<a class="headerlink" href="#combinatorial-always-blocks-use-blocking-assignments" title="Permalink to this headline">¶</a></h3>
+<p>The convertor now uses blocking assignments for combinatorial
+always blocks in Verilog. This is in line with generally
+accepted Verilog coding conventions.</p>
+</div>
+<div class="section" id="no-synthesis-pragmas-in-verilog-output">
+<h3>No synthesis pragmas in Verilog output<a class="headerlink" href="#no-synthesis-pragmas-in-verilog-output" title="Permalink to this headline">¶</a></h3>
+<p>The convertor no longer outputs the synthesis pragmas
+<tt class="docutils literal"><span class="pre">full_case</span></tt> and <tt class="docutils literal"><span class="pre">parallel_case</span></tt>. These pragmas do
+more harm than good as they can cause simulation-synthesis
+mismatches. Synthesis tools should be able to infer the
+appropriate optimizations from the source code directly.</p>
+</div>
+</div>
+<div class="section" id="python-version">
+<h2>Python version<a class="headerlink" href="#python-version" title="Permalink to this headline">¶</a></h2>
+<p>MyHDL 0.7 requires Python 2.6, mainly because of its
+dependency on the new <tt class="docutils literal"><span class="pre">ast</span></tt> package.</p>
+</div>
+<div class="section" id="acknowledgments">
+<h2>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Permalink to this headline">¶</a></h2>
+<p>Several people have contributed to MyHDL 0.7 by giving feedback,
+making suggestions, fixing bugs and implementing features.
+In particular, I would like to thank
+Benoit Allard,
+Günter Dannoritzer,
+Tom Dillon,
+Knut Eldhuset,
+Angel Ezquerra,
+Christopher Felton,
+and Jian LUO.</p>
+<p>Thanks to Francesco Balau for packaging MyHDL for Ubuntu.</p>
+<p>I would also like to thank <a class="reference external" href="http://www.easics.com">Easics</a> for
+the opportunity to use MyHDL in industrial projects.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0.6.html" title="What’s new in MyHDL 0.6"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0.8.html" title="What’s new in MyHDL 0.8"
+             >previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Jan Decaluwe.
+      Last updated on May 20, 2013.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

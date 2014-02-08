@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="whatsnew03.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="whatsnew03.html" title='What's New in MyHDL 0.3'>
+<link rel="contents" href="contents.html" title="Contents"><link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="section-enum.html">
+<LINK REL="previous" href="contents.html">
+<LINK REL="up" HREF="whatsnew03.html">
+<LINK REL="next" href="section-enum.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="1 VCD output for waveform viewing">
+<META NAME="keywords" CONTENT="whatsnew03">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>1 VCD output for waveform viewing</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="contents.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A HREF="whatsnew03.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="section-enum.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">What's New in MyHDL 0.3</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="contents.html">Contents</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew03.html">What's New in MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="section-enum.html">2 Enumeration types</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000200000000000000000">&nbsp;</A>
+<BR>
+1 VCD output for waveform viewing
+</H1>
+
+<P>
+
+<IMG
+  WIDTH="746" HEIGHT="428" ALIGN="BOTTOM" BORDER="0"
+ SRC="./tbfsm.png"
+ ALT="Image tbfsm">
+
+<P>
+MyHDL now has support for waveform viewing. During simulation, signal
+changes can be written to a VCD output file that can be loaded
+into a waveform viewer tool such as <b class="program">gtkwave</b>.
+
+<P>
+The user interface of this feature consists of a single function,
+<tt class="function">traceSignals()</tt>.  To explain how it works, recall that in
+MyHDL, an instance is created by assigning
+the result of a function call to an instance name. For example:
+
+<P>
+<div class="verbatim"><pre>
+tb_fsm = testbench()
+</pre></div>
+
+<P>
+To enable VCD tracing, the instance should be created as follows
+instead:
+
+<P>
+<div class="verbatim"><pre>
+tb_fsm = traceSignals(testbench)
+</pre></div>
+
+<P>
+All signals in the instance hierarchy will be traced in a VCD
+file called <span class="file">tb_fsm.vcd</span>. Note that first the argument of
+<tt class="function">traceSignals()</tt> consists of the uncalled function. By
+calling the function under its control, <tt class="function">traceSignals()</tt>
+gathers information about the hierarchy and the signals to be traced.
+In addition to a function argument, <tt class="function">traceSignals()</tt> accepts
+an arbitrary number of non-keyword and keyword arguments that will be
+passed to the function call.
+
+<P>
+Signals are dumped in a suitable format. This format is inferred at
+the <tt class="class">Signal</tt> construction time, from the type of the initial
+value. In particular, <tt class="class">bool</tt> signals are dumped as single
+bits. (This only works starting with Python&nbsp;2.3, when <tt class="class">bool</tt> has
+become a separate type).  Likewise, <tt class="class">intbv</tt> signals with a
+defined bit width are dumped as bit vectors. To support the general
+case, other types of signals are dumped as a string representation, as
+returned by the standard <tt class="function">str()</tt> function.
+
+<P>
+<div class="warning"><b class="label">Warning:</b>
+
+Support for literal string representations is not part of the VCD
+standard. It is specific to <b class="program">gtkwave</b>. To generate a
+standard VCD file, you need to use signals with a defined bit width
+only.
+</div>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="contents.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A HREF="whatsnew03.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="section-enum.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">What's New in MyHDL 0.3</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="contents.html">Contents</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew03.html">What's New in MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="section-enum.html">2 Enumeration types</A>
+<hr>
+<span class="release-info">Release 0.3.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

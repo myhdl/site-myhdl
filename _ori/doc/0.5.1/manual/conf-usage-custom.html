@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="previous" href="conf-usage-ROM.html">
+<LINK REL="up" href="conv-usage.html">
+<LINK REL="next" href="conv-issues.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="6.6.7 User-defined Verilog code ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>6.6.7 User-defined Verilog code </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conf-usage-ROM.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-usage.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-issues.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conf-usage-ROM.html">6.6.6 ROM inference</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-usage.html">6.6 Converter usage</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-issues.html">6.7 Known issues</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION007670000000000000000">&nbsp;</A>
+<BR>
+6.6.7 User-defined Verilog code 
+</H2>
+
+<P>
+MyHDL provides a way  to include user-defined Verilog
+code during the conversion process.
+
+<P>
+MyHDL defines a hook that is understood by the converter but ignored by
+the simulator. The hook is called <code>__verilog__</code>. It operates
+like a special return value. When a MyHDL function defines
+<code>__verilog__</code>, the Verilog converter will use its value instead of the
+regular return value.
+
+<P>
+The value of <code>__verilog__</code> should be a format string that uses keys in
+its format specifiers. The keys refer to the variable names in the
+context of the string.
+
+<P>
+Example:
+
+<P>
+<div class="verbatim"><pre>
+def inc_comb(nextCount, count, n):
+
+    @always_comb
+    def logic():
+        # note: '-' instead of '+'
+        nextCount.next = (count - 1) % n
+
+    nextCount.driven = "wire"
+
+    __verilog__ =\
+"""
+assign %(nextCount)s = (%(count)s + 1) %% %(n)s;
+"""
+
+    return logic
+</pre></div>
+
+<P>
+The converted code looks as follows:
+
+<P>
+<div class="verbatim"><pre>
+module inc_comb (
+    nextCount,
+    count
+);
+
+output [7:0] nextCount;
+wire [7:0] nextCount;
+input [7:0] count;
+
+assign nextCount = (count + 1) % 128;
+
+endmodule
+</pre></div>
+
+<P>
+In this example, conversion of the <tt class="function">inc_comb</tt> function is bypassed and
+the user-defined Verilog code is inserted instead. Note that the
+user-defined code refers to signals and parameters in the MyHDL
+context by using format specifiers. During conversion, the appropriate
+hierarchical names and parameter values will be filled in. Note also
+that the format specifier indicator % needs to be escaped (by doubling
+it) if it is required in the user-defined code.
+
+<P>
+There is one more issue that needs user attention. Normally, the
+Verilog converter infers inputs, internal signals, and outputs. It
+also detects undriven and multiple driven signals. To do this, it
+assumes that signals are not driven by default. It then processes the
+code to find out which signals are driven from where. However, it
+cannot do this for user-defined code. Without additional help, this
+will result in warnings or errors during the inference process, or in
+compilation errors from invalid Verilog code. The user should solve
+this by setting the <code>driven</code> attribute for signals that are driven from
+the user-defined code. In the example code above, note the following
+assignment:
+
+<P>
+<div class="verbatim"><pre>
+nextCount.driven = "wire"
+</pre></div>
+
+<P>
+This specifies that the nextCount signal is driven as a Verilog wire
+from this module. The allowed values of the driven attribute are
+<code>'wire'</code> and <code>'reg'</code>. The value specifies how the
+user-defined Verilog code drives the signal in Verilog. To decide
+which value to use, consider how the signal should be declared in
+Verilog after the user-defined code is inserted.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conf-usage-ROM.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-usage.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-issues.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conf-usage-ROM.html">6.6.6 ROM inference</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-usage.html">6.6 Converter usage</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-issues.html">6.7 Known issues</A>
+<hr>
+<span class="release-info">Release 0.5.1, documentation updated on May 1, 2006.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

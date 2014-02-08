@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="whatsnew04.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="whatsnew04.html" title='New in MyHDL 0.4: Conversion to Verilog'>
+<link rel="contents" href="contents.html" title="Contents"><link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="conv-usage-gen.html">
+<LINK REL="previous" href="conv-usage.html">
+<LINK REL="up" href="conv-usage.html">
+<LINK REL="next" href="conv-usage-gen.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="6.1 A small design with a single generator">
+<META NAME="keywords" CONTENT="whatsnew04">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>6.1 A small design with a single generator</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conv-usage.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-usage.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-usage-gen.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">New in MyHDL 0.4: Conversion to Verilog</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conv-usage.html">6 Converter usage</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-usage.html">6 Converter usage</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-usage-gen.html">6.2 Converting a generator</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000710000000000000000">&nbsp;</A>
+<BR>
+6.1 A small design with a single generator
+</H2>
+
+<P>
+Consider the following MyHDL code for an incrementer module:
+
+<P>
+<div class="verbatim"><pre>
+def inc(count, enable, clock, reset, n):
+    """ Incrementer with enable.
+    
+    count -- output
+    enable -- control input, increment when 1
+    clock -- clock input
+    reset -- asynchronous reset input
+    n -- counter max value
+    """
+    def incProcess():
+        while 1:
+            yield posedge(clock), negedge(reset)
+            if reset == ACTIVE_LOW:
+                count.next = 0
+            else:
+                if enable:
+                    count.next = (count + 1) % n
+    return incProcess()
+</pre></div>
+
+<P>
+In Verilog terminology, function <tt class="function">inc</tt> corresponds to a
+module, while generator function <tt class="function">incProcess</tt>
+roughly corresponds to an always block.
+
+<P>
+Normally, to simulate the design, we would "elaborate" an instance
+as follows:
+
+<P>
+<div class="verbatim"><pre>
+m = 8
+n = 2 ** m
+ 
+count = Signal(intbv(0)[m:])
+enable = Signal(bool(0))
+clock, reset = [Signal(bool()) for i in range(2)]
+
+inc_inst = inc(count, enable, clock, reset, n=n)
+</pre></div>
+
+<P>
+<code>inc_inst</code> is an elaborated design instance that can be simulated. To
+convert it to Verilog, we change the last line as follows:
+
+<P>
+<div class="verbatim"><pre>
+inc_inst = toVerilog(inc, count, enable, clock, reset, n=n)
+</pre></div>
+
+<P>
+Again, this creates an instance that can be simulated, but as a side
+effect, it also generates an equivalent Verilog module in file <span class="file">inc_inst.v</span>.
+The Verilog code looks as follows:
+
+<P>
+<div class="verbatim"><pre>
+module inc_inst (
+    count,
+    enable,
+    clock,
+    reset
+);
+
+output [7:0] count;
+reg [7:0] count;
+input enable;
+input clock;
+input reset;
+
+
+always @(posedge clock or negedge reset) begin: _MYHDL1_BLOCK
+    if ((reset == 0)) begin
+        count &lt;= 0;
+    end
+    else begin
+        if (enable) begin
+            count &lt;= ((count + 1) % 256);
+        end
+    end
+end
+
+endmodule
+</pre></div>
+
+<P>
+You can see the module interface and the always block, as expected
+from the MyHDL design. 
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conv-usage.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-usage.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-usage-gen.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">New in MyHDL 0.4: Conversion to Verilog</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conv-usage.html">6 Converter usage</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-usage.html">6 Converter usage</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-usage-gen.html">6.2 Converting a generator</A>
+<hr>
+<span class="release-info">Release 0.4.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

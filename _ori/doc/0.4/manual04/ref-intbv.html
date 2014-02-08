@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="ref-cosim.html">
+<LINK REL="previous" href="ref-misc.html">
+<LINK REL="up" href="ref.html">
+<LINK REL="next" href="ref-cosim.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="7.6 The intbv class ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>7.6 The intbv class </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ref-misc.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="ref.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="ref-cosim.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ref-misc.html">7.5 Modeling support</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="ref.html">7. Reference</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="ref-cosim.html">7.7 Co-simulation</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION008600000000000000000">&nbsp;</A>
+<BR>
+7.6 The <tt class="class">intbv</tt> class 
+</H1>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><span class="typelabel">class</span>&nbsp;<a name="l2h-48"><tt class="class">intbv</tt></a></b>(</nobr></td>
+  <td><big>[</big><var>val=0</var><big>]</big><big>[</big><var>, min=None</var><big>]</big><big>[</big><var>, max=None</var><big>]</big>)</td></tr></table>
+<dd>
+This class represents <tt class="class">int</tt>-like objects with some additional
+features that make it suitable for hardware design. The <var>val</var>
+argument can be an <tt class="class">int</tt>, a <tt class="class">long</tt>, an <tt class="class">intbv</tt> or a
+bit string (a string with only '0's or '1's). For a bit string
+argument, the value is calculated as in <code>int(<var>bitstring</var>,
+2)</code>.  The optional <var>min</var> and <var>max</var> arguments can be used to
+specify the minimum and maximum value of the <tt class="class">intbv</tt> object. As
+in standard Python practice for ranges, the minimum value is inclusive
+and the maximum value is exclusive.
+</dl>
+
+<P>
+The minimum and maximum values of an <tt class="class">intbv</tt> object
+are available as attributes:
+
+<P>
+<dl><dt><b><a name="l2h-49"><tt class="member">min</tt></a></b>
+<dd>
+Read-only attribute that is the minimum value (inclusive) of an
+<tt class="class">intbv</tt>, or <var>None</var> for no minimum.
+</dl>
+<dl><dt><b><a name="l2h-50"><tt class="member">max</tt></a></b>
+<dd>
+Read-only attribute that is the maximum value
+(exclusive) of an <tt class="class">intbv</tt>, or <var>None</var> for no 
+maximum.
+</dl>
+
+<P>
+Unlike <tt class="class">int</tt> objects, <tt class="class">intbv</tt> objects are mutable; this is
+also the reason for their existence. Mutability is needed to support
+assignment to indexes and slices, as is common in hardware design. For
+the same reason, <tt class="class">intbv</tt> is not a subclass from <tt class="class">int</tt>,
+even though <tt class="class">int</tt> provides most of the desired
+functionality. (It is not possible to derive a mutable subtype from
+an immutable base type.)
+
+<P>
+An <tt class="class">intbv</tt> object supports the same comparison, numeric,
+bitwise, logical, and conversion operations as <tt class="class">int</tt> objects. See
+<a class="url" href="http://www.python.org/doc/current/lib/typesnumeric.html">http://www.python.org/doc/current/lib/typesnumeric.html</a> for more
+information on such operations. In all binary operations,
+<tt class="class">intbv</tt> objects can work together with <tt class="class">int</tt> objects.
+For mixed-type numeric operations, the result type is an <tt class="class">int</tt>
+or a <tt class="class">long</tt>. For mixed-type bitwise operations, the result
+type is an <tt class="class">intbv</tt>.
+
+<P>
+In addition, <tt class="class">intbv</tt> objects support indexing and slicing
+operations:
+
+<P>
+<table border align="center" style="border-collapse: collapse">
+  <thead>
+    <tr class="tableheader">
+      <th align="center"><b>Operation</b>&nbsp;</th>
+      <th><b>Result</b>&nbsp;</th>
+      <th><b>Notes</b>&nbsp;</th>
+      </tr>
+    </thead>
+  <tbody valign="baseline">
+    <tr><td align="center" valign="baseline"><code><var>bv</var>[<var>i</var>]</code></td>
+        <td>item <var>i</var> of <var>bv</var></td>
+        <td>(1)</td>
+    <tr><td align="center" valign="baseline"><code><var>bv</var>[<var>i</var>] = <var>x</var></code></td>
+        <td>item <var>i</var> of <var>bv</var> is replaced by <var>x</var></td>
+        <td>(1)</td>
+    <tr><td align="center" valign="baseline"><code><var>bv</var>[<var>i</var>:<var>j</var>]</code></td>
+        <td>slice of <var>bv</var> from <var>i</var> downto <var>j</var></td>
+        <td>(2)(3)</td>
+    <tr><td align="center" valign="baseline"><code><var>bv</var>[<var>i</var>:<var>j</var>] = <var>t</var></code></td>
+        <td>slice of <var>bv</var> from <var>i</var> downto <var>j</var> is replaced
+          by <var>t</var></td>
+        <td>(2)(4)</td></tbody>
+</table>
+
+<P>
+<DL>
+<DT><STRONG>(1)</STRONG></DT>
+<DD>Indexing follows the most common hardware design
+	  conventions: the lsb bit is the rightmost bit, and it has
+	  index 0. This has the following desirable property: if the
+	  <tt class="class">intbv</tt> value is decomposed as a sum of powers of 2,
+	  the bit with index <var>i</var> corresponds to the term
+	  <code>2**i</code>.
+
+<P>
+</DD>
+<DT><STRONG>(2)</STRONG></DT>
+<DD>In contrast to standard Python sequencing conventions,
+	  slicing range are downward. This is a consequence of the
+	  indexing convention, combined with the common convention
+	  that the most significant digits of a number are the
+	  leftmost ones. The Python convention of half-open ranges is
+	  followed: the bit with the highest index is not
+	  included. However, it is the <i>leftmost</i> bit in this
+	  case. As in standard Python, this takes care of one-off
+	  issues in many practical cases: in particular,
+	  <code>bv[<var>i</var>:]</code> returns <var>i</var> bits;
+	  <code>bv[<var>i</var>:<var>j</var>]</code> has <code><var>i</var>-<var>j</var></code>
+	  bits. When the low index <var>j</var> is omitted, it defaults
+          to <code>0</code>. When the high index <var>i</var> is omitted, it
+          means ``all'' higher order bits.
+
+<P>
+</DD>
+<DT><STRONG>(3)</STRONG></DT>
+<DD>The object returned from a slicing access operation is always a
+	  positive <tt class="class">intbv</tt>; higher order bits are implicitly
+	  assumed to be zero. The bit width is implicitly stored in
+	  the return object, so that it can be used in concatenations
+	  and as an iterator. In addition, for a bit width w, the
+	  <var>min</var> and <var>max</var> attributes are implicitly set to
+	  <code>0</code> and <code>2**w</code>, respectively.  
+
+<P>
+</DD>
+<DT><STRONG>(4)</STRONG></DT>
+<DD>In setting a slice, it is checked whether the slice is wide
+	  enough to accept all significant bits of the value.
+</DD>
+</DL>
+
+<P>
+In addition, an <tt class="class">intbv</tt> object supports the iterator protocol. This
+makes it possible to iterate over all its bits, from the high index to
+index 0. This is only possible for <tt class="class">intbv</tt> objects with a
+defined bit width.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ref-misc.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="ref.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="ref-cosim.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ref-misc.html">7.5 Modeling support</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="ref.html">7. Reference</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="ref-cosim.html">7.7 Co-simulation</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on February 4, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

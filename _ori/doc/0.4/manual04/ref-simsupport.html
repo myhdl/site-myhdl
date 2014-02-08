@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="ref-sig.html">
+<LINK REL="previous" href="ref-sim.html">
+<LINK REL="up" href="ref.html">
+<LINK REL="next" href="ref-sig.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="7.2 Simulation support">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>7.2 Simulation support</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ref-sim.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="ref.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="ref-sig.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ref-sim.html">7.1 The Simulation class</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="ref.html">7. Reference</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="ref-sig.html">7.3 The Signal class</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION008200000000000000000">&nbsp;</A>
+<BR>
+7.2 Simulation support
+</H1>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-24"><tt class="function">now</tt></a></b>(</nobr></td>
+  <td>)</td></tr></table>
+<dd>
+Returns the current simulation time.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><span class="typelabel">exception</span>&nbsp;<a name="l2h-25"><tt class="exception">StopSimulation</tt></a></b>(</nobr></td>
+  <td>)</td></tr></table>
+<dd>
+Base exception that is caught by the <code>Simulation.run()</code> method to
+stop a simulation.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-26"><tt class="function">traceSignals</tt></a></b>(</nobr></td>
+  <td><var>func </var><big>[</big><var>, *args</var><big>]</big><big>[</big><var>, **kwargs</var><big>]</big>)</td></tr></table>
+<dd>
+Enables signal tracing to a VCD file for waveform viewing.
+<var>func</var> is a function that returns an instance.
+<tt class="function">traceSignals()</tt> calls <var>func</var> under its control
+and passes <var>*args</var> and <var>**kwargs</var> to the call. In this way, it
+finds the hierarchy and the signals to be traced.
+
+<P>
+The return value is the same as would be returned by the call
+<code>func(*args, **kwargs)</code>. It should be assigned
+to a top level instance name. For example:
+<div class="verbatim"><pre>
+topname = traceSignals(func, ...)
+</pre></div>
+The resulting VCD file will be named after the top level instance
+name. In the example, it would be called <span class="file">topname.vcd</span>.  If the
+VCD file exists already, it will be moved to a backup file by
+attaching a timestamp to it, before creating the new file.
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ref-sim.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="ref.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="ref-sig.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ref-sim.html">7.1 The Simulation class</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="ref.html">7. Reference</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="ref-sig.html">7.3 The Signal class</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on February 4, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="intro-slicing.html">
+<LINK REL="previous" href="intro-bit.html">
+<LINK REL="up" href="intro-bit.html">
+<LINK REL="next" href="intro-slicing.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="2.4.1 Bit indexing ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>2.4.1 Bit indexing </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="intro-bit.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="intro-bit.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="intro-slicing.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="intro-bit.html">2.4 Bit oriented operations</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="intro-bit.html">2.4 Bit oriented operations</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="intro-slicing.html">2.4.2 Bit slicing</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION003410000000000000000">&nbsp;</A>
+<a name="l2h-7">&nbsp;</a>
+<BR>
+2.4.1 Bit indexing 
+</H2>
+
+<P>
+As an example, we will consider the design of a Gray encoder. The
+following code is a Gray encoder modeled in MyHDL:
+
+<P>
+<div class="verbatim"><pre>
+from myhdl import Signal, delay, Simulation, always_comb, instance, intbv, bin
+
+def bin2gray(B, G, width):
+    """ Gray encoder.
+
+    B -- input intbv signal, binary encoded
+    G -- output intbv signal, gray encoded
+    width -- bit width
+    """
+    
+    @always_comb
+    def logic():
+        for i in range(width):
+            G.next[i] = B[i+1] ^ B[i]
+            
+    return logic
+</pre></div>
+
+<P>
+This code introduces a few new concepts. The string in triple quotes
+at the start of the function is a <i class="dfn">doc string</i>. This is standard
+Python practice for structured documentation of code.
+
+<P>
+Furthermore, we introduce a third decorator: <tt class="function">always_comb</tt>.
+    <a name="l2h-8">&nbsp;</a>It is used with a classic function and specifies that the 
+resulting generator should
+wait for a value change on any input signal. This is typically used to
+describe 
+combinatorial logic. The <tt class="function">always_comb</tt> decorator
+automatically infers which signals are used as inputs.
+
+<P>
+Finally, the code contains bit indexing operations and an exclusive-or
+operator as required for a Gray encoder. By convention, the lsb of an
+<tt class="class">intbv</tt> object has index&nbsp;<code>0</code>.
+
+<P>
+To verify the Gray encoder, we write a test bench that prints input
+and output for all possible input values:
+
+<P>
+<div class="verbatim"><pre>
+def testBench(width):
+    
+    B = Signal(intbv(0))
+    G = Signal(intbv(0))
+    
+    dut = bin2gray(B, G, width)
+
+    @instance
+    def stimulus():
+        for i in range(2**width):
+            B.next = intbv(i)
+            yield delay(10)
+            print "B: " + bin(B, width) + "| G: " + bin(G, width)
+
+    return dut, stimulus
+</pre></div>
+
+<P>
+We use the conversion function <code>bin</code> to get a binary
+string representation of the signal values. This function is exported
+by the <code>myhdl</code> package and supplements the standard Python
+<code>hex</code> and <code>oct</code> conversion functions.
+
+<P>
+As a demonstration, we set up a simulation for a small width: 
+
+<P>
+<div class="verbatim"><pre>
+sim = Simulation(testBench(width=3))
+sim.run()
+</pre></div>
+
+<P>
+The simulation produces the following output:
+
+<P>
+<div class="verbatim"><pre>
+% python bin2gray.py
+B: 000 | G: 000
+B: 001 | G: 001
+B: 010 | G: 011
+B: 011 | G: 010
+B: 100 | G: 110
+B: 101 | G: 111
+B: 110 | G: 101
+B: 111 | G: 100
+StopSimulation: No more events
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="intro-bit.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="intro-bit.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="intro-slicing.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="intro-bit.html">2.4 Bit oriented operations</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="intro-bit.html">2.4 Bit oriented operations</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="intro-slicing.html">2.4.2 Bit slicing</A>
+<hr>
+<span class="release-info">Release 0.5, documentation updated on December 29, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

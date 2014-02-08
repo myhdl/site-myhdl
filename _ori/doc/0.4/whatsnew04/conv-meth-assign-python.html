@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="whatsnew04.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="whatsnew04.html" title='New in MyHDL 0.4: Conversion to Verilog'>
+<link rel="contents" href="contents.html" title="Contents"><link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="conv-meth-assign-signal.html">
+<LINK REL="previous" href="conv-meth-assign.html">
+<LINK REL="up" href="conv-meth-assign.html">
+<LINK REL="next" href="conv-meth-assign-signal.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="5.3.1 Name assignment in Python">
+<META NAME="keywords" CONTENT="whatsnew04">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>5.3.1 Name assignment in Python</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conv-meth-assign.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-meth-assign.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-meth-assign-signal.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">New in MyHDL 0.4: Conversion to Verilog</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conv-meth-assign.html">5.3 Assignment issues</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-meth-assign.html">5.3 Assignment issues</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-meth-assign-signal.html">5.3.2 Signal assignment</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION000631000000000000000">&nbsp;</A>
+<BR>
+5.3.1 Name assignment in Python
+</H3>
+
+<P>
+Name assignment in Python is a different concept than in
+many other languages. This point is very important for
+effective modeling in Python, and even more so
+for synthesizable MyHDL code. Therefore, the issues are
+discussed here explicitly.
+
+<P>
+Consider the following name assignments:
+
+<P>
+<div class="verbatim"><pre>
+a = 4
+a = ``a string''
+a = False
+</pre></div>
+
+<P>
+In many languages, the meaning would be that an
+existing variable <var>a</var> gets a number of different values.
+In Python, such a concept of a variable doesn't exist. Instead,
+assignment merely creates a new binding of a name to a
+certain object, that replaces any previous binding.
+So in the example, the name <var>a</var> is bound a 
+number of different objects in sequence.
+
+<P>
+The Verilog converter has to investigate name
+assignment and usage in MyHDL code, and to map
+names to Verilog variables. To achieve that,
+it tries to infer the type and possibly the
+bit width of each expression that is assigned
+to a name.
+
+<P>
+Multiple assignments to the same name can be supported if it can be
+determined that a consistent type and bit width is being used in the
+assignments. This can be done for boolean expressions, numeric
+expressions, and enumeration type literals. In Verilog, the
+corresponding name is mapped to a single bit <code>reg</code>, an
+<code>integer</code>, or a <code>reg</code> with the appropriate width, respectively.
+
+<P>
+In other cases, a single assignment should be used when an object is
+created. Subsequent value changes are then achieved by modification of
+an existing object.  This technique should be used for <tt class="class">Signal</tt>
+and <tt class="class">intbv</tt> objects.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conv-meth-assign.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-meth-assign.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-meth-assign-signal.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">New in MyHDL 0.4: Conversion to Verilog</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conv-meth-assign.html">5.3 Assignment issues</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-meth-assign.html">5.3 Assignment issues</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-meth-assign-signal.html">5.3.2 Signal assignment</A>
+<hr>
+<span class="release-info">Release 0.4.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

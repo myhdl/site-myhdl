@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="intro-bit.html">
+<LINK REL="previous" href="intro-conc.html">
+<LINK REL="up" href="intro.html">
+<LINK REL="next" href="intro-bit.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="2.3 Parameters, instances and hierarchy ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>2.3 Parameters, instances and hierarchy </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="intro-conc.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="intro.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="intro-bit.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="intro-conc.html">2.2 Concurrent generators and</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="intro.html">2. Introduction to MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="intro-bit.html">2.4 Bit oriented operations</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION003300000000000000000">&nbsp;</A>    <a name="l2h-4">&nbsp;</a>
+<BR>
+2.3 Parameters, instances and hierarchy 
+</H1>
+
+<P>
+So far, the generator function examples had no parameters. For
+example, the <code>clk</code> signal was defined in the enclosing scope of
+the generator functions. To make code reusable we will
+want to pass arguments through a parameter list. For example, we can
+change the clock generator function to make it more general
+and reusable, as follows:
+
+<P>
+<div class="verbatim"><pre>
+def clkGen(clock, period=20):
+    lowTime = int(period / 2)
+    highTime = period - lowTime
+    while 1:
+        yield delay(lowTime)
+        clock.next = 1
+        yield delay(highTime)
+        clock.next = 0
+</pre></div>
+
+<P>
+The clock signal is now a parameter of the function. Also, the clock
+<var>period</var> is a parameter with a default value of <code>20</code>.
+This makes <var>period</var> an <i class="dfn">optional</i> parameter; if it is not
+specified in a call, the default value will be used.
+
+<P>
+Similarly, the <code>sayHello</code> function can be made more general as follows:
+
+<P>
+<div class="verbatim"><pre>
+def sayHello(clock, to="World!"):
+    while 1:
+        yield posedge(clock)
+        print "%s Hello %s" % (now(), to)
+</pre></div>
+
+<P>
+We can create any number of generators by calling generator functions
+with the appropriate parameters. This is very similar to the concept
+of instantiation in hardware description languages and we will use
+the same terminology in MyHDL. A MyHDL <i class="dfn">instance</i> is
+recursively defined as being either a sequence of instances, or a
+generator.  Hierarchy can be modeled by defining the instances in a
+higher-level function, and returning them. 
+A <tt class="class">Simulation</tt> constructor takes an arbitrary number of
+instances as its arguments.
+For example:
+
+<P>
+<div class="verbatim"><pre>
+def greetings():
+    clk1 = Signal(0)
+    clk2 = Signal(0)
+    clkGen1 = clkGen(clk1)
+    clkGen2 = clkGen(clock=clk2, period=19)
+    sayHello1 = sayHello(clock=clk1)
+    sayHello2 = sayHello(to="MyHDL", clock=clk2)
+    return clkGen1, clkGen2, sayHello1, sayHello2
+
+sim = Simulation(greetings())
+sim.run(50)
+</pre></div>
+
+<P>
+As in standard Python, positional or named parameter association can
+be used in instantiations, or a mix of both<A NAME="tex2html4"
+  HREF="#foot271"><SUP>2.2</SUP></A>. All these styles
+are demonstrated in the example above. As in hardware description
+languages, named association can be very useful if there are a lot of
+parameters, as the parameter order in the call does not matter in that
+case.
+
+<P>
+The simulation produces the following output:
+
+<P>
+<div class="verbatim"><pre>
+% python greetings.py
+9 Hello MyHDL
+10 Hello World!
+28 Hello MyHDL
+30 Hello World!
+47 Hello MyHDL
+50 Hello World!
+StopSimulation: Simulated for duration 50
+</pre></div>
+
+<P>
+<div class="warning"><b class="label">Warning:</b>
+
+Some commonly used terminology has different meanings
+in Python versus hardware design. Rather than artificially
+changing terminology, I think it's best to keep it
+and explicitly describing the differences.
+
+<P>
+A <i class="dfn">module</i> in Python refers to all source code
+in a particular file. A module can be reused by
+other modules by importing. In hardware design,
+a module is  a reusable block of hardware with
+a well defined interface. It can be reused in 
+another module by <i class="dfn">instantiating</i> it.
+
+<P>
+An <i class="dfn">instance</i> in Python (and other object-oriented
+languages) refers to the object created by a
+class constructor. In hardware design, an instance
+is a particular incarnation of a hardware module.
+
+<P>
+Normally, the meaning should be clear from
+the context. Occasionally, I may qualify terms 
+with the words 'hardware' or 'MyHDL' to 
+avoid ambiguity.
+</div>
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot271">... both</A><A
+ href="intro-hier.html#tex2html4"><SUP>2.2</SUP></A></DT>
+<DD>All positional
+parameters have to go before any named parameter.
+
+</DD>
+</DL>
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="intro-conc.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="intro.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="intro-bit.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="intro-conc.html">2.2 Concurrent generators and</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="intro.html">2. Introduction to MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="intro-bit.html">2.4 Bit oriented operations</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on February 4, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

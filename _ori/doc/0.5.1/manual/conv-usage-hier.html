@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="conv-usage-fsm.html">
+<LINK REL="previous" href="conv-usage-comb.html">
+<LINK REL="up" href="conv-usage.html">
+<LINK REL="next" href="conv-usage-fsm.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="6.6.3 A hierarchical design">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>6.6.3 A hierarchical design</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conv-usage-comb.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-usage.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-usage-fsm.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conv-usage-comb.html">6.6.2 A small combinatorial</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-usage.html">6.6 Converter usage</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-usage-fsm.html">6.6.4 Optimizations for finite</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION007630000000000000000">&nbsp;</A>
+<BR>
+6.6.3 A hierarchical design
+</H2>
+The Verilog converter can handle designs with an
+arbitrarily deep hierarchy.
+
+<P>
+For example, suppose we want to design an
+incrementer with Gray code output. Using the
+designs from previous sections, we can proceed
+as follows:
+
+<P>
+<div class="verbatim"><pre>
+ACTIVE_LOW, INACTIVE_HIGH = 0, 1
+
+def GrayInc(graycnt, enable, clock, reset, width):
+    
+    bincnt = Signal(intbv(0)[width:])
+    
+    inc_1 = inc(bincnt, enable, clock, reset, n=2**width)
+    bin2gray_1 = bin2gray(B=bincnt, G=graycnt, width=width)
+    
+    return inc_1, bin2gray_1
+</pre></div>
+
+<P>
+According to Gray code properties, only a single bit
+will change in consecutive values. However, as the
+<code>bin2gray</code> module is combinatorial, the output bits
+may have transient glitches, which may not be desirable.
+To solve this, let's create an additional level of
+hierarchy and add an output register to the design.
+(This will create an additional latency of a clock
+cycle, which may not be acceptable, but we will
+ignore that here.)
+
+<P>
+<div class="verbatim"><pre>
+def GrayIncReg(graycnt, enable, clock, reset, width):
+    
+    graycnt_comb = Signal(intbv(0)[width:])
+    
+    gray_inc_1 = GrayInc(graycnt_comb, enable, clock, reset, width)
+
+    @always(clock.posedge)
+    def reg_1():
+        graycnt.next = graycnt_comb
+    
+    return gray_inc_1, reg_1
+</pre></div>
+
+<P>
+We can convert this hierarchical design as before:
+
+<P>
+<div class="verbatim"><pre>
+width = 8
+graycnt = Signal(intbv()[width:])
+enable, clock, reset = [Signal(bool()) for i in range(3)]
+
+gray_inc_reg_1 = toVerilog(GrayIncReg, graycnt, enable, clock, reset, width)
+</pre></div>
+
+<P>
+The Verilog output code looks as follows:
+
+<P>
+<div class="verbatim"><pre>
+module GrayIncReg (
+    graycnt,
+    enable,
+    clock,
+    reset
+);
+ 
+output [7:0] graycnt;
+reg [7:0] graycnt;
+input enable;
+input clock;
+input reset;
+ 
+reg [7:0] graycnt_comb;
+reg [7:0] _gray_inc_1_bincnt;
+ 
+ 
+always @(posedge clock or negedge reset) begin: _GrayIncReg_gray_inc_1_inc_1_incProcess
+    if ((reset == 0)) begin
+        _gray_inc_1_bincnt &lt;= 0;
+    end
+    else begin
+        if (enable) begin
+            _gray_inc_1_bincnt &lt;= ((_gray_inc_1_bincnt + 1) % 256);
+        end
+    end
+end
+ 
+always @(_gray_inc_1_bincnt) begin: _GrayIncReg_gray_inc_1_bin2gray_1_logic
+    integer i;
+    reg [9-1:0] Bext;
+    Bext = 9'h0;
+    Bext = _gray_inc_1_bincnt;
+    for (i=0; i&lt;8; i=i+1) begin
+        graycnt_comb[i] &lt;= (Bext[(i + 1)] ^ Bext[i]);
+    end
+end
+ 
+always @(posedge clock) begin: _GrayIncReg_reg_1
+    graycnt &lt;= graycnt_comb;
+end
+ 
+endmodule
+</pre></div>
+
+<P>
+Note that the output is a flat ``net list of blocks'', and
+that hierarchical signal names are generated as necessary.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conv-usage-comb.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-usage.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-usage-fsm.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conv-usage-comb.html">6.6.2 A small combinatorial</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-usage.html">6.6 Converter usage</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-usage-fsm.html">6.6.4 Optimizations for finite</A>
+<hr>
+<span class="release-info">Release 0.5.1, documentation updated on May 1, 2006.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

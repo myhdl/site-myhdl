@@ -23,13 +23,13 @@ learn, and MyHDL aims to achieve the same for hardware design.
 Moreover, with MyHDL you can convert your designs automatically to both Verilog
 and VHDL. So you keep all your options open.
 
-Using scripting languages intensively
-=====================================
+Dynamic language power
+======================
 
-If you're a practicing hardware designer, you're probably using so-called
-"scripting" languages in your workflow already. For example, tcl is popular for
-tool control.  Also, many designers use perl to glue things together. Others
-use ruby or Python for that purpose.
+If you're a practicing hardware designer, you're probably using dynamic
+languages (sometimes called "scripting" languages) in your workflow already.
+For example, tcl is popular for tool control.  Also, many designers use perl to
+glue things together. Others use ruby or Python for that purpose.
 
 It is clear that these high-level dynamic languages play an essential role in
 modern digital design. Verilog or VHDL alone is not enough. Many designers even
@@ -39,8 +39,8 @@ with them.
 Wouldn't it be great if one could use such a language directly to design
 hardware?  That's exactly what MyHDL offers.
 
-Modern software development techniques
-======================================
+Modern software techniques
+==========================
 
 In the software methodology world, a lot of innovation is going on, with
 buzzwords such as "agile", "rapid application development", "scrum", and
@@ -57,8 +57,8 @@ available to the hardware designer, thanks to its Python foundation.  For
 example, you can use a Python unit test framework to do test-driven development
 for hardware design.
 
-Algorithm development and implementation in a single environment
-================================================================
+Algorithm and implementation unified 
+====================================
 
 Python is an ideal language for algorithm development and many engineers use it
 for this purpose.  Commonly this work and a subsequent HDL implementation are
@@ -74,8 +74,8 @@ staying in the powerful Python environment can be a significant boost to
 quality and productivity.  For example, the verification work can directly be
 reused between both design domains.
 
-Developing for both Verilog and VHDL
-====================================
+Target both Verilog and VHDL
+============================
 
 The usage of Verilog versus VHDL differs significantly between regions and
 sectors.  However, there is every indication that the overall ratio is about
@@ -91,8 +91,8 @@ Verilog and VHDL don't work very well. Using a syntactically simple language
 like Python as the starting point is an easier way to a create a high-quality
 conversion tool.
 
-VHDL is too verbose
-===================
+Explicit, but not verbose
+==========================
 
 VHDL has many virtues, but conciseness is not one of them. Many feel that the
 syntax is verbose and even redundant, and even experts need a manual nearby to
@@ -104,9 +104,8 @@ Moreover, it achieves this without resorting to "magic".  The code remains
 explicit, but the syntax has been reduced to the essence. Python has been
 called executable pseudocode, and that's actually a quite accurate description.
 
-
-SystemVerilog is too complicated
-================================
+Power, not complexity
+=====================
 
 SystemVerilog has been called a "dumping ground" for any feature ever dreamed
 up by an EDA company. Through the process of "donations", the language contains
@@ -128,12 +127,12 @@ secondary.  After learning the small core language, you only need to study and
 import those libraries that contain the functionality that you need.  This is a
 superior and scalable way of dealing with complexity.
 
+Signals and variables, like VHDL
+================================
 
-Confusion about blocking and non-blocking assignments
-=====================================================
-
-If you are *not* confused about blocking and non-blocking assignments, you
-probably don't have enough experience :-).
+One of the most confusing aspects of Verilog is about the difference between
+blocking and non-blocking assignments.  Actually, if you are *not* confused
+about this, you probably don't have enough experience :-).
 
 Here is the problem. The semantics of blocking (`=`) versus non-blocking (`<=)`
 assignments are radically different. So different in fact that a language like
@@ -153,8 +152,8 @@ signal assignments that correspond to the semantics of Verilog non-blocking
 assignments. The clear separation between signals and variables avoids the
 confusion about the two types of assignment.
 
-Confusion about signal assignments
-==================================
+Signal assignments done right
+=============================
 
 Hardware Description Languages need a way to describe racefree communication
 between parallel hardware blocks. This is the purpose of VHDL signal
@@ -195,8 +194,8 @@ A MyHDL designer merely has to learn that a signal's future value should be
 modified by assigning to its `next` attribute. From there on, the semantics are
 clear from the code.
 
-VHDL requires too many conversion functions
-===========================================
+Straighforward integer arithmetic 
+=================================
 
 When writing synthesizable VHDL code, you typically use the signed and unsigned
 types for arithmetic operations. These are "representational" types that focus
@@ -218,8 +217,8 @@ using integers. Therefore, all issues with signed/unsigned representations
 simply disappear.  The convertor to VHDL infers the required conversions and
 resizings automatically, thereby automating a cumbersome task.
 
-Confusion about signed arithmetic
-=================================
+Signed arithmetic that works 
+============================
 
 Signed arithmetic in Verilog can be quite confusing. The reason is that when
 you mix signed and unsigned operands, the operation is done in unsigned mode.

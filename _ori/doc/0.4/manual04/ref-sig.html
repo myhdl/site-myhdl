@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="ref-gen.html">
+<LINK REL="previous" href="ref-simsupport.html">
+<LINK REL="up" href="ref.html">
+<LINK REL="next" href="ref-gen.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="7.3 The Signal class ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>7.3 The Signal class </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ref-simsupport.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="ref.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="ref-gen.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ref-simsupport.html">7.2 Simulation support</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="ref.html">7. Reference</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="ref-gen.html">7.4 MyHDL generators and</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION008300000000000000000">&nbsp;</A>
+<BR>
+7.3 The <tt class="class">Signal</tt> class 
+</H1>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><span class="typelabel">class</span>&nbsp;<a name="l2h-28"><tt class="class">Signal</tt></a></b>(</nobr></td>
+  <td><big>[</big><var>val=None</var><big>]</big><big>[</big><var>, delay=0</var><big>]</big>)</td></tr></table>
+<dd>
+This class is used to construct a new signal and to initialize its
+value to <var>val</var>. Optionally, a delay can be specified.
+</dl>
+
+<P>
+A <tt class="class">Signal</tt> object has the following attributes:
+
+<P>
+<dl><dt><b><a name="l2h-29"><tt class="member">next</tt></a></b>
+<dd>
+Read-write attribute that represents the next value of the signal.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-30"><tt class="member">val</tt></a></b>
+<dd>
+Read-only attribute that represents the current value of the signal.
+
+<P>
+This attribute is always available to access the current value;
+however in many practical case it will not be needed. Whenever there
+is no ambiguity, the Signal object's current value is used
+implicitly. In particular, all Python's standard numeric, bit-wise,
+logical and comparison operators are implemented on a Signal object by
+delegating to its current value. The exception is augmented
+assignment. These operators are not implemented as they would break
+the rule that the current value should be a read-only attribute. In
+addition, when a Signal object is assigned to the <code>next</code>
+attribute of another Signal object, its current value is assigned
+instead.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-31"><tt class="member">min</tt></a></b>
+<dd>
+Read-only attribute that is the minimum value (inclusive) of a
+numeric signal, or <var>None</var> for no minimum.
+</dl>
+<dl><dt><b><a name="l2h-32"><tt class="member">max</tt></a></b>
+<dd>
+Read-only attribute that is the maximum value
+(exclusive) of a numeric signal, or <var>None</var> for no 
+maximum.
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ref-simsupport.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="ref.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="ref-gen.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ref-simsupport.html">7.2 Simulation support</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="ref.html">7. Reference</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="ref-gen.html">7.4 MyHDL generators and</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on February 4, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

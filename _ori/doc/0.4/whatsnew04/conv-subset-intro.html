@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="whatsnew04.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="whatsnew04.html" title='New in MyHDL 0.4: Conversion to Verilog'>
+<link rel="contents" href="contents.html" title="Contents"><link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="conv-subset-style.html">
+<LINK REL="previous" href="conv-subset.html">
+<LINK REL="up" href="conv-subset.html">
+<LINK REL="next" href="conv-subset-style.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="4.1 Introduction">
+<META NAME="keywords" CONTENT="whatsnew04">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>4.1 Introduction</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conv-subset.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-subset.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-subset-style.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">New in MyHDL 0.4: Conversion to Verilog</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conv-subset.html">4 The convertible subset</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-subset.html">4 The convertible subset</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-subset-style.html">4.2 Coding style</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000510000000000000000">&nbsp;</A>
+<BR>
+4.1 Introduction
+</H2>
+
+<P>
+Unsurprisingly, not all MyHDL code can be converted to Verilog. In
+fact, there are very important restrictions.  As the goal of the
+conversion functionality is implementation, this should not be a big
+issue: anyone familiar with synthesis is used to similar restrictions
+in the <i>synthesizable subset</i> of Verilog and VHDL. The converter
+attempts to issue clear error messages when it encounters a construct
+that cannot be converted. 
+
+<P>
+In practice, the synthesizable subset usually refers to RTL synthesis,
+which is by far the most popular type of synthesis today. There are
+industry standards that define the RTL synthesis subset.  However,
+those were not used as a model for the restrictions of the MyHDL
+converter, but as a minimal starting point.  On that basis, whenever
+it was judged easy or useful to support an additional feature, this
+was done. For example, it is actually easier to convert
+<tt class="keyword">while</tt> loops than <tt class="keyword">for</tt> loops even though they are
+not RTL-synthesizable.  As another example, <tt class="keyword">print</tt> is
+supported because it's so useful for debugging, even though it's not
+synthesizable.  In summary, the convertible subset is a superset of
+the standard RTL synthesis subset, and supports synthesis tools with
+more advanced capabilities, such as behavioral synthesis.
+
+<P>
+Recall that any restrictions only apply to the design post
+elaboration.  In practice, this means that they apply only to the code
+of the generators, that are the leaf functional blocks in a MyHDL
+design.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conv-subset.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-subset.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-subset-style.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">New in MyHDL 0.4: Conversion to Verilog</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conv-subset.html">4 The convertible subset</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-subset.html">4 The convertible subset</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-subset-style.html">4.2 Coding style</A>
+<hr>
+<span class="release-info">Release 0.4.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

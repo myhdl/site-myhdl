@@ -1,0 +1,703 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>High level modeling &mdash; MyHDL 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/myhdl.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="MyHDL 0.8 documentation" href="../index.html" />
+    <link rel="up" title="The MyHDL manual" href="index.html" />
+    <link rel="next" title="Unit testing" href="unittest.html" />
+    <link rel="prev" title="RTL modeling" href="rtl.html" /> 
+  </head>
+  <body>
+<div style="background-color: white; text-align: left; padding: 5px 5px 2px 15px">
+<a href="http://www.myhdl.org">
+    <img src="../_static/myhdl_logo_header.png" border=0 alt="MyHDL" />
+</a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="unittest.html" title="Unit testing"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="rtl.html" title="RTL modeling"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">The MyHDL manual</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">High level modeling</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#modeling-with-bus-functional-procedures">Modeling with bus-functional procedures</a></li>
+<li><a class="reference internal" href="#modeling-memories-with-built-in-types">Modeling memories with built-in types</a></li>
+<li><a class="reference internal" href="#modeling-errors-using-exceptions">Modeling errors using exceptions</a></li>
+<li><a class="reference internal" href="#object-oriented-modeling">Object oriented modeling</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="rtl.html"
+                        title="previous chapter">RTL modeling</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="unittest.html"
+                        title="next chapter">Unit testing</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/manual/highlevel.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="high-level-modeling">
+<span id="model-hl"></span><h1>High level modeling<a class="headerlink" href="#high-level-modeling" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p id="index-0">To write synthesizable models in MyHDL, you should stick to
+the RTL templates shown in <a class="reference internal" href="rtl.html#model-rtl"><em>RTL modeling</em></a>. However,
+modeling in MyHDL is much more powerful than that.
+Conceptually, MyHDL is a library for general event-driven
+modeling and simulation of hardware systems.</p>
+<p>There are many reasons why it can be useful to model at a
+higher abstraction level than RTL. For example, you can
+use MyHDL to verify architectural features, such as system
+throughput, latency and buffer sizes. You can also write
+high level models for specialized technology-dependent cores
+that are not going through synthesis. Last but not least,
+you can use MyHDL to write test benches that verify a system
+model or a synthesizable description.</p>
+<p>This chapter explores some of the options for high level
+modeling with MyHDL.</p>
+</div>
+<div class="section" id="modeling-with-bus-functional-procedures">
+<span id="model-bfm"></span><h2>Modeling with bus-functional procedures<a class="headerlink" href="#modeling-with-bus-functional-procedures" title="Permalink to this headline">¶</a></h2>
+<p id="index-1">A <em class="dfn">bus-functional procedure</em> is a reusable encapsulation of the low-level
+operations needed to implement some abstract transaction on a physical
+interface. Bus-functional procedures are typically used in flexible verification
+environments.</p>
+<p>Once again, MyHDL uses generator functions to support bus-functional procedures.
+In MyHDL, the difference between instances and bus-functional procedure calls
+comes from the way in which a generator function is used.</p>
+<p>As an example, we will design a bus-functional procedure of a simplified UART
+transmitter. We assume 8 data bits, no parity bit, and a single stop bit, and we
+add print statements to follow the simulation behavior:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">T_9600</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1e9</span> <span class="o">/</span> <span class="mi">9600</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">rs232_tx</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">T_9600</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Simple rs232 transmitter procedure.</span>
+
+<span class="sd">    tx -- serial output data</span>
+<span class="sd">    data -- input data byte to be transmitted</span>
+<span class="sd">    duration -- transmit bit duration</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">print</span> <span class="s">&quot;-- Transmitting </span><span class="si">%s</span><span class="s"> --&quot;</span> <span class="o">%</span> <span class="nb">hex</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;TX: start bit&quot;</span>
+    <span class="n">tx</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&quot;TX: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">tx</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="s">&quot;TX: stop bit&quot;</span>
+    <span class="n">tx</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This looks exactly like the generator functions in previous sections. It becomes
+a bus-functional procedure when we use it differently. Suppose that in a test
+bench, we want to generate a number of data bytes to be transmitted. This can be
+modeled as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">testvals</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0xc5</span><span class="p">,</span> <span class="mh">0x3a</span><span class="p">,</span> <span class="mh">0x4b</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">stimulus</span><span class="p">():</span>
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">testvals</span><span class="p">:</span>
+        <span class="n">txData</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">rs232_tx</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">txData</span><span class="p">)</span>
+</pre></div>
+</div>
+<p id="index-2">We use the bus-functional procedure call as a clause in a <tt class="docutils literal"><span class="pre">yield</span></tt> statement.
+This introduces a fourth form of the <tt class="docutils literal"><span class="pre">yield</span></tt> statement: using a generator as a
+clause. Although this is a more dynamic usage than in the previous cases, the
+meaning is actually very similar: at that point, the original generator should
+wait for the completion of a generator.  In this case, the original generator
+resumes when the <tt class="docutils literal"><span class="pre">rs232_tx(tx,</span> <span class="pre">txData)</span></tt> generator returns.</p>
+<p>When simulating this, we get:</p>
+<div class="highlight-python"><pre>-- Transmitting 0xc5 --
+TX: start bit
+TX: 1
+TX: 0
+TX: 1
+TX: 0
+TX: 0
+TX: 0
+TX: 1
+TX: 1
+TX: stop bit
+-- Transmitting 0x3a --
+TX: start bit
+TX: 0
+TX: 1
+TX: 0
+TX: 1
+...</pre>
+</div>
+<p>We will continue with this example by designing the corresponding UART receiver
+bus-functional procedure. This will allow us to introduce further capabilities
+of MyHDL and its use of the <tt class="docutils literal"><span class="pre">yield</span></tt> statement.</p>
+<p id="index-3">Until now, the <tt class="docutils literal"><span class="pre">yield</span></tt> statements had a single clause. However, they can have
+multiple clauses as well. In that case, the generator resumes as soon as the
+wait condition specified by one of the clauses is satisfied. This corresponds to
+the functionality of sensitivity lists in Verilog and VHDL.</p>
+<p>For example, suppose we want to design an UART receive procedure with a timeout.
+We can specify the timeout condition while waiting for the start bit, as in the
+following generator function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">rs232_rx</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">T_9600</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">MAX_TIMEOUT</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Simple rs232 receiver procedure.</span>
+
+<span class="sd">    rx -- serial input data</span>
+<span class="sd">    data -- data received</span>
+<span class="sd">    duration -- receive bit duration</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># wait on start bit until timeout</span>
+    <span class="k">yield</span> <span class="n">rx</span><span class="o">.</span><span class="n">negedge</span><span class="p">,</span> <span class="n">delay</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rx</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">StopSimulation</span><span class="p">,</span> <span class="s">&quot;RX time out error&quot;</span>
+
+    <span class="c"># sample in the middle of the bit duration</span>
+    <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="n">duration</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;RX: start bit&quot;</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;RX: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">rx</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">rx</span>
+
+    <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;RX: stop bit&quot;</span>
+    <span class="k">print</span> <span class="s">&quot;-- Received </span><span class="si">%s</span><span class="s"> --&quot;</span> <span class="o">%</span> <span class="nb">hex</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If the timeout condition is triggered, the receive bit <tt class="docutils literal"><span class="pre">rx</span></tt> will still be
+<tt class="docutils literal"><span class="pre">1</span></tt>. In that case, we raise an exception to stop the simulation. The
+<tt class="docutils literal"><span class="pre">StopSimulation</span></tt> exception is predefined in MyHDL for such purposes. In the
+other case, we proceed by positioning the sample point in the middle of the bit
+duration, and sampling the received data bits.</p>
+<p>When a <tt class="docutils literal"><span class="pre">yield</span></tt> statement has multiple clauses, they can be of any type that is
+supported as a single clause, including generators. For example, we can verify
+the transmitter and receiver generator against each other by yielding them
+together, as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">rx</span> <span class="o">=</span> <span class="n">tx</span>
+    <span class="n">rxData</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">testvals</span><span class="p">:</span>
+        <span class="n">txData</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">rs232_rx</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="n">rxData</span><span class="p">),</span> <span class="n">rs232_tx</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">txData</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Both forked generators will run concurrently, and the original generator will
+resume as soon as one of them finishes (which will be the transmitter in this
+case).  The simulation output shows how the UART procedures run in lockstep:</p>
+<div class="highlight-python"><pre>-- Transmitting 0xc5 --
+TX: start bit
+RX: start bit
+TX: 1
+RX: 1
+TX: 0
+RX: 0
+TX: 1
+RX: 1
+TX: 0
+RX: 0
+TX: 0
+RX: 0
+TX: 0
+RX: 0
+TX: 1
+RX: 1
+TX: 1
+RX: 1
+TX: stop bit
+RX: stop bit
+-- Received 0xc5 --
+-- Transmitting 0x3a --
+TX: start bit
+RX: start bit
+TX: 0
+RX: 0
+...</pre>
+</div>
+<p>For completeness, we will verify the timeout behavior with a test bench that
+disconnects the <tt class="docutils literal"><span class="pre">rx</span></tt> from the <tt class="docutils literal"><span class="pre">tx</span></tt> signal, and we specify a small timeout
+for the receive procedure:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">testTimeout</span><span class="p">():</span>
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">rx</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">rxData</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">testvals</span><span class="p">:</span>
+        <span class="n">txData</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">rs232_rx</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="n">rxData</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">4</span><span class="o">*</span><span class="n">T_9600</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">rs232_tx</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">txData</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The simulation now stops with a timeout exception after a few transmit cycles:</p>
+<div class="highlight-python"><pre>-- Transmitting 0xc5 --
+TX: start bit
+TX: 1
+TX: 0
+TX: 1
+StopSimulation: RX time out error</pre>
+</div>
+<p>Recall that the original generator resumes as soon as one of the forked
+generators returns. In the previous cases, this is just fine, as the transmitter
+and receiver generators run in lockstep. However, it may be desirable to resume
+the caller only when <em>all</em> of the forked generators have finished. For example,
+suppose that we want to characterize the robustness of the transmitter and
+receiver design to bit duration differences. We can adapt our test bench as
+follows, to run the transmitter at a faster rate:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">T_10200</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1e9</span> <span class="o">/</span> <span class="mi">10200</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">testNoJoin</span><span class="p">():</span>
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">rx</span> <span class="o">=</span> <span class="n">tx</span>
+    <span class="n">rxData</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">testvals</span><span class="p">:</span>
+        <span class="n">txData</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">rs232_rx</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="n">rxData</span><span class="p">),</span> <span class="n">rs232_tx</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">txData</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">T_10200</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Simulating this shows how the transmission of the new byte starts before the
+previous one is received, potentially creating additional transmission errors:</p>
+<div class="highlight-python"><pre>-- Transmitting 0xc5 --
+TX: start bit
+RX: start bit
+...
+TX: 1
+RX: 1
+TX: 1
+TX: stop bit
+RX: 1
+-- Transmitting 0x3a --
+TX: start bit
+RX: stop bit
+-- Received 0xc5 --
+RX: start bit
+TX: 0</pre>
+</div>
+<p>It is more likely that we want to characterize the design on a byte by byte
+basis, and align the two generators before transmitting each byte. In MyHDL,
+this is done with the <a class="reference internal" href="reference.html#myhdl.join" title="myhdl.join"><tt class="xref py py-func docutils literal"><span class="pre">join()</span></tt></a> function. By joining clauses together in a
+<tt class="docutils literal"><span class="pre">yield</span></tt> statement, we create a new clause that triggers only when all of its
+clause arguments have triggered. For example, we can adapt the test bench as
+follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">testJoin</span><span class="p">():</span>
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">rx</span> <span class="o">=</span> <span class="n">tx</span>
+    <span class="n">rxData</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">testvals</span><span class="p">:</span>
+        <span class="n">txData</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">join</span><span class="p">(</span><span class="n">rs232_rx</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="n">rxData</span><span class="p">),</span> <span class="n">rs232_tx</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">txData</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">T_10200</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Now, transmission of a new byte only starts when the previous one is received:</p>
+<div class="highlight-python"><pre>-- Transmitting 0xc5 --
+TX: start bit
+RX: start bit
+...
+TX: 1
+RX: 1
+TX: 1
+TX: stop bit
+RX: 1
+RX: stop bit
+-- Received 0xc5 --
+-- Transmitting 0x3a --
+TX: start bit
+RX: start bit
+TX: 0
+RX: 0</pre>
+</div>
+</div>
+<div class="section" id="modeling-memories-with-built-in-types">
+<span id="model-mem"></span><h2>Modeling memories with built-in types<a class="headerlink" href="#modeling-memories-with-built-in-types" title="Permalink to this headline">¶</a></h2>
+<p id="index-4">Python has powerful built-in data types that can be useful to model hardware
+memories. This can be merely a matter of putting an interface around some data
+type operations.</p>
+<p>For example, a <em class="dfn">dictionary</em> comes in handy to model sparse memory
+structures. (In other languages, this data type is called  <em class="dfn">associative
+array</em>, or <em class="dfn">hash table</em>.) A sparse memory is one in which only a small part
+of the addresses is used in a particular application or simulation. Instead of
+statically allocating the full address space, which can be large, it is better
+to dynamically allocate the needed storage space. This is exactly what a
+dictionary provides. The following is an example of a sparse memory model:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">sparseMemory</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">din</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">we</span><span class="p">,</span> <span class="n">en</span><span class="p">,</span> <span class="n">clk</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Sparse memory model based on a dictionary.</span>
+
+<span class="sd">    Ports:</span>
+<span class="sd">    dout -- data out</span>
+<span class="sd">    din -- data in</span>
+<span class="sd">    addr -- address bus</span>
+<span class="sd">    we -- write enable: write if 1, read otherwise</span>
+<span class="sd">    en -- interface enable: enabled if 1</span>
+<span class="sd">    clk -- clock input</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">memory</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">access</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">en</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">we</span><span class="p">:</span>
+                <span class="n">memory</span><span class="p">[</span><span class="n">addr</span><span class="o">.</span><span class="n">val</span><span class="p">]</span> <span class="o">=</span> <span class="n">din</span><span class="o">.</span><span class="n">val</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dout</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">memory</span><span class="p">[</span><span class="n">addr</span><span class="o">.</span><span class="n">val</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">access</span>
+</pre></div>
+</div>
+<p>Note how we use the <tt class="docutils literal"><span class="pre">val</span></tt> attribute of the <tt class="docutils literal"><span class="pre">din</span></tt> signal, as we don&#8217;t want to
+store the signal object itself, but its current value. Similarly, we use the
+<tt class="docutils literal"><span class="pre">val</span></tt> attribute of the <tt class="docutils literal"><span class="pre">addr</span></tt> signal as the dictionary key.</p>
+<p>In many cases, MyHDL code uses a signal&#8217;s current value automatically when there
+is no ambiguity: for example, when a signal is used in an expression. However,
+in other cases, such as in this example, you have to refer to the value
+explicitly: for example, when the Signal is used as a dictionary key, or when it is not
+used in an expression.  One option is to use the <tt class="docutils literal"><span class="pre">val</span></tt> attribute, as in this
+example.  Another possibility is to use the <tt class="docutils literal"><span class="pre">int()</span></tt> or <tt class="docutils literal"><span class="pre">bool()</span></tt> functions to
+typecast the Signal to an integer or a boolean value. These functions are also
+useful with <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> objects.</p>
+<p>As a second example, we will demonstrate how to use a list to model a
+synchronous fifo:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">fifo</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">din</span><span class="p">,</span> <span class="n">re</span><span class="p">,</span> <span class="n">we</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">full</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">maxFilling</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">maxint</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Synchronous fifo model based on a list.</span>
+
+<span class="sd">    Ports:</span>
+<span class="sd">    dout -- data out</span>
+<span class="sd">    din -- data in</span>
+<span class="sd">    re -- read enable</span>
+<span class="sd">    we -- write enable</span>
+<span class="sd">    empty -- empty indication flag</span>
+<span class="sd">    full -- full indication flag</span>
+<span class="sd">    clk -- clock input</span>
+
+<span class="sd">    Optional parameter:</span>
+<span class="sd">    maxFilling -- maximum fifo filling, &quot;infinite&quot; by default</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">memory</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">access</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">we</span><span class="p">:</span>
+            <span class="n">memory</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">din</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">re</span><span class="p">:</span>
+            <span class="n">dout</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">memory</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">filling</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">memory</span><span class="p">)</span>
+        <span class="n">empty</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="p">(</span><span class="n">filling</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">full</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="p">(</span><span class="n">filling</span> <span class="o">==</span> <span class="n">maxFilling</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">access</span>
+</pre></div>
+</div>
+<p>Again, the model is merely a MyHDL interface around some operations on a list:
+<tt class="xref py py-func docutils literal"><span class="pre">insert()</span></tt> to insert entries, <tt class="xref py py-func docutils literal"><span class="pre">pop()</span></tt> to retrieve them, and <a class="reference external" href="http://docs.python.org/library/functions.html#len" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">len()</span></tt></a>
+to get the size of a Python object.</p>
+</div>
+<div class="section" id="modeling-errors-using-exceptions">
+<span id="model-err"></span><h2>Modeling errors using exceptions<a class="headerlink" href="#modeling-errors-using-exceptions" title="Permalink to this headline">¶</a></h2>
+<p>In the previous section, we used Python data types for modeling. If such a type
+is used inappropriately, Python&#8217;s run time error system will come into play. For
+example, if we access an address in the <tt class="xref py py-func docutils literal"><span class="pre">sparseMemory()</span></tt> model that was not
+initialized before, we will get a traceback similar to the following (some lines
+omitted for clarity):</p>
+<div class="highlight-python"><pre>Traceback (most recent call last):
+...
+  File "sparseMemory.py", line 31, in access
+    dout.next = memory[addr.val]
+KeyError: Signal(51)</pre>
+</div>
+<p>Similarly, if the <tt class="docutils literal"><span class="pre">fifo</span></tt> is empty, and we attempt to read from it, we get:</p>
+<div class="highlight-python"><pre>Traceback (most recent call last):
+...
+  File "fifo.py", line 34, in fifo
+    dout.next = memory.pop()
+IndexError: pop from empty list</pre>
+</div>
+<p>Instead of these low level errors, it may be preferable to define errors at the
+functional level. In Python, this is typically done by defining a custom
+<tt class="docutils literal"><span class="pre">Error</span></tt> exception, by subclassing the standard <tt class="docutils literal"><span class="pre">Exception</span></tt> class. This
+exception is then raised explicitly when an error condition occurs.</p>
+<p>For example, we can change the <tt class="xref py py-func docutils literal"><span class="pre">sparseMemory()</span></tt> function as follows (with
+the doc string is omitted for brevity):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Error</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">sparseMemory2</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">din</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">we</span><span class="p">,</span> <span class="n">en</span><span class="p">,</span> <span class="n">clk</span><span class="p">):</span>
+
+    <span class="n">memory</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">access</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">en</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">we</span><span class="p">:</span>
+                <span class="n">memory</span><span class="p">[</span><span class="n">addr</span><span class="o">.</span><span class="n">val</span><span class="p">]</span> <span class="o">=</span> <span class="n">din</span><span class="o">.</span><span class="n">val</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">dout</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">memory</span><span class="p">[</span><span class="n">addr</span><span class="o">.</span><span class="n">val</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">Error</span><span class="p">,</span> <span class="s">&quot;Uninitialized address </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">hex</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">access</span>
+</pre></div>
+</div>
+<p>This works by catching the low level data type exception, and raising the custom
+exception with an appropriate error message instead.  If the
+<tt class="xref py py-func docutils literal"><span class="pre">sparseMemory()</span></tt> function is defined in a module with the same name, an
+access error is now reported as follows:</p>
+<div class="highlight-python"><pre>Traceback (most recent call last):
+...
+  File "sparseMemory.py", line 61, in access
+    raise Error, "Uninitialized address %s" % hex(addr)
+Error: Uninitialized address 0x33</pre>
+</div>
+<p>Likewise, the <tt class="xref py py-func docutils literal"><span class="pre">fifo()</span></tt> function can be adapted as follows, to report
+underflow and overflow errors:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Error</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">def</span> <span class="nf">fifo2</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">din</span><span class="p">,</span> <span class="n">re</span><span class="p">,</span> <span class="n">we</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">full</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">maxFilling</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">maxint</span><span class="p">):</span>
+
+    <span class="n">memory</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">access</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">we</span><span class="p">:</span>
+            <span class="n">memory</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">din</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">re</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">dout</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">memory</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">Error</span><span class="p">,</span> <span class="s">&quot;Underflow -- Read from empty fifo&quot;</span>
+        <span class="n">filling</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">memory</span><span class="p">)</span>
+        <span class="n">empty</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="p">(</span><span class="n">filling</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">full</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="p">(</span><span class="n">filling</span> <span class="o">==</span> <span class="n">maxFilling</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filling</span> <span class="o">&gt;</span> <span class="n">maxFilling</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">Error</span><span class="p">,</span> <span class="s">&quot;Overflow -- Max filling </span><span class="si">%s</span><span class="s"> exceeded&quot;</span> <span class="o">%</span> <span class="n">maxFilling</span>
+
+    <span class="k">return</span> <span class="n">access</span>
+</pre></div>
+</div>
+<p>In this case, the underflow error is detected as before, by catching a low level
+exception on the list data type. On the other hand, the overflow error is
+detected by a regular check on the length of the list.</p>
+</div>
+<div class="section" id="object-oriented-modeling">
+<span id="model-obj"></span><h2>Object oriented modeling<a class="headerlink" href="#object-oriented-modeling" title="Permalink to this headline">¶</a></h2>
+<p id="index-5">The models in the previous sections used high-level built-in data types
+internally. However, they had a conventional RTL-style interface.  Communication
+with such a module is done through signals that are attached to it during
+instantiation.</p>
+<p>A more advanced approach is to model hardware blocks as objects. Communication
+with objects is done through method calls. A method encapsulates all details of
+a certain task performed by the object. As an object has a method interface
+instead of an RTL-style hardware interface, this is a much  higher level
+approach.</p>
+<p>As an example, we will design a synchronized queue object.  Such an object can
+be filled by producer, and independently read by a consumer. When the queue is
+empty, the consumer should wait until an item is available. The queue can be
+modeled as an object with a <tt class="xref py py-meth docutils literal"><span class="pre">put(item)()</span></tt> and a <tt class="xref py py-meth docutils literal"><span class="pre">get()</span></tt> method, as
+follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">def</span> <span class="nf">trigger</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">event</span>
+
+<span class="k">class</span> <span class="nc">queue</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">sync</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">item</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">item</span><span class="p">):</span>
+       <span class="c"># non time-consuming method</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+       <span class="n">trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sync</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+       <span class="c"># time-consuming method</span>
+       <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">:</span>
+          <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <tt class="xref py py-class docutils literal"><span class="pre">queue</span></tt> object constructor initializes an internal list to hold
+items, and a <em>sync</em> signal to synchronize the operation between the methods.
+Whenever <tt class="xref py py-meth docutils literal"><span class="pre">put()</span></tt> puts an item in the queue, the signal is triggered.  When
+the <tt class="xref py py-meth docutils literal"><span class="pre">get()</span></tt> method sees that the list is empty, it waits on the trigger
+first. <tt class="xref py py-meth docutils literal"><span class="pre">get()</span></tt> is a generator method because  it may consume time. As the
+<tt class="docutils literal"><span class="pre">yield</span></tt> statement is used in MyHDL for timing control, the method cannot
+&#8220;yield&#8221; the item. Instead, it makes it available in the <em>item</em> instance
+variable.</p>
+<p>To test the queue operation, we will model a producer and a consumer in the test
+bench.  As a waiting consumer should not block a whole system, it should run in
+a concurrent &#8220;thread&#8221;. As always in MyHDL, concurrency is modeled by Python
+generators. Producer and consumer will thus run independently, and we will
+monitor their operation through some print statements:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">q</span> <span class="o">=</span> <span class="n">queue</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">Producer</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+    <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">: PUT item </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">45</span> <span class="o">-</span> <span class="mi">10</span><span class="o">*</span><span class="n">i</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">Consumer</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+    <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+    <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">: TRY to get item&quot;</span> <span class="o">%</span> <span class="n">now</span><span class="p">()</span>
+        <span class="k">yield</span> <span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">: GOT item </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="n">q</span><span class="o">.</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">Producer</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">Consumer</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">P</span><span class="p">,</span> <span class="n">C</span>
+
+<span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Note that the generator method <tt class="xref py py-meth docutils literal"><span class="pre">get()</span></tt> is called in a <tt class="docutils literal"><span class="pre">yield</span></tt> statement in
+the <tt class="xref py py-func docutils literal"><span class="pre">Consumer()</span></tt> function. The new generator will take over from
+<tt class="xref py py-func docutils literal"><span class="pre">Consumer()</span></tt>, until it is done. Running this test bench produces the
+following output:</p>
+<div class="highlight-python"><pre>% python queue.py
+100: TRY to get item
+120: PUT item 0
+120: GOT item 0
+150: TRY to get item
+165: PUT item 1
+165: GOT item 1
+195: TRY to get item
+200: PUT item 2
+200: GOT item 2
+225: PUT item 3
+230: TRY to get item
+230: GOT item 3
+240: PUT item 4
+260: TRY to get item
+260: GOT item 4
+290: TRY to get item
+StopSimulation: No more events</pre>
+</div>
+<p class="rubric">Footnotes</p>
+<table class="docutils footnote" frame="void" id="id1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td>The name <a class="reference internal" href="reference.html#myhdl.always_comb" title="myhdl.always_comb"><tt class="xref py py-func docutils literal"><span class="pre">always_comb()</span></tt></a> refers to a construct with similar semantics in
+SystemVerilog.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[2]</td><td>It also possible to have a reproducible random output, by explicitly providing a
+seed value. See the documentation of the <tt class="docutils literal"><span class="pre">random</span></tt> module.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="unittest.html" title="Unit testing"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="rtl.html" title="RTL modeling"
+             >previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" >The MyHDL manual</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Jan Decaluwe.
+      Last updated on May 20, 2013.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

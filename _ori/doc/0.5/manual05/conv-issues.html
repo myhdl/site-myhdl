@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="previous" href="conv-usage.html">
+<LINK REL="up" href="conv.html">
+<LINK REL="next" href="ref-misc.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="6.7 Known issues">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>6.7 Known issues</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conf-usage-custom.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="ref-misc.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conf-usage-custom.html">6.6.7 User-defined Verilog code</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv.html">6. Conversion to Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="ref-misc.html">7. Reference</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION007700000000000000000">&nbsp;</A>
+<BR>
+6.7 Known issues
+</H1>
+<DL>
+<DT><STRONG>Verilog integers are 32 bit wide</STRONG></DT>
+<DD>Usually, Verilog integers are 32 bit wide. In contrast, Python is
+moving toward integers with undefined width. Python <tt class="class">int</tt> 
+and <tt class="class">long</tt> variables are mapped to Verilog integers; so for values
+wider than 32 bit this mapping is incorrect.
+
+<P>
+</DD>
+<DT><STRONG>Synthesis pragmas are specified as Verilog comments.</STRONG></DT>
+<DD>The recommended
+way to specify synthesis pragmas in Verilog is through attribute
+lists. However, the Icarus simulator doesn't support them
+for <code>case</code> statements (to specify <code>parallel_case</code> and
+<code>full_case</code> pragmas). Therefore, the old
+but deprecated method of synthesis pragmas in Verilog comments
+is still used.
+
+<P>
+</DD>
+<DT><STRONG>Inconsistent place of the sensitivity list inferred from <code>always_comb</code>.</STRONG></DT>
+<DD>The semantics of <code>always_comb</code>, both in Verilog and MyHDL, is to
+have an implicit sensitivity list at the end of the code. However, this
+may not be synthesizable. Therefore, the inferred sensitivity list is
+put at the top of the corresponding <code>always</code> block.
+This may cause inconsistent behavior at the start of the
+simulation. The workaround is to create events at time 0.
+
+<P>
+</DD>
+<DT><STRONG>Non-blocking assignments to task arguments don't work.</STRONG></DT>
+<DD>Non-blocking (signal) assignments to task arguments don't work
+for an as yet unknown reason.
+</DD>
+</DL>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conf-usage-custom.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="ref-misc.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conf-usage-custom.html">6.6.7 User-defined Verilog code</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv.html">6. Conversion to Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="ref-misc.html">7. Reference</A>
+<hr>
+<span class="release-info">Release 0.5, documentation updated on December 29, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

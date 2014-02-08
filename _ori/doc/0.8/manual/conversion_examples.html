@@ -1,0 +1,982 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Conversion examples &mdash; MyHDL 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/myhdl.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="MyHDL 0.8 documentation" href="../index.html" />
+    <link rel="up" title="The MyHDL manual" href="index.html" />
+    <link rel="next" title="Reference" href="reference.html" />
+    <link rel="prev" title="Conversion to Verilog and VHDL" href="conversion.html" /> 
+  </head>
+  <body>
+<div style="background-color: white; text-align: left; padding: 5px 5px 2px 15px">
+<a href="http://www.myhdl.org">
+    <img src="../_static/myhdl_logo_header.png" border=0 alt="MyHDL" />
+</a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="reference.html" title="Reference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="conversion.html" title="Conversion to Verilog and VHDL"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">The MyHDL manual</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Conversion examples</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#a-small-sequential-design">A small sequential design</a></li>
+<li><a class="reference internal" href="#a-small-combinatorial-design">A small combinatorial design</a></li>
+<li><a class="reference internal" href="#a-hierarchical-design">A hierarchical design</a></li>
+<li><a class="reference internal" href="#optimizations-for-finite-state-machines">Optimizations for finite state machines</a></li>
+<li><a class="reference internal" href="#ram-inference">RAM inference</a></li>
+<li><a class="reference internal" href="#rom-inference">ROM inference</a></li>
+<li><a class="reference internal" href="#user-defined-code">User-defined code</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="conversion.html"
+                        title="previous chapter">Conversion to Verilog and VHDL</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="reference.html"
+                        title="next chapter">Reference</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/manual/conversion_examples.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="conversion-examples">
+<span id="conv-usage"></span><h1>Conversion examples<a class="headerlink" href="#conversion-examples" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<span id="conv-usage-intro"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>In this chapter, we will demonstrate the conversion process with a
+number of examples. For the concepts of MyHDL conversion,
+read the companion chapter <a class="reference internal" href="conversion.html#conv"><em>Conversion to Verilog and VHDL</em></a>.</p>
+</div>
+<div class="section" id="a-small-sequential-design">
+<span id="conv-usage-seq"></span><h2>A small sequential design<a class="headerlink" href="#a-small-sequential-design" title="Permalink to this headline">¶</a></h2>
+<p>Consider the following MyHDL code for an incrementer module:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ACTIVE_LOW</span><span class="p">,</span> <span class="n">INACTIVE_HIGH</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+
+<span class="k">def</span> <span class="nf">Inc</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">enable</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Incrementer with enable.</span>
+
+<span class="sd">    count -- output</span>
+<span class="sd">    enable -- control input, increment when 1</span>
+<span class="sd">    clock -- clock input</span>
+<span class="sd">    reset -- asynchronous reset input</span>
+<span class="sd">    n -- counter max value</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@always_seq</span><span class="p">(</span><span class="n">clock</span><span class="o">.</span><span class="n">posedge</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="n">reset</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">incLogic</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">enable</span><span class="p">:</span>
+            <span class="n">count</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">incLogic</span>
+</pre></div>
+</div>
+<p>Normally, to simulate the design, we would elaborate it as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">m</span> <span class="o">=</span> <span class="mi">8</span>
+
+<span class="n">count</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">modbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="n">m</span><span class="p">:])</span>
+<span class="n">enable</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">clock</span>  <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">reset</span> <span class="o">=</span> <span class="n">ResetSignal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">async</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">inc_inst</span> <span class="o">=</span> <span class="n">Inc</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">enable</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">inc_inst</span></tt> is an elaborated design instance that can be simulated. To convert
+it to Verilog, we change the last line as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">inc_inst</span> <span class="o">=</span> <span class="n">toVerilog</span><span class="p">(</span><span class="n">Inc</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">enable</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Again, this creates an instance that can be simulated, but as a side effect, it
+also generates an equivalent Verilog module in file <tt class="file docutils literal"><span class="pre">Inc.v</span></tt>. The Verilog
+code looks as follows:</p>
+<div class="highlight-python"><pre>module Inc (
+    count,
+    enable,
+    clock,
+    reset
+);
+
+output [7:0] count;
+reg [7:0] count;
+input enable;
+input clock;
+input reset;
+
+always @(posedge clock, negedge reset) begin: INC_INCLOGIC
+    if (reset == 0) begin
+        count &lt;= 0;
+    end
+    else begin
+        if (enable) begin
+            count &lt;= (count + 1);
+        end
+    end
+end
+
+endmodule</pre>
+</div>
+<p>The convertor infers a proper Verilog module interface and maps
+the MyHDL generator to a Verilog always block.</p>
+<p>Similarly, we can convert to VHDL as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">inc_inst</span> <span class="o">=</span> <span class="n">toVHDL</span><span class="p">(</span><span class="n">Inc</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">enable</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This creates an equivalent VHDL module in file <tt class="file docutils literal"><span class="pre">Inc.vhd</span></tt>:</p>
+<div class="highlight-python"><pre>library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+use std.textio.all;
+
+use work.pck_myhdl_08.all;
+
+entity Inc is
+    port (
+        count: inout unsigned(7 downto 0);
+        enable: in std_logic;
+        clock: in std_logic;
+        reset: in std_logic
+    );
+end entity Inc;
+
+architecture MyHDL of Inc is
+
+begin
+
+INC_INCLOGIC: process (clock, reset) is
+begin
+    if (reset = '0') then
+        count &lt;= (others =&gt; '0');
+    elsif rising_edge(clock) then
+        if bool(enable) then
+            count &lt;= (count + 1);
+        end if;
+    end if;
+end process INC_INCLOGIC;
+
+end architecture MyHDL;</pre>
+</div>
+<p>The MyHDL generator is mapped to a VHDL process in this case.</p>
+<p>Note that the VHDL file refers to a VHDL package called
+<tt class="docutils literal"><span class="pre">pck_myhdl_08</span></tt>.  This package contains a number of convenience
+functions that make the conversion easier.</p>
+<p>Note also the use of an <tt class="docutils literal"><span class="pre">inout</span></tt> in the interface.  This is not
+recommended VHDL design practice, but it is required here to have a
+valid VHDL design that matches the behavior of the MyHDL design. As
+this is only an issue for ports and as the convertor output is
+non-hierarchical, the issue is not very common and has an easy
+workaround.</p>
+</div>
+<div class="section" id="a-small-combinatorial-design">
+<span id="conv-usage-comb"></span><h2>A small combinatorial design<a class="headerlink" href="#a-small-combinatorial-design" title="Permalink to this headline">¶</a></h2>
+<p>The second example is a small combinatorial design, more specifically the binary
+to Gray code converter from previous chapters:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">bin2gray</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Gray encoder.</span>
+
+<span class="sd">    B -- input intbv signal, binary encoded</span>
+<span class="sd">    G -- output intbv signal, gray encoded</span>
+<span class="sd">    width -- bit width</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@always_comb</span>
+    <span class="k">def</span> <span class="nf">logic</span><span class="p">():</span>
+        <span class="n">Bext</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="n">width</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">Bext</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">B</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">width</span><span class="p">):</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">next</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Bext</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">^</span> <span class="n">Bext</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">logic</span>
+</pre></div>
+</div>
+<p>As before, you can create an instance and convert to Verilog and VHDL as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">width</span> <span class="o">=</span> <span class="mi">8</span>
+
+<span class="n">B</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="n">width</span><span class="p">:])</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="n">width</span><span class="p">:])</span>
+
+<span class="n">bin2gray_inst</span> <span class="o">=</span> <span class="n">toVerilog</span><span class="p">(</span><span class="n">bin2gray</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+<span class="n">bin2gray_inst</span> <span class="o">=</span> <span class="n">toVHDL</span><span class="p">(</span><span class="n">bin2gray</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The generated Verilog code looks as follows:</p>
+<div class="highlight-python"><pre>module bin2gray (
+    B,
+    G
+);
+
+input [7:0] B;
+output [7:0] G;
+reg [7:0] G;
+
+
+always @(B) begin: BIN2GRAY_LOGIC
+    integer i;
+    reg [9-1:0] Bext;
+    Bext = 9'h0;
+    Bext = B;
+    for (i=0; i&lt;8; i=i+1) begin
+      G[i] &lt;= (Bext[(i + 1)] ^ Bext[i]);
+    end
+end
+
+endmodule</pre>
+</div>
+<p>The generated VHDL code looks as follows:</p>
+<div class="highlight-python"><pre>library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+use work.pck_myhdl_08.all;
+
+entity bin2gray is
+    port (
+      B: in unsigned(7 downto 0);
+      G: out unsigned(7 downto 0)
+    );
+end entity bin2gray;
+
+architecture MyHDL of bin2gray is
+
+begin
+
+BIN2GRAY_LOGIC: process (B) is
+    variable Bext: unsigned(8 downto 0);
+begin
+    Bext := to_unsigned(0, 9);
+    Bext := resize(B, 9);
+    for i in 0 to 8-1 loop
+      G(i) &lt;= (Bext((i + 1)) xor Bext(i));
+    end loop;
+end process BIN2GRAY_LOGIC;
+
+end architecture MyHDL;</pre>
+</div>
+</div>
+<div class="section" id="a-hierarchical-design">
+<span id="conv-usage-hier"></span><h2>A hierarchical design<a class="headerlink" href="#a-hierarchical-design" title="Permalink to this headline">¶</a></h2>
+<p>The converter can handle designs with an arbitrarily deep hierarchy.</p>
+<p>For example, suppose we want to design an incrementer with Gray code output.
+Using the designs from previous sections, we can proceed as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">GrayInc</span><span class="p">(</span><span class="n">graycnt</span><span class="p">,</span> <span class="n">enable</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+
+    <span class="n">bincnt</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="n">width</span><span class="p">:])</span>
+
+    <span class="n">inc_1</span> <span class="o">=</span> <span class="n">inc</span><span class="p">(</span><span class="n">bincnt</span><span class="p">,</span> <span class="n">enable</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="o">**</span><span class="n">width</span><span class="p">)</span>
+    <span class="n">bin2gray_1</span> <span class="o">=</span> <span class="n">bin2gray</span><span class="p">(</span><span class="n">B</span><span class="o">=</span><span class="n">bincnt</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">graycnt</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">inc_1</span><span class="p">,</span> <span class="n">bin2gray_1</span>
+</pre></div>
+</div>
+<p>According to Gray code properties, only a single bit will change in consecutive
+values. However, as the <tt class="docutils literal"><span class="pre">bin2gray</span></tt> module is combinatorial, the output bits
+may have transient glitches, which may not be desirable. To solve this, let&#8217;s
+create an additional level of hierarchy and add an output register to the
+design. (This will create an additional latency of a clock cycle, which may not
+be acceptable, but we will ignore that here.)</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">GrayIncReg</span><span class="p">(</span><span class="n">graycnt</span><span class="p">,</span> <span class="n">enable</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+
+    <span class="n">graycnt_comb</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="n">width</span><span class="p">:])</span>
+    <span class="n">gray_inc_1</span> <span class="o">=</span> <span class="n">GrayInc</span><span class="p">(</span><span class="n">graycnt_comb</span><span class="p">,</span> <span class="n">enable</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">clock</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">reg_1</span><span class="p">():</span>
+        <span class="n">graycnt</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">graycnt_comb</span>
+
+    <span class="k">return</span> <span class="n">gray_inc_1</span><span class="p">,</span> <span class="n">reg_1</span>
+</pre></div>
+</div>
+<p>We can convert this hierarchical design as before:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">width</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">graycnt</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">modbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="n">width</span><span class="p">:])</span>
+<span class="n">enable</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">())</span>
+<span class="n">clock</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">())</span>
+<span class="n">reset</span> <span class="o">=</span> <span class="n">ResetSignal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">async</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">toVerilog</span><span class="p">(</span><span class="n">GrayIncReg</span><span class="p">,</span> <span class="n">graycnt</span><span class="p">,</span> <span class="n">enable</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+<span class="n">toVHDL</span><span class="p">(</span><span class="n">GrayIncReg</span><span class="p">,</span> <span class="n">graycnt</span><span class="p">,</span> <span class="n">enable</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The Verilog output code looks as follows:</p>
+<div class="highlight-python"><pre>module GrayIncReg (
+    graycnt,
+    enable,
+    clock,
+    reset
+);
+
+output [7:0] graycnt;
+reg [7:0] graycnt;
+input enable;
+input clock;
+input reset;
+
+reg [7:0] graycnt_comb;
+reg [7:0] gray_inc_1_bincnt;
+
+always @(posedge clock, negedge reset) begin: GRAYINCREG_GRAY_INC_1_INC_1_INCLOGIC
+    if (reset == 0) begin
+        gray_inc_1_bincnt &lt;= 0;
+    end
+    else begin
+        if (enable) begin
+            gray_inc_1_bincnt &lt;= (gray_inc_1_bincnt + 1);
+        end
+    end
+end
+
+always @(gray_inc_1_bincnt) begin: GRAYINCREG_GRAY_INC_1_BIN2GRAY_1_LOGIC
+    integer i;
+    reg [9-1:0] Bext;
+    Bext = 9'h0;
+    Bext = gray_inc_1_bincnt;
+    for (i=0; i&lt;8; i=i+1) begin
+        graycnt_comb[i] = (Bext[(i + 1)] ^ Bext[i]);
+    end
+end
+
+always @(posedge clock) begin: GRAYINCREG_REG_1
+    graycnt &lt;= graycnt_comb;
+end
+
+endmodule</pre>
+</div>
+<p>The VHDL output code looks as follows:</p>
+<div class="highlight-python"><pre>library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+use work.pck_myhdl_08.all;
+
+entity GrayIncReg is
+    port (
+        graycnt: out unsigned(7 downto 0);
+        enable: in std_logic;
+        clock: in std_logic;
+        reset: in std_logic
+    );
+end entity GrayIncReg;
+
+
+architecture MyHDL of GrayIncReg is
+
+signal graycnt_comb: unsigned(7 downto 0);
+signal gray_inc_1_bincnt: unsigned(7 downto 0);
+
+begin
+
+GRAYINCREG_GRAY_INC_1_INC_1_INCLOGIC: process (clock, reset) is
+begin
+    if (reset = '0') then
+        gray_inc_1_bincnt &lt;= (others =&gt; '0');
+    elsif rising_edge(clock) then
+        if bool(enable) then
+            gray_inc_1_bincnt &lt;= (gray_inc_1_bincnt + 1);
+        end if;
+    end if;
+end process GRAYINCREG_GRAY_INC_1_INC_1_INCLOGIC;
+
+
+GRAYINCREG_GRAY_INC_1_BIN2GRAY_1_LOGIC: process (gray_inc_1_bincnt) is
+    variable Bext: unsigned(8 downto 0);
+begin
+    Bext := to_unsigned(0, 9);
+    Bext := resize(gray_inc_1_bincnt, 9);
+    for i in 0 to 8-1 loop
+        graycnt_comb(i) &lt;= (Bext((i + 1)) xor Bext(i));
+    end loop;
+end process GRAYINCREG_GRAY_INC_1_BIN2GRAY_1_LOGIC;
+
+
+GRAYINCREG_REG_1: process (clock) is
+begin
+    if rising_edge(clock) then
+        graycnt &lt;= graycnt_comb;
+    end if;
+end process GRAYINCREG_REG_1;
+
+end architecture MyHDL;</pre>
+</div>
+<p>Note that the output is a flat &#8220;net list of blocks&#8221;, and that hierarchical
+signal names are generated as necessary.</p>
+</div>
+<div class="section" id="optimizations-for-finite-state-machines">
+<span id="conv-usage-fsm"></span><h2>Optimizations for finite state machines<a class="headerlink" href="#optimizations-for-finite-state-machines" title="Permalink to this headline">¶</a></h2>
+<p>As often in hardware design, finite state machines deserve special attention.</p>
+<p>In Verilog and VHDL, finite state machines are typically described using case
+statements.  Python doesn&#8217;t have a case statement, but the converter recognizes
+particular if-then-else structures and maps them to case statements. This
+optimization occurs when a variable whose type is an enumerated type is
+sequentially tested against enumeration items in an if-then-else structure.
+Also, the appropriate synthesis pragmas for efficient synthesis are generated in
+the Verilog code.</p>
+<p>As a further optimization, function <a class="reference internal" href="reference.html#myhdl.enum" title="myhdl.enum"><tt class="xref py py-func docutils literal"><span class="pre">enum()</span></tt></a> was enhanced to support
+alternative encoding schemes elegantly, using an additional parameter
+<em>encoding</em>. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">t_State</span> <span class="o">=</span> <span class="n">enum</span><span class="p">(</span><span class="s">&#39;SEARCH&#39;</span><span class="p">,</span> <span class="s">&#39;CONFIRM&#39;</span><span class="p">,</span> <span class="s">&#39;SYNC&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">&#39;one_hot&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The default encoding is <tt class="docutils literal"><span class="pre">'binary'</span></tt>; the other possibilities are <tt class="docutils literal"><span class="pre">'one_hot'</span></tt>
+and <tt class="docutils literal"><span class="pre">'one_cold'</span></tt>. This parameter only affects the conversion output, not the
+behavior of the type.  The generated Verilog code for case statements is
+optimized for an efficient implementation according to the encoding. Note that
+in contrast, a Verilog designer has to make nontrivial code changes to implement
+a different encoding scheme.</p>
+<p>As an example, consider the following finite state machine, whose state variable
+uses the enumeration type defined above:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ACTIVE_LOW</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">FRAME_SIZE</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">t_State</span> <span class="o">=</span> <span class="n">enum</span><span class="p">(</span><span class="s">&#39;SEARCH&#39;</span><span class="p">,</span> <span class="s">&#39;CONFIRM&#39;</span><span class="p">,</span> <span class="s">&#39;SYNC&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">&quot;one_hot&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">FramerCtrl</span><span class="p">(</span><span class="n">SOF</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">syncFlag</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">reset_n</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Framing control FSM.</span>
+
+<span class="sd">    SOF -- start-of-frame output bit</span>
+<span class="sd">    state -- FramerState output</span>
+<span class="sd">    syncFlag -- sync pattern found indication input</span>
+<span class="sd">    clk -- clock input</span>
+<span class="sd">    reset_n -- active low reset</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">index</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">8</span><span class="p">:])</span> <span class="c"># position in frame</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">,</span> <span class="n">reset_n</span><span class="o">.</span><span class="n">negedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">FSM</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">reset_n</span> <span class="o">==</span> <span class="n">ACTIVE_LOW</span><span class="p">:</span>
+            <span class="n">SOF</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">index</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">state</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">t_State</span><span class="o">.</span><span class="n">SEARCH</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">index</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">FRAME_SIZE</span>
+            <span class="n">SOF</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="n">t_State</span><span class="o">.</span><span class="n">SEARCH</span><span class="p">:</span>
+                <span class="n">index</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">syncFlag</span><span class="p">:</span>
+                    <span class="n">state</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">t_State</span><span class="o">.</span><span class="n">CONFIRM</span>
+            <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="n">t_State</span><span class="o">.</span><span class="n">CONFIRM</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">syncFlag</span><span class="p">:</span>
+                        <span class="n">state</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">t_State</span><span class="o">.</span><span class="n">SYNC</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">state</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">t_State</span><span class="o">.</span><span class="n">SEARCH</span>
+            <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="n">t_State</span><span class="o">.</span><span class="n">SYNC</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">syncFlag</span><span class="p">:</span>
+                        <span class="n">state</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">t_State</span><span class="o">.</span><span class="n">SEARCH</span>
+                <span class="n">SOF</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="p">(</span><span class="n">index</span> <span class="o">==</span> <span class="n">FRAME_SIZE</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Undefined state&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">FSM</span>
+</pre></div>
+</div>
+<p>The conversion is done as before:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SOF</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">syncFlag</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">clk</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">reset_n</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">state</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">t_State</span><span class="o">.</span><span class="n">SEARCH</span><span class="p">)</span>
+<span class="n">toVerilog</span><span class="p">(</span><span class="n">FramerCtrl</span><span class="p">,</span> <span class="n">SOF</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">syncFlag</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">reset_n</span><span class="p">)</span>
+<span class="n">toVHDL</span><span class="p">(</span><span class="n">FramerCtrl</span><span class="p">,</span> <span class="n">SOF</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">syncFlag</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">reset_n</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The Verilog output looks as follows:</p>
+<div class="highlight-python"><pre>module FramerCtrl (
+    SOF,
+    state,
+    syncFlag,
+    clk,
+    reset_n
+);
+
+output SOF;
+reg SOF;
+output [2:0] state;
+reg [2:0] state;
+input syncFlag;
+input clk;
+input reset_n;
+
+reg [7:0] index;
+
+
+
+always @(posedge clk, negedge reset_n) begin: FRAMERCTRL_FSM
+    if ((reset_n == 0)) begin
+        SOF &lt;= 0;
+        index &lt;= 0;
+        state &lt;= 3'b001;
+    end
+    else begin
+        index &lt;= ((index + 1) % 8);
+        SOF &lt;= 0;
+        // synthesis parallel_case full_case
+        casez (state)
+            3'b??1: begin
+                index &lt;= 1;
+                if (syncFlag) begin
+                    state &lt;= 3'b010;
+                end
+            end
+            3'b?1?: begin
+                if ((index == 0)) begin
+                    if (syncFlag) begin
+                        state &lt;= 3'b100;
+                    end
+                    else begin
+                        state &lt;= 3'b001;
+                    end
+                end
+            end
+            3'b1??: begin
+                if ((index == 0)) begin
+                    if ((!syncFlag)) begin
+                        state &lt;= 3'b001;
+                    end
+                end
+                SOF &lt;= (index == (8 - 1));
+            end
+            default: begin
+                $finish;
+            end
+        endcase
+    end
+end
+
+endmodule</pre>
+</div>
+<p>The VHDL output looks as follows:</p>
+<div class="highlight-python"><pre>package pck_FramerCtrl is
+
+    type t_enum_t_State_1 is (
+    SEARCH,
+    CONFIRM,
+    SYNC
+);
+attribute enum_encoding of t_enum_t_State_1: type is "001 010 100";
+
+end package pck_FramerCtrl;
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+use std.textio.all;
+
+use work.pck_myhdl_06.all;
+
+use work.pck_FramerCtrl.all;
+
+entity FramerCtrl is
+    port (
+        SOF: out std_logic;
+        state: inout t_enum_t_State_1;
+        syncFlag: in std_logic;
+        clk: in std_logic;
+        reset_n: in std_logic
+    );
+end entity FramerCtrl;
+
+architecture MyHDL of FramerCtrl is
+
+signal index: unsigned(7 downto 0);
+
+begin
+
+
+FRAMERCTRL_FSM: process (clk, reset_n) is
+begin
+    if (reset_n = '0') then
+        SOF &lt;= '0';
+        index &lt;= "00000000";
+        state &lt;= SEARCH;
+    elsif rising_edge(clk) then
+        index &lt;= ((index + 1) mod 8);
+        SOF &lt;= '0';
+        case state is
+            when SEARCH =&gt;
+                index &lt;= "00000001";
+                if to_boolean(syncFlag) then
+                    state &lt;= CONFIRM;
+                end if;
+            when CONFIRM =&gt;
+                if (index = 0) then
+                    if to_boolean(syncFlag) then
+                        state &lt;= SYNC;
+                    else
+                        state &lt;= SEARCH;
+                    end if;
+                end if;
+            when SYNC =&gt;
+                if (index = 0) then
+                    if (not to_boolean(syncFlag)) then
+                        state &lt;= SEARCH;
+                    end if;
+                end if;
+                SOF &lt;= to_std_logic(signed(resize(index, 9)) = (8 - 1));
+            when others =&gt;
+                assert False report "End of Simulation" severity Failure;
+        end case;
+    end if;
+end process FRAMERCTRL_FSM;
+
+end architecture MyHDL;</pre>
+</div>
+</div>
+<div class="section" id="ram-inference">
+<span id="conv-usage-ram"></span><h2>RAM inference<a class="headerlink" href="#ram-inference" title="Permalink to this headline">¶</a></h2>
+<p>Certain synthesis tools can infer RAM structures. To support
+this feature, the converter maps lists of signals in MyHDL
+to Verilog memories and VHDL arrays.</p>
+<p>The following MyHDL example is a ram model that uses a list of signals to model
+the internal memory.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">RAM</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">din</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">we</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;  Ram model &quot;&quot;&quot;</span>
+
+    <span class="n">mem</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">8</span><span class="p">:])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">depth</span><span class="p">)]</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">write</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">we</span><span class="p">:</span>
+            <span class="n">mem</span><span class="p">[</span><span class="n">addr</span><span class="p">]</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">din</span>
+
+    <span class="nd">@always_comb</span>
+    <span class="k">def</span> <span class="nf">read</span><span class="p">():</span>
+        <span class="n">dout</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">mem</span><span class="p">[</span><span class="n">addr</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">write</span><span class="p">,</span> <span class="n">read</span>
+</pre></div>
+</div>
+<p>With the appropriate signal definitions for the interface ports, it is converted
+to the following Verilog code. Note how the list of signals <tt class="docutils literal"><span class="pre">mem</span></tt> is mapped to
+a Verilog memory.</p>
+<div class="highlight-python"><pre>module ram (
+    dout,
+    din,
+    addr,
+    we,
+    clk
+);
+
+output [7:0] dout;
+wire [7:0] dout;
+input [7:0] din;
+input [6:0] addr;
+input we;
+input clk;
+
+
+reg [7:0] mem [0:128-1];
+
+
+always @(posedge clk) begin: RAM_1_WRITE
+    if (we) begin
+        mem[addr] &lt;= din;
+    end
+end
+
+
+assign dout = mem[addr];
+
+endmodule</pre>
+</div>
+<p>In VHDL, the list of MyHDL signals is modeled as a VHDL array signal:</p>
+<div class="highlight-python"><pre>library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+use work.pck_myhdl_06.all;
+
+entity ram is
+    port (
+        dout: out unsigned(7 downto 0);
+        din: in unsigned(7 downto 0);
+        addr: in unsigned(6 downto 0);
+        we: in std_logic;
+        clk: in std_logic
+    );
+end entity ram;
+
+architecture MyHDL of ram is
+
+type t_array_mem is array(0 to 128-1) of unsigned(7 downto 0);
+signal mem: t_array_mem;
+
+begin
+
+RAM_WRITE: process (clk) is
+begin
+    if rising_edge(clk) then
+        if to_boolean(we) then
+            mem(to_integer(addr)) &lt;= din;
+        end if;
+    end if;
+end process RAM_WRITE;
+
+
+dout &lt;= mem(to_integer(addr));
+
+end architecture MyHDL;</pre>
+</div>
+</div>
+<div class="section" id="rom-inference">
+<span id="conv-usage-rom"></span><h2>ROM inference<a class="headerlink" href="#rom-inference" title="Permalink to this headline">¶</a></h2>
+<p>Some synthesis tools can infer a ROM memory from a case statement. The Verilog
+converter can perform the expansion into a case statement automatically, based
+on a higher level description. The ROM access is described in a single line, by
+indexing into a tuple of integers. The tuple can be described manually, but also
+by programmatical means. Note that a tuple is used instead of a list to stress
+the read-only character of the memory.</p>
+<p>The following example illustrates this functionality. ROM access is described as
+follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">rom</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">CONTENT</span><span class="p">):</span>
+
+    <span class="nd">@always_comb</span>
+    <span class="k">def</span> <span class="nf">read</span><span class="p">():</span>
+        <span class="n">dout</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">CONTENT</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">addr</span><span class="p">)]</span>
+
+    <span class="k">return</span> <span class="n">read</span>
+</pre></div>
+</div>
+<p>The ROM content is described as a tuple of integers. When the ROM content is
+defined, the conversion can be performed:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CONTENT</span> <span class="o">=</span> <span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">134</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+<span class="n">dout</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">8</span><span class="p">:])</span>
+<span class="n">addr</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">4</span><span class="p">:])</span>
+
+<span class="n">toVerilog</span><span class="p">(</span><span class="n">rom</span><span class="p">,</span> <span class="n">dout</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">CONTENT</span><span class="p">)</span>
+<span class="n">toVHDL</span><span class="p">(</span><span class="n">rom</span><span class="p">,</span> <span class="n">dout</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">CONTENT</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The Verilog output code is as follows:</p>
+<div class="highlight-python"><pre>module rom (
+    dout,
+    addr
+);
+
+output [7:0] dout;
+reg [7:0] dout;
+input [3:0] addr;
+
+always @(addr) begin: ROM_READ
+    // synthesis parallel_case full_case
+    case (addr)
+        0: dout &lt;= 17;
+        1: dout &lt;= 134;
+        2: dout &lt;= 52;
+        default: dout &lt;= 9;
+    endcase
+end
+
+endmodule</pre>
+</div>
+<p>The VHDL output code is as follows:</p>
+<div class="highlight-python"><pre>library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+use std.textio.all;
+
+use work.pck_myhdl_06.all;
+
+entity rom is
+    port (
+        dout: out unsigned(7 downto 0);
+        addr: in unsigned(3 downto 0)
+    );
+end entity rom;
+
+architecture MyHDL of rom is
+
+
+begin
+
+ROM_READ: process (addr) is
+begin
+    case to_integer(addr) is
+        when 0 =&gt; dout &lt;= "00010001";
+        when 1 =&gt; dout &lt;= "10000110";
+        when 2 =&gt; dout &lt;= "00110100";
+        when others =&gt; dout &lt;= "00001001";
+    end case;
+end process ROM_READ;
+
+end architecture MyHDL;</pre>
+</div>
+</div>
+<div class="section" id="user-defined-code">
+<span id="conv-usage-custom"></span><span id="index-0"></span><h2>User-defined code<a class="headerlink" href="#user-defined-code" title="Permalink to this headline">¶</a></h2>
+<p>MyHDL provides a way to include user-defined code during the
+conversion process, using the special function attributes
+<tt class="xref py py-attr docutils literal"><span class="pre">vhdl_code</span></tt> and <tt class="xref py py-attr docutils literal"><span class="pre">verilog_code</span></tt>.</p>
+<p>For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">inc_comb</span><span class="p">(</span><span class="n">nextCount</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">logic</span><span class="p">():</span>
+        <span class="c"># do nothing here</span>
+        <span class="k">pass</span>
+
+    <span class="n">nextCount</span><span class="o">.</span><span class="n">driven</span> <span class="o">=</span> <span class="s">&quot;wire&quot;</span>
+
+    <span class="k">return</span> <span class="n">logic</span>
+
+<span class="n">inc_comb</span><span class="o">.</span><span class="n">verilog_code</span> <span class="o">=</span>\
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">assign $nextCount = ($count + 1) % $n;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">inc_comb</span><span class="o">.</span><span class="n">vhdl_code</span> <span class="o">=</span>\
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">$nextCount &lt;= ($count + 1) mod $n;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>The converted code looks as follows in Verilog:</p>
+<div class="highlight-python"><pre>module inc_comb (
+    nextCount,
+    count
+);
+
+output [7:0] nextCount;
+wire [7:0] nextCount;
+input [7:0] count;
+
+assign nextCount = (count + 1) % 256;
+
+endmodule</pre>
+</div>
+<p>and as follows in VHDL:</p>
+<div class="highlight-python"><pre>library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+use work.pck_myhdl_06.all;
+
+entity inc_comb is
+    port (
+        nextCount: out unsigned(7 downto 0);
+        count: in unsigned(7 downto 0)
+    );
+end entity inc_comb;
+
+architecture MyHDL of inc_comb is
+
+begin
+
+nextCount &lt;= (count + 1) mod 256;
+
+end architecture MyHDL;</pre>
+</div>
+<p>In this example, conversion of the <tt class="xref py py-func docutils literal"><span class="pre">inc_comb()</span></tt> function is
+bypassed and the user-defined code is inserted instead. The
+user-defined code is a Python template string that
+can refer to signals and parameters in the MyHDL
+context through <tt class="docutils literal"><span class="pre">$</span></tt>-based substitutions.
+During conversion, the appropriate
+hierarchical names and parameter values will be substituted.</p>
+<p>The MyHDL code contains the following assignment:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">nextCount</span><span class="o">.</span><span class="n">driven</span> <span class="o">=</span> <span class="s">&quot;wire&quot;</span>
+</pre></div>
+</div>
+<p>This specifies that the nextCount signal is driven as a Verilog wire from this
+module.</p>
+<p>For more info about user-defined code, see <a class="reference internal" href="conversion.html#conv-custom"><em>User-defined code</em></a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="reference.html" title="Reference"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="conversion.html" title="Conversion to Verilog and VHDL"
+             >previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" >The MyHDL manual</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Jan Decaluwe.
+      Last updated on May 20, 2013.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

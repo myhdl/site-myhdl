@@ -1,0 +1,227 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The MyHDL manual &mdash; MyHDL 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/myhdl.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="MyHDL 0.8 documentation" href="../index.html" />
+    <link rel="next" title="Overview" href="preface.html" />
+    <link rel="prev" title="Welcome to the MyHDL documentation" href="../index.html" /> 
+  </head>
+  <body>
+<div style="background-color: white; text-align: left; padding: 5px 5px 2px 15px">
+<a href="http://www.myhdl.org">
+    <img src="../_static/myhdl_logo_header.png" border=0 alt="MyHDL" />
+</a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="preface.html" title="Overview"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Welcome to the MyHDL documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../index.html"
+                        title="previous chapter">Welcome to the MyHDL documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="preface.html"
+                        title="next chapter">Overview</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/manual/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="the-myhdl-manual">
+<h1>The MyHDL manual<a class="headerlink" href="#the-myhdl-manual" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Author:</th><td class="field-body">Jan Decaluwe</td>
+</tr>
+</tbody>
+</table>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="preface.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="background.html">Background information</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="background.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="background.html#a-small-tutorial-on-generators">A small tutorial on generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="background.html#about-decorators">About decorators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction to MyHDL</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#a-basic-myhdl-simulation">A basic MyHDL simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#signals-ports-and-concurrency">Signals, ports, and concurrency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#parameters-and-hierarchy">Parameters and hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#some-remarks-on-myhdl-and-python">Some remarks on MyHDL and Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#summary-and-perspective">Summary and perspective</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="hwtypes.html">Hardware-oriented types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="hwtypes.html#the-intbv-class">The <tt class="docutils literal"><span class="pre">intbv</span></tt> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hwtypes.html#bit-indexing">Bit indexing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hwtypes.html#bit-slicing">Bit slicing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hwtypes.html#the-modbv-class">The <tt class="docutils literal"><span class="pre">modbv</span></tt> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hwtypes.html#unsigned-and-signed-representation">Unsigned and signed representation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="structure.html">Structural modeling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="structure.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structure.html#conditional-instantiation">Conditional instantiation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structure.html#converting-between-lists-of-signals-and-bit-vectors">Converting between lists of signals and bit vectors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structure.html#inferring-the-list-of-instances">Inferring the list of instances</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rtl.html">RTL modeling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rtl.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rtl.html#combinatorial-logic">Combinatorial logic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rtl.html#sequential-logic">Sequential logic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rtl.html#finite-state-machine-modeling">Finite State Machine modeling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="highlevel.html">High level modeling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="highlevel.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="highlevel.html#modeling-with-bus-functional-procedures">Modeling with bus-functional procedures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="highlevel.html#modeling-memories-with-built-in-types">Modeling memories with built-in types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="highlevel.html#modeling-errors-using-exceptions">Modeling errors using exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="highlevel.html#object-oriented-modeling">Object oriented modeling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="unittest.html">Unit testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="unittest.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unittest.html#the-importance-of-unit-tests">The importance of unit tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unittest.html#unit-test-development">Unit test development</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cosimulation.html">Co-simulation with Verilog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cosimulation.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosimulation.html#the-hdl-side">The HDL side</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosimulation.html#the-myhdl-side">The MyHDL side</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosimulation.html#restrictions">Restrictions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosimulation.html#implementation-notes">Implementation notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="conversion.html">Conversion to Verilog and VHDL</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="conversion.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conversion.html#solution-description">Solution description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conversion.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conversion.html#the-convertible-subset">The convertible subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conversion.html#conversion-of-lists-of-signals">Conversion of lists of signals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conversion.html#assignment-issues">Assignment issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conversion.html#excluding-code-from-conversion">Excluding code from conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conversion.html#user-defined-code">User-defined code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conversion.html#template-transformation">Template transformation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conversion.html#conversion-output-verification-by-co-simulation">Conversion output verification by co-simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conversion.html#conversion-of-test-benches">Conversion of test benches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conversion.html#methodology-notes">Methodology notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conversion.html#known-issues">Known issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="conversion_examples.html">Conversion examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="conversion_examples.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conversion_examples.html#a-small-sequential-design">A small sequential design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conversion_examples.html#a-small-combinatorial-design">A small combinatorial design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conversion_examples.html#a-hierarchical-design">A hierarchical design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conversion_examples.html#optimizations-for-finite-state-machines">Optimizations for finite state machines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conversion_examples.html#ram-inference">RAM inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conversion_examples.html#rom-inference">ROM inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conversion_examples.html#user-defined-code">User-defined code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#simulation">Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#modeling">Modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#co-simulation">Co-simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#conversion-to-verilog-and-vhdl">Conversion to Verilog and VHDL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-myhdl.conversion">Conversion output verification</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="preface.html" title="Overview"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Welcome to the MyHDL documentation"
+             >previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Jan Decaluwe.
+      Last updated on May 20, 2013.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

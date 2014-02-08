@@ -1,0 +1,831 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Conversion to Verilog and VHDL &mdash; MyHDL 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/myhdl.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="MyHDL 0.8 documentation" href="../index.html" />
+    <link rel="up" title="The MyHDL manual" href="index.html" />
+    <link rel="next" title="Conversion examples" href="conversion_examples.html" />
+    <link rel="prev" title="Co-simulation with Verilog" href="cosimulation.html" /> 
+  </head>
+  <body>
+<div style="background-color: white; text-align: left; padding: 5px 5px 2px 15px">
+<a href="http://www.myhdl.org">
+    <img src="../_static/myhdl_logo_header.png" border=0 alt="MyHDL" />
+</a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="conversion_examples.html" title="Conversion examples"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="cosimulation.html" title="Co-simulation with Verilog"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">The MyHDL manual</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Conversion to Verilog and VHDL</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#solution-description">Solution description</a></li>
+<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#the-convertible-subset">The convertible subset</a><ul>
+<li><a class="reference internal" href="#conv-subset-intro">Introduction</a></li>
+<li><a class="reference internal" href="#coding-style">Coding style</a></li>
+<li><a class="reference internal" href="#supported-types">Supported types</a></li>
+<li><a class="reference internal" href="#supported-statements">Supported statements</a></li>
+<li><a class="reference internal" href="#supported-built-in-functions">Supported built-in functions</a></li>
+<li><a class="reference internal" href="#docstrings">Docstrings</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conversion-of-lists-of-signals">Conversion of lists of signals</a></li>
+<li><a class="reference internal" href="#assignment-issues">Assignment issues</a><ul>
+<li><a class="reference internal" href="#name-assignment-in-python">Name assignment in Python</a></li>
+<li><a class="reference internal" href="#signal-assignment">Signal assignment</a></li>
+<li><a class="reference internal" href="#intbv-objects"><tt class="docutils literal"><span class="pre">intbv</span></tt> objects</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#excluding-code-from-conversion">Excluding code from conversion</a></li>
+<li><a class="reference internal" href="#user-defined-code">User-defined code</a></li>
+<li><a class="reference internal" href="#template-transformation">Template transformation</a></li>
+<li><a class="reference internal" href="#conversion-output-verification-by-co-simulation">Conversion output verification by co-simulation</a></li>
+<li><a class="reference internal" href="#conversion-of-test-benches">Conversion of test benches</a></li>
+<li><a class="reference internal" href="#methodology-notes">Methodology notes</a><ul>
+<li><a class="reference internal" href="#simulate-first">Simulate first</a></li>
+<li><a class="reference internal" href="#handling-hierarchy">Handling hierarchy</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#known-issues">Known issues</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="cosimulation.html"
+                        title="previous chapter">Co-simulation with Verilog</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="conversion_examples.html"
+                        title="next chapter">Conversion examples</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/manual/conversion.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="conversion-to-verilog-and-vhdl">
+<span id="conv"></span><h1>Conversion to Verilog and VHDL<a class="headerlink" href="#conversion-to-verilog-and-vhdl" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<span id="conv-intro"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Subject to some limitations,
+MyHDL supports the automatic conversion of MyHDL code to
+Verilog or VHDL code. This feature provides a path from MyHDL into a
+standard Verilog or VHDL based design environment.</p>
+<p>This chapter describes the concepts of conversion. Concrete
+examples can be found in the companion chapter <a class="reference internal" href="conversion_examples.html#conv-usage"><em>Conversion examples</em></a>.</p>
+</div>
+<div class="section" id="solution-description">
+<span id="conv-solution"></span><h2>Solution description<a class="headerlink" href="#solution-description" title="Permalink to this headline">¶</a></h2>
+<p>To be convertible, the hardware description should satisfy certain restrictions,
+defined as the <em class="dfn">convertible subset</em>. This is described
+in detail in <a class="reference internal" href="#conv-subset"><em>The convertible subset</em></a>.</p>
+<p>A convertible design can be converted to an equivalent model in Verilog
+or VHDL, using the function <a class="reference internal" href="reference.html#myhdl.toVerilog" title="myhdl.toVerilog"><tt class="xref py py-func docutils literal"><span class="pre">toVerilog()</span></tt></a> or <a class="reference internal" href="reference.html#myhdl.toVHDL" title="myhdl.toVHDL"><tt class="xref py py-func docutils literal"><span class="pre">toVHDL()</span></tt></a>  from the MyHDL
+library.</p>
+<p>When the design is intended for implementation
+a third-party <em class="dfn">synthesis tool</em> is used to compile the Verilog or VHDL
+model into an implementation for an ASIC or FPGA. With this step, there is
+an automated path from a hardware description in Python to an FPGA or ASIC implementation.</p>
+<p>The conversion does not start from source files, but from an instantiated design
+that has been <em>elaborated</em> by the Python interpreter. The converter uses the
+Python profiler to track the interpreter&#8217;s operation and to infer the design
+structure and name spaces. It then selectively compiles pieces of source code
+for additional analysis and for conversion.</p>
+</div>
+<div class="section" id="features">
+<span id="conv-features"></span><h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>Conversion after elaboration</dt>
+<dd><em>Elaboration</em> refers to the initial processing of a hardware description to
+achieve a representation of a design instance that is ready for simulation or
+synthesis. In particular, structural parameters and constructs are processed in
+this step. In MyHDL, the Python interpreter itself is used for elaboration.  A
+<a class="reference internal" href="reference.html#myhdl.Simulation" title="myhdl.Simulation"><tt class="xref py py-class docutils literal"><span class="pre">Simulation</span></tt></a> object is constructed with elaborated design instances as
+arguments.  Likewise, conversion works on an elaborated design
+instance. The Python interpreter is thus used as much as possible.</dd>
+<dt>Arbitrarily complex structure</dt>
+<dd>As the conversion works on an elaborated design instance, any modeling
+constraints only apply to the leaf elements of the design structure, that is,
+the co-operating generators. In other words, there are no restrictions on the
+description of the design structure: Python&#8217;s full power can be used for that
+purpose. Also, the design hierarchy can be arbitrarily deep.</dd>
+<dt>Generator are mapped to Verilog or VHDL constructs</dt>
+<dd>The converter analyzes the code of each generator and maps it to equivalent
+constructs in the target HDL. For Verilog, it will map generators to
+<tt class="docutils literal"><span class="pre">always</span></tt> blocks, continuous assignments or <tt class="docutils literal"><span class="pre">initial</span></tt> blocks. For VHDL,
+it will map them to <tt class="docutils literal"><span class="pre">process</span></tt> statements or concurrent signal assignments.</dd>
+<dt>The module interface is inferred from signal usage</dt>
+<dd>In MyHDL, the input or output direction of interface signals is not explicitly
+declared. The converter investigates signal usage in the design hierarchy to
+infer whether a signal is used as input, output, or as an internal signal.</dd>
+<dt>Function calls are mapped to Verilog or VHDL subprograms</dt>
+<dd>The converter analyzes function calls and function code. Each function is
+mapped to an appropriate subprogram in the target HDL:  a function or task in  Verilog,
+and a function  or procedure in VHDL.
+In order to support the full power of Python functions,
+a unique subprogram is generated per Python function call.</dd>
+<dt>If-then-else structures may be mapped to case statements</dt>
+<dd>Python does not provide a case statement. However,  the converter recognizes if-then-else
+structures in which a variable is sequentially compared to items of an
+enumeration type, and maps such a structure to a Verilog or VHDL case statement with the
+appropriate synthesis attributes.</dd>
+<dt>Choice of encoding schemes for enumeration types</dt>
+<dd>The <a class="reference internal" href="reference.html#myhdl.enum" title="myhdl.enum"><tt class="xref py py-func docutils literal"><span class="pre">enum()</span></tt></a> function in MyHDL returns an enumeration type. This function
+takes an additional parameter <em>encoding</em> that specifies the desired encoding in
+the implementation: binary, one hot, or one cold. The converter
+generates the appropriate code for the specified encoding.</dd>
+<dt>RAM memory</dt>
+<dd>Certain synthesis tools can map Verilog memories or VHDL arrays to RAM structures. To support
+this interesting feature, the converter maps lists of signals to Verilog
+memories or VHDL arrays.</dd>
+<dt>ROM memory</dt>
+<dd>Some synthesis tools can infer a ROM from a case statement. The
+converter does the expansion into a case statement automatically, based on a
+higher level description. The ROM access is described in a single line, by
+indexing into a tuple of integers.</dd>
+<dt>Signed arithmetic</dt>
+<dd><p class="first">In MyHDL, working with negative numbers is trivial: one just uses an
+<tt class="docutils literal"><span class="pre">intbv</span></tt> object with an appropriate constraint on its values.  In
+contrast, both Verilog and VHDL make a difference between an
+unsigned and a signed representation. To work with negative values,
+the user has to declare a signed variable explicitly. But when
+signed and unsigned operands are mixed in an expression, things may
+become tricky.</p>
+<p>In Verilog, when signed and unsigned operands are mixed, all
+operands are interpreted as <em>unsigned</em>. Obviously, this leads to
+unexpected results. The designer will have to add sign extensions
+and type casts to solve this.</p>
+<p>In VHDL, mixing signed and unsigned will generally not work. The
+designer will have to match the operands manually by adding
+resizings and type casts.</p>
+<p class="last">In MyHDL, these issues don&#8217;t exist because <tt class="docutils literal"><span class="pre">intbv</span></tt> objects simply
+work as (constrained) integers. Moreover, the convertor automates
+the cumbersome tasks that are required in Verilog and
+VHDL. It uses signed or unsigned types based on the value
+constraints of the intbv objects, and automatically performs the
+required sign extensions, resizings, and type casts.</p>
+</dd>
+<dt>User-defined code</dt>
+<dd>If desired, the user can bypass the conversion process and describe
+user-defined code to be inserted instead.</dd>
+</dl>
+</div>
+<div class="section" id="the-convertible-subset">
+<span id="conv-subset"></span><h2>The convertible subset<a class="headerlink" href="#the-convertible-subset" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="conv-subset-intro">
+<span id="id1"></span><h3>Introduction<a class="headerlink" href="#conv-subset-intro" title="Permalink to this headline">¶</a></h3>
+<p>Unsurprisingly, not all MyHDL code can be converted.  Although the
+restrictions are significant, the convertible subset is much broader
+than the RTL synthesis subset which is an industry standard.  In other
+words, MyHDL code written according to the RTL synthesis rules, should
+always be convertible. However, it is also possible to write
+convertible code for non-synthesizable models or test benches.</p>
+<p>The converter attempts to issue clear error messages when it
+encounters a construct that cannot be converted.</p>
+<p>Recall that any restrictions only apply to the design after
+elaboration.  In practice, this means that they apply only to the code
+of the generators, that are the leaf functional blocks in a MyHDL
+design.</p>
+</div>
+<div class="section" id="coding-style">
+<span id="conv-subset-style"></span><h3>Coding style<a class="headerlink" href="#coding-style" title="Permalink to this headline">¶</a></h3>
+<p>A natural restriction on convertible code is that it should be written
+in MyHDL style: cooperating generators, communicating through signals,
+and with sensitivity specify resume conditions.</p>
+<p>For pure modeling, it doesn&#8217;t matter how generators are created.
+However, in convertible code they should be created using one of the
+MyHDL decorators: <a class="reference internal" href="reference.html#myhdl.instance" title="myhdl.instance"><tt class="xref py py-func docutils literal"><span class="pre">instance()</span></tt></a>, <a class="reference internal" href="reference.html#myhdl.always" title="myhdl.always"><tt class="xref py py-func docutils literal"><span class="pre">always()</span></tt></a>,
+<a class="reference internal" href="reference.html#myhdl.always_seq" title="myhdl.always_seq"><tt class="xref py py-func docutils literal"><span class="pre">always_seq()</span></tt></a>, or <a class="reference internal" href="reference.html#myhdl.always_comb" title="myhdl.always_comb"><tt class="xref py py-func docutils literal"><span class="pre">always_comb()</span></tt></a>.</p>
+</div>
+<div class="section" id="supported-types">
+<span id="conv-subset-types"></span><h3>Supported types<a class="headerlink" href="#supported-types" title="Permalink to this headline">¶</a></h3>
+<p>The most important restriction regards object types.  Only a limited
+amount of types can be converted. Python <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt> and
+<tt class="xref py py-class docutils literal"><span class="pre">long</span></tt> objects are mapped to Verilog or VHDL integers. All
+other supported types need to have a defined bit width. The
+supported types are the Python <tt class="xref py py-class docutils literal"><span class="pre">bool</span></tt> type, the MyHDL
+<a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> type, and MyHDL enumeration types returned by function
+<a class="reference internal" href="reference.html#myhdl.enum" title="myhdl.enum"><tt class="xref py py-func docutils literal"><span class="pre">enum()</span></tt></a>.</p>
+<p id="index-0"><a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> objects must be constructed so that a bit width can be
+inferred.  This can be done by specifying minimum and maximum values,
+e.g. as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">index</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="n">MIN</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">MAX</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The Verilog converter supports <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> objects that can take
+negative values.</p>
+<p>Alternatively, a slice can be taken from an <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> object as
+follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">index</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="n">N</span><span class="p">:]</span>
+</pre></div>
+</div>
+<p>Such as slice returns a new <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> object, with minimum value
+<tt class="docutils literal"><span class="pre">0</span></tt> , and maximum value <tt class="docutils literal"><span class="pre">2**N</span></tt>.</p>
+<p>In addition to the scalar types described above, the convertor also
+supports a number of tuple and list based types. The mapping from
+MyHDL types is summarized in the following table.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="34%" />
+<col width="24%" />
+<col width="9%" />
+<col width="24%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">MyHDL type</th>
+<th class="head">VHDL type</th>
+<th class="head">Notes</th>
+<th class="head">Verilog type</th>
+<th class="head">Notes</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">int</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">integer</span></tt></td>
+<td>&nbsp;</td>
+<td><tt class="docutils literal"><span class="pre">integer</span></tt></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">bool</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">std_logic</span></tt></td>
+<td>(1)</td>
+<td><tt class="docutils literal"><span class="pre">reg</span></tt></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">intbv</span></tt> with <tt class="docutils literal"><span class="pre">min</span> <span class="pre">&gt;=</span> <span class="pre">0</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">unsigned</span></tt></td>
+<td>(2)</td>
+<td><tt class="docutils literal"><span class="pre">reg</span></tt></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">intbv</span></tt> with  <tt class="docutils literal"><span class="pre">min</span> <span class="pre">&lt;</span> <span class="pre">0</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">signed</span></tt></td>
+<td>(2)</td>
+<td><tt class="docutils literal"><span class="pre">reg</span> <span class="pre">signed</span></tt></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">enum</span></tt></td>
+<td>dedicated enumeration type</td>
+<td>&nbsp;</td>
+<td><tt class="docutils literal"><span class="pre">reg</span></tt></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">tuple</span></tt> of <tt class="docutils literal"><span class="pre">int</span></tt></td>
+<td>mapped to case statement</td>
+<td>(3)</td>
+<td>mapped to case statement</td>
+<td>(3)</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">list</span></tt> of <tt class="docutils literal"><span class="pre">bool</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">array</span> <span class="pre">of</span> <span class="pre">std_logic</span></tt></td>
+<td>&nbsp;</td>
+<td><tt class="docutils literal"><span class="pre">reg</span></tt></td>
+<td>(5)</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">list</span></tt> of <tt class="docutils literal"><span class="pre">intbv</span></tt> with <tt class="docutils literal"><span class="pre">min</span> <span class="pre">&gt;=</span> <span class="pre">0</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">array</span> <span class="pre">of</span> <span class="pre">unsigned</span></tt></td>
+<td>(4)</td>
+<td><tt class="docutils literal"><span class="pre">reg</span></tt></td>
+<td>(4)(5)</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">list</span></tt> of <tt class="docutils literal"><span class="pre">intbv</span></tt> with <tt class="docutils literal"><span class="pre">min</span> <span class="pre">&lt;</span> <span class="pre">0</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">array</span> <span class="pre">of</span> <span class="pre">signed</span></tt></td>
+<td>(4)</td>
+<td><tt class="docutils literal"><span class="pre">reg</span> <span class="pre">signed</span></tt></td>
+<td>(4)(5)</td>
+</tr>
+</tbody>
+</table>
+<p>Notes:</p>
+<ol class="arabic simple">
+<li>The VHDL <tt class="docutils literal"><span class="pre">std_logic</span></tt> type is defined in the standard VHDL package
+<tt class="docutils literal"><span class="pre">IEEE.std_logic_1164</span></tt>.</li>
+<li>The VHDL <tt class="docutils literal"><span class="pre">unsigned</span></tt> and <tt class="docutils literal"><span class="pre">signed</span></tt> types used are those from the
+standard VHDL packages <tt class="docutils literal"><span class="pre">IEEE.numeric_std</span></tt>.</li>
+<li>A MyHDL <tt class="docutils literal"><span class="pre">tuple</span></tt> of <tt class="docutils literal"><span class="pre">int</span></tt> is used for ROM inference, and can only be
+used in a very specific way: an indexing operation into the tuple
+should be the rhs of an assignment.</li>
+<li>All list members should have identical value constraints.</li>
+<li>Lists are mapped to Verilog memories.</li>
+</ol>
+<p>The table as presented applies to MyHDL variables. The convertor also
+supports MyHDL signals that use <tt class="docutils literal"><span class="pre">bool</span></tt>, <tt class="docutils literal"><span class="pre">intbv</span></tt> or <tt class="docutils literal"><span class="pre">enum</span></tt>
+objects as their underlying type. For VHDL, these are mapped to VHDL signals
+with an underlying type as specified in the table above. Verilog doesn&#8217;t have
+the signal concept. For Verilog, a MyHDL signal is mapped to a Verilog
+<tt class="docutils literal"><span class="pre">reg</span></tt> as in the table above, or to a Verilog <tt class="docutils literal"><span class="pre">wire</span></tt>, depending
+on the signal usage.</p>
+<p>The convertor supports MyHDL list of signals provided the underlying
+signal type is either <tt class="docutils literal"><span class="pre">bool</span></tt> or <tt class="docutils literal"><span class="pre">intbv</span></tt>. They may be mapped to a
+VHDL signal with a VHDL type as specified in the table, or to a
+Verilog memory.  However, list of signals are not always mapped to a
+corresponding VHDL or Verilog object.  See <a class="reference internal" href="#conv-listofsigs"><em>Conversion of lists of signals</em></a> for
+more info.</p>
+</div>
+<div class="section" id="supported-statements">
+<span id="conv-subset-statements"></span><h3>Supported statements<a class="headerlink" href="#supported-statements" title="Permalink to this headline">¶</a></h3>
+<p>The following is a list of the statements that are supported by the Verilog
+converter, possibly qualified with restrictions or usage notes.</p>
+<dl class="docutils">
+<dt><a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#assert" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">assert</span></tt></a></dt>
+<dd><p class="first">An <a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#assert" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">assert</span></tt></a> statement in Python looks as follow:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">assert</span> <span class="n">test_expression</span>
+</pre></div>
+</div>
+<p class="last">It can be converted provided <tt class="docutils literal"><span class="pre">test_expression</span></tt> is convertible.</p>
+</dd>
+</dl>
+<p><a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#break" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">break</span></tt></a></p>
+<p><a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#continue" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">continue</span></tt></a></p>
+<p><a class="reference external" href="http://docs.python.org/reference/compound_stmts.html#def" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">def</span></tt></a></p>
+<dl class="docutils">
+<dt><a class="reference external" href="http://docs.python.org/reference/compound_stmts.html#for" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">for</span></tt></a></dt>
+<dd>The only supported iteration scheme is iterating through sequences of integers
+returned by built-in function <a class="reference external" href="http://docs.python.org/library/functions.html#range" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">range()</span></tt></a> or MyHDL function
+<a class="reference internal" href="reference.html#myhdl.downrange" title="myhdl.downrange"><tt class="xref py py-func docutils literal"><span class="pre">downrange()</span></tt></a>.  The optional <a class="reference external" href="http://docs.python.org/reference/compound_stmts.html#else" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">else</span></tt></a> clause is not supported.</dd>
+<dt><a class="reference external" href="http://docs.python.org/reference/compound_stmts.html#if" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">if</span></tt></a></dt>
+<dd><a class="reference external" href="http://docs.python.org/reference/compound_stmts.html#if" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">if</span></tt></a>, <a class="reference external" href="http://docs.python.org/reference/compound_stmts.html#elif" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">elif</span></tt></a>, and <a class="reference external" href="http://docs.python.org/reference/compound_stmts.html#else" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">else</span></tt></a> clauses are fully supported.</dd>
+</dl>
+<p><a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#pass" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">pass</span></tt></a></p>
+<p><a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#print" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">print</span></tt></a></p>
+<blockquote>
+<div><p>A <a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#print" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">print</span></tt></a> statement with multiple arguments:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">print</span> <span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">,</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>is supported. However, there are restrictions on the arguments.
+First, they should be of one of the following forms:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">arg</span>
+<span class="n">formatstring</span> <span class="o">%</span> <span class="n">arg</span>
+<span class="n">formatstring</span> <span class="o">%</span> <span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">arg</span></tt> is a <tt class="docutils literal"><span class="pre">bool</span></tt>, <tt class="docutils literal"><span class="pre">int</span></tt>, <tt class="docutils literal"><span class="pre">intbv</span></tt>, <tt class="docutils literal"><span class="pre">enum</span></tt>, or a
+<tt class="docutils literal"><span class="pre">Signal</span></tt> of these types.</p>
+<p>The <tt class="docutils literal"><span class="pre">formatstring</span></tt> contains ordinary characters and conversion
+specifiers as in Python. However, the only supported conversion specifiers
+are <tt class="docutils literal"><span class="pre">%s</span></tt> and <tt class="docutils literal"><span class="pre">%d</span></tt>.
+Justification and width specification are thus not supported.</p>
+<p>Printing without a newline:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">print</span> <span class="n">arg1</span> <span class="p">,</span>
+</pre></div>
+</div>
+<p>is not supported.</p>
+</div></blockquote>
+<dl class="docutils">
+<dt><a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#raise" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">raise</span></tt></a></dt>
+<dd>This statement is mapped to statements that end the simulation with an
+error message.</dd>
+</dl>
+<p><a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#return" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">return</span></tt></a></p>
+<dl class="docutils">
+<dt><a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#yield" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">yield</span></tt></a></dt>
+<dd>A <cite>yield</cite> expression is used to specify a sensitivity list.
+The yielded expression can be a <a class="reference internal" href="reference.html#myhdl.Signal" title="myhdl.Signal"><tt class="xref py py-class docutils literal"><span class="pre">Signal</span></tt></a>, a signal edge as specified by MyHDL
+functions <a class="reference internal" href="reference.html#myhdl.Signal.posedge" title="myhdl.Signal.posedge"><tt class="xref py py-attr docutils literal"><span class="pre">Signal.posedge</span></tt></a> or <a class="reference internal" href="reference.html#myhdl.Signal.negedge" title="myhdl.Signal.negedge"><tt class="xref py py-attr docutils literal"><span class="pre">Signal.negedge</span></tt></a>, or a tuple of signals and edge
+specifications. It can also be a <a class="reference internal" href="reference.html#myhdl.delay" title="myhdl.delay"><tt class="xref py py-func docutils literal"><span class="pre">delay()</span></tt></a> object.</dd>
+<dt><a class="reference external" href="http://docs.python.org/reference/compound_stmts.html#while" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">while</span></tt></a></dt>
+<dd>The optional <a class="reference external" href="http://docs.python.org/reference/compound_stmts.html#else" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">else</span></tt></a> clause is not supported.</dd>
+</dl>
+</div>
+<div class="section" id="supported-built-in-functions">
+<span id="conv-subset-builtin"></span><h3>Supported built-in functions<a class="headerlink" href="#supported-built-in-functions" title="Permalink to this headline">¶</a></h3>
+<p>The following is a list of the built-in functions that are supported by the
+converter.</p>
+<dl class="docutils">
+<dt><a class="reference external" href="http://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">bool()</span></tt></a></dt>
+<dd>This function can be used to typecast an object explicitly to its boolean
+interpretation.</dd>
+<dt><a class="reference external" href="http://docs.python.org/library/functions.html#len" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">len()</span></tt></a></dt>
+<dd>For <a class="reference internal" href="reference.html#myhdl.Signal" title="myhdl.Signal"><tt class="xref py py-class docutils literal"><span class="pre">Signal</span></tt></a> and <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> objects, function <a class="reference external" href="http://docs.python.org/library/functions.html#len" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">len()</span></tt></a> returns the
+bit width.</dd>
+<dt><a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">int()</span></tt></a></dt>
+<dd>This function can be used to typecast an object explicitly to its integer
+interpretation.</dd>
+</dl>
+</div>
+<div class="section" id="docstrings">
+<h3>Docstrings<a class="headerlink" href="#docstrings" title="Permalink to this headline">¶</a></h3>
+<p>The convertor propagates comments under the form of Python
+docstrings.</p>
+<p>Docstrings are typically used in Python to document certain objects in
+a standard way. Such &#8220;official&#8221; docstrings are put into the converted
+output at appropriate locations.  The convertor supports official
+docstrings for the top level module and for generators.</p>
+<p>Within generators, &#8220;nonofficial&#8221; docstrings are propagated also. These
+are strings (triple quoted by convention) that can occur anywhere
+between statements.</p>
+<p>Regular Python comments are ignored by the Python parser, and they are
+not present in the parse tree. Therefore, these are not
+propagated. With docstrings, you have an elegant way to specify which
+comments should be propagated and which not.</p>
+</div>
+</div>
+<div class="section" id="conversion-of-lists-of-signals">
+<span id="conv-listofsigs"></span><h2>Conversion of lists of signals<a class="headerlink" href="#conversion-of-lists-of-signals" title="Permalink to this headline">¶</a></h2>
+<p>Lists of signals are useful for many purposes. For example, they make
+it easy to create a repetitive structure. Another application is the
+description of memory behavior.</p>
+<p>The convertor output is non-hierarchical. That implies that all
+signals are declared at the top-level in VHDL or Verilog (as VHDL
+signals, or Verilog regs and wires.)  However, some signals that are a
+list member at some level in the MyHDL design hierarchy may be used as
+a plain signal at a lower level. For such signals, a choice has to be
+made whether to declare a Verilog memory or VHDL array, or a number of
+plain signal names.</p>
+<p>If possible, plain signal declarations are preferred, because Verilog
+memories and arrays have some restrictions in usage and tool support.
+This is possible if the list syntax is strictly used outside generator
+code, for example when lists of signals are used to describe
+structure.</p>
+<p>Conversely, when list syntax is used in some generator, then a Verilog
+memory or VHDL array will be declared. The typical example is the
+description of RAM memories.</p>
+</div>
+<div class="section" id="assignment-issues">
+<span id="conv-meth-assign"></span><h2>Assignment issues<a class="headerlink" href="#assignment-issues" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="name-assignment-in-python">
+<span id="conv-meth-assign-python"></span><h3>Name assignment in Python<a class="headerlink" href="#name-assignment-in-python" title="Permalink to this headline">¶</a></h3>
+<p>Name assignment in Python is a different concept than in many other languages.
+This point is very important for effective modeling in Python, and even more so
+for synthesizable MyHDL code. Therefore, the issues are discussed here
+explicitly.</p>
+<p>Consider the following name assignments:</p>
+<div class="highlight-python"><pre>a = 4
+a = ``a string''
+a = False</pre>
+</div>
+<p>In many languages, the meaning would be that an existing variable <em>a</em> gets a
+number of different values. In Python, such a concept of a variable doesn&#8217;t
+exist. Instead, assignment merely creates a new binding of a name to a certain
+object, that replaces any previous binding. So in the example, the name <em>a</em> is
+bound a  number of different objects in sequence.</p>
+<p>The converter has to investigate name assignment and usage in MyHDL
+code, and to map names to Verilog or VHDL objects. To achieve that, it tries to infer
+the type and possibly the bit width of each expression that is assigned to a
+name.</p>
+<p>Multiple assignments to the same name can be supported if it can be determined
+that a consistent type and bit width is being used in the assignments. This can
+be done for boolean expressions, numeric expressions, and enumeration type
+literals.</p>
+<p>In other cases, a single assignment should be used when an object is created.
+Subsequent value changes are then achieved by modification of an existing
+object.  This technique should be used for <a class="reference internal" href="reference.html#myhdl.Signal" title="myhdl.Signal"><tt class="xref py py-class docutils literal"><span class="pre">Signal</span></tt></a> and <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a>
+objects.</p>
+</div>
+<div class="section" id="signal-assignment">
+<span id="conv-meth-assign-signal"></span><h3>Signal assignment<a class="headerlink" href="#signal-assignment" title="Permalink to this headline">¶</a></h3>
+<p>Signal assignment in MyHDL is implemented using attribute assignment to
+attribute <tt class="docutils literal"><span class="pre">next</span></tt>.  Value changes are thus modeled by modification of the
+existing object. The converter investigates the <a class="reference internal" href="reference.html#myhdl.Signal" title="myhdl.Signal"><tt class="xref py py-class docutils literal"><span class="pre">Signal</span></tt></a> object to infer
+the type and bit width of the corresponding Verilog or VHDL object.</p>
+</div>
+<div class="section" id="intbv-objects">
+<span id="conv-meth-assign-intbv"></span><h3><a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> objects<a class="headerlink" href="#intbv-objects" title="Permalink to this headline">¶</a></h3>
+<p id="index-1">Type <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> is likely to be the workhorse for synthesizable
+modeling in MyHDL. An <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> instance behaves like a (mutable)
+integer whose individual bits can be accessed and modified. Also, it
+is possible to constrain its set of values. In addition to error
+checking, this makes it possible to infer a bit width, which is
+required for implementation.</p>
+<p>As noted before, it is not possible to modify value of an
+<a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> object using name assignment. In the following, we will
+show how it can be done instead.  Consider:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">a</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">8</span><span class="p">:]</span>
+</pre></div>
+</div>
+<p>This is an <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> object with initial value <tt class="docutils literal"><span class="pre">0</span></tt> and bit
+width 8. To change its value to <tt class="docutils literal"><span class="pre">5</span></tt>, we can use slice assignment:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">a</span><span class="p">[</span><span class="mi">8</span><span class="p">:]</span> <span class="o">=</span> <span class="mi">5</span>
+</pre></div>
+</div>
+<p>The same can be achieved by leaving the bit width unspecified, which
+has the meaning to change &#8220;all&#8221; bits:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">a</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">5</span>
+</pre></div>
+</div>
+<p>Often the new value will depend on the old one. For example, to
+increment an <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> with the technique above:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">a</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>Python also provides <em>augmented</em> assignment operators, which can be
+used to implement in-place operations. These are supported on
+<a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> objects and by the converter, so that the increment can
+also be done as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">a</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="excluding-code-from-conversion">
+<span id="conv-subset-exclude"></span><h2>Excluding code from conversion<a class="headerlink" href="#excluding-code-from-conversion" title="Permalink to this headline">¶</a></h2>
+<p>For some tasks, such as debugging, it may be useful to insert arbitrary Python
+code that should not be converted.</p>
+<p>The convertor supports this by ignoring all code that is embedded in a
+<tt class="docutils literal"><span class="pre">if</span> <span class="pre">__debug__</span></tt> test. The value of the <tt class="docutils literal"><span class="pre">__debug__</span></tt> variable is not taken into
+account.</p>
+</div>
+<div class="section" id="user-defined-code">
+<span id="conv-custom"></span><span id="index-2"></span><h2>User-defined code<a class="headerlink" href="#user-defined-code" title="Permalink to this headline">¶</a></h2>
+<p>MyHDL provides a way to include user-defined code during the
+conversion process. There are special function attributes that are understood by the
+converter but ignored by the simulator. The attributes are <tt class="xref py py-attr docutils literal"><span class="pre">verilog_code</span></tt>
+for Verilog and <tt class="xref py py-attr docutils literal"><span class="pre">vhdl_code</span></tt> for VHDL.  They operate like a special
+return value. When defined in a MyHDL function, the convertor will use
+their value instead of the regular return value. Effectively, it will
+stop converting at that point.</p>
+<p>The value of <tt class="xref py py-attr docutils literal"><span class="pre">verilog_code</span></tt> or <tt class="xref py py-attr docutils literal"><span class="pre">vhdl_code</span></tt> should be a Python
+template string. A template string supports <tt class="docutils literal"><span class="pre">$</span></tt>-based substitutions.
+The <tt class="docutils literal"><span class="pre">$name</span></tt> notation can be used to refer to the
+variable names in the context of the string. The convertor will
+substitute the appropriate values in the string and then insert it
+instead of the regular converted output.</p>
+<p>There is one more issue with user-defined code.
+Normally, the converter infers inputs, internal signals,
+and outputs. It also detects undriven and multiple driven signals. To
+do this, it assumes that signals are not driven by default. It then
+processes the code to find out which signals are driven from
+where.</p>
+<p>Proper signal usage inference cannot be done with user-defined code. Without
+user help, this will result in warnings or errors during the
+inference process, or in compilation errors from invalid
+code. The user can solve this by setting the <tt class="xref py py-attr docutils literal"><span class="pre">driven</span></tt> or
+<tt class="xref py py-attr docutils literal"><span class="pre">read</span></tt> attribute
+for signals that are driven or read from the user-defined code.
+These attributes are <tt class="docutils literal"><span class="pre">False</span></tt> by default.
+The allowed &#8220;true&#8221; values of the <tt class="xref py py-attr docutils literal"><span class="pre">driven</span></tt> attribute are
+<tt class="docutils literal"><span class="pre">True</span></tt>, <tt class="docutils literal"><span class="pre">'wire'</span></tt> and <tt class="docutils literal"><span class="pre">'reg'</span></tt>. The
+latter two values specifies how the user-defined Verilog code drives the signal in
+Verilog. To decide which value to use, consider how the signal should
+be declared in Verilog after the user-defined code is inserted.</p>
+<p>For an example of user-defined code, see <a class="reference internal" href="conversion_examples.html#conv-usage-custom"><em>User-defined code</em></a>.</p>
+</div>
+<div class="section" id="template-transformation">
+<h2>Template transformation<a class="headerlink" href="#template-transformation" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This section is only relevant for VHDL.</p>
+</div>
+<p>There is a difference between VHDL and Verilog in the way in which
+sensitivity to signal edges is specified. In Verilog, edge specifiers
+can be used directly in the sensitivity list. In VHDL, this is not
+possible: only signals can be used in the sensitivity list. To check
+for an edge, one uses the <tt class="docutils literal"><span class="pre">rising_edge()</span></tt> or <tt class="docutils literal"><span class="pre">falling_edge()</span></tt>
+functions in the code.</p>
+<p>MyHDL follows the Verilog scheme to specify edges in the sensitivity
+list. Consequently, when mapping such code to VHDL, it needs to be
+transformed to equivalent VHDL. This is an important issue because it
+affects all synthesizable templates that infer sequential logic.</p>
+<p>We will illustrate this feature with some examples. This is the MyHDL
+code for a D flip-flop:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">logic</span><span class="p">():</span>
+    <span class="n">q</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">d</span>
+</pre></div>
+</div>
+<p>It is converted to VHDL as follows:</p>
+<div class="highlight-python"><pre>DFF_LOGIC: process (clk) is
+begin
+    if rising_edge(clk) then
+        q &lt;= d;
+    end if;
+end process DFF_LOGIC;</pre>
+</div>
+<p>The convertor can handle the more general case. For example, this is
+MyHDL code for a D flip-flop with asynchronous set, asynchronous
+reset, and preference of set over reset:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">,</span> <span class="nb">set</span><span class="o">.</span><span class="n">negedge</span><span class="p">,</span> <span class="n">rst</span><span class="o">.</span><span class="n">negedge</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">logic</span><span class="p">():</span>
+    <span class="k">if</span> <span class="nb">set</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="n">rst</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">d</span>
+</pre></div>
+</div>
+<p>This is converted to VHDL as follows:</p>
+<div class="highlight-python"><pre>DFFSR_LOGIC: process (clk, set, rst) is
+begin
+    if (set = '0') then
+        q &lt;= '1';
+    elsif (rst = '0') then
+        q &lt;= '0';
+    elsif rising_edge(clk) then
+        q &lt;= d;
+    end if;
+end process DFFSR_LOGIC;</pre>
+</div>
+<p>All cases with practical utility can be handled in this way. However,
+there are other cases that cannot be transformed to equivalent
+VHDL. The convertor will detect those cases and give an error.</p>
+</div>
+<div class="section" id="conversion-output-verification-by-co-simulation">
+<span id="conv-meth-conv"></span><h2>Conversion output verification by co-simulation<a class="headerlink" href="#conversion-output-verification-by-co-simulation" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This section is only relevant for Verilog.</p>
+</div>
+<p>To verify the converted Verilog output, co-simulation can be used. To
+make this task easier, the converter also generates a test bench that
+makes it possible to simulate the Verilog design using the Verilog
+co-simulation interface. This permits to verify the Verilog code with
+the same test bench used for the MyHDL code.</p>
+</div>
+<div class="section" id="conversion-of-test-benches">
+<span id="conv-testbench"></span><h2>Conversion of test benches<a class="headerlink" href="#conversion-of-test-benches" title="Permalink to this headline">¶</a></h2>
+<p>After conversion, we obviously want to verify that the VHDL or Verilog
+code works correctly. For Verilog, we can use co-simulation as
+discussed earlier. However, for VHDL, co-simulation is currently
+not supported.</p>
+<p>An alternative is to convert the test bench itself, so that
+both test bench and design can be run in the HDL simulator. Of course,
+this is not a fully general solution, as there are important
+constraints on the kind of code that can be converted.
+Thus, the question is whether the conversion restrictions permit to develop
+sufficiently complex test benches. In this section, we present some
+insights about this.</p>
+<p>The most important restrictions regard the types that can be used, as
+discussed earlier in this chapter. However, the &#8220;convertible subset&#8221; is
+wider than the &#8220;synthesis subset&#8221;. We will present a number of
+non-synthesizable feature that are of interest for test benches.</p>
+<dl class="docutils">
+<dt>the <a class="reference external" href="http://docs.python.org/reference/compound_stmts.html#while" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">while</span></tt></a> loop</dt>
+<dd><a class="reference external" href="http://docs.python.org/reference/compound_stmts.html#while" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">while</span></tt></a> loops can be used for high-level control structures.</dd>
+<dt>the <a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#raise" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">raise</span></tt></a> statement</dt>
+<dd>A <a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#raise" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">raise</span></tt></a> statement can stop the simulation on an error condition.</dd>
+<dt><a class="reference internal" href="reference.html#myhdl.delay" title="myhdl.delay"><tt class="xref py py-func docutils literal"><span class="pre">delay()</span></tt></a> objects</dt>
+<dd>Delay modeling is essential for test benches.</dd>
+<dt>the <a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#print" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">print</span></tt></a> statement</dt>
+<dd><a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#print" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">print</span></tt></a> statements can be used for simple debugging.</dd>
+<dt>the <a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#assert" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">assert</span></tt></a> statement.</dt>
+<dd>Originally, <a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#assert" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">assert</span></tt></a> statements were only intended to insert debugging
+assertions in code. Recently, there is a tendency to use them to write
+self-checking unit tests, controlled by unit test frameworks such as
+<tt class="docutils literal"><span class="pre">py.test</span></tt>. In particular, they are a powerful way to write
+self-checking test benches for MyHDL designs. As <a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#assert" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">assert</span></tt></a>
+statements are convertible, a whole unit test suite in MyHDL can be
+converted to an equivalent test suite in Verilog and VHDL.</dd>
+</dl>
+<p>Additionally, the same techniques as for synthesizable code can be used
+to master complexity. In particular, any code outside generators
+is executed during elaboration, and therefore not considered in
+the conversion process. This feature can for example be used for
+complex calculations that set up constants or expected results.
+Furthermore, a tuple of ints can be used to hold a table of
+values that will be mapped to a case statement in Verilog and VHDL.</p>
+</div>
+<div class="section" id="methodology-notes">
+<span id="conv-meth"></span><h2>Methodology notes<a class="headerlink" href="#methodology-notes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="simulate-first">
+<span id="conv-meth-sim"></span><h3>Simulate first<a class="headerlink" href="#simulate-first" title="Permalink to this headline">¶</a></h3>
+<p>In the Python philosophy, the run-time rules. The Python compiler doesn&#8217;t
+attempt to detect a lot of errors beyond syntax errors, which given Python&#8217;s
+ultra-dynamic nature would be an almost impossible task anyway. To verify a
+Python program, one should run it, preferably using unit testing to verify each
+feature.</p>
+<p>The same philosophy should be used when converting a MyHDL description to
+Verilog: make sure the simulation runs fine first. Although the converter checks
+many things and attempts to issue clear error messages, there is no guarantee
+that it does a meaningful job unless the simulation runs fine.</p>
+</div>
+<div class="section" id="handling-hierarchy">
+<span id="conv-meth-hier"></span><h3>Handling hierarchy<a class="headerlink" href="#handling-hierarchy" title="Permalink to this headline">¶</a></h3>
+<p>Recall that conversion occurs after elaboration. A consequence is that
+the converted output is non-hierarchical. In many cases, this is not an
+issue. The purpose of conversion is to provide a path into a traditional
+design flow by using Verilog and VHDL as a &#8220;back-end&#8221; format. Hierarchy
+is quite relevant to humans, but much less so to tools.</p>
+<p>However, in some cases hierarchy is desirable. For example, if you convert
+a test bench you may prefer to keep its code separate from the design
+under test. In other words, conversion should stop at the design under test
+instance, and insert an instantiation instead.</p>
+<p>There is a workaround to accomplish this with a small amount of additional
+work. The workaround is to define user-defined code consisting of an
+instantiation of the design under test. As discussed in <a class="reference internal" href="#conv-custom"><em>User-defined code</em></a>,
+when the convertor sees the hook it will stop converting and insert the
+instantiation instead. Of course, you will want to convert the design
+under test itself also. Therefore, you should use a flag that controls
+whether the hook is defined or not and set it according to the
+desired conversion.</p>
+</div>
+</div>
+<div class="section" id="known-issues">
+<span id="conv-issues"></span><h2>Known issues<a class="headerlink" href="#known-issues" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>Verilog and VHDL integers are 32 bit wide</dt>
+<dd>Usually, Verilog and VHDL integers are 32 bit wide. In contrast,
+Python is moving toward integers with undefined width. Python
+<tt class="xref py py-class docutils literal"><span class="pre">int</span></tt> and <tt class="xref py py-class docutils literal"><span class="pre">long</span></tt> variables are mapped to Verilog
+integers; so for values wider than 32 bit this mapping is
+incorrect.</dd>
+<dt>Synthesis pragmas are specified as Verilog comments.</dt>
+<dd>The recommended way to specify synthesis pragmas in Verilog is
+through attribute lists. However, the Icarus simulator doesn&#8217;t
+support them for <tt class="docutils literal"><span class="pre">case</span></tt> statements (to specify <tt class="docutils literal"><span class="pre">parallel_case</span></tt>
+and <tt class="docutils literal"><span class="pre">full_case</span></tt> pragmas). Therefore, the old but deprecated
+method of synthesis pragmas in Verilog comments is still used.</dd>
+<dt>Inconsistent place of the sensitivity list inferred from <tt class="docutils literal"><span class="pre">always_comb</span></tt>.</dt>
+<dd>The semantics of <tt class="docutils literal"><span class="pre">always_comb</span></tt>, both in Verilog and MyHDL, is to
+have an implicit sensitivity list at the end of the code. However,
+this may not be synthesizable. Therefore, the inferred sensitivity
+list is put at the top of the corresponding <tt class="docutils literal"><span class="pre">always</span></tt> block or
+<tt class="docutils literal"><span class="pre">process</span></tt>. This may cause inconsistent behavior at the start of
+the simulation. The workaround is to create events at time 0.</dd>
+</dl>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="conversion_examples.html" title="Conversion examples"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="cosimulation.html" title="Co-simulation with Verilog"
+             >previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" >The MyHDL manual</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Jan Decaluwe.
+      Last updated on May 20, 2013.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

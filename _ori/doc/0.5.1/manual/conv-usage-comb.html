@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="conv-usage-hier.html">
+<LINK REL="previous" href="conv-usage-seq.html">
+<LINK REL="up" href="conv-usage.html">
+<LINK REL="next" href="conv-usage-hier.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="6.6.2 A small combinatorial design">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>6.6.2 A small combinatorial design</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conv-usage-seq.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-usage.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-usage-hier.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conv-usage-seq.html">6.6.1 A small sequential</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-usage.html">6.6 Converter usage</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-usage-hier.html">6.6.3 A hierarchical design</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION007620000000000000000">&nbsp;</A>
+<BR>
+6.6.2 A small combinatorial design
+</H2>
+
+<P>
+The second example is a small combinatorial design, more
+specifically the binary to Gray code converter from previous chapters:
+
+<P>
+<div class="verbatim"><pre>
+def bin2gray(B, G, width):
+    
+    """ Gray encoder.
+
+    B -- input intbv signal, binary encoded
+    G -- output intbv signal, gray encoded
+    width -- bit width
+    
+    """
+
+    @always_comb
+    def logic():
+        Bext = intbv(0)[width+1:]
+        Bext[:] = B
+        for i in range(width):
+            G.next[i] = Bext[i+1] ^ Bext[i]
+
+    return logic
+</pre></div>
+
+<P>
+As before, you can create an instance and convert to
+Verilog as follows:
+
+<P>
+<div class="verbatim"><pre>
+width = 8
+
+B = Signal(intbv(0)[width:])
+G = Signal(intbv(0)[width:])
+
+bin2gray_inst = toVerilog(bin2gray, B, G, width)
+</pre></div>
+
+<P>
+The generated Verilog code looks as follows:
+
+<P>
+<div class="verbatim"><pre>
+module bin2gray (
+    B,
+    G
+);
+
+input [7:0] B;
+output [7:0] G;
+reg [7:0] G;
+
+always @(B) begin: _bin2gray_logic
+    integer i;
+    reg [9-1:0] Bext;
+    Bext = 9'h0;
+    Bext = B;
+    for (i=0; i&lt;8; i=i+1) begin
+        G[i] &lt;= (Bext[(i + 1)] ^ Bext[i]);
+    end
+end
+
+endmodule
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conv-usage-seq.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-usage.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-usage-hier.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conv-usage-seq.html">6.6.1 A small sequential</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-usage.html">6.6 Converter usage</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-usage-hier.html">6.6.3 A hierarchical design</A>
+<hr>
+<span class="release-info">Release 0.5.1, documentation updated on May 1, 2006.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

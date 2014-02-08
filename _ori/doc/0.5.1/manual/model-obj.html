@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="previous" href="model-err.html">
+<LINK REL="up" href="model-hl.html">
+<LINK REL="next" href="unittest.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="3.3.4 Object oriented modeling ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>3.3.4 Object oriented modeling </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model-err.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model-hl.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="unittest.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model-err.html">3.3.3 Modeling errors using</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model-hl.html">3.3 High level modeling</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="unittest.html">4. Unit testing</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION004340000000000000000">&nbsp;</A>
+<a name="l2h-23">&nbsp;</a>
+<BR>
+3.3.4 Object oriented modeling 
+</H2>
+
+<P>
+The models in the previous sections used high-level built-in data
+types internally. However, they had a conventional RTL-style
+interface.  Communication with such a module is done through signals
+that are attached to it during instantiation.
+
+<P>
+A more advanced approach is to model hardware blocks as
+objects. Communication with objects is done through method calls.
+A method encapsulates all details of a certain task performed
+by the object. As an object has a method interface instead
+of an RTL-style hardware interface, this is a much 
+higher level approach.
+
+<P>
+As an example, we will design a synchronized queue object. 
+Such an object can be filled by producer, and independently
+read by a consumer. When the queue is empty, the consumer
+should wait until an item is available. The queue can be modeled
+as an object with a <tt class="method">put(item)</tt> and a <tt class="method">get()</tt>
+method, as follows:
+
+<P>
+<div class="verbatim"><pre>
+from myhdl import *
+
+def trigger(event):
+    event.next = not event
+
+class queue:
+    def __init__(self):
+       self.l = []
+       self.sync = Signal(0)
+       self.item = None
+    def put(self,item):
+       # non time-consuming method
+       self.l.append(item)
+       trigger(self.sync)
+    def get(self):
+       # time-consuming method
+       if not self.l:
+          yield self.sync
+       self.item = self.l.pop(0)
+</pre></div>
+
+<P>
+The <tt class="class">queue</tt> object constructor initializes an internal list to
+hold items, and a <var>sync</var> signal to synchronize the operation
+between the methods. Whenever <tt class="method">put()</tt> puts an item in the
+queue, the signal is triggered.  When the <tt class="method">get()</tt> method sees
+that the list is empty, it waits on the trigger first.
+<tt class="method">get()</tt> is a generator method because 
+it may consume time. As the <code>yield</code> statement is used in MyHDL for timing control, the method cannot ``yield'' the item. Instead, it
+makes it available in the <var>item</var> instance variable.
+
+<P>
+To test the queue operation, we will model a producer and a consumer
+in the test bench.  As a waiting consumer should not block a whole
+system, it should run in a concurrent ``thread''. As always in
+MyHDL, concurrency is modeled by Python generators. Producer
+and consumer will thus run independently, and we will monitor
+their operation through some print statements:
+
+<P>
+<div class="verbatim"><pre>
+q = queue()
+
+def Producer(q):
+    yield delay(120)
+    for i in range(5):
+        print "%s: PUT item %s" % (now(), i)
+        q.put(i)
+        yield delay(max(5, 45 - 10*i))
+
+def Consumer(q):
+    yield delay(100)
+    while 1:
+        print "%s: TRY to get item" % now()
+        yield q.get()
+        print "%s: GOT item %s" % (now(), q.item)
+        yield delay(30)
+
+def main():
+    P = Producer(q)
+    C = Consumer(q)
+    return P, C 
+
+sim = Simulation(main())
+sim.run()
+</pre></div>
+
+<P>
+Note that the generator method <tt class="method">get()</tt> is called in a
+<code>yield</code> statement in the <tt class="function">Consumer</tt> function. The new
+generator will take over from <tt class="function">Consumer</tt>, until it is done.
+Running this test bench produces the following output:
+
+<P>
+<div class="verbatim"><pre>
+% python queue.py
+100: TRY to get item
+120: PUT item 0
+120: GOT item 0
+150: TRY to get item
+165: PUT item 1
+165: GOT item 1
+195: TRY to get item
+200: PUT item 2
+200: GOT item 2
+225: PUT item 3
+230: TRY to get item
+230: GOT item 3
+240: PUT item 4
+260: TRY to get item
+260: GOT item 4
+290: TRY to get item
+StopSimulation: No more events
+</pre></div>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model-err.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model-hl.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="unittest.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model-err.html">3.3.3 Modeling errors using</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model-hl.html">3.3 High level modeling</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="unittest.html">4. Unit testing</A>
+<hr>
+<span class="release-info">Release 0.5.1, documentation updated on May 1, 2006.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

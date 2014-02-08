@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="previous" href="ref-cosim.html">
+<LINK REL="up" href="ref.html">
+<LINK REL="next" href="genindex.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="7.8 Conversion to Verilog">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>7.8 Conversion to Verilog</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ref-cosim-vhdl.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="ref.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="genindex.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ref-cosim-vhdl.html">7.7.3 VHDL</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="ref.html">7. Reference</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="genindex.html">Index</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION008800000000000000000">&nbsp;</A>
+<BR>
+7.8 Conversion to Verilog
+</H1>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-56"><tt class="function">toVerilog</tt></a></b>(</nobr></td>
+  <td><var>func </var><big>[</big><var>, *args</var><big>]</big><big>[</big><var>, **kwargs</var><big>]</big>)</td></tr></table>
+<dd>
+Converts a MyHDL design instance to equivalent Verilog
+code, and also generates a test bench to verify it.
+<var>func</var> is a function that returns an instance.
+<tt class="function">toVerilog()</tt> calls <var>func</var> under its control
+and passes <var>*args</var> and <var>**kwargs</var> to the call.
+
+<P>
+The return value is the same as would be returned by the call
+<code>func(*args, **kwargs)</code>. It should be assigned
+to an instance name.
+
+<P>
+For more information about the restrictions on convertible
+MyHDL code, see section&nbsp;<A href="conv-subset.html#conv-subset">6.4</A> in
+Chapter&nbsp;<A href="conv.html#conv">6</A>.
+</dl>
+
+<P>
+ 
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ref-cosim-vhdl.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="ref.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="genindex.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ref-cosim-vhdl.html">7.7.3 VHDL</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="ref.html">7. Reference</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="genindex.html">Index</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on February 4, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

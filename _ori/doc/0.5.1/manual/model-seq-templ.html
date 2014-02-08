@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="model-seq-ex.html">
+<LINK REL="previous" href="model-seq.html">
+<LINK REL="up" href="model-seq.html">
+<LINK REL="next" href="model-seq-ex.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="3.2.2.1 Template ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>3.2.2.1 Template </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model-seq.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model-seq.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model-seq-ex.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model-seq.html">3.2.2 Sequential logic</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model-seq.html">3.2.2 Sequential logic</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model-seq-ex.html">3.2.2.2 Example</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION004221000000000000000">&nbsp;</A>
+<BR>
+3.2.2.1 Template 
+</H3>
+Sequential RTL models are sensitive to a clock edge. In addition, they
+may be sensitive to a reset signal. We will describe one of the most
+common patterns: a template with a rising clock edge and an
+asynchronous reset signal. Other templates are similar.
+
+<P>
+<div class="verbatim"><pre>
+def top(&lt;parameters&gt;, clock, ..., reset, ...):
+    ...
+    @always(clock.posedge, reset.negedge)
+    def seqLogic():
+        if reset == &lt;active level&gt;:
+            &lt;reset code&gt;
+        else:
+            &lt;functional code&gt;
+    ...
+    return seqLogic, ...
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model-seq.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model-seq.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model-seq-ex.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model-seq.html">3.2.2 Sequential logic</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model-seq.html">3.2.2 Sequential logic</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model-seq-ex.html">3.2.2.2 Example</A>
+<hr>
+<span class="release-info">Release 0.5.1, documentation updated on May 1, 2006.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

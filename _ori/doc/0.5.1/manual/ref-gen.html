@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="ref-deco.html">
+<LINK REL="previous" href="ref-sig.html">
+<LINK REL="up" href="ref-model.html">
+<LINK REL="next" href="ref-deco.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="7.2.2 MyHDL generators and trigger objects ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>7.2.2 MyHDL generators and trigger objects </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ref-sig.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="ref-model.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="ref-deco.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ref-sig.html">7.2.1 The Signal class</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="ref-model.html">7.2 Modeling</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="ref-deco.html">7.2.3 Decorator functions</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION008220000000000000000">&nbsp;</A>
+<BR>
+7.2.2 MyHDL generators and trigger objects 
+</H2>
+
+<P>
+MyHDL generators are standard Python generators with specialized
+<tt class="keyword">yield</tt> statements. In hardware description languages, the equivalent
+statements are called 
+    <a name="l2h-45">&nbsp;</a><i>sensitivity lists</i>. The general format
+of <tt class="keyword">yield</tt> statements in in MyHDL generators is:
+
+<P>
+ <tt class="keyword">yield</tt> <var>clause <big>[</big>, clause ...<big>]</big></var>
+
+<P>
+When a generator executes a <tt class="keyword">yield</tt> statement, its
+execution is suspended at that point. At the same time, each
+<var>clause</var> is a <i>trigger object</i> which defines the condition
+upon which the generator should be resumed. However, per invocation of a
+<tt class="keyword">yield</tt> statement, the generator resumes exactly once,
+regardless of the number of clauses. This happens on the
+first trigger that occurs.
+
+<P>
+In this section, the trigger objects and their functionality will be
+described.
+
+<P>
+Some MyHDL objects that are described elsewhere can directly be used
+as trigger objects. In particular, a signal can be used as
+a trigger object. Whenever a signal changes value, the generator
+resumes. Likewise, the objects referred to by the signal attributes
+<code>posedge</code> and <code>negedge</code> are trigger objects. The generator
+resumes on the occurrence of a positive or a negative edge on the
+signal, respectively. An edge occurs when there is a change from
+false to true (positive) or vice versa (negative).
+For the full description of the <tt class="class">Signal</tt> class and its
+attributes, see section&nbsp;<A href="ref-sig.html#ref-sig">7.2.1</A>.
+
+<P>
+Furthermore, MyHDL generators can be used as clauses in <code>yield</code>
+statements. Such a generator is forked, and starts operating
+immediately, while the original generator
+waits for it to complete. The original generator resumes when the
+forked generator returns.
+
+<P>
+In addition, the following functions return trigger objects:
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-43"><tt class="function">delay</tt></a></b>(</nobr></td>
+  <td><var>t</var>)</td></tr></table>
+<dd>
+Return a trigger object that specifies that the generator should
+resume after a delay <var>t</var>.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-44"><tt class="function">join</tt></a></b>(</nobr></td>
+  <td><var>arg </var><big>[</big><var>, arg ...</var><big>]</big>)</td></tr></table>
+<dd>
+Join a number of trigger objects together and return a joined
+trigger object.  The effect is that the joined trigger object will
+trigger when <i>all</i> of its arguments have triggered.
+</dl>
+
+<P>
+Finally, as a special case, the Python <code>None</code> object can be
+present in a <code>yield</code> statement. It is the do-nothing
+trigger object. The generator immediately resumes, as if no
+<code>yield</code> statement were present. This can be useful if the
+<code>yield</code> statement also has generator clauses: those generators
+are forked, while the original generator resumes immediately.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ref-sig.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="ref-model.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="ref-deco.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ref-sig.html">7.2.1 The Signal class</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="ref-model.html">7.2 Modeling</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="ref-deco.html">7.2.3 Decorator functions</A>
+<hr>
+<span class="release-info">Release 0.5.1, documentation updated on May 1, 2006.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

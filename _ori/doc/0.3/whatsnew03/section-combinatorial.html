@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="whatsnew03.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="whatsnew03.html" title='What's New in MyHDL 0.3'>
+<link rel="contents" href="contents.html" title="Contents"><link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="section-instances.html">
+<LINK REL="previous" href="section-enum.html">
+<LINK REL="up" HREF="whatsnew03.html">
+<LINK REL="next" href="section-instances.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="3 Inferring the sensitivity list for combinatorial
+logic">
+<META NAME="keywords" CONTENT="whatsnew03">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>3 Inferring the sensitivity list for combinatorial
+logic</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="section-enum.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A HREF="whatsnew03.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="section-instances.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">What's New in MyHDL 0.3</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="section-enum.html">2 Enumeration types</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew03.html">What's New in MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="section-instances.html">4 Inferring the list</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000400000000000000000">&nbsp;</A>
+<BR>
+3 Inferring the sensitivity list for combinatorial
+logic
+</H1>
+
+<P>
+In MyHDL, combinatorial logic is described by a generator function with
+a sensitivity list that contains all inputs signals (the signals that
+are read inside the function).
+
+<P>
+It may be easy to forget some input signals, especially it there are a
+lot of them or if the code is being modified. There are various ways
+to solve this. One way is to use a sophisticated editor. Another way
+is direct language support. For example, recent versions of Verilog
+have the <code>always&nbsp;@*</code> construct, that infers all input
+signals. The SystemVerilog&nbsp;3.1 standard improves on this by
+introducing the <code>always_comb</code> block with slightly enhanced
+semantics.
+
+<P>
+MyHDL&nbsp;0.3 provides a function called <tt class="function">always_comb()</tt> which
+is named and modeled after the SystemVerilog counterpart.
+<tt class="function">always_comb()</tt> takes a classic local function as its
+argument. This function should specify the combinatorial logic behavior.
+<tt class="function">always_comb()</tt> returns a generator
+that is sensitive to all inputs, and that will run the function
+whenever an input changes.
+
+<P>
+For example, suppose that we have a mux module described as follows:
+
+<P>
+<div class="verbatim"><pre>
+def mux(z, a, b, sel):
+    """ Multiplexer.
+    
+    z -- mux output
+    a, b -- data inputs
+    sel -- control input
+
+    """
+    def logic()
+        while 1:
+            yield a, b, sel
+            if sel == 1:
+                z.next = a
+            else:
+                z.next = b
+    mux_logic = logic()
+    return mux_logic
+</pre></div>
+
+<P>
+Using <tt class="function">always_comb()</tt>, we can describe it as follows instead:
+
+<P>
+<div class="verbatim"><pre>
+def mux(z, a, b, sel):
+    """ Multiplexer.
+    
+    z -- mux output
+    a, b -- data inputs
+    sel -- control input
+
+    """
+    def logic()
+        if sel == 1:
+            z.next = a
+        else:
+            z.next = b
+    mux_logic = always_comb(logic)
+    return mux_logic
+</pre></div>
+
+<P>
+Note that in the first version, the sensitivity list is at the beginning of
+the generator function code. This is traditionally done in
+synthesizable RTL style modeling. However, the semantics of this style
+are not entirely correct: at the start of the simulation, the
+combinatorial output will not reflect the initial state of the
+inputs. <tt class="function">always_comb()</tt> solves this by putting the sensitivity
+list at the end of the code.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="section-enum.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A HREF="whatsnew03.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="section-instances.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">What's New in MyHDL 0.3</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="section-enum.html">2 Enumeration types</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew03.html">What's New in MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="section-instances.html">4 Inferring the list</A>
+<hr>
+<span class="release-info">Release 0.3.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

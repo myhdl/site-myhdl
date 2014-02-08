@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="whatsnew04.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="whatsnew04.html" title='New in MyHDL 0.4: Conversion to Verilog'>
+<link rel="contents" href="contents.html" title="Contents"><link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="conv-features-func.html">
+<LINK REL="previous" href="conv-features-gen.html">
+<LINK REL="up" href="conv-features.html">
+<LINK REL="next" href="conv-features-func.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="3.4 The Verilog module interface is inferred from signal usage">
+<META NAME="keywords" CONTENT="whatsnew04">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>3.4 The Verilog module interface is inferred from signal usage</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conv-features-gen.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-features.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-features-func.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">New in MyHDL 0.4: Conversion to Verilog</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conv-features-gen.html">3.3 Generators are mapped</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-features.html">3 Features</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-features-func.html">3.5 Function calls are</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000440000000000000000">&nbsp;</A>
+<BR>
+3.4 The Verilog module interface is inferred from signal usage
+</H2>
+In MyHDL, the input or output direction of interface signals
+is not explicitly declared. The converter investigates signal usage
+in the design hierarchy to infer whether a signal is used as
+input, output, or as an internal signal. Internal signals are
+given a hierarchical name in the Verilog output.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conv-features-gen.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-features.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-features-func.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">New in MyHDL 0.4: Conversion to Verilog</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conv-features-gen.html">3.3 Generators are mapped</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-features.html">3 Features</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-features-func.html">3.5 Function calls are</A>
+<hr>
+<span class="release-info">Release 0.4.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

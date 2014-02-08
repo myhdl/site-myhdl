@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="cosim-impl.html">
+<LINK REL="previous" href="cosim-myhdl.html">
+<LINK REL="up" href="cosim.html">
+<LINK REL="next" href="cosim-pass.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="5.4 Restrictions ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>5.4 Restrictions </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-myhdl.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-pass.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-myhdl.html">5.3 The MyHDL side</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim.html">5. Co-simulation with Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-pass.html">5.4.1 Only passive HDL</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION006400000000000000000">&nbsp;</A>
+<BR>
+5.4 Restrictions 
+</H1>
+
+<P>
+In the ideal case, it should be possible to simulate
+any HDL description seamlessly with MyHDL. Moreover
+the communicating signals at each side should act
+transparently as a single one, enabling fully race free
+operation.
+
+<P>
+For various reasons, it may not be possible or desirable
+to achieve full generality. As anyone that has developed
+applications with the Verilog PLI can testify, the
+restrictions in a particular simulator, and the 
+differences over various simulators, can be quite 
+frustrating. Moreover, full generality may require
+a disproportionate amount of development work compared
+to a slightly less general solution that may
+be sufficient for the target application.
+
+<P>
+Consequently, I have tried to achieve a solution
+which is simple enough so that one can reasonably 
+expect that any PLI-enabled simulator can support it,
+and that is relatively easy to verify and maintain.
+At the same time, the solution is sufficiently general 
+to cover the target application space.
+
+<P>
+The result is a compromise that places certain restrictions
+on the HDL code. In this section, these restrictions 
+are presented.
+
+<P>
+
+<p><hr>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></a>
+
+<UL CLASS="ChildLinks">
+<LI><A href="cosim-pass.html">5.4.1 Only passive HDL can be co-simulated</a>
+<LI><A href="cosim-race.html">5.4.2 Race sensitivity issues</a>
+</ul>
+<!--End of Table of Child-Links-->
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-myhdl.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-pass.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-myhdl.html">5.3 The MyHDL side</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim.html">5. Co-simulation with Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-pass.html">5.4.1 Only passive HDL</A>
+<hr>
+<span class="release-info">Release 0.5.1, documentation updated on May 1, 2006.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="previous" href="cosim-icarus-delta.html">
+<LINK REL="up" href="cosim-icarus.html">
+<LINK REL="next" href="cosim-cver.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="5.5.1.2 Passive Verilog check ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>5.5.1.2 Passive Verilog check </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-icarus-delta.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim-icarus.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-cver.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-icarus-delta.html">5.5.1.1 Delta cycle implementation</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim-icarus.html">5.5.1 Icarus Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-cver.html">5.5.2 Cver</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION006512000000000000000">&nbsp;</A>
+<BR>
+5.5.1.2 Passive Verilog check 
+</H3>
+
+<P>
+As explained before, co-simulated Verilog should not contain delay
+statements. Ideally, there should be a run-time check to flag
+non-compliant code. However, there is currently no such check in the
+Icarus module.
+
+<P>
+The check can be written using the <code>cbNextSimTime</code> VPI callback
+in Verilog. However, Icarus 0.7 doesn't support this callback. In the
+meantime, support for it has been added to the Icarus development
+branch.  When Icarus 0.8 is released, a check will be added.
+
+<P>
+In the mean time, just don't do this. It may appear to ``work'' but it
+really won't as events will be missed over the co-simulation
+interface.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-icarus-delta.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim-icarus.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-cver.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-icarus-delta.html">5.5.1.1 Delta cycle implementation</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim-icarus.html">5.5.1 Icarus Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-cver.html">5.5.2 Cver</A>
+<hr>
+<span class="release-info">Release 0.5.1, documentation updated on May 1, 2006.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="previous" href="ref-intbv.html">
+<LINK REL="up" href="ref-model.html">
+<LINK REL="next" href="ref-cosim.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="7.2.5 Miscellaneous modeling support functions">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>7.2.5 Miscellaneous modeling support functions</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ref-intbv.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="ref-model.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="ref-cosim.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ref-intbv.html">7.2.4 The intbv class</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="ref-model.html">7.2 Modeling</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="ref-cosim.html">7.3 Co-simulation</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION008250000000000000000">&nbsp;</A>
+<BR>
+7.2.5 Miscellaneous modeling support functions
+</H2>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-55"><tt class="function">bin</tt></a></b>(</nobr></td>
+  <td><var>num </var><big>[</big><var>, width</var><big>]</big>)</td></tr></table>
+<dd>
+Returns a bit string representation. If the optional <var>width</var>
+is provided, and if it is larger than the width of the default
+representation, the bit string is padded with the sign bit.
+
+<P>
+This function complements the standard Python conversion functions
+<code>hex</code> and <code>oct</code>. A binary string representation is often
+useful in hardware design.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-56"><tt class="function">concat</tt></a></b>(</nobr></td>
+  <td><var>base </var><big>[</big><var>, arg ...</var><big>]</big>)</td></tr></table>
+<dd>
+Returns an <tt class="class">intbv</tt> object formed by concatenating the arguments.
+
+<P>
+The following argument types are supported: <tt class="class">intbv</tt> objects with
+a defined bit width, <tt class="class">bool</tt> objects, signals of the previous
+objects, and bit strings. All these objects have a defined bit
+width. The first argument <var>base</var> is special as it doesn't need to
+have a defined bit width. In addition to the previously mentioned
+objects, unsized <tt class="class">intbv</tt>, <tt class="class">int</tt> and <tt class="class">long</tt> objects
+are supported, as well as signals of such objects.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-57"><tt class="function">downrange</tt></a></b>(</nobr></td>
+  <td><var>high </var><big>[</big><var>, low=0</var><big>]</big>)</td></tr></table>
+<dd>
+Generates a downward range list of integers.
+
+<P>
+This function is modeled after the standard <code>range</code> function, but
+works in the downward direction. The returned interval is half-open,
+with the <var>high</var> index not included. <var>low</var> is optional and
+defaults to zero.  This function is especially useful in conjunction
+with the <tt class="class">intbv</tt> class, that also works with downward indexing.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-58"><tt class="function">enum</tt></a></b>(</nobr></td>
+  <td><var>arg </var><big>[</big><var>, arg ...</var><big>]</big><big>[</big><var>, encoding='binary'</var><big>]</big>)</td></tr></table>
+<dd>
+Returns an enumeration type.
+
+<P>
+The arguments should be string literals that represent the desired
+names of the enumeration type attributes.  The returned type should be
+assigned to a type name.  For example:
+<div class="verbatim"><pre>
+t_EnumType = enum('ATTR_NAME_1', 'ATTR_NAME_2', ...)
+</pre></div>
+The enumeration type identifiers are available as attributes of
+the type name, for example: <code>t_EnumType.ATTR_NAME_1</code>
+
+<P>
+The optional keyword argument <var>encoding</var> specifies the encoding
+scheme used in Verilog output. The available encodings are <code>'binary'</code>,
+<code>'one_hot'</code>, and <code>'one_cold'</code>.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-59"><tt class="function">instances</tt></a></b>(</nobr></td>
+  <td>)</td></tr></table>
+<dd>
+Looks up all MyHDL instances in the local name space and returns them
+in a list.
+
+<P>
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ref-intbv.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="ref-model.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="ref-cosim.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ref-intbv.html">7.2.4 The intbv class</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="ref-model.html">7.2 Modeling</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="ref-cosim.html">7.3 Co-simulation</A>
+<hr>
+<span class="release-info">Release 0.5.1, documentation updated on May 1, 2006.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="previous" href="model-seq-templ.html">
+<LINK REL="up" href="model-seq.html">
+<LINK REL="next" href="model-fsm.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="3.2.2.2 Example ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>3.2.2.2 Example </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model-seq-templ.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model-seq.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model-fsm.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model-seq-templ.html">3.2.2.1 Template</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model-seq.html">3.2.2 Sequential logic</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model-fsm.html">3.2.3 Finite State Machine</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION004222000000000000000">&nbsp;</A>
+<BR>
+3.2.2.2 Example 
+</H3>
+The following code is a description of an incrementer with enable, and
+an asynchronous reset.
+
+<P>
+<div class="verbatim"><pre>
+from random import randrange
+from myhdl import *
+
+ACTIVE_LOW, INACTIVE_HIGH = 0, 1
+
+def Inc(count, enable, clock, reset, n):
+
+    """ Incrementer with enable.
+    
+    count -- output
+    enable -- control input, increment when 1
+    clock -- clock input
+    reset -- asynchronous reset input
+    n -- counter max value
+
+    """
+
+    @always(clock.posedge, reset.negedge)
+    def incLogic():
+        if reset == ACTIVE_LOW:
+            count.next = 0
+        else:
+            if enable:
+                count.next = (count + 1) % n
+
+    return incLogic
+</pre></div>
+
+<P>
+For the test bench, we will use an independent clock generator, stimulus
+generator, and monitor. After applying enough stimulus patterns, we
+can raise the <code>StopSimulation</code> exception to stop the
+simulation run. The test bench for a small incrementer and a small
+number of patterns is a follows:
+
+<P>
+<div class="verbatim"><pre>
+def testbench():
+    count, enable, clock, reset = [Signal(intbv(0)) for i in range(4)]
+
+    inc_1 = Inc(count, enable, clock, reset, n=4)
+
+    HALF_PERIOD = delay(10)
+
+    @always(HALF_PERIOD)
+    def clockGen():
+        clock.next = not clock
+
+    @instance
+    def stimulus():
+        reset.next = ACTIVE_LOW
+        yield clock.negedge
+        reset.next = INACTIVE_HIGH
+        for i in range(12):
+            enable.next = min(1, randrange(3))
+            yield clock.negedge
+        raise StopSimulation
+
+    @instance
+    def monitor():
+        print "enable  count"
+        yield reset.posedge
+        while 1:
+            yield clock.posedge
+            yield delay(1)
+            print "   %s      %s" % (enable, count)
+
+    return clockGen, stimulus, inc_1, monitor
+
+
+tb = testbench()
+
+def main():
+    Simulation(tb).run()
+</pre></div>
+
+<P>
+The simulation produces the following output:
+<div class="verbatim"><pre>
+% python inc.py
+enable  count
+   0      0
+   1      1
+   0      1
+   1      2
+   1      3
+   1      0
+   0      0
+   1      1
+   0      1
+   0      1
+   0      1
+   1      2
+StopSimulation
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model-seq-templ.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model-seq.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model-fsm.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model-seq-templ.html">3.2.2.1 Template</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model-seq.html">3.2.2 Sequential logic</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model-fsm.html">3.2.3 Finite State Machine</A>
+<hr>
+<span class="release-info">Release 0.5, documentation updated on December 29, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

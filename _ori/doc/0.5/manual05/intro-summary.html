@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="previous" href="intro-python.html">
+<LINK REL="up" href="intro.html">
+<LINK REL="next" href="model.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="2.6 Summary and perspective ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>2.6 Summary and perspective </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="intro-python.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="intro.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="intro-python.html">2.5 Some remarks on</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="intro.html">2. Introduction to MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model.html">3. Modeling techniques</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION003600000000000000000">&nbsp;</A>
+<BR>
+2.6 Summary and perspective 
+</H1>
+Here is an overview of what we have learned in this chapter:
+
+<P>
+
+<UL>
+<LI>Generators are the basic building blocks of MyHDL models. They
+provide the way to model massive concurrency and sensitiviy lists.
+
+<P>
+</LI>
+<LI>MyHDL provides decorators that create useful generators from local functions.
+
+<P>
+</LI>
+<LI>Hardware structure and hierarchy is described with classic Python functions. 
+
+<P>
+</LI>
+<LI><code>Signal</code> objects are used to communicate between concurrent generators.
+
+<P>
+</LI>
+<LI><code>intbv</code> objects are used to describe bit-oriented operations.
+
+<P>
+</LI>
+<LI>A <code>Simulation</code> object is used to simulate MyHDL models.
+</LI>
+</UL>
+
+<P>
+These concepts are sufficient to start describing and simulating MyHDL models.
+
+<P>
+However, there is much more to MyHDL. Here is an overview of what can
+be learned from the following chapters:
+
+<P>
+
+<UL>
+<LI>MyHDL supports sophisticated and high level modeling techniques.
+This is described in Chapter&nbsp;<A href="model.html#model">3</A>
+
+<P>
+</LI>
+<LI>MyHDL enables the use of modern software verfication techniques,
+such as unit testing, on hardware designs. This is the topic of
+Chapter&nbsp;<A href="unittest.html#unittest">4</A>.
+
+<P>
+</LI>
+<LI>It is possible to co-simulate MyHDL models with other HDL
+languages such as Verilog and VHDL. This is described in
+Chapter&nbsp;<A href="cosim.html#cosim">5</A>.
+
+<P>
+</LI>
+<LI>Last but not least, MyHDL models can be converted to
+Verilog, providing a path to a silicon implementation. This
+is the topic of Chapter&nbsp;<A href="conv.html#conv">6</A>.
+</LI>
+</UL>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="intro-python.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="intro.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="intro-python.html">2.5 Some remarks on</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="intro.html">2. Introduction to MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model.html">3. Modeling techniques</A>
+<hr>
+<span class="release-info">Release 0.5, documentation updated on December 29, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

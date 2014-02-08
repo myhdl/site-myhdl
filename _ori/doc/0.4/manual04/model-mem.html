@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="model-err.html">
+<LINK REL="previous" href="model-hl.html">
+<LINK REL="up" href="model-hl.html">
+<LINK REL="next" href="model-err.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="3.3.1 Modeling memories with built-in types ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>3.3.1 Modeling memories with built-in types </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model-hl.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model-hl.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model-err.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model-hl.html">3.3 High level modeling</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model-hl.html">3.3 High level modeling</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model-err.html">3.3.2 Modeling errors using</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION004310000000000000000">&nbsp;</A>
+<a name="l2h-17">&nbsp;</a>
+<BR>
+3.3.1 Modeling memories with built-in types 
+</H2>
+
+<P>
+Python has powerful built-in data types that can be useful to model
+hardware memories. This can be merely a matter of putting an interface
+around some data type operations.
+
+<P>
+For example, a <i class="dfn">dictionary</i> comes in handy to model sparse memory
+structures. (In other languages, this data type is called 
+<i class="dfn">associative array</i>, or <i class="dfn">hash table</i>.) A sparse memory is one in
+which only a small part of the addresses is used in a particular
+application or simulation. Instead of statically allocating the full
+address space, which can be large, it is better to dynamically
+allocate the needed storage space. This is exactly what a dictionary
+provides. The following is an example of a sparse memory model:
+
+<P>
+<div class="verbatim"><pre>
+def sparseMemory(dout, din, addr, we, en, clk):
+    """ Sparse memory model based on a dictionary.
+
+    Ports:
+    dout -- data out
+    din -- data in
+    addr -- address bus
+    we -- write enable: write if 1, read otherwise
+    en -- interface enable: enabled if 1
+    clk -- clock input
+    
+    """
+    memory = {}
+    while 1:
+        yield posedge(clk)
+        if not en:
+            continue
+        if we:
+            memory[addr] = din.val
+        else:
+            dout.next = memory[addr]
+</pre></div> 
+
+<P>
+Note how we use the <code>val</code> attribute of the <code>din</code> signal, as
+we don't want to store the signal object itself, but its current
+value. (In many cases, MyHDL can use a signal's value automatically
+when there is no ambiguity: for example, this happens whenever a
+signal is used in expressions. When in doubt, you can always use the
+<code>val</code> attribute explicitly.)
+
+<P>
+As a second example, we will demonstrate how to use a list to model a
+synchronous fifo:
+
+<P>
+<div class="verbatim"><pre>
+def fifo(dout, din, re, we, empty, full, clk, maxFilling=sys.maxint):
+    """ Synchronous fifo model based on a list.
+
+    Ports:
+    dout -- data out
+    din -- data in
+    re -- read enable
+    we -- write enable
+    empty -- empty indication flag
+    full -- full indication flag
+    clk -- clock input
+    Optional parameter:
+    maxFilling -- maximum fifo filling, "infinite" by default
+
+    """
+    memory = []
+    while 1:
+        yield posedge(clk)
+        if we:
+            memory.insert(0, din.val)
+        if re:
+            dout.next = memory.pop()
+        filling = len(memory)
+        empty.next = (filling == 0)
+        full.next = (filling == maxFilling)
+</pre></div>
+
+<P>
+Again, the model is merely a MyHDL interface around some operations
+on a list: <tt class="function">insert()</tt> to insert entries, <tt class="function">pop()</tt> to
+retrieve them, and <tt class="function">len()</tt> to get the size of a Python
+object.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model-hl.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model-hl.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model-err.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model-hl.html">3.3 High level modeling</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model-hl.html">3.3 High level modeling</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model-err.html">3.3.2 Modeling errors using</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on February 4, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

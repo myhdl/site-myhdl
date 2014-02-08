@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="cosim-hdl.html">
+<LINK REL="previous" href="cosim.html">
+<LINK REL="up" href="cosim.html">
+<LINK REL="next" href="cosim-hdl.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="5.1 Introduction ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>5.1 Introduction </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-hdl.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim.html">5. Co-simulation with Verilog</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim.html">5. Co-simulation with Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-hdl.html">5.2 The HDL side</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION006100000000000000000">&nbsp;</A>
+<BR>
+5.1 Introduction 
+</H1>
+
+<P>
+One of the most exciting possibilities of MyHDL is to use it as a hardware verification language (HVL).
+A HVL is a language used to write test benches and
+verification environments, and to control simulations.
+
+<P>
+Nowadays, it is generally acknowledged that HVLs should be equipped
+with modern software techniques, such as object orientation. The
+reason is that verification it the most complex and time-consuming
+task of the design process. Consequently, every useful technique is
+welcome. Moreover, test benches are not required to be
+implementable. Therefore, unlike with synthesizable code, there
+are no constraints on creativity.
+
+<P>
+Technically, verification of a design implemented in
+another language requires co-simulation. MyHDL is 
+enabled for co-simulation with any HDL simulator that
+has a procedural language interface (PLI). The MyHDL side is designed to be independent of a particular
+simulator, On the other hand, for each HDL simulator a specific
+PLI module will have to be written in C. Currently,
+the MyHDL release contains a PLI module for
+two Verilog simulators: Icarus and Cver.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-hdl.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim.html">5. Co-simulation with Verilog</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim.html">5. Co-simulation with Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-hdl.html">5.2 The HDL side</A>
+<hr>
+<span class="release-info">Release 0.5.1, documentation updated on May 1, 2006.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

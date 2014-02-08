@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="whatsnew04.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="whatsnew04.html" title='New in MyHDL 0.4: Conversion to Verilog'>
+<link rel="contents" href="contents.html" title="Contents"><link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="previous" href="conv-subset-types.html">
+<LINK REL="up" href="conv-subset.html">
+<LINK REL="next" href="conv-meth.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="4.4 Supported statements">
+<META NAME="keywords" CONTENT="whatsnew04">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>4.4 Supported statements</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conv-subset-types.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-subset.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-meth.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">New in MyHDL 0.4: Conversion to Verilog</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conv-subset-types.html">4.3 Supported types</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-subset.html">4 The convertible subset</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-meth.html">5 Methodology notes</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000540000000000000000">&nbsp;</A>
+<BR>
+4.4 Supported statements
+</H2>
+
+<P>
+The following is a list of the statements that are supported by the
+Verilog converter, possibly qualified with restrictions
+or usage notes. 
+
+<P>
+<DL>
+<DT><STRONG>The <tt class="keyword">break</tt> statement.</STRONG></DT>
+<DD><P>
+</DD>
+<DT><STRONG>The <tt class="keyword">continue</tt> statement.</STRONG></DT>
+<DD><P>
+</DD>
+<DT><STRONG>The <tt class="keyword">def</tt> statement.</STRONG></DT>
+<DD><P>
+</DD>
+<DT><STRONG>The <tt class="keyword">for</tt> statement.</STRONG></DT>
+<DD>The only supported iteration scheme is iterating through sequences of
+integers returned by built-in function <tt class="function">range</tt> or MyHDL function <tt class="function">downrange</tt>.  The optional <tt class="keyword">else</tt> clause is
+not supported.
+
+<P>
+</DD>
+<DT><STRONG>The <tt class="keyword">if</tt> statement.</STRONG></DT>
+<DD><tt class="keyword">if</tt>, <tt class="keyword">elif</tt>, and <tt class="keyword">else</tt> clauses
+are fully supported.
+
+<P>
+</DD>
+<DT><STRONG>The <tt class="keyword">pass</tt> statement.</STRONG></DT>
+<DD><P>
+</DD>
+<DT><STRONG>The <tt class="keyword">print</tt> statement.</STRONG></DT>
+<DD>When printing an interpolated string, the format specifiers are copied
+verbatim to the Verilog output.  Printing to a file (with syntax
+<code>'&#187;'</code>) is not supported.
+
+<P>
+</DD>
+<DT><STRONG>The <tt class="keyword">raise</tt> statement.</STRONG></DT>
+<DD>This statement is mapped to Verilog statements
+that end the simulation with an error message.
+
+<P>
+</DD>
+<DT><STRONG>The <tt class="keyword">return</tt> statement.</STRONG></DT>
+<DD><P>
+</DD>
+<DT><STRONG>The <tt class="keyword">yield</tt> statement.</STRONG></DT>
+<DD>The yielded expression can be a signal, a signal edge
+as specified by MyHDL functions <tt class="function">posedge</tt>
+or <tt class="function">negedge</tt>, or a tuple of signals and
+edge specifications.
+
+<P>
+</DD>
+<DT><STRONG>The <tt class="keyword">while</tt> statement.</STRONG></DT>
+<DD>The optional <tt class="keyword">else</tt>
+clause is not supported.
+
+<P>
+</DD>
+</DL>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conv-subset-types.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-subset.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-meth.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">New in MyHDL 0.4: Conversion to Verilog</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conv-subset-types.html">4.3 Supported types</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-subset.html">4 The convertible subset</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-meth.html">5 Methodology notes</A>
+<hr>
+<span class="release-info">Release 0.4.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

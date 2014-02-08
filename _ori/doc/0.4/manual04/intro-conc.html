@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="intro-hier.html">
+<LINK REL="previous" href="intro-basic.html">
+<LINK REL="up" href="intro.html">
+<LINK REL="next" href="intro-hier.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="2.2 Concurrent generators and signals ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>2.2 Concurrent generators and signals </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="intro-basic.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="intro.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="intro-hier.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="intro-basic.html">2.1 A basic MyHDL</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="intro.html">2. Introduction to MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="intro-hier.html">2.3 Parameters, instances and</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION003200000000000000000">&nbsp;</A>    <a name="l2h-3">&nbsp;</a>
+<BR>
+2.2 Concurrent generators and signals 
+</H1>
+
+<P>
+In the previous section, we simulated a single generator. Of course,
+real hardware descriptions are not like that: in fact, they are
+typically massively concurrent. MyHDL supports this by allowing an
+arbitrary number of concurrent generators. 
+
+<P>
+With concurrency comes the problem of deterministic
+communication. Hardware languages use special objects to
+support deterministic communication between concurrent code. MyHDL has a <tt class="class">Signal</tt> object which is roughly modeled after VHDL
+signals.
+
+<P>
+We will demonstrate these concepts by extending and modifying our
+first example. We introduce a clock signal, driven by a second
+generator: 
+
+<P>
+<div class="verbatim"><pre>
+clk = Signal(0)
+
+def clkGen():
+    while 1:
+        yield delay(10)
+        clk.next = 1
+        yield delay(10)
+        clk.next = 0
+</pre></div>
+
+<P>
+The <code>clk</code> signal is constructed with an initial value
+<code>0</code>. In the clock generator function <code>clkGen</code>, it is
+continuously assigned a new value after a certain delay. In MyHDL,
+the new value of a signal is specified by assigning to its
+<code>next</code> attribute. This is the MyHDL equivalent of 
+the VHDL signal assignment and the 
+Verilog non-blocking assignment.
+
+<P>
+The <code>sayHello</code> generator function is modified to wait for a
+rising edge of the clock instead of a delay:
+
+<P>
+<div class="verbatim"><pre>
+def sayHello():
+    while 1:
+        yield posedge(clk)
+        print "%s Hello World!" % now()
+</pre></div>
+
+<P>
+Waiting for the clock edge is achieved with a second form of the
+<tt class="keyword">yield</tt> statement: "<tt class="samp">yield posedge(<var>signal</var>)</tt>". 
+At that point, the generator will
+wait for a rising edge on the signal.
+
+<P>
+The <tt class="class">Simulation</tt> is now constructed with 2 generator arguments:
+
+<P>
+<div class="verbatim"><pre>
+sim = Simulation(clkGen(), sayHello())
+sim.run(50)
+</pre></div>
+
+<P>
+When we run this simulation, we get:
+
+<P>
+<div class="verbatim"><pre>
+% python hello2.py
+10 Hello World!
+30 Hello World!
+50 Hello World!
+StopSimulation: Simulated for duration 50
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="intro-basic.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="intro.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="intro-hier.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="intro-basic.html">2.1 A basic MyHDL</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="intro.html">2. Introduction to MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="intro-hier.html">2.3 Parameters, instances and</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on February 4, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

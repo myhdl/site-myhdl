@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="ref-intbv.html">
+<LINK REL="previous" href="ref-gen.html">
+<LINK REL="up" href="ref-model.html">
+<LINK REL="next" href="ref-intbv.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="7.2.3 Decorator functions ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>7.2.3 Decorator functions </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ref-gen.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="ref-model.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="ref-intbv.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ref-gen.html">7.2.2 MyHDL generators and</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="ref-model.html">7.2 Modeling</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="ref-intbv.html">7.2.4 The intbv class</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION008230000000000000000">&nbsp;</A>
+<BR>
+7.2.3 Decorator functions 
+</H2>
+
+<P>
+MyHDL defines a number of decorator functions, that make it easier to
+create generators from local generator functions.
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-47"><tt class="function">instance</tt></a></b>(</nobr></td>
+  <td>)</td></tr></table>
+<dd>
+The <tt class="function">instance</tt> decorator is the most general decorator.  It
+automatically creates a generator by calling the decorated generator function.
+
+<P>
+It is used as follows:
+
+<P>
+<div class="verbatim"><pre>
+def top(...):
+    ...
+    @instance
+    def inst():
+        &lt;generator body&gt;
+    ...
+    return inst, ...
+</pre></div>
+
+<P>
+This is equivalent to:
+
+<P>
+<div class="verbatim"><pre>
+def top(...):
+    ...
+    def _gen_func():
+        &lt;generator body&gt;
+    ...
+    inst = _gen_func()
+    ...
+    return inst, ...
+</pre></div>
+
+<P>
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-48"><tt class="function">always</tt></a></b>(</nobr></td>
+  <td><var>arg </var><big>[</big><var>, *args</var><big>]</big>)</td></tr></table>
+<dd>
+
+<P>
+The <tt class="function">always</tt> decorator is a specialized decorator that targets a widely used
+coding pattern. It is used as follows:
+
+<P>
+<div class="verbatim"><pre>
+def top(...):
+    ...
+    @always(event1, event2, ...)
+    def inst()
+        &lt;body&gt;
+    ...
+    return inst, ...
+</pre></div>
+
+<P>
+This is equivalent to the following:
+
+<P>
+<div class="verbatim"><pre>
+def top(...):
+    ...
+    def _func():
+        &lt;body&gt;
+
+    def _gen_func()
+        while True:
+            yield event1, event2, ... 
+            _func()
+    ...
+    inst = _gen_func()
+    ...
+    return inst, ...
+</pre></div>
+
+<P>
+The argument list of the decorator corresponds to the sensitivity
+list. Only signals, edge specifiers, or delay objects are allowed.
+The decorated function should be a classic function.
+
+<P>
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-49"><tt class="function">always_comb</tt></a></b>(</nobr></td>
+  <td>)</td></tr></table>
+<dd>
+
+<P>
+The <tt class="function">always_comb</tt> decorator is used to describe combinatorial
+logic.
+
+<P>
+<div class="verbatim"><pre>
+def top(...):
+    ...
+    @always_comb
+    def comb_inst():
+        &lt;combinatorial body&gt;
+    ...
+    return comb_inst, ...
+</pre></div>
+
+<P>
+The <tt class="function">always_comb</tt> decorator infers the inputs of the combinatorial
+logic and the corresponding sensitivity list automatically.
+The decorated function should be a classic function.
+
+<P>
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ref-gen.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="ref-model.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="ref-intbv.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ref-gen.html">7.2.2 MyHDL generators and</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="ref-model.html">7.2 Modeling</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="ref-intbv.html">7.2.4 The intbv class</A>
+<hr>
+<span class="release-info">Release 0.5, documentation updated on December 29, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,478 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>What’s new in MyHDL 0.8 &mdash; MyHDL 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/myhdl.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="MyHDL 0.8 documentation" href="../index.html" />
+    <link rel="next" title="What’s new in MyHDL 0.7" href="0.7.html" />
+    <link rel="prev" title="Reference" href="../manual/reference.html" /> 
+  </head>
+  <body>
+<div style="background-color: white; text-align: left; padding: 5px 5px 2px 15px">
+<a href="http://www.myhdl.org">
+    <img src="../_static/myhdl_logo_header.png" border=0 alt="MyHDL" />
+</a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0.7.html" title="What’s new in MyHDL 0.7"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../manual/reference.html" title="Reference"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">What&#8217;s new in MyHDL 0.8</a><ul>
+<li><a class="reference internal" href="#modular-bit-vector-types">Modular bit vector types</a><ul>
+<li><a class="reference internal" href="#rationale">Rationale</a></li>
+<li><a class="reference internal" href="#solution">Solution</a></li>
+<li><a class="reference internal" href="#implementation">Implementation</a></li>
+<li><a class="reference internal" href="#interface">Interface</a></li>
+<li><a class="reference internal" href="#conversion">Conversion</a></li>
+<li><a class="reference internal" href="#see-also">See also</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#always-seq-decorator"><tt class="docutils literal"><span class="pre">always_seq</span></tt> decorator</a><ul>
+<li><a class="reference internal" href="#id1">Rationale</a></li>
+<li><a class="reference internal" href="#id2">Solution</a></li>
+<li><a class="reference internal" href="#id3">Interface</a></li>
+<li><a class="reference internal" href="#id4">Conversion</a></li>
+<li><a class="reference internal" href="#limitations">Limitations</a><ul>
+<li><a class="reference internal" href="#all-registers-in-a-process-are-reset">All registers in a process are reset</a></li>
+<li><a class="reference internal" href="#register-inferencing-from-variables-is-not-supported">Register inferencing from variables is not supported</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id5">See also</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#other-improvements">Other improvements</a><ul>
+<li><a class="reference internal" href="#conversion-of-top-level-class-methods">Conversion of top-level class methods</a><ul>
+<li><a class="reference internal" href="#example">Example</a></li>
+<li><a class="reference internal" href="#id6">See also</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing-lists-of-signals">Tracing lists of signals</a></li>
+<li><a class="reference internal" href="#library-attribute-for-tovhdl"><tt class="docutils literal"><span class="pre">library</span></tt> attribute for <tt class="docutils literal"><span class="pre">toVHDL()</span></tt></a></li>
+<li><a class="reference internal" href="#timescale-attribute-for-tracesignals"><tt class="docutils literal"><span class="pre">timescale</span></tt> attribute for <tt class="docutils literal"><span class="pre">traceSignals()</span></tt></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#acknowledgments">Acknowledgments</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../manual/reference.html"
+                        title="previous chapter">Reference</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="0.7.html"
+                        title="next chapter">What&#8217;s new in MyHDL 0.7</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/whatsnew/0.8.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="what-s-new-in-myhdl-0-8">
+<span id="new08"></span><h1>What&#8217;s new in MyHDL 0.8<a class="headerlink" href="#what-s-new-in-myhdl-0-8" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Author:</th><td class="field-body">Jan Decaluwe</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="modular-bit-vector-types">
+<h2>Modular bit vector types<a class="headerlink" href="#modular-bit-vector-types" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="rationale">
+<h3>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h3>
+<p>In hardware modeling, there is often a need for the elegant
+modeling of wrap-around behavior. <a class="reference internal" href="../manual/reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> instances
+don&#8217;t provide this automatically, because they assert
+that any assigned value is within the bound constraints.
+Therefore, one has currently has to use other language
+features for wrap-around modeling.</p>
+<p>Often, this is straightforward. For example, the wrap-around
+condition for a counter is often decoded explicitly, as it
+is needed for other purposes. Also, the modulo
+operator provides an elegant one-liner in most scenarios.</p>
+<p>However, in some important cases the current solution is
+not satisfactory. For example, we would like to describe
+a free running counter using a variable and augmented
+assignment as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>This is not possible with the <a class="reference internal" href="../manual/reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> type, as we
+cannot add the modulo behavior to this description. A similar
+problem exist of for a left shift as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">shifter</span> <span class="o">&lt;&lt;=</span> <span class="mi">4</span>
+</pre></div>
+</div>
+<p>These operations can only supported directly with a new type.
+For these reasons, it was felt that this would be a useful
+addition to MyHDL.</p>
+</div>
+<div class="section" id="solution">
+<h3>Solution<a class="headerlink" href="#solution" title="Permalink to this headline">¶</a></h3>
+<p>The proposed solution is to borrow the idea behind Ada modular types.
+These are natural integer types with wrap-around behaviour.</p>
+<p>The wrap-around behavior of modular types is based on the sound
+mathematical concept of modulo arithmetic. Therefore, the modulus is
+not limited to powers of 2.</p>
+<p>Ada&#8217;s modular type is called <tt class="xref py py-class docutils literal"><span class="pre">mod</span></tt>. In MyHDL, we want also
+want to give it &#8220;bit-vector&#8221; support, like <a class="reference internal" href="../manual/reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a>. Therefore,
+proposed MyHDL type is called <a class="reference internal" href="../manual/reference.html#myhdl.modbv" title="myhdl.modbv"><tt class="xref py py-class docutils literal"><span class="pre">modbv</span></tt></a>.</p>
+</div>
+<div class="section" id="implementation">
+<h3>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference internal" href="../manual/reference.html#myhdl.modbv" title="myhdl.modbv"><tt class="xref py py-class docutils literal"><span class="pre">modbv</span></tt></a> is implemented as a subclass of  <a class="reference internal" href="../manual/reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a>.
+The two classes have an identical interface and work together
+in a straightforward way for arithmetic operations.</p>
+<p>The only difference is how the bounds are handled: out-of-bound values
+result in an error with <a class="reference internal" href="../manual/reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a>, and in wrap-around with
+<a class="reference internal" href="../manual/reference.html#myhdl.modbv" title="myhdl.modbv"><tt class="xref py py-class docutils literal"><span class="pre">modbv</span></tt></a>. The Wrap-around behavior would be defined as follows, with val
+denoting the current value and min/max the bounds:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">val</span> <span class="o">=</span> <span class="p">(</span><span class="n">val</span> <span class="o">-</span> <span class="nb">min</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="nb">max</span> <span class="o">-</span> <span class="nb">min</span><span class="p">)</span> <span class="o">+</span> <span class="nb">min</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="interface">
+<h3>Interface<a class="headerlink" href="#interface" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descname">modbv</tt><big>(</big><em>[val=0] [, min=None]  [, max=None]</em><big>)</big></dt>
+<dd><p>The <a class="reference internal" href="../manual/reference.html#myhdl.modbv" title="myhdl.modbv"><tt class="xref py py-class docutils literal"><span class="pre">modbv</span></tt></a> class implements modular bit vector types.</p>
+<p>It is implemented as a subclass of <a class="reference internal" href="../manual/reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a>
+and supports the same parameters and operators.
+The difference is in the handling of the <em>min</em> and <em>max</em> boundaries.
+Instead of throwing an exception when those constraints are exceeded,
+the value of <a class="reference internal" href="../manual/reference.html#myhdl.modbv" title="myhdl.modbv"><tt class="xref py py-class docutils literal"><span class="pre">modbv</span></tt></a> objects wraps around according to the
+following formula:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">val</span> <span class="o">=</span> <span class="p">(</span><span class="n">val</span> <span class="o">-</span> <span class="nb">min</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="nb">max</span> <span class="o">-</span> <span class="nb">min</span><span class="p">)</span> <span class="o">+</span> <span class="nb">min</span>
+</pre></div>
+</div>
+<p>This formula is a generalization of modulo wrap-around behavior that
+is often useful when describing hardware system behavior.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="conversion">
+<h3>Conversion<a class="headerlink" href="#conversion" title="Permalink to this headline">¶</a></h3>
+<p><em class="dfn">Full-range</em> <a class="reference internal" href="../manual/reference.html#myhdl.modbv" title="myhdl.modbv"><tt class="xref py py-class docutils literal"><span class="pre">modbv</span></tt></a> objects are those where the max bound is
+a power of 2, and the min bound is 0 or the negative of the max bound.
+For these objects, conversion worked out-of-the-box because this
+corresponds to the target types in Verilog and VHDL.</p>
+<p>Currently, conversion is restricted to full-range <a class="reference internal" href="../manual/reference.html#myhdl.modbv" title="myhdl.modbv"><tt class="xref py py-class docutils literal"><span class="pre">modbv</span></tt></a>
+objects.  It may be possible to support conversion of the modulo
+behavior of more general cases, but this requires more sophistication
+in the converter. This may be considered in the future.</p>
+</div>
+<div class="section" id="see-also">
+<h3>See also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h3>
+<p>For a more in-depth discussion, see <a class="reference external" href="http://www.myhdl.org/doku.php/meps:mep-106">mep-106</a>.</p>
+</div>
+</div>
+<div class="section" id="always-seq-decorator">
+<h2><tt class="docutils literal"><span class="pre">always_seq</span></tt> decorator<a class="headerlink" href="#always-seq-decorator" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Rationale<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>In classical synthesizable RTL coding, the reset behavior is described
+explicitly. A typical template is as follows:</p>
+<div class="highlight-python"><pre>@always(clock.posedge, reset.negedge)
+def seq():
+    if reset == 0:
+        &lt;reset code&gt;
+    else:
+        &lt;functional code&gt;</pre>
+</div>
+<p>The reset behavior is described using a the top-level if-else
+structure with a number of assignments under the if. A significant
+piece of code at a prominent location is therefore dedicated to
+non-functional behavior.</p>
+<p>Reset behavior coding is error-prone. For a proper gate-level
+implementation, most if not all registers should typically be
+reset. However, it is easy to forget some reset assignments. Such bugs
+are not necessarily easily detected during RTL or gate-level
+simulations.</p>
+<p>In the template, the edge that asserts reset is in the sensitivity
+list. It is easy to forget this, and in that case the reset will not
+behave asynchronously as intended but synchronously. Note also that it
+is somewhat strange to specify an edge sensitivity when describing
+asynchronous behavior.</p>
+</div>
+<div class="section" id="id2">
+<h3>Solution<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>The proposed solution is to infer the reset structure automatically.
+The main idea is to use the initial values of signals as the
+specification of reset values. This is possible in MyHDL, because
+all objects are constructed with an initial value. The assumption
+is that the initial value also specifies the desired reset value.</p>
+<p>The solution is implemented with two new MyHDL constructs. The first
+one is a new decorator called <a class="reference internal" href="../manual/reference.html#myhdl.always_seq" title="myhdl.always_seq"><tt class="xref py py-func docutils literal"><span class="pre">always_seq()</span></tt></a>. Using this
+decorator, code with identical behavior as in the previous section can
+be described as follows:</p>
+<div class="highlight-python"><pre>@always_seq(clock.posedge, reset=reset)
+    &lt;functional code&gt;</pre>
+</div>
+<p>The <a class="reference internal" href="../manual/reference.html#myhdl.always_seq" title="myhdl.always_seq"><tt class="xref py py-func docutils literal"><span class="pre">always_seq()</span></tt></a> decorator takes two arguments: a clock edge
+and a reset signal. It inspects the code to find the registers, and
+uses the initial values to construct the reset behavior.</p>
+<p>The second construct is a specialized signal subclass called
+<a class="reference internal" href="../manual/reference.html#myhdl.ResetSignal" title="myhdl.ResetSignal"><tt class="xref py py-class docutils literal"><span class="pre">ResetSignal</span></tt></a>. It is used as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">reset</span> <span class="o">=</span> <span class="n">ResetSignal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">async</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The ResetSignal constructor has three arguments: the initial value as
+usual, an <em>active</em> argument with the active level, and an <em>async</em> argument
+that specifies whether the reset style is asynchronous or synchronous.</p>
+<p>The proposed solution has some very desirable features.</p>
+<p>Explicit reset behavior coding is no longer necessary. Code reviewers
+are thus no longer distracted by non-functional code. It is
+sufficient to check the initial values to verify whether the reset
+value is correctly specified. Moreover, one indentation level is saved
+for functional coding.</p>
+<p>Even more importantly, the reset structure is correct by
+construction. All registers are automatically included in the reset
+behavior, and the sensitivity list is automatically correct according
+to the reset style.</p>
+<p>Traditionally, the reset behavior is spread out over all sequential
+processes. Therefore, it has to be debugged by investigating all those
+processes. Even worse, if a change in style or active level is
+required, all processes are affected. In contrast, with the proposed
+technique all reset features are specified at single location in the
+<a class="reference internal" href="../manual/reference.html#myhdl.ResetSignal" title="myhdl.ResetSignal"><tt class="xref py py-class docutils literal"><span class="pre">ResetSignal</span></tt></a> constructor. Changes are trivial. For example, to
+change to an active high synchronous reset one merely has to change
+the constructor as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">reset</span> <span class="o">=</span> <span class="n">ResetSignal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">async</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Occasionally, it is useful to have registers without reset at
+all. The proposed technique is also useful in that case. In
+particular, the <a class="reference internal" href="../manual/reference.html#myhdl.always_seq" title="myhdl.always_seq"><tt class="xref py py-func docutils literal"><span class="pre">always_seq()</span></tt></a> decorator accepts <tt class="docutils literal"><span class="pre">None</span></tt> as the reset
+argument:</p>
+<div class="highlight-python"><pre>@always_seq(clock.posedge, reset=None)</pre>
+</div>
+<p>A reviewer will have no doubt what the intention is. In contrast, in
+the case of a traditional always block, the reviewer may think that
+the designer has delayed the detailed reset coding for later and then
+forgotten about it.</p>
+</div>
+<div class="section" id="id3">
+<h3>Interface<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt>
+<tt class="descname">always_seq</tt><big>(</big><em>edge</em>, <em>reset</em><big>)</big></dt>
+<dd><p>The <a class="reference internal" href="../manual/reference.html#myhdl.always_seq" title="myhdl.always_seq"><tt class="xref py py-func docutils literal"><span class="pre">always_seq()</span></tt></a> decorator is used to describe sequential (clocked) logic.</p>
+<p>The <em>edge</em> parameter should be a clock edge (<tt class="docutils literal"><span class="pre">clock.posedge</span></tt> or <tt class="docutils literal"><span class="pre">clock.negedge</span></tt>).
+The <em>reset</em> parameter should a <a class="reference internal" href="../manual/reference.html#myhdl.ResetSignal" title="myhdl.ResetSignal"><tt class="xref py py-class docutils literal"><span class="pre">ResetSignal</span></tt></a> object.</p>
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descname">ResetSignal</tt><big>(</big><em>val</em>, <em>active</em>, <em>async</em><big>)</big></dt>
+<dd><blockquote>
+<div>This <a class="reference internal" href="../manual/reference.html#myhdl.Signal" title="myhdl.Signal"><tt class="xref py py-class docutils literal"><span class="pre">Signal</span></tt></a> subclass defines reset signals. <em>val</em>, <em>active</em>, and <em>async</em>
+are mandatory arguments.
+<em>val</em> is a boolean value that specifies the intial value,
+<em>active</em> is a boolean value that specifies the active level.
+<em>async</em> is a boolean value that specifies the reset style:
+asynchronous (<tt class="docutils literal"><span class="pre">True</span></tt>) or asynchronous (<tt class="docutils literal"><span class="pre">False</span></tt>).</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="id4">
+<h3>Conversion<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>As modeling the reset behavior is a typical task in synthesizable RTL
+coding, the proposed technique is fully convertible to Verilog and
+VHDL.</p>
+</div>
+<div class="section" id="limitations">
+<h3>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="all-registers-in-a-process-are-reset">
+<h4>All registers in a process are reset<a class="headerlink" href="#all-registers-in-a-process-are-reset" title="Permalink to this headline">¶</a></h4>
+<p>All registers in a process are automatically included in the reset
+behavior. If it is the intention that some registers should not be
+reset, those registers and the corresponding code should be factored
+out in a separate process.</p>
+<p>Actually, this is not really a limitation but a feature. If some
+registers in a process are reset and others not, a synthesis tool may
+generate undesirable feedback loops that are active during the reset
+condition. This is not good practice and probably not the intention.</p>
+</div>
+<div class="section" id="register-inferencing-from-variables-is-not-supported">
+<h4>Register inferencing from variables is not supported<a class="headerlink" href="#register-inferencing-from-variables-is-not-supported" title="Permalink to this headline">¶</a></h4>
+<p>An important limitation is that the proposed technique is limited to
+registers inferred from signals. Registers inferred from variables are
+not supported, because such state variables cannot be described in
+classic functions (in particular the functions required by MyHDL
+decorators such as <a class="reference internal" href="../manual/reference.html#myhdl.always_seq" title="myhdl.always_seq"><tt class="xref py py-func docutils literal"><span class="pre">always_seq()</span></tt></a> and <a class="reference internal" href="../manual/reference.html#myhdl.always" title="myhdl.always"><tt class="xref py py-func docutils literal"><span class="pre">always()</span></tt></a>).</p>
+<p>In fact, the reason is a Python2 limitation. Currently, to infer
+registers from variables, one has to use the <a class="reference internal" href="../manual/reference.html#myhdl.instance" title="myhdl.instance"><tt class="xref py py-func docutils literal"><span class="pre">instance()</span></tt></a> decorator and
+declare the state variables outside an infinite <tt class="docutils literal"><span class="pre">while</span> <span class="pre">True</span></tt> loop.</p>
+<p>In Python3, this limitation can be lifted with the introduction of the
+<tt class="docutils literal"><span class="pre">nonlocal</span></tt> declaration. This will make it possible for functions to
+modify variables in the enclosing scope. It should be possible to
+adapt the <a class="reference internal" href="../manual/reference.html#myhdl.always_seq" title="myhdl.always_seq"><tt class="xref py py-func docutils literal"><span class="pre">always_seq()</span></tt></a> and <a class="reference internal" href="../manual/reference.html#myhdl.always" title="myhdl.always"><tt class="xref py py-func docutils literal"><span class="pre">always()</span></tt></a> decorators to support such
+variables.</p>
+</div>
+</div>
+<div class="section" id="id5">
+<h3>See also<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>For a more in-depth discussion, see <a class="reference external" href="http://www.myhdl.org/doku.php/meps:mep-109">mep-109</a>.</p>
+</div>
+</div>
+<div class="section" id="other-improvements">
+<h2>Other improvements<a class="headerlink" href="#other-improvements" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="conversion-of-top-level-class-methods">
+<h3>Conversion of top-level class methods<a class="headerlink" href="#conversion-of-top-level-class-methods" title="Permalink to this headline">¶</a></h3>
+<p>Often it is desirable to embed an HDL module description in
+a class.  Previous versions would only convert a class method
+if it was not the top-level.  This release adds the conversion
+of top-level class methods.</p>
+<div class="section" id="example">
+<h4>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">DFilter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delay_length</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">fs</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="o">&lt;</span><span class="n">init</span> <span class="n">code</span><span class="o">&gt;</span>
+    <span class="k">def</span> <span class="nf">nulls</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">&lt;</span><span class="n">support</span> <span class="n">method</span> <span class="n">code</span><span class="o">&gt;</span>
+    <span class="k">def</span> <span class="nf">m_top</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">clock</span><span class="p">,</span><span class="n">reset</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
+        <span class="o">&lt;</span><span class="n">myhdl</span> <span class="n">module</span> <span class="n">code</span><span class="o">&gt;</span>
+
+<span class="n">clock</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">reset</span> <span class="o">=</span> <span class="n">ResetSignal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">async</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=-</span><span class="mi">8</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=-</span><span class="mi">64</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">64</span><span class="p">))</span>
+
+<span class="n">filt</span> <span class="o">=</span> <span class="n">DFilter</span><span class="p">()</span>
+<span class="n">toVerilog</span><span class="p">(</span><span class="n">filt</span><span class="o">.</span><span class="n">m_top</span><span class="p">,</span><span class="n">clock</span><span class="p">,</span><span class="n">reset</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+<span class="n">toVHDL</span><span class="p">(</span><span class="n">filt</span><span class="o">.</span><span class="n">m_top</span><span class="p">,</span><span class="n">clock</span><span class="p">,</span><span class="n">reset</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id6">
+<h4>See also<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<p>For a more in-depth discussion, see <a class="reference external" href="http://www.myhdl.org/doku.php/meps:mep-108">mep-108</a>.</p>
+</div>
+</div>
+<div class="section" id="tracing-lists-of-signals">
+<h3>Tracing lists of signals<a class="headerlink" href="#tracing-lists-of-signals" title="Permalink to this headline">¶</a></h3>
+<p>Tracing lists of signals is now supported.
+Contributed by Frederik Teichtert, <a class="reference external" href="http://teichert-ing.de">http://teichert-ing.de</a> .
+The following shows how the list of signals are displayed
+in a waveform viewer</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">delay_taps</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">min</span><span class="o">=-</span><span class="mi">8</span><span class="p">,</span><span class="nb">max</span><span class="o">=</span><span class="mi">8</span><span class="p">))</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+</pre></div>
+</div>
+<img alt="../_images/los.png" class="align-center" src="../_images/los.png" />
+</div>
+<div class="section" id="library-attribute-for-tovhdl">
+<h3><tt class="docutils literal"><span class="pre">library</span></tt> attribute for <a class="reference internal" href="../manual/reference.html#myhdl.toVHDL" title="myhdl.toVHDL"><tt class="xref py py-func docutils literal"><span class="pre">toVHDL()</span></tt></a><a class="headerlink" href="#library-attribute-for-tovhdl" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference internal" href="../manual/reference.html#myhdl.toVHDL" title="myhdl.toVHDL"><tt class="xref py py-func docutils literal"><span class="pre">toVHDL()</span></tt></a> now has a <tt class="docutils literal"><span class="pre">library</span></tt> function that
+can be used to set the library name in the
+VHDL output. The assigned value should be a string.
+The default library is &#8220;work&#8221;.</p>
+</div>
+<div class="section" id="timescale-attribute-for-tracesignals">
+<h3><tt class="docutils literal"><span class="pre">timescale</span></tt> attribute for <a class="reference internal" href="../manual/reference.html#myhdl.traceSignals" title="myhdl.traceSignals"><tt class="xref py py-func docutils literal"><span class="pre">traceSignals()</span></tt></a><a class="headerlink" href="#timescale-attribute-for-tracesignals" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference internal" href="../manual/reference.html#myhdl.traceSignals" title="myhdl.traceSignals"><tt class="xref py py-func docutils literal"><span class="pre">traceSignals()</span></tt></a> now has a <tt class="docutils literal"><span class="pre">timescale</span></tt> attribute
+that can be used to set the timescale
+in the VCD output. The assigned value should be a string.
+The default timescale is &#8220;1ns&#8221;.</p>
+</div>
+</div>
+<div class="section" id="acknowledgments">
+<h2>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Permalink to this headline">¶</a></h2>
+<p>Several people have contributed to MyHDL 0.8 by giving feedback,
+making suggestions, fixing bugs and implementing features.
+In particular, I would like to thank
+Christopher Felton and Frederik Teichert.</p>
+<p>I would also like to thank <a class="reference external" href="http://www.easics.com">Easics</a> for
+the opportunity to use MyHDL in industrial projects.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0.7.html" title="What’s new in MyHDL 0.7"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../manual/reference.html" title="Reference"
+             >previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Jan Decaluwe.
+      Last updated on May 20, 2013.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

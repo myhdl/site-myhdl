@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="unittest-impl.html">
+<LINK REL="previous" href="unittest-req.html">
+<LINK REL="up" href="unittest-dev.html">
+<LINK REL="next" href="unittest-impl.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="4.3.2 Writing the test first ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>4.3.2 Writing the test first </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="unittest-req.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="unittest-dev.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="unittest-impl.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="unittest-req.html">4.3.1 Defining the requirements</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="unittest-dev.html">4.3 Unit test development</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="unittest-impl.html">4.3.3 Test-driven implementation</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION005320000000000000000">&nbsp;</A>
+<BR>
+4.3.2 Writing the test first 
+</H2>
+
+<P>
+A fascinating guideline in the XP world is to write the unit test
+first. That is, before implementing something, first write the test
+that will verify it. This seems to go against our natural inclination,
+and certainly against common practices. Many engineers like to
+implement first and think about verification afterwards.
+
+<P>
+But if you think about it, it makes a lot of sense to deal with
+verification first. Verification is about the requirements only -- so
+your thoughts are not yet cluttered with implementation details. The
+unit tests are an executable description of the requirements, so they
+will be better understood and it will be very clear what needs to be
+done. Consequently, the implementation should go smoother. Perhaps
+most importantly, the test is available when you are done
+implementing, and can be run anytime by anybody to verify changes.
+
+<P>
+Python has a standard <code>unittest</code> module that facilitates writing,
+managing and running unit tests. With <code>unittest</code>, a test case is 
+written by creating a class that inherits from
+<code>unittest.TestCase</code>. Individual tests are created by methods of
+that class: all method names that start with <code>test</code> are
+considered to be tests of the test case.
+
+<P>
+We will define a test case for the Gray code properties, and then
+write a test for each of the requirements. The outline of the test
+case class is as follows:
+
+<P>
+<div class="verbatim"><pre>
+from unittest import TestCase
+
+class TestGrayCodeProperties(TestCase):
+
+    def testSingleBitChange(self):
+     """ Check that only one bit changes in successive codewords """
+     ....
+
+
+    def testUniqueCodeWords(self):
+        """ Check that all codewords occur exactly once """
+    ....
+</pre></div>
+
+<P>
+Each method will be a small test bench that tests a single
+requirement. To write the tests, we don't need an implementation of
+the Gray encoder, but we do need the interface of the design. We can
+specify this by a dummy implementation, as follows:
+
+<P>
+<div class="verbatim"><pre>
+def bin2gray(B, G, width):
+    ### NOT IMPLEMENTED YET! ###
+    yield None
+</pre></div>
+
+<P>
+For the first requirement, we will write a test bench that applies all
+consecutive input numbers, and compares the current output with the
+previous one for each input. Then we check that the difference is a
+single bit. We will test all Gray codes up to a certain order
+<code>MAX_WIDTH</code>.
+
+<P>
+<div class="verbatim"><pre>
+    def testSingleBitChange(self):
+        """ Check that only one bit changes in successive codewords """
+        
+        def test(B, G, width):
+            B.next = intbv(0)
+            yield delay(10)
+            for i in range(1, 2**width):
+                G_Z.next = G
+                B.next = intbv(i)
+                yield delay(10)
+                diffcode = bin(G ^ G_Z)
+                self.assertEqual(diffcode.count('1'), 1)
+        
+        for width in range(1, MAX_WIDTH):
+            B = Signal(intbv(-1))
+            G = Signal(intbv(0))
+            G_Z = Signal(intbv(0))
+            dut = bin2gray(B, G, width)
+            check = test(B, G, width)
+            sim = Simulation(dut, check)
+            sim.run(quiet=1)
+</pre></div>
+
+<P>
+Note how the actual check is performed by a <code>self.assertEqual</code>
+method, defined by the <code>unittest.TestCase</code> class.
+
+<P>
+Similarly, we write a test bench for the second requirement. Again, we
+simulate all numbers, and put the result in a list. The requirement
+implies that if we sort the result list, we should get a range of
+numbers:
+
+<P>
+<div class="verbatim"><pre>
+    def testUniqueCodeWords(self):
+        """ Check that all codewords occur exactly once """
+
+        def test(B, G, width):
+            actual = []
+            for i in range(2**width):
+                B.next = intbv(i)
+                yield delay(10)
+                actual.append(int(G))
+            actual.sort()
+            expected = range(2**width)
+            self.assertEqual(actual, expected)
+       
+        for width in range(1, MAX_WIDTH):
+            B = Signal(intbv(-1))
+            G = Signal(intbv(0))
+            dut = bin2gray(B, G, width)
+            check = test(B, G, width)
+            sim = Simulation(dut, check)
+            sim.run(quiet=1)
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="unittest-req.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="unittest-dev.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="unittest-impl.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="unittest-req.html">4.3.1 Defining the requirements</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="unittest-dev.html">4.3 Unit test development</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="unittest-impl.html">4.3.3 Test-driven implementation</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on February 4, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

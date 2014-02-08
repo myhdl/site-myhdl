@@ -80,16 +80,16 @@
 <ul>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#new-to-digital-hardware-design">New to digital hardware design</a></li>
-<li><a href="#using-scripting-languages-intensively">Using scripting languages intensively</a></li>
-<li><a href="#modern-software-development-techniques">Modern software development techniques</a></li>
-<li><a href="#algorithm-development-and-implementation-in-a-single-environment">Algorithm development and implementation in a single environment</a></li>
-<li><a href="#developing-for-both-verilog-and-vhdl">Developing for both Verilog and VHDL</a></li>
-<li><a href="#vhdl-is-too-verbose">VHDL is too verbose</a></li>
-<li><a href="#systemverilog-is-too-complicated">SystemVerilog is too complicated</a></li>
-<li><a href="#confusion-about-blocking-and-non-blocking-assignments">Confusion about blocking and non-blocking assignments</a></li>
-<li><a href="#confusion-about-signal-assignments">Confusion about signal assignments</a></li>
-<li><a href="#vhdl-requires-too-many-conversion-functions">VHDL requires too many conversion functions</a></li>
-<li><a href="#confusion-about-signed-arithmetic">Confusion about signed arithmetic</a></li>
+<li><a href="#dynamic-language-power">Dynamic language power</a></li>
+<li><a href="#modern-software-techniques">Modern software techniques</a></li>
+<li><a href="#algorithm-and-implementation-unified">Algorithm and implementation unified</a></li>
+<li><a href="#target-both-verilog-and-vhdl">Target both Verilog and VHDL</a></li>
+<li><a href="#explicit-but-not-verbose">Explicit, but not verbose</a></li>
+<li><a href="#power-not-complexity">Power, not complexity</a></li>
+<li><a href="#signals-and-variables-like-vhdl">Signals and variables, like VHDL</a></li>
+<li><a href="#signal-assignments-done-right">Signal assignments done right</a></li>
+<li><a href="#straighforward-integer-arithmetic">Straighforward integer arithmetic</a></li>
+<li><a href="#signed-arithmetic-that-works">Signed arithmetic that works</a></li>
 </ul>
 </div>
 
@@ -117,7 +117,8 @@ window.__gcfg = {
   })();
 </script>
 
-<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>
+<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>            <p><em>Last edit on 08-Feb-2014 by Jan Decaluwe</em></p>
+
             <h2 id="introduction">Introduction</h2>
 <p>Why MyHDL? Here is a good reason: MyHDL is open-source software that you can
 use for free.  However, there are many other good reasons why MyHDL is worth
@@ -131,18 +132,18 @@ significantly easier. Python is one of the easiest programming languages to
 learn, and MyHDL aims to achieve the same for hardware design.</p>
 <p>Moreover, with MyHDL you can convert your designs automatically to both Verilog
 and VHDL. So you keep all your options open.</p>
-<h2 id="using-scripting-languages-intensively">Using scripting languages intensively</h2>
-<p>If you're a practicing hardware designer, you're probably using so-called
-"scripting" languages in your workflow already. For example, tcl is popular for
-tool control.  Also, many designers use perl to glue things together. Others
-use ruby or Python for that purpose.</p>
+<h2 id="dynamic-language-power">Dynamic language power</h2>
+<p>If you're a practicing hardware designer, you're probably using dynamic
+languages (sometimes called "scripting" languages) in your workflow already.
+For example, tcl is popular for tool control.  Also, many designers use perl to
+glue things together. Others use ruby or Python for that purpose.</p>
 <p>It is clear that these high-level dynamic languages play an essential role in
 modern digital design. Verilog or VHDL alone is not enough. Many designers even
 prefer those languages over their <abbr title="Hardware Description Language">HDL</abbr>, because they can get things done quickly
 with them.</p>
 <p>Wouldn't it be great if one could use such a language directly to design
 hardware?  That's exactly what MyHDL offers.</p>
-<h2 id="modern-software-development-techniques">Modern software development techniques</h2>
+<h2 id="modern-software-techniques">Modern software techniques</h2>
 <p>In the software methodology world, a lot of innovation is going on, with
 buzzwords such as "agile", "rapid application development", "scrum", and
 "test-driven development".  This is not just hype. The new ideas and techniques
@@ -155,7 +156,7 @@ seems detached from them. </p>
 available to the hardware designer, thanks to its Python foundation.  For
 example, you can use a Python unit test framework to do test-driven development
 for hardware design.</p>
-<h2 id="algorithm-development-and-implementation-in-a-single-environment">Algorithm development and implementation in a single environment</h2>
+<h2 id="algorithm-and-implementation-unified">Algorithm and implementation unified</h2>
 <p>Python is an ideal language for algorithm development and many engineers use it
 for this purpose.  Commonly this work and a subsequent <abbr title="Hardware Description Language">HDL</abbr> implementation are
 done by different engineers.  They use a different set of tools that require a
@@ -168,7 +169,7 @@ still requires knowledge of <abbr title="Hardware Description Language">HDL</abb
 staying in the powerful Python environment can be a significant boost to
 quality and productivity.  For example, the verification work can directly be
 reused between both design domains.</p>
-<h2 id="developing-for-both-verilog-and-vhdl">Developing for both Verilog and VHDL</h2>
+<h2 id="target-both-verilog-and-vhdl">Target both Verilog and VHDL</h2>
 <p>The usage of Verilog versus VHDL differs significantly between regions and
 sectors.  However, there is every indication that the overall ratio is about
 fifty-fifty, and will remain so in the forseeable future. Consequently, it is
@@ -181,7 +182,7 @@ obviously superior to manual conversion. Moreover, direct convertors between
 Verilog and VHDL don't work very well. Using a syntactically simple language
 like Python as the starting point is an easier way to a create a high-quality
 conversion tool.</p>
-<h2 id="vhdl-is-too-verbose">VHDL is too verbose</h2>
+<h2 id="explicit-but-not-verbose">Explicit, but not verbose</h2>
 <p>VHDL has many virtues, but conciseness is not one of them. Many feel that the
 syntax is verbose and even redundant, and even experts need a manual nearby to
 get the syntax right.</p>
@@ -190,7 +191,7 @@ without declarations. But the major reason is its well thought out design.
 Moreover, it achieves this without resorting to "magic".  The code remains
 explicit, but the syntax has been reduced to the essence. Python has been
 called executable pseudocode, and that's actually a quite accurate description.</p>
-<h2 id="systemverilog-is-too-complicated">SystemVerilog is too complicated</h2>
+<h2 id="power-not-complexity">Power, not complexity</h2>
 <p>SystemVerilog has been called a "dumping ground" for any feature ever dreamed
 up by an EDA company. Through the process of "donations", the language contains
 an ever increasing pile of builtin constructs and features. Of course, not all
@@ -208,9 +209,10 @@ example.</p>
 secondary.  After learning the small core language, you only need to study and
 import those libraries that contain the functionality that you need.  This is a
 superior and scalable way of dealing with complexity.</p>
-<h2 id="confusion-about-blocking-and-non-blocking-assignments">Confusion about blocking and non-blocking assignments</h2>
-<p>If you are <em>not</em> confused about blocking and non-blocking assignments, you
-probably don't have enough experience :-).</p>
+<h2 id="signals-and-variables-like-vhdl">Signals and variables, like VHDL</h2>
+<p>One of the most confusing aspects of Verilog is about the difference between
+blocking and non-blocking assignments.  Actually, if you are <em>not</em> confused
+about this, you probably don't have enough experience :-).</p>
 <p>Here is the problem. The semantics of blocking (<code>=</code>) versus non-blocking (<code>&lt;=)</code>
 assignments are radically different. So different in fact that a language like
 VHDL (and MyHDL) uses dedicated objects called signals to implement
@@ -226,7 +228,7 @@ completely!</p>
 signal assignments that correspond to the semantics of Verilog non-blocking
 assignments. The clear separation between signals and variables avoids the
 confusion about the two types of assignment.</p>
-<h2 id="confusion-about-signal-assignments">Confusion about signal assignments</h2>
+<h2 id="signal-assignments-done-right">Signal assignments done right</h2>
 <p>Hardware Description Languages need a way to describe racefree communication
 between parallel hardware blocks. This is the purpose of VHDL signal
 assignments and Verilog non-blocking assignments. In both languages, these
@@ -260,7 +262,7 @@ modifying the current value, but the next value of the signal.</p>
 <p>A MyHDL designer merely has to learn that a signal's future value should be
 modified by assigning to its <code>next</code> attribute. From there on, the semantics are
 clear from the code.</p>
-<h2 id="vhdl-requires-too-many-conversion-functions">VHDL requires too many conversion functions</h2>
+<h2 id="straighforward-integer-arithmetic">Straighforward integer arithmetic</h2>
 <p>When writing synthesizable VHDL code, you typically use the signed and unsigned
 types for arithmetic operations. These are "representational" types that focus
 on bit representation and bit width. The operators defined for such types have
@@ -278,7 +280,7 @@ representation if required.</p>
 using integers. Therefore, all issues with signed/unsigned representations
 simply disappear.  The convertor to VHDL infers the required conversions and
 resizings automatically, thereby automating a cumbersome task.</p>
-<h2 id="confusion-about-signed-arithmetic">Confusion about signed arithmetic</h2>
+<h2 id="signed-arithmetic-that-works">Signed arithmetic that works</h2>
 <p>Signed arithmetic in Verilog can be quite confusing. The reason is that when
 you mix signed and unsigned operands, the operation is done in unsigned mode.
 This is the opposite of what should be done to get the normally expected

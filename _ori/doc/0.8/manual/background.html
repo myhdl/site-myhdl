@@ -1,0 +1,255 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Background information &mdash; MyHDL 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/myhdl.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="MyHDL 0.8 documentation" href="../index.html" />
+    <link rel="up" title="The MyHDL manual" href="index.html" />
+    <link rel="next" title="Introduction to MyHDL" href="intro.html" />
+    <link rel="prev" title="Overview" href="preface.html" /> 
+  </head>
+  <body>
+<div style="background-color: white; text-align: left; padding: 5px 5px 2px 15px">
+<a href="http://www.myhdl.org">
+    <img src="../_static/myhdl_logo_header.png" border=0 alt="MyHDL" />
+</a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="intro.html" title="Introduction to MyHDL"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="preface.html" title="Overview"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">The MyHDL manual</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Background information</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#a-small-tutorial-on-generators">A small tutorial on generators</a></li>
+<li><a class="reference internal" href="#about-decorators">About decorators</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="preface.html"
+                        title="previous chapter">Overview</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="intro.html"
+                        title="next chapter">Introduction to MyHDL</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/manual/background.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="background-information">
+<span id="background"></span><h1>Background information<a class="headerlink" href="#background-information" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="prerequisites">
+<span id="id1"></span><h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>You need a basic understanding of Python to use MyHDL. If you don&#8217;t know Python,
+don&#8217;t worry: it is is one of the easiest programming languages to learn  <a class="footnote-reference" href="#id4" id="id2">[1]</a>.
+Learning Python is one of the best time investments that engineering
+professionals can make  <a class="footnote-reference" href="#id5" id="id3">[2]</a>.</p>
+<p>For starters, <a class="reference external" href="http://docs.python.org/tutorial">http://docs.python.org/tutorial</a> is probably the
+best choice for an on-line tutorial. For alternatives, see
+<a class="reference external" href="http://wiki.python.org/moin/BeginnersGuide">http://wiki.python.org/moin/BeginnersGuide</a>.</p>
+<p>A working knowledge of a hardware description language such as Verilog or VHDL
+is helpful.</p>
+<p>Code examples in this manual are sometimes shortened for clarity. Complete
+executable examples can be found in the distribution directory at
+<tt class="file docutils literal"><span class="pre">example/manual/</span></tt>.</p>
+</div>
+<div class="section" id="a-small-tutorial-on-generators">
+<span id="tutorial"></span><h2>A small tutorial on generators<a class="headerlink" href="#a-small-tutorial-on-generators" title="Permalink to this headline">¶</a></h2>
+<p id="index-0">Generators were introduced in
+Python 2.2. Because generators are the key concept in MyHDL, a small tutorial is
+included here.</p>
+<p>Consider the following nonsensical function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">function</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">i</span>
+</pre></div>
+</div>
+<p>You can see why it doesn&#8217;t make a lot of sense. As soon as the first loop
+iteration is entered, the function returns:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">function</span><span class="p">()</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<p>Returning is fatal for the function call. Further loop iterations never get a
+chance, and nothing is left over from the function call when it returns.</p>
+<p>To change the function into a generator function, we replace <a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#return" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">return</span></tt></a>
+with <a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#yield" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">yield</span></tt></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">generator</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">i</span>
+</pre></div>
+</div>
+<p>Now we get:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">generator</span><span class="p">()</span>
+<span class="go">&lt;generator object at 0x815d5a8&gt;</span>
+</pre></div>
+</div>
+<p>When a generator function is called, it returns a generator object. A generator
+object supports the iterator protocol, which is an expensive way of saying that
+you can let it generate subsequent values by calling its <a class="reference external" href="http://docs.python.org/library/functions.html#next" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">next()</span></tt></a> method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">generator</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+<span class="go">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">?</span>
+<span class="gr">StopIteration</span>
+</pre></div>
+</div>
+<p>Now we can generate the subsequent values from the for loop on demand, until
+they are exhausted. What happens is that the <a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#yield" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">yield</span></tt></a> statement is like
+a <a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#return" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">return</span></tt></a>, except that it is non-fatal: the generator remembers its
+state and the point in the code when it yielded. A higher order agent can decide
+when to get the next value by calling the generator&#8217;s <a class="reference external" href="http://docs.python.org/library/functions.html#next" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">next()</span></tt></a> method. We
+say that generators are <em class="dfn">resumable functions</em>.</p>
+<p id="index-1">If you are familiar with hardware description languages, this may ring a bell.
+In hardware simulations, there is also a higher order agent, the Simulator, that
+interacts with such resumable functions; they are called  <em class="dfn">processes</em> in
+VHDL and  <em class="dfn">always blocks</em> in Verilog.  Similarly, Python generators provide
+an elegant and efficient method to model concurrency, without having to resort
+to some form of threading.</p>
+<p id="index-2">The use of generators to model concurrency is the first key concept in MyHDL.
+The second key concept is a related one: in MyHDL, the yielded values are used
+to specify the conditions on which the generator should wait before resuming. In
+other words, <a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#yield" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">yield</span></tt></a> statements work as general  sensitivity lists.</p>
+</div>
+<div class="section" id="about-decorators">
+<span id="deco"></span><h2>About decorators<a class="headerlink" href="#about-decorators" title="Permalink to this headline">¶</a></h2>
+<p id="index-3">Python 2.4 introduced a feature called decorators. MyHDL takes advantage
+of this feature by defining a number of decorators that facilitate hardware
+descriptions. However, some users may not yet be familiar with decorators.
+Therefore, an introduction is included here.</p>
+<p>A decorator consists of special syntax in front of a function declaration. It
+refers to a decorator function. The decorator function automatically transforms
+the declared function into some other callable object.</p>
+<p>A decorator function <tt class="xref py py-func docutils literal"><span class="pre">deco()</span></tt> is used in a decorator statement as follows:</p>
+<div class="highlight-python"><pre>@deco
+def func(arg1, arg2, ...):
+    &lt;body&gt;</pre>
+</div>
+<p>This code is equivalent to the following:</p>
+<div class="highlight-python"><pre>def func(arg1, arg2, ...):
+    &lt;body&gt;
+func = deco(func)</pre>
+</div>
+<p>Note that the decorator statement goes directly in front of the function
+declaration, and that the function name <tt class="xref py py-func docutils literal"><span class="pre">func()</span></tt> is automatically reused for
+the final result.</p>
+<p>MyHDL uses decorators to create ready-to-simulate generators from local
+function definitions. Their functionality and usage will be described
+extensively in this manual.</p>
+<p class="rubric">Footnotes</p>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>You must be bored by such claims, but in Python&#8217;s case it&#8217;s true.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id5" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td>I am not biased.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="intro.html" title="Introduction to MyHDL"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="preface.html" title="Overview"
+             >previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" >The MyHDL manual</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Jan Decaluwe.
+      Last updated on May 20, 2013.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

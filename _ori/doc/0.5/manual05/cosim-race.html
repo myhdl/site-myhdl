@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="previous" href="cosim-pass.html">
+<LINK REL="up" href="cosim-restr.html">
+<LINK REL="next" href="cosim-impl.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="5.4.2 Race sensitivity issues ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>5.4.2 Race sensitivity issues </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-pass.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim-restr.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-impl.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-pass.html">5.4.1 Only passive HDL</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim-restr.html">5.4 Restrictions</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-impl.html">5.5 Implementation notes</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION006420000000000000000">&nbsp;</A>
+<BR>
+5.4.2 Race sensitivity issues 
+</H2>
+
+<P>
+In a typical RTL code, some events cause other events to occur in the
+same time step. For example, when a clock signal triggers some signals
+may change in the same time step. For race-free operation, an HDL
+must differentiate between such events within a time step. This is done
+by the concept of ``delta'' cycles. In a fully general, race free
+co-simulation, the co-simulators would communicate at the level of delta
+cycles. However, in MyHDL co-simulation, this is not entirely the
+case.
+
+<P>
+Delta cycles from the MyHDL simulator toward the HDL co-simulator are
+preserved. However, in the opposite direction, they are not. The
+signals changes are only returned to the MyHDL simulator after all delta
+cycles have been performed in the HDL co-simulator.
+
+<P>
+What does this mean? Let's start with the good news. As explained in
+the previous section, the concept behind MyHDL co-simulation implies
+that clocks are generated at the MyHDL side.  <i>When using a
+MyHDL clock and its corresponding HDL signal directly as a clock,
+co-simulation is race free.</i> In other words, the case
+that most closely reflects the MyHDL co-simulation approach, is race free.
+
+<P>
+The situation is different when you want to use a signal driven by the
+HDL (and the corresponding MyHDL signal) as a clock. 
+Communication triggered by such a clock is not race free. The solution
+is to treat such an interface as a chip interface instead of an RTL
+interface.  For example, when data is triggered at positive clock
+edges, it can safely be sampled at negative clock edges.
+Alternatively, the MyHDL data signals can be declared with a delay
+value, so that they are guaranteed to change after the clock
+edge.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-pass.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim-restr.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-impl.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-pass.html">5.4.1 Only passive HDL</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim-restr.html">5.4 Restrictions</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-impl.html">5.5 Implementation notes</A>
+<hr>
+<span class="release-info">Release 0.5, documentation updated on December 29, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="model-obj.html">
+<LINK REL="previous" href="model-mem.html">
+<LINK REL="up" href="model-hl.html">
+<LINK REL="next" href="model-obj.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="3.3.3 Modeling errors using exceptions ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>3.3.3 Modeling errors using exceptions </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model-mem.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model-hl.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model-obj.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model-mem.html">3.3.2 Modeling memories with</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model-hl.html">3.3 High level modeling</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model-obj.html">3.3.4 Object oriented modeling</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION004330000000000000000">&nbsp;</A>
+<BR>
+3.3.3 Modeling errors using exceptions 
+</H2>
+
+<P>
+In the previous section, we used Python data types for modeling. If
+such a type is used inappropriately, Python's run time error system
+will come into play. For example, if we access an address in the
+<tt class="function">sparseMemory</tt> model that was not initialized before, we will
+get a traceback similar to the following (some lines omitted for
+clarity):
+
+<P>
+<div class="verbatim"><pre>
+Traceback (most recent call last):
+...
+  File "sparseMemory.py", line 31, in access
+    dout.next = memory[addr.val]
+KeyError: Signal(51)
+</pre></div>
+
+<P>
+Similarly, if the <code>fifo</code> is empty, and we attempt to read from
+it, we get:
+
+<P>
+<div class="verbatim"><pre>
+Traceback (most recent call last):
+...
+  File "fifo.py", line 34, in fifo
+    dout.next = memory.pop()
+IndexError: pop from empty list
+</pre></div>
+
+<P>
+Instead of these low level errors, it may be preferable to define
+errors at the functional level. In Python, this is typically done by
+defining a custom <code>Error</code> exception, by subclassing the standard
+<code>Exception</code> class. This exception is then raised explicitly when
+an error condition occurs.
+
+<P>
+For example, we can change the <tt class="function">sparseMemory</tt> function as
+follows (with the doc string is omitted for brevity):
+
+<P>
+<div class="verbatim"><pre>
+class Error(Exception):
+    pass
+
+def sparseMemory2(dout, din, addr, we, en, clk):
+   
+    memory = {}
+
+    @always(clk.posedge)
+    def access():
+        if en:
+            if we:
+                memory[addr.val] = din.val
+            else:
+                try:
+                    dout.next = memory[addr.val]
+                except KeyError:
+                    raise Error, "Uninitialized address %s" % hex(addr)
+
+    return access
+</pre></div>
+
+<P>
+This works by catching the low level data type exception, and raising
+the custom exception with an appropriate error message instead.  If
+the <tt class="function">sparseMemory</tt> function is defined in a module with the
+same name, an access error is now reported as follows:
+
+<P>
+<div class="verbatim"><pre>
+Traceback (most recent call last):
+...
+  File "sparseMemory.py", line 61, in access
+    raise Error, "Uninitialized address %s" % hex(addr)
+Error: Uninitialized address 0x33
+</pre></div>
+
+<P>
+Likewise, the <tt class="function">fifo</tt> function can be adapted as follows, to
+report underflow and overflow errors:
+
+<P>
+<div class="verbatim"><pre>
+class Error(Exception):
+    pass
+
+
+def fifo2(dout, din, re, we, empty, full, clk, maxFilling=sys.maxint):
+ 
+    memory = []
+
+    @always(clk.posedge)
+    def access():
+        if we:
+            memory.insert(0, din.val)
+        if re:
+            try:
+                dout.next = memory.pop()
+            except IndexError:
+                raise Error, "Underflow -- Read from empty fifo"
+        filling = len(memory)
+        empty.next = (filling == 0)
+        full.next = (filling == maxFilling)
+        if filling &gt; maxFilling:
+            raise Error, "Overflow -- Max filling %s exceeded" % maxFilling
+
+    return access
+</pre></div>
+
+<P>
+In this case, the underflow error is detected as before, by catching a
+low level exception on the list data type. On the other hand, the
+overflow error is detected by a regular check on the length of the
+list.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model-mem.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model-hl.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model-obj.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model-mem.html">3.3.2 Modeling memories with</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model-hl.html">3.3 High level modeling</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model-obj.html">3.3.4 Object oriented modeling</A>
+<hr>
+<span class="release-info">Release 0.5, documentation updated on December 29, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

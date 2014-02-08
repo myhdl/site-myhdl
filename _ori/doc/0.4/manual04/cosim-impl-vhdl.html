@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="previous" href="cosim-impl-verilog.html">
+<LINK REL="up" href="cosim-impl.html">
+<LINK REL="next" href="conv.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="5.5.3 VHDL ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>5.5.3 VHDL </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-impl-verilog.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim-impl.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-impl-verilog.html">5.5.2 Other Verilog simulators</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim-impl.html">5.5 Implementation notes</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv.html">6. Conversion to Verilog</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION006530000000000000000">&nbsp;</A>
+<BR>
+5.5.3 VHDL 
+</H2>
+
+<P>
+It would be nice to have an interface to VHDL simulators such as the
+Modelsim VHDL simulator. This will require a PLI module using the
+PLI of the VHDL simulator. One feature which I would
+like to keep if possible is the way to declare the communicating
+signals.  In the Verilog solution, it is not necessary to define and
+instantiate a special HDL module (entity). Rather, the participating
+signals can be declared directly in the <code>$to_myhdl</code> and
+<code>$from_myhdl</code> task calls.
+
+<P>
+As for Verilog, I currently have no access to commercial VHDL
+simulators, so progress in co-simulation support will depend on
+external interest and participation.  Contact me for more information
+if you are interested.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-impl-verilog.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim-impl.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-impl-verilog.html">5.5.2 Other Verilog simulators</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim-impl.html">5.5 Implementation notes</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv.html">6. Conversion to Verilog</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on February 4, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

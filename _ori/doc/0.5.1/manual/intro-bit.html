@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="intro-python.html">
+<LINK REL="previous" href="intro-hier.html">
+<LINK REL="up" href="intro.html">
+<LINK REL="next" href="intro-indexing.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="2.4 Bit oriented operations ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>2.4 Bit oriented operations </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="intro-hier.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="intro.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="intro-indexing.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="intro-hier.html">2.3 Parameters and hierarchy</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="intro.html">2. Introduction to MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="intro-indexing.html">2.4.1 Bit indexing</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION003400000000000000000">&nbsp;</A>
+<BR>
+2.4 Bit oriented operations 
+</H1>
+
+<P>
+Hardware design involves dealing with bits and bit-oriented
+operations. The standard Python type <tt class="class">int</tt> has most of the
+desired features, but lacks support for indexing and slicing. For this
+reason, MyHDL provides the <tt class="class">intbv</tt> class. The name was chosen
+to suggest an integer with bit vector flavor.
+
+<P>
+Class <tt class="class">intbv</tt> works transparently with other
+integer-like types. Like class <tt class="class">int</tt>, it provides access to the
+underlying two's complement representation for bitwise
+operations. In addition, it is a mutable type that provides indexing
+and slicing operations, and some additional bit-oriented support such
+as concatenation.
+
+<P>
+
+<p><hr>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></a>
+
+<UL CLASS="ChildLinks">
+<LI><A href="intro-indexing.html">2.4.1 Bit indexing</a>
+<LI><A href="intro-slicing.html">2.4.2 Bit slicing</a>
+</ul>
+<!--End of Table of Child-Links-->
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="intro-hier.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="intro.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="intro-indexing.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="intro-hier.html">2.3 Parameters and hierarchy</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="intro.html">2. Introduction to MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="intro-indexing.html">2.4.1 Bit indexing</A>
+<hr>
+<span class="release-info">Release 0.5.1, documentation updated on May 1, 2006.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

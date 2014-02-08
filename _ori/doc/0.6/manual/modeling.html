@@ -1,0 +1,1164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Modeling techniques &mdash; MyHDL v0.6 documentation</title>
+    <link rel="stylesheet" href="../_static/myhdl.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '../',
+          VERSION:     '0.6',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="MyHDL v0.6 documentation" href="../index.html" />
+    <link rel="up" title="The MyHDL manual" href="index.html" />
+    <link rel="next" title="Unit testing" href="unittest.html" />
+    <link rel="prev" title="Introduction to MyHDL" href="intro.html" /> 
+  </head>
+  <body>
+<div style="background-color: white; text-align: left; padding: 5px 5px 2px 15px">
+<a href="http://www.myhdl.org">
+    <img src="../_static/myhdl_logo_header.png" border=0 alt="MyHDL" />
+</a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="unittest.html" title="Unit testing"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="Introduction to MyHDL"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">MyHDL v0.6 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">The MyHDL manual</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference" href="">Modeling techniques</a><ul>
+<li><a class="reference" href="#structural-modeling">Structural modeling</a><ul>
+<li><a class="reference" href="#conditional-instantiation">Conditional instantiation</a></li>
+<li><a class="reference" href="#arrays-of-instances">Arrays of instances</a></li>
+<li><a class="reference" href="#inferring-the-list-of-instances">Inferring the list of instances</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#rtl-modeling">RTL modeling</a><ul>
+<li><a class="reference" href="#combinatorial-logic">Combinatorial logic</a><ul>
+<li><a class="reference" href="#template">Template</a></li>
+<li><a class="reference" href="#example">Example</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#sequential-logic">Sequential logic</a><ul>
+<li><a class="reference" href="#id3">Template</a></li>
+<li><a class="reference" href="#id4">Example</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#finite-state-machine-modeling">Finite State Machine modeling</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#high-level-modeling">High level modeling</a><ul>
+<li><a class="reference" href="#modeling-with-bus-functional-procedures">Modeling with bus-functional procedures</a></li>
+<li><a class="reference" href="#modeling-memories-with-built-in-types">Modeling memories with built-in types</a></li>
+<li><a class="reference" href="#modeling-errors-using-exceptions">Modeling errors using exceptions</a></li>
+<li><a class="reference" href="#object-oriented-modeling">Object oriented modeling</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="intro.html" title="previous chapter">Introduction to MyHDL</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="unittest.html" title="next chapter">Unit testing</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/manual/modeling.txt">Show Source</a></li>
+            </ul>
+          <h3>Quick search</h3>
+            <form class="search" action="../search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+      </div>
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  
+  <div class="section" id="modeling-techniques">
+<span id="model"></span><h1>Modeling techniques<a class="headerlink" href="#modeling-techniques" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="structural-modeling">
+<span id="model-structure"></span><h2>Structural modeling<a class="headerlink" href="#structural-modeling" title="Permalink to this headline">¶</a></h2>
+<p id="index-56">Hardware descriptions need to support the concepts of module instantiation and
+hierarchy.  In MyHDL, an instance is recursively defined as being either a
+sequence of instances, or a generator. Hierarchy is modeled by defining
+instances in a higher-level function, and returning them.  The following is a
+schematic example of the basic case.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">top</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="n">instance_1</span> <span class="o">=</span> <span class="n">module_1</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="n">instance_2</span> <span class="o">=</span> <span class="n">module_2</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="n">instance_n</span> <span class="o">=</span> <span class="n">module_n</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">instance_1</span><span class="p">,</span> <span class="n">instance_2</span><span class="p">,</span> <span class="o">...</span> <span class="p">,</span> <span class="n">instance_n</span>
+</pre></div>
+</div>
+<p>Note that MyHDL uses conventional procedural techniques for modeling structure.
+This makes it straightforward to model more complex cases.</p>
+<div class="section" id="conditional-instantiation">
+<span id="model-conf"></span><h3>Conditional instantiation<a class="headerlink" href="#conditional-instantiation" title="Permalink to this headline">¶</a></h3>
+<p id="index-57">To model conditional instantiation, we can select the returned instance under
+parameter control. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SLOW</span><span class="p">,</span> <span class="n">MEDIUM</span><span class="p">,</span> <span class="n">FAST</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mf">3</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">top</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="n">SLOW</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">slowAndSmall</span><span class="p">():</span>
+       <span class="o">...</span>
+    <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">fastAndLarge</span><span class="p">():</span>
+       <span class="o">...</span>
+    <span class="k">if</span> <span class="n">speed</span> <span class="o">==</span> <span class="n">SLOW</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">slowAndSmall</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">speed</span> <span class="o">==</span> <span class="n">FAST</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fastAndLarge</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="arrays-of-instances">
+<span id="model-instarray"></span><h3>Arrays of instances<a class="headerlink" href="#arrays-of-instances" title="Permalink to this headline">¶</a></h3>
+<p id="index-58">Python lists are easy to create. We can use them to model arrays of instances.</p>
+<p>Suppose we have a top module that instantiates a single <tt class="docutils literal"><span class="pre">channel</span></tt> submodule,
+as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">top</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+
+    <span class="n">din</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mf">0</span><span class="p">)</span>
+    <span class="n">dout</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mf">0</span><span class="p">)</span>
+    <span class="n">clk</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mf">0</span><span class="p">))</span>
+    <span class="n">reset</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mf">0</span><span class="p">))</span>
+
+    <span class="n">channel_inst</span> <span class="o">=</span> <span class="n">channel</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">din</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">reset</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">channel_inst</span>
+</pre></div>
+</div>
+<p>If we wanted to support an arbitrary number of channels, we can use lists of
+signals and a list of instances, as follows:</p>
+<div class="highlight-python"><pre>def top(..., n=8):
+
+    din = [Signal(0) for i in range(n)]
+    dout = [Signal(0) for in range(n)]
+    clk = Signal(bool(0))
+    reset = Signal(bool(0))
+    channel_inst = [None for i in range(n)]
+
+    for i in range(n):
+        channel_inst[i] = channel(dout[i], din[i], clk, reset)
+
+    return channel_inst</pre>
+</div>
+</div>
+<div class="section" id="inferring-the-list-of-instances">
+<span id="model-infer-instlist"></span><h3>Inferring the list of instances<a class="headerlink" href="#inferring-the-list-of-instances" title="Permalink to this headline">¶</a></h3>
+<p>In MyHDL, instances have to be returned explicitly by a top level function. It
+may be convenient to assemble  the list of instances automatically. For this
+purpose, MyHDL  provides the function <a title="myhdl.instances" class="reference" href="reference.html#myhdl.instances"><tt class="xref docutils literal"><span class="pre">instances()</span></tt></a>. Using the first example
+in this section, it is used as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="n">instances</span>
+
+<span class="k">def</span> <span class="nf">top</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="n">instance_1</span> <span class="o">=</span> <span class="n">module_1</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="n">instance_2</span> <span class="o">=</span> <span class="n">module_2</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="n">instance_n</span> <span class="o">=</span> <span class="n">module_n</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">instances</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Function <a title="myhdl.instances" class="reference" href="reference.html#myhdl.instances"><tt class="xref docutils literal"><span class="pre">instances()</span></tt></a> uses introspection to inspect the type of the local
+variables defined by the calling function. All variables that comply with the
+definition of an instance are assembled in a list, and that list is returned.</p>
+</div>
+</div>
+<div class="section" id="rtl-modeling">
+<span id="model-rtl"></span><h2>RTL modeling<a class="headerlink" href="#rtl-modeling" title="Permalink to this headline">¶</a></h2>
+<p id="index-59">The present section describes how MyHDL supports RTL style modeling as is
+typically used for synthesizable models.</p>
+<div class="section" id="combinatorial-logic">
+<span id="model-comb"></span><h3>Combinatorial logic<a class="headerlink" href="#combinatorial-logic" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="template">
+<span id="model-comb-templ"></span><span id="index-60"></span><h4>Template<a class="headerlink" href="#template" title="Permalink to this headline">¶</a></h4>
+<p>Combinatorial logic is described with a code pattern as follows:</p>
+<div class="highlight-python"><pre>def top(&lt;parameters&gt;):
+    ...
+    @always_comb
+    def combLogic():
+        &lt;functional code&gt;
+    ...
+    return combLogic, ...</pre>
+</div>
+<p>The <a title="myhdl.always_comb" class="reference" href="reference.html#myhdl.always_comb"><tt class="xref docutils literal"><span class="pre">always_comb()</span></tt></a> decorator describes combinatorial logic.  <a class="footnote-reference" href="#id5" id="id1" name="id1">[1]</a>. The
+decorated function is a local function that specifies what happens when one of
+the input signals of the logic changes.  The <a title="myhdl.always_comb" class="reference" href="reference.html#myhdl.always_comb"><tt class="xref docutils literal"><span class="pre">always_comb()</span></tt></a> decorator
+infers the input signals automatically. It returns a generator that is sensitive
+to all inputs, and that executes the function whenever an input changes.</p>
+</div>
+<div class="section" id="example">
+<span id="model-comb-ex"></span><h4>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h4>
+<p>The following is an example of a combinatorial multiplexer:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">Simulation</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">always_comb</span>
+
+<span class="k">def</span> <span class="nf">Mux</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">sel</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Multiplexer.</span>
+
+<span class="sd">    z -- mux output</span>
+<span class="sd">    a, b -- data inputs</span>
+<span class="sd">    sel -- control input: select a if asserted, otherwise b</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@always_comb</span>
+    <span class="k">def</span> <span class="nf">muxLogic</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">sel</span> <span class="o">==</span> <span class="mf">1</span><span class="p">:</span>
+            <span class="n">z</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">a</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">z</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">b</span>
+
+    <span class="k">return</span> <span class="n">muxLogic</span>
+</pre></div>
+</div>
+<p>To verify it, we will simulate the logic with some random patterns. The
+<tt class="docutils literal"><span class="pre">random</span></tt> module in Python&#8217;s standard library comes in handy for such purposes.
+The function <tt class="docutils literal"><span class="pre">randrange(n)</span></tt> returns a random natural integer smaller than <em>n</em>.
+It is used in the test bench code to produce random input values:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
+
+<span class="n">z</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">sel</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="mf">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mf">4</span><span class="p">)]</span>
+
+<span class="n">mux_1</span> <span class="o">=</span> <span class="n">Mux</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">sel</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+    <span class="k">print</span> <span class="s">&quot;z a b sel&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mf">8</span><span class="p">):</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">next</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">next</span><span class="p">,</span> <span class="n">sel</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">randrange</span><span class="p">(</span><span class="mf">8</span><span class="p">),</span> <span class="n">randrange</span><span class="p">(</span><span class="mf">8</span><span class="p">),</span> <span class="n">randrange</span><span class="p">(</span><span class="mf">2</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="mf">10</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">sel</span><span class="p">)</span>
+
+<span class="n">test_1</span> <span class="o">=</span> <span class="n">test</span><span class="p">()</span>
+
+<span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">mux_1</span><span class="p">,</span> <span class="n">test_1</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Because of the randomness, the simulation output varies between runs  <a class="footnote-reference" href="#id6" id="id2" name="id2">[2]</a>. One
+particular run produced the following output:</p>
+<div class="highlight-python"><pre>% python mux.py
+z a b sel
+6 6 1 1
+7 7 1 1
+7 3 7 0
+1 2 1 0
+7 7 5 1
+4 7 4 0
+4 0 4 0
+3 3 5 1
+StopSimulation: No more events</pre>
+</div>
+</div>
+</div>
+<div class="section" id="sequential-logic">
+<span id="model-seq"></span><h3>Sequential logic<a class="headerlink" href="#sequential-logic" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id3">
+<span id="model-seq-templ"></span><span id="index-61"></span><h4>Template<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<p>Sequential RTL models are sensitive to a clock edge. In addition, they may be
+sensitive to a reset signal. We will describe one of the most common patterns: a
+template with a rising clock edge and an asynchronous reset signal. Other
+templates are similar.</p>
+<div class="highlight-python"><pre>def top(&lt;parameters&gt;, clock, ..., reset, ...):
+    ...
+    @always(clock.posedge, reset.negedge)
+    def seqLogic():
+        if reset == &lt;active level&gt;:
+            &lt;reset code&gt;
+        else:
+            &lt;functional code&gt;
+    ...
+    return seqLogic, ...</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<span id="model-seq-ex"></span><h4>Example<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<p>The following code is a description of an incrementer with enable, and an
+asynchronous reset.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
+<span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">ACTIVE_LOW</span><span class="p">,</span> <span class="n">INACTIVE_HIGH</span> <span class="o">=</span> <span class="mf">0</span><span class="p">,</span> <span class="mf">1</span>
+
+<span class="k">def</span> <span class="nf">Inc</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">enable</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Incrementer with enable.</span>
+
+<span class="sd">    count -- output</span>
+<span class="sd">    enable -- control input, increment when 1</span>
+<span class="sd">    clock -- clock input</span>
+<span class="sd">    reset -- asynchronous reset input</span>
+<span class="sd">    n -- counter max value</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">clock</span><span class="o">.</span><span class="n">posedge</span><span class="p">,</span> <span class="n">reset</span><span class="o">.</span><span class="n">negedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">incLogic</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">reset</span> <span class="o">==</span> <span class="n">ACTIVE_LOW</span><span class="p">:</span>
+            <span class="n">count</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mf">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">enable</span><span class="p">:</span>
+                <span class="n">count</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="p">(</span><span class="n">count</span> <span class="o">+</span> <span class="mf">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">n</span>
+
+    <span class="k">return</span> <span class="n">incLogic</span>
+</pre></div>
+</div>
+<p>For the test bench, we will use an independent clock generator, stimulus
+generator, and monitor. After applying enough stimulus patterns, we can raise
+the <tt class="docutils literal"><span class="pre">StopSimulation</span></tt> exception to stop the simulation run. The test bench for
+a small incrementer and a small number of patterns is a follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">testbench</span><span class="p">():</span>
+    <span class="n">count</span><span class="p">,</span> <span class="n">enable</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mf">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mf">4</span><span class="p">)]</span>
+
+    <span class="n">inc_1</span> <span class="o">=</span> <span class="n">Inc</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">enable</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mf">4</span><span class="p">)</span>
+
+    <span class="n">HALF_PERIOD</span> <span class="o">=</span> <span class="n">delay</span><span class="p">(</span><span class="mf">10</span><span class="p">)</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">HALF_PERIOD</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">clockGen</span><span class="p">():</span>
+        <span class="n">clock</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">clock</span>
+
+    <span class="nd">@instance</span>
+    <span class="k">def</span> <span class="nf">stimulus</span><span class="p">():</span>
+        <span class="n">reset</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">ACTIVE_LOW</span>
+        <span class="k">yield</span> <span class="n">clock</span><span class="o">.</span><span class="n">negedge</span>
+        <span class="n">reset</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">INACTIVE_HIGH</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mf">12</span><span class="p">):</span>
+            <span class="n">enable</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span> <span class="n">randrange</span><span class="p">(</span><span class="mf">3</span><span class="p">))</span>
+            <span class="k">yield</span> <span class="n">clock</span><span class="o">.</span><span class="n">negedge</span>
+        <span class="k">raise</span> <span class="n">StopSimulation</span>
+
+    <span class="nd">@instance</span>
+    <span class="k">def</span> <span class="nf">monitor</span><span class="p">():</span>
+        <span class="k">print</span> <span class="s">&quot;enable  count&quot;</span>
+        <span class="k">yield</span> <span class="n">reset</span><span class="o">.</span><span class="n">posedge</span>
+        <span class="k">while</span> <span class="mf">1</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">clock</span><span class="o">.</span><span class="n">posedge</span>
+            <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="mf">1</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s">&quot;   </span><span class="si">%s</span><span class="s">      </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">enable</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">clockGen</span><span class="p">,</span> <span class="n">stimulus</span><span class="p">,</span> <span class="n">inc_1</span><span class="p">,</span> <span class="n">monitor</span>
+
+
+<span class="n">tb</span> <span class="o">=</span> <span class="n">testbench</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">Simulation</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The simulation produces the following output:</p>
+<div class="highlight-python"><pre>% python inc.py
+enable  count
+   0      0
+   1      1
+   0      1
+   1      2
+   1      3
+   1      0
+   0      0
+   1      1
+   0      1
+   0      1
+   0      1
+   1      2
+StopSimulation</pre>
+</div>
+</div>
+</div>
+<div class="section" id="finite-state-machine-modeling">
+<span id="model-fsm"></span><h3>Finite State Machine modeling<a class="headerlink" href="#finite-state-machine-modeling" title="Permalink to this headline">¶</a></h3>
+<p id="index-62">Finite State Machine (FSM) modeling is very common in RTL design and therefore
+deserves special attention.</p>
+<p>For code clarity, the state values are typically represented by a set of
+identifiers. A standard Python idiom for this purpose is to assign a range of
+integers to a tuple of identifiers, like so:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">SEARCH</span><span class="p">,</span> <span class="n">CONFIRM</span><span class="p">,</span> <span class="n">SYNC</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mf">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">CONFIRM</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+<p>However, this technique has some drawbacks. Though it is clearly the intention
+that the identifiers belong together, this information is lost as soon as they
+are defined. Also, the identifiers evaluate to integers, whereas a string
+representation of the identifiers would be preferable. To solve these issues, we
+need an <em>enumeration type</em>.</p>
+<p id="index-63">MyHDL supports enumeration types by providing a function <a title="myhdl.enum" class="reference" href="reference.html#myhdl.enum"><tt class="xref docutils literal"><span class="pre">enum()</span></tt></a>.  The
+arguments to <a title="myhdl.enum" class="reference" href="reference.html#myhdl.enum"><tt class="xref docutils literal"><span class="pre">enum()</span></tt></a> are the string representations of the identifiers, and
+its return value is an enumeration type. The identifiers are available as
+attributes of the type. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="n">enum</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t_State</span> <span class="o">=</span> <span class="n">enum</span><span class="p">(</span><span class="s">&#39;SEARCH&#39;</span><span class="p">,</span> <span class="s">&#39;CONFIRM&#39;</span><span class="p">,</span> <span class="s">&#39;SYNC&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t_State</span>
+<span class="go">&lt;Enum: SEARCH, CONFIRM, SYNC&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t_State</span><span class="o">.</span><span class="n">CONFIRM</span>
+<span class="go">CONFIRM</span>
+</pre></div>
+</div>
+<p>We can use this type to construct a state signal as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">state</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">t_State</span><span class="o">.</span><span class="n">SEARCH</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As an example, we will use a framing controller FSM.  It is an imaginary
+example, but similar control structures are often found in telecommunication
+applications. Suppose that we need to find the Start Of Frame (SOF) position of
+an incoming frame of bytes. A sync pattern detector continuously looks for a
+framing pattern and indicates it to the FSM with a <tt class="docutils literal"><span class="pre">syncFlag</span></tt> signal. When
+found, the FSM moves from the initial <tt class="docutils literal"><span class="pre">SEARCH</span></tt> state to the <tt class="docutils literal"><span class="pre">CONFIRM</span></tt> state.
+When the <tt class="docutils literal"><span class="pre">syncFlag</span></tt> is confirmed on the expected position, the FSM declares
+<tt class="docutils literal"><span class="pre">SYNC</span></tt>, otherwise it falls back to the <tt class="docutils literal"><span class="pre">SEARCH</span></tt> state.  This FSM can be
+coded as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">ACTIVE_LOW</span> <span class="o">=</span> <span class="mf">0</span>
+<span class="n">FRAME_SIZE</span> <span class="o">=</span> <span class="mf">8</span>
+<span class="n">t_State</span> <span class="o">=</span> <span class="n">enum</span><span class="p">(</span><span class="s">&#39;SEARCH&#39;</span><span class="p">,</span> <span class="s">&#39;CONFIRM&#39;</span><span class="p">,</span> <span class="s">&#39;SYNC&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">FramerCtrl</span><span class="p">(</span><span class="n">SOF</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">syncFlag</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">reset_n</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Framing control FSM.</span>
+
+<span class="sd">    SOF -- start-of-frame output bit</span>
+<span class="sd">    state -- FramerState output</span>
+<span class="sd">    syncFlag -- sync pattern found indication input</span>
+<span class="sd">    clk -- clock input</span>
+<span class="sd">    reset_n -- active low reset</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">index</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mf">0</span><span class="p">)</span> <span class="c"># position in frame</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">,</span> <span class="n">reset_n</span><span class="o">.</span><span class="n">negedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">FSM</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">reset_n</span> <span class="o">==</span> <span class="n">ACTIVE_LOW</span><span class="p">:</span>
+            <span class="n">SOF</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mf">0</span>
+            <span class="n">index</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mf">0</span>
+            <span class="n">state</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">t_State</span><span class="o">.</span><span class="n">SEARCH</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">index</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mf">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">FRAME_SIZE</span>
+            <span class="n">SOF</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mf">0</span>
+
+            <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="n">t_State</span><span class="o">.</span><span class="n">SEARCH</span><span class="p">:</span>
+                <span class="n">index</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mf">1</span>
+                <span class="k">if</span> <span class="n">syncFlag</span><span class="p">:</span>
+                    <span class="n">state</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">t_State</span><span class="o">.</span><span class="n">CONFIRM</span>
+
+            <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="n">t_State</span><span class="o">.</span><span class="n">CONFIRM</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="mf">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">syncFlag</span><span class="p">:</span>
+                        <span class="n">state</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">t_State</span><span class="o">.</span><span class="n">SYNC</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">state</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">t_State</span><span class="o">.</span><span class="n">SEARCH</span>
+
+            <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="n">t_State</span><span class="o">.</span><span class="n">SYNC</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="mf">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">syncFlag</span><span class="p">:</span>
+                        <span class="n">state</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">t_State</span><span class="o">.</span><span class="n">SEARCH</span>
+                <span class="n">SOF</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="p">(</span><span class="n">index</span> <span class="o">==</span> <span class="n">FRAME_SIZE</span><span class="o">-</span><span class="mf">1</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Undefined state&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">FSM</span>
+</pre></div>
+</div>
+<p id="index-64">At this point, we will use the example to demonstrate the MyHDL support for
+waveform viewing. During simulation, signal changes can be written to a VCD
+output file.  The VCD file can then be loaded and viewed in a waveform viewer
+tool such as <strong>gtkwave</strong>.</p>
+<p>The user interface of this feature consists of a single function,
+<a title="myhdl.traceSignals" class="reference" href="reference.html#myhdl.traceSignals"><tt class="xref docutils literal"><span class="pre">traceSignals()</span></tt></a>.  To explain how it works, recall that in MyHDL, an
+instance is created by assigning the result of a function call to an instance
+name. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">tb_fsm</span> <span class="o">=</span> <span class="n">testbench</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To enable VCD tracing, the instance should be created as follows instead:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">tb_fsm</span> <span class="o">=</span> <span class="n">traceSignals</span><span class="p">(</span><span class="n">testbench</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that the first argument of <a title="myhdl.traceSignals" class="reference" href="reference.html#myhdl.traceSignals"><tt class="xref docutils literal"><span class="pre">traceSignals()</span></tt></a> consists of the uncalled
+function. By calling the function under its control, <a title="myhdl.traceSignals" class="reference" href="reference.html#myhdl.traceSignals"><tt class="xref docutils literal"><span class="pre">traceSignals()</span></tt></a>
+gathers information about the hierarchy and the signals to be traced. In
+addition to a function argument, <a title="myhdl.traceSignals" class="reference" href="reference.html#myhdl.traceSignals"><tt class="xref docutils literal"><span class="pre">traceSignals()</span></tt></a> accepts an arbitrary
+number of non-keyword and keyword arguments that will be passed to the function
+call.</p>
+<p>A small test bench for our framing controller example, with signal tracing
+enabled, is shown below:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">testbench</span><span class="p">():</span>
+
+    <span class="n">SOF</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mf">0</span><span class="p">))</span>
+    <span class="n">syncFlag</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mf">0</span><span class="p">))</span>
+    <span class="n">clk</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mf">0</span><span class="p">))</span>
+    <span class="n">reset_n</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mf">1</span><span class="p">))</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">t_State</span><span class="o">.</span><span class="n">SEARCH</span><span class="p">)</span>
+
+    <span class="n">framectrl</span> <span class="o">=</span> <span class="n">FramerCtrl</span><span class="p">(</span><span class="n">SOF</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">syncFlag</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">reset_n</span><span class="p">)</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">delay</span><span class="p">(</span><span class="mf">10</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">clkgen</span><span class="p">():</span>
+        <span class="n">clk</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">clk</span>
+
+    <span class="nd">@instance</span>
+    <span class="k">def</span> <span class="nf">stimulus</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mf">3</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">clk</span><span class="o">.</span><span class="n">posedge</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">12</span><span class="p">,</span> <span class="mf">8</span><span class="p">,</span> <span class="mf">8</span><span class="p">,</span> <span class="mf">4</span><span class="p">):</span>
+            <span class="n">syncFlag</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mf">1</span>
+            <span class="k">yield</span> <span class="n">clk</span><span class="o">.</span><span class="n">posedge</span>
+            <span class="n">syncFlag</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mf">0</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mf">1</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">clk</span><span class="o">.</span><span class="n">posedge</span>
+        <span class="k">raise</span> <span class="n">StopSimulation</span>
+
+    <span class="k">return</span> <span class="n">framectrl</span><span class="p">,</span> <span class="n">clkgen</span><span class="p">,</span> <span class="n">stimulus</span>
+
+
+<span class="n">tb_fsm</span> <span class="o">=</span> <span class="n">traceSignals</span><span class="p">(</span><span class="n">testbench</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">tb_fsm</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>When we run the test bench, it generates a VCD file called
+<tt class="docutils literal"><span class="pre">testbench.vcd</span></tt>. When we load this file into <strong>gtkwave</strong>, we can
+view the waveforms:</p>
+<img alt="../_images/tbfsm.png" src="../_images/tbfsm.png" />
+<p>Signals are dumped in a suitable format. This format is inferred at the
+<a title="myhdl.Signal" class="reference" href="reference.html#myhdl.Signal"><tt class="xref docutils literal"><span class="pre">Signal</span></tt></a> construction time, from the type of the initial value. In
+particular, <tt class="xref docutils literal"><span class="pre">bool</span></tt> signals are dumped as single bits. (This only works
+starting with Python 2.3, when <tt class="xref docutils literal"><span class="pre">bool</span></tt> has become a separate type).
+Likewise, <a title="myhdl.intbv" class="reference" href="reference.html#myhdl.intbv"><tt class="xref docutils literal"><span class="pre">intbv</span></tt></a> signals with a defined bit width are dumped as bit
+vectors. To support the general case, other types of signals are dumped as a
+string representation, as returned by the standard <tt class="xref docutils literal"><span class="pre">str()</span></tt> function.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Support for literal string representations is not part of the VCD standard. It
+is specific to <strong>gtkwave</strong>. To generate a standard VCD file, you need to
+use signals with a defined bit width only.</p>
+</div>
+</div>
+</div>
+<div class="section" id="high-level-modeling">
+<span id="model-hl"></span><h2>High level modeling<a class="headerlink" href="#high-level-modeling" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="modeling-with-bus-functional-procedures">
+<span id="model-bfm"></span><span id="index-65"></span><h3>Modeling with bus-functional procedures<a class="headerlink" href="#modeling-with-bus-functional-procedures" title="Permalink to this headline">¶</a></h3>
+<p id="index-66">A <em>bus-functional procedure</em> is a reusable encapsulation of the low-level
+operations needed to implement some abstract transaction on a physical
+interface. Bus-functional procedures are typically used in flexible verification
+environments.</p>
+<p>Once again, MyHDL uses generator functions to support bus-functional procedures.
+In MyHDL, the difference between instances and bus-functional procedure calls
+comes from the way in which a generator function is used.</p>
+<p>As an example, we will design a bus-functional procedure of a simplified UART
+transmitter. We assume 8 data bits, no parity bit, and a single stop bit, and we
+add print statements to follow the simulation behavior:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">T_9600</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1e9</span> <span class="o">/</span> <span class="mf">9600</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">rs232_tx</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">T_9600</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Simple rs232 transmitter procedure.</span>
+
+<span class="sd">    tx -- serial output data</span>
+<span class="sd">    data -- input data byte to be transmitted</span>
+<span class="sd">    duration -- transmit bit duration</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">print</span> <span class="s">&quot;-- Transmitting </span><span class="si">%s</span><span class="s"> --&quot;</span> <span class="o">%</span> <span class="nb">hex</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;TX: start bit&quot;</span>
+    <span class="n">tx</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mf">0</span>
+    <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mf">8</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&quot;TX: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">tx</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="s">&quot;TX: stop bit&quot;</span>
+    <span class="n">tx</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mf">1</span>
+    <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This looks exactly like the generator functions in previous sections. It becomes
+a bus-functional procedure when we use it differently. Suppose that in a test
+bench, we want to generate a number of data bytes to be transmitted. This can be
+modeled as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">testvals</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0</span><span class="n">xc5</span><span class="p">,</span> <span class="mf">0</span><span class="n">x3a</span><span class="p">,</span> <span class="mf">0</span><span class="n">x4b</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">stimulus</span><span class="p">():</span>
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mf">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">testvals</span><span class="p">:</span>
+        <span class="n">txData</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">rs232_tx</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">txData</span><span class="p">)</span>
+</pre></div>
+</div>
+<p id="index-67">We use the bus-functional procedure call as a clause in a <tt class="docutils literal"><span class="pre">yield</span></tt> statement.
+This introduces a fourth form of the <tt class="docutils literal"><span class="pre">yield</span></tt> statement: using a generator as a
+clause. Although this is a more dynamic usage than in the previous cases, the
+meaning is actually very similar: at that point, the original generator should
+wait for the completion of a generator.  In this case, the original generator
+resumes when the <tt class="docutils literal"><span class="pre">rs232_tx(tx,</span> <span class="pre">txData)</span></tt> generator returns.</p>
+<p>When simulating this, we get:</p>
+<div class="highlight-python"><pre>-- Transmitting 0xc5 --
+TX: start bit
+TX: 1
+TX: 0
+TX: 1
+TX: 0
+TX: 0
+TX: 0
+TX: 1
+TX: 1
+TX: stop bit
+-- Transmitting 0x3a --
+TX: start bit
+TX: 0
+TX: 1
+TX: 0
+TX: 1
+...</pre>
+</div>
+<p>We will continue with this example by designing the corresponding UART receiver
+bus-functional procedure. This will allow us to introduce further capabilities
+of MyHDL and its use of the <tt class="docutils literal"><span class="pre">yield</span></tt> statement.</p>
+<p id="index-68">Until now, the <tt class="docutils literal"><span class="pre">yield</span></tt> statements had a single clause. However, they can have
+multiple clauses as well. In that case, the generator resumes as soon as the
+wait condition specified by one of the clauses is satisfied. This corresponds to
+the functionality of sensitivity lists in Verilog and VHDL.</p>
+<p>For example, suppose we want to design an UART receive procedure with a timeout.
+We can specify the timeout condition while waiting for the start bit, as in the
+following generator function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">rs232_rx</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">T_9600</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">MAX_TIMEOUT</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Simple rs232 receiver procedure.</span>
+
+<span class="sd">    rx -- serial input data</span>
+<span class="sd">    data -- data received</span>
+<span class="sd">    duration -- receive bit duration</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># wait on start bit until timeout</span>
+    <span class="k">yield</span> <span class="n">rx</span><span class="o">.</span><span class="n">negedge</span><span class="p">,</span> <span class="n">delay</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rx</span> <span class="o">==</span> <span class="mf">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">StopSimulation</span><span class="p">,</span> <span class="s">&quot;RX time out error&quot;</span>
+
+    <span class="c"># sample in the middle of the bit duration</span>
+    <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="n">duration</span> <span class="o">//</span> <span class="mf">2</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;RX: start bit&quot;</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mf">8</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;RX: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">rx</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">rx</span>
+
+    <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;RX: stop bit&quot;</span>
+    <span class="k">print</span> <span class="s">&quot;-- Received </span><span class="si">%s</span><span class="s"> --&quot;</span> <span class="o">%</span> <span class="nb">hex</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If the timeout condition is triggered, the receive bit <tt class="docutils literal"><span class="pre">rx</span></tt> will still be
+<tt class="docutils literal"><span class="pre">1</span></tt>. In that case, we raise an exception to stop the simulation. The
+<tt class="docutils literal"><span class="pre">StopSimulation</span></tt> exception is predefined in MyHDL for such purposes. In the
+other case, we proceed by positioning the sample point in the middle of the bit
+duration, and sampling the received data bits.</p>
+<p>When a <tt class="docutils literal"><span class="pre">yield</span></tt> statement has multiple clauses, they can be of any type that is
+supported as a single clause, including generators. For example, we can verify
+the transmitter and receiver generator against each other by yielding them
+together, as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mf">1</span><span class="p">)</span>
+    <span class="n">rx</span> <span class="o">=</span> <span class="n">tx</span>
+    <span class="n">rxData</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mf">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">testvals</span><span class="p">:</span>
+        <span class="n">txData</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">rs232_rx</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="n">rxData</span><span class="p">),</span> <span class="n">rs232_tx</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">txData</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Both forked generators will run concurrently, and the original generator will
+resume as soon as one of them finishes (which will be the transmitter in this
+case).  The simulation output shows how the UART procedures run in lockstep:</p>
+<div class="highlight-python"><pre>-- Transmitting 0xc5 --
+TX: start bit
+RX: start bit
+TX: 1
+RX: 1
+TX: 0
+RX: 0
+TX: 1
+RX: 1
+TX: 0
+RX: 0
+TX: 0
+RX: 0
+TX: 0
+RX: 0
+TX: 1
+RX: 1
+TX: 1
+RX: 1
+TX: stop bit
+RX: stop bit
+-- Received 0xc5 --
+-- Transmitting 0x3a --
+TX: start bit
+RX: start bit
+TX: 0
+RX: 0
+...</pre>
+</div>
+<p>For completeness, we will verify the timeout behavior with a test bench that
+disconnects the <tt class="docutils literal"><span class="pre">rx</span></tt> from the <tt class="docutils literal"><span class="pre">tx</span></tt> signal, and we specify a small timeout
+for the receive procedure:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">testTimeout</span><span class="p">():</span>
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mf">1</span><span class="p">)</span>
+    <span class="n">rx</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mf">1</span><span class="p">)</span>
+    <span class="n">rxData</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mf">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">testvals</span><span class="p">:</span>
+        <span class="n">txData</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">rs232_rx</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="n">rxData</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">4</span><span class="o">*</span><span class="n">T_9600</span><span class="o">-</span><span class="mf">1</span><span class="p">),</span> <span class="n">rs232_tx</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">txData</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The simulation now stops with a timeout exception after a few transmit cycles:</p>
+<div class="highlight-python"><pre>-- Transmitting 0xc5 --
+TX: start bit
+TX: 1
+TX: 0
+TX: 1
+StopSimulation: RX time out error</pre>
+</div>
+<p>Recall that the original generator resumes as soon as one of the forked
+generators returns. In the previous cases, this is just fine, as the transmitter
+and receiver generators run in lockstep. However, it may be desirable to resume
+the caller only when <em>all</em> of the forked generators have finished. For example,
+suppose that we want to characterize the robustness of the transmitter and
+receiver design to bit duration differences. We can adapt our test bench as
+follows, to run the transmitter at a faster rate:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">T_10200</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1e9</span> <span class="o">/</span> <span class="mf">10200</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">testNoJoin</span><span class="p">():</span>
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mf">1</span><span class="p">)</span>
+    <span class="n">rx</span> <span class="o">=</span> <span class="n">tx</span>
+    <span class="n">rxData</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mf">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">testvals</span><span class="p">:</span>
+        <span class="n">txData</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">rs232_rx</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="n">rxData</span><span class="p">),</span> <span class="n">rs232_tx</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">txData</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">T_10200</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Simulating this shows how the transmission of the new byte starts before the
+previous one is received, potentially creating additional transmission errors:</p>
+<div class="highlight-python"><pre>-- Transmitting 0xc5 --
+TX: start bit
+RX: start bit
+...
+TX: 1
+RX: 1
+TX: 1
+TX: stop bit
+RX: 1
+-- Transmitting 0x3a --
+TX: start bit
+RX: stop bit
+-- Received 0xc5 --
+RX: start bit
+TX: 0</pre>
+</div>
+<p>It is more likely that we want to characterize the design on a byte by byte
+basis, and align the two generators before transmitting each byte. In MyHDL,
+this is done with the <a title="myhdl.join" class="reference" href="reference.html#myhdl.join"><tt class="xref docutils literal"><span class="pre">join()</span></tt></a> function. By joining clauses together in a
+<tt class="docutils literal"><span class="pre">yield</span></tt> statement, we create a new clause that triggers only when all of its
+clause arguments have triggered. For example, we can adapt the test bench as
+follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">testJoin</span><span class="p">():</span>
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mf">1</span><span class="p">)</span>
+    <span class="n">rx</span> <span class="o">=</span> <span class="n">tx</span>
+    <span class="n">rxData</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mf">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">testvals</span><span class="p">:</span>
+        <span class="n">txData</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">join</span><span class="p">(</span><span class="n">rs232_rx</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="n">rxData</span><span class="p">),</span> <span class="n">rs232_tx</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">txData</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">T_10200</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Now, transmission of a new byte only starts when the previous one is received:</p>
+<div class="highlight-python"><pre>-- Transmitting 0xc5 --
+TX: start bit
+RX: start bit
+...
+TX: 1
+RX: 1
+TX: 1
+TX: stop bit
+RX: 1
+RX: stop bit
+-- Received 0xc5 --
+-- Transmitting 0x3a --
+TX: start bit
+RX: start bit
+TX: 0
+RX: 0</pre>
+</div>
+</div>
+<div class="section" id="modeling-memories-with-built-in-types">
+<span id="model-mem"></span><h3>Modeling memories with built-in types<a class="headerlink" href="#modeling-memories-with-built-in-types" title="Permalink to this headline">¶</a></h3>
+<p id="index-69">Python has powerful built-in data types that can be useful to model hardware
+memories. This can be merely a matter of putting an interface around some data
+type operations.</p>
+<p>For example, a <em>dictionary</em> comes in handy to model sparse memory
+structures. (In other languages, this data type is called  <em>associative
+array</em>, or <em>hash table</em>.) A sparse memory is one in which only a small part
+of the addresses is used in a particular application or simulation. Instead of
+statically allocating the full address space, which can be large, it is better
+to dynamically allocate the needed storage space. This is exactly what a
+dictionary provides. The following is an example of a sparse memory model:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">sparseMemory</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">din</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">we</span><span class="p">,</span> <span class="n">en</span><span class="p">,</span> <span class="n">clk</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Sparse memory model based on a dictionary.</span>
+
+<span class="sd">    Ports:</span>
+<span class="sd">    dout -- data out</span>
+<span class="sd">    din -- data in</span>
+<span class="sd">    addr -- address bus</span>
+<span class="sd">    we -- write enable: write if 1, read otherwise</span>
+<span class="sd">    en -- interface enable: enabled if 1</span>
+<span class="sd">    clk -- clock input</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">memory</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">access</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">en</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">we</span><span class="p">:</span>
+                <span class="n">memory</span><span class="p">[</span><span class="n">addr</span><span class="o">.</span><span class="n">val</span><span class="p">]</span> <span class="o">=</span> <span class="n">din</span><span class="o">.</span><span class="n">val</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dout</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">memory</span><span class="p">[</span><span class="n">addr</span><span class="o">.</span><span class="n">val</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">access</span>
+</pre></div>
+</div>
+<p>Note how we use the <tt class="docutils literal"><span class="pre">val</span></tt> attribute of the <tt class="docutils literal"><span class="pre">din</span></tt> signal, as we don&#8217;t want to
+store the signal object itself, but its current value. Similarly, we use the
+<tt class="docutils literal"><span class="pre">val</span></tt> attribute of the <tt class="docutils literal"><span class="pre">addr</span></tt> signal as the dictionary key.</p>
+<p>In many cases, MyHDL code uses a signal&#8217;s current value automatically when there
+is no ambiguity: for example, when a signal is used in an expression. However,
+in other cases such as in this example you have to refer to the value
+explicitly: for example, when the Signal is used as an index, or when it is not
+used in an expression.  One option is to use the <tt class="docutils literal"><span class="pre">val</span></tt> attribute, as in this
+example.  Another possibility is to use the <tt class="docutils literal"><span class="pre">int()</span></tt> or <tt class="docutils literal"><span class="pre">bool()</span></tt> functions to
+typecast the Signal to an integer or a boolean value. These functions are also
+useful with <a title="myhdl.intbv" class="reference" href="reference.html#myhdl.intbv"><tt class="xref docutils literal"><span class="pre">intbv</span></tt></a> objects.</p>
+<p>As a second example, we will demonstrate how to use a list to model a
+synchronous fifo:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">fifo</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">din</span><span class="p">,</span> <span class="n">re</span><span class="p">,</span> <span class="n">we</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">full</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">maxFilling</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">maxint</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Synchronous fifo model based on a list.</span>
+
+<span class="sd">    Ports:</span>
+<span class="sd">    dout -- data out</span>
+<span class="sd">    din -- data in</span>
+<span class="sd">    re -- read enable</span>
+<span class="sd">    we -- write enable</span>
+<span class="sd">    empty -- empty indication flag</span>
+<span class="sd">    full -- full indication flag</span>
+<span class="sd">    clk -- clock input</span>
+
+<span class="sd">    Optional parameter:</span>
+<span class="sd">    maxFilling -- maximum fifo filling, &quot;infinite&quot; by default</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">memory</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">access</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">we</span><span class="p">:</span>
+            <span class="n">memory</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mf">0</span><span class="p">,</span> <span class="n">din</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">re</span><span class="p">:</span>
+            <span class="n">dout</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">memory</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">filling</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">memory</span><span class="p">)</span>
+        <span class="n">empty</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="p">(</span><span class="n">filling</span> <span class="o">==</span> <span class="mf">0</span><span class="p">)</span>
+        <span class="n">full</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="p">(</span><span class="n">filling</span> <span class="o">==</span> <span class="n">maxFilling</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">access</span>
+</pre></div>
+</div>
+<p>Again, the model is merely a MyHDL interface around some operations on a list:
+<tt class="xref docutils literal"><span class="pre">insert()</span></tt> to insert entries, <tt class="xref docutils literal"><span class="pre">pop()</span></tt> to retrieve them, and <tt class="xref docutils literal"><span class="pre">len()</span></tt>
+to get the size of a Python object.</p>
+</div>
+<div class="section" id="modeling-errors-using-exceptions">
+<span id="model-err"></span><h3>Modeling errors using exceptions<a class="headerlink" href="#modeling-errors-using-exceptions" title="Permalink to this headline">¶</a></h3>
+<p>In the previous section, we used Python data types for modeling. If such a type
+is used inappropriately, Python&#8217;s run time error system will come into play. For
+example, if we access an address in the <tt class="xref docutils literal"><span class="pre">sparseMemory()</span></tt> model that was not
+initialized before, we will get a traceback similar to the following (some lines
+omitted for clarity):</p>
+<div class="highlight-python"><pre>Traceback (most recent call last):
+...
+  File "sparseMemory.py", line 31, in access
+    dout.next = memory[addr.val]
+KeyError: Signal(51)</pre>
+</div>
+<p>Similarly, if the <tt class="docutils literal"><span class="pre">fifo</span></tt> is empty, and we attempt to read from it, we get:</p>
+<div class="highlight-python"><pre>Traceback (most recent call last):
+...
+  File "fifo.py", line 34, in fifo
+    dout.next = memory.pop()
+IndexError: pop from empty list</pre>
+</div>
+<p>Instead of these low level errors, it may be preferable to define errors at the
+functional level. In Python, this is typically done by defining a custom
+<tt class="docutils literal"><span class="pre">Error</span></tt> exception, by subclassing the standard <tt class="docutils literal"><span class="pre">Exception</span></tt> class. This
+exception is then raised explicitly when an error condition occurs.</p>
+<p>For example, we can change the <tt class="xref docutils literal"><span class="pre">sparseMemory()</span></tt> function as follows (with
+the doc string is omitted for brevity):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Error</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">sparseMemory2</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">din</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">we</span><span class="p">,</span> <span class="n">en</span><span class="p">,</span> <span class="n">clk</span><span class="p">):</span>
+
+    <span class="n">memory</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">access</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">en</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">we</span><span class="p">:</span>
+                <span class="n">memory</span><span class="p">[</span><span class="n">addr</span><span class="o">.</span><span class="n">val</span><span class="p">]</span> <span class="o">=</span> <span class="n">din</span><span class="o">.</span><span class="n">val</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">dout</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">memory</span><span class="p">[</span><span class="n">addr</span><span class="o">.</span><span class="n">val</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">Error</span><span class="p">,</span> <span class="s">&quot;Uninitialized address </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">hex</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">access</span>
+</pre></div>
+</div>
+<p>This works by catching the low level data type exception, and raising the custom
+exception with an appropriate error message instead.  If the
+<tt class="xref docutils literal"><span class="pre">sparseMemory()</span></tt> function is defined in a module with the same name, an
+access error is now reported as follows:</p>
+<div class="highlight-python"><pre>Traceback (most recent call last):
+...
+  File "sparseMemory.py", line 61, in access
+    raise Error, "Uninitialized address %s" % hex(addr)
+Error: Uninitialized address 0x33</pre>
+</div>
+<p>Likewise, the <tt class="xref docutils literal"><span class="pre">fifo()</span></tt> function can be adapted as follows, to report
+underflow and overflow errors:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Error</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">def</span> <span class="nf">fifo2</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">din</span><span class="p">,</span> <span class="n">re</span><span class="p">,</span> <span class="n">we</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">full</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">maxFilling</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">maxint</span><span class="p">):</span>
+
+    <span class="n">memory</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">access</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">we</span><span class="p">:</span>
+            <span class="n">memory</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mf">0</span><span class="p">,</span> <span class="n">din</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">re</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">dout</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">memory</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">Error</span><span class="p">,</span> <span class="s">&quot;Underflow -- Read from empty fifo&quot;</span>
+        <span class="n">filling</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">memory</span><span class="p">)</span>
+        <span class="n">empty</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="p">(</span><span class="n">filling</span> <span class="o">==</span> <span class="mf">0</span><span class="p">)</span>
+        <span class="n">full</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="p">(</span><span class="n">filling</span> <span class="o">==</span> <span class="n">maxFilling</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filling</span> <span class="o">&gt;</span> <span class="n">maxFilling</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">Error</span><span class="p">,</span> <span class="s">&quot;Overflow -- Max filling </span><span class="si">%s</span><span class="s"> exceeded&quot;</span> <span class="o">%</span> <span class="n">maxFilling</span>
+
+    <span class="k">return</span> <span class="n">access</span>
+</pre></div>
+</div>
+<p>In this case, the underflow error is detected as before, by catching a low level
+exception on the list data type. On the other hand, the overflow error is
+detected by a regular check on the length of the list.</p>
+</div>
+<div class="section" id="object-oriented-modeling">
+<span id="model-obj"></span><h3>Object oriented modeling<a class="headerlink" href="#object-oriented-modeling" title="Permalink to this headline">¶</a></h3>
+<p id="index-70">The models in the previous sections used high-level built-in data types
+internally. However, they had a conventional RTL-style interface.  Communication
+with such a module is done through signals that are attached to it during
+instantiation.</p>
+<p>A more advanced approach is to model hardware blocks as objects. Communication
+with objects is done through method calls. A method encapsulates all details of
+a certain task performed by the object. As an object has a method interface
+instead of an RTL-style hardware interface, this is a much  higher level
+approach.</p>
+<p>As an example, we will design a synchronized queue object.  Such an object can
+be filled by producer, and independently read by a consumer. When the queue is
+empty, the consumer should wait until an item is available. The queue can be
+modeled as an object with a <tt class="xref docutils literal"><span class="pre">put(item)()</span></tt> and a <tt class="xref docutils literal"><span class="pre">get()</span></tt> method, as
+follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">def</span> <span class="nf">trigger</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">event</span>
+
+<span class="k">class</span> <span class="nc">queue</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">sync</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mf">0</span><span class="p">)</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">item</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">item</span><span class="p">):</span>
+       <span class="c"># non time-consuming method</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+       <span class="n">trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sync</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+       <span class="c"># time-consuming method</span>
+       <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">:</span>
+          <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mf">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <tt class="xref docutils literal"><span class="pre">queue</span></tt> object constructor initializes an internal list to hold
+items, and a <em>sync</em> signal to synchronize the operation between the methods.
+Whenever <tt class="xref docutils literal"><span class="pre">put()</span></tt> puts an item in the queue, the signal is triggered.  When
+the <tt class="xref docutils literal"><span class="pre">get()</span></tt> method sees that the list is empty, it waits on the trigger
+first. <tt class="xref docutils literal"><span class="pre">get()</span></tt> is a generator method because  it may consume time. As the
+<tt class="docutils literal"><span class="pre">yield</span></tt> statement is used in MyHDLfor timing control, the method cannot
+&#8220;yield&#8221; the item. Instead, it makes it available in the <em>item</em> instance
+variable.</p>
+<p>To test the queue operation, we will model a producer and a consumer in the test
+bench.  As a waiting consumer should not block a whole system, it should run in
+a concurrent &#8220;thread&#8221;. As always in MyHDL, concurrency is modeled by Python
+generators. Producer and consumer will thus run independently, and we will
+monitor their operation through some print statements:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">q</span> <span class="o">=</span> <span class="n">queue</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">Producer</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+    <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="mf">120</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mf">5</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">: PUT item </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mf">5</span><span class="p">,</span> <span class="mf">45</span> <span class="o">-</span> <span class="mf">10</span><span class="o">*</span><span class="n">i</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">Consumer</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+    <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="mf">100</span><span class="p">)</span>
+    <span class="k">while</span> <span class="mf">1</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">: TRY to get item&quot;</span> <span class="o">%</span> <span class="n">now</span><span class="p">()</span>
+        <span class="k">yield</span> <span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">: GOT item </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="n">q</span><span class="o">.</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="mf">30</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">Producer</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">Consumer</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">P</span><span class="p">,</span> <span class="n">C</span>
+
+<span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Note that the generator method <tt class="xref docutils literal"><span class="pre">get()</span></tt> is called in a <tt class="docutils literal"><span class="pre">yield</span></tt> statement in
+the <tt class="xref docutils literal"><span class="pre">Consumer()</span></tt> function. The new generator will take over from
+<tt class="xref docutils literal"><span class="pre">Consumer()</span></tt>, until it is done. Running this test bench produces the
+following output:</p>
+<div class="highlight-python"><pre>% python queue.py
+100: TRY to get item
+120: PUT item 0
+120: GOT item 0
+150: TRY to get item
+165: PUT item 1
+165: GOT item 1
+195: TRY to get item
+200: PUT item 2
+200: GOT item 2
+225: PUT item 3
+230: TRY to get item
+230: GOT item 3
+240: PUT item 4
+260: TRY to get item
+260: GOT item 4
+290: TRY to get item
+StopSimulation: No more events</pre>
+</div>
+<p class="rubric">Footnotes</p>
+<table class="docutils footnote" frame="void" id="id5" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1" name="id5">[1]</a></td><td>The name <a title="myhdl.always_comb" class="reference" href="reference.html#myhdl.always_comb"><tt class="xref docutils literal"><span class="pre">always_comb()</span></tt></a> refers to a construct with similar semantics in
+SystemVerilog.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id6" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2" name="id6">[2]</a></td><td>It also possible to have a reproducible random output, by explicitly providing a
+seed value. See the documentation of the <tt class="docutils literal"><span class="pre">random</span></tt> module.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="unittest.html" title="Unit testing"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="Introduction to MyHDL"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">MyHDL v0.6 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">The MyHDL manual</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2008, Jan Decaluwe.
+      Last updated on Jan 08, 2009.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.
+    </div>
+  </body>
+</html>

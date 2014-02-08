@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="whatsnew04.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="whatsnew04.html" title='New in MyHDL 0.4: Conversion to Verilog'>
+<link rel="contents" href="contents.html" title="Contents"><link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+<LINK REL="next" href="contents.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="New in MyHDL 0.4: Conversion to Verilog">
+<META NAME="keywords" CONTENT="whatsnew04">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>New in MyHDL 0.4: Conversion to Verilog</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A HREF="../Overview.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="contents.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">New in MyHDL 0.4: Conversion to Verilog</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="../Overview.html">Overview</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="contents.html">Contents</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<link rel='up' href='../Overview.html' title='Overview'>
+<div class="titlepage">
+<center>
+<h1>New in MyHDL 0.4: Conversion to Verilog</h1>
+<p><b><font size="+2">Jan Decaluwe</font></b></p>
+<p><span class="email">jan@jandecaluwe.com</span></p>
+<p>
+</center>
+</div>
+
+<p><hr>
+
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"></a>
+
+<UL CLASS="ChildLinks">
+<LI><A href="contents.html">Contents</a>
+<LI><A href="conv-intro.html">1 Introduction</a>
+<LI><A href="conv-solution.html">2 Solution description</a>
+<LI><A href="conv-features.html">3 Features</a>
+<UL>
+<LI><A href="conv-features-elab.html">3.1 The design is converted after elaboration</a>
+<LI><A href="conv-features-struc.html">3.2 The structural description can be arbitrarily complex and hierarchical</a>
+<LI><A href="conv-features-gen.html">3.3 Generators are mapped to Verilog always or initial blocks</a>
+<LI><A href="conv-features-intf.html">3.4 The Verilog module interface is inferred from signal usage</a>
+<LI><A href="conv-features-func.html">3.5 Function calls are mapped to a unique Verilog function or task call</a>
+<LI><A href="conv-features-if.html">3.6 If-then-else structures may be mapped to Verilog case statements</a>
+<LI><A href="conv-features-enum.html">3.7 Choice of encoding schemes for enumeration types</a>
+</ul>
+<LI><A href="conv-subset.html">4 The convertible subset</a>
+<UL>
+<LI><A href="conv-subset-intro.html">4.1 Introduction</a>
+<LI><A href="conv-subset-style.html">4.2 Coding style</a>
+<LI><A href="conv-subset-types.html">4.3 Supported types</a>
+<LI><A href="conv-subset-statements.html">4.4 Supported statements</a>
+</ul>
+<LI><A href="conv-meth.html">5 Methodology notes</a>
+<UL>
+<LI><A href="conv-meth-sim.html">5.1 Simulation</a>
+<LI><A href="conv-meth-conv.html">5.2 Conversion output verification</a>
+<LI><A href="conv-meth-assign.html">5.3 Assignment issues</a>
+<UL>
+<LI><A href="conv-meth-assign-python.html">5.3.1 Name assignment in Python</a>
+<LI><A href="conv-meth-assign-signal.html">5.3.2 Signal assignment</a>
+<LI><A href="conv-meth-assign-intbv.html">5.3.3 <tt class="class">intbv</tt> objects</a>
+</ul>
+</ul>
+<LI><A href="conv-usage.html">6 Converter usage</a>
+<UL>
+<LI><A href="conv-usage-small.html">6.1 A small design with a single generator</a>
+<LI><A href="conv-usage-gen.html">6.2 Converting a generator directly</a>
+<LI><A href="conv-usage-hier.html">6.3 A hierarchical design</a>
+<LI><A href="conv-usage-fsm.html">6.4 Optimizations for finite state machines</a>
+</ul>
+<LI><A href="conv-issues.html">7 Known issues</a>
+<LI><A href="about.html">About this document ...</a>
+</ul>
+<!--End of Table of Child-Links-->
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A HREF="../Overview.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="contents.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">New in MyHDL 0.4: Conversion to Verilog</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="../Overview.html">Overview</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="contents.html">Contents</A>
+<hr>
+<span class="release-info">Release 0.4.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="cosim-impl-vhdl.html">
+<LINK REL="previous" href="cosim-impl-verilog.html">
+<LINK REL="up" href="cosim-impl.html">
+<LINK REL="next" href="cosim-impl-vhdl.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="5.5.4 Interrupted system calls ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>5.5.4 Interrupted system calls </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-impl-verilog.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim-impl.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-impl-vhdl.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-impl-verilog.html">5.5.3 Other Verilog simulators</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim-impl.html">5.5 Implementation notes</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-impl-vhdl.html">5.5.5 VHDL</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION006540000000000000000">&nbsp;</A>
+<BR>
+5.5.4 Interrupted system calls 
+</H2>
+
+<P>
+The PLI module uses <code>read</code> and <code>write</code> system calls to
+communicate between the co-simulators. The implementation assumes that
+these calls are restarted automatically by the operating system when
+interrupted. This is apparently what happens on the Linux box on which
+MyHDL is developed.
+
+<P>
+It is known how non-restarted interrupted system calls should be
+handled, but currently such code cannot be tested on the MyHDL
+development platform. Also, it is not clear whether this is still a
+relevant issue with modern operating systems. Therefore, this issue
+has not been addressed at this moment. However, assertions have been
+included that should trigger when this situation occurs.
+
+<P>
+Whenever an assertion fires in the PLI module, please report it.  The
+same holds for Python exceptions that cannot be easily explained.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-impl-verilog.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim-impl.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-impl-vhdl.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-impl-verilog.html">5.5.3 Other Verilog simulators</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim-impl.html">5.5 Implementation notes</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-impl-vhdl.html">5.5.5 VHDL</A>
+<hr>
+<span class="release-info">Release 0.5, documentation updated on December 29, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="conf-usage-custom.html">
+<LINK REL="previous" href="conf-usage-RAM.html">
+<LINK REL="up" href="conv-usage.html">
+<LINK REL="next" href="conf-usage-custom.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="6.6.6 ROM inference ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>6.6.6 ROM inference </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conf-usage-RAM.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-usage.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conf-usage-custom.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conf-usage-RAM.html">6.6.5 RAM inference</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-usage.html">6.6 Converter usage</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conf-usage-custom.html">6.6.7 User-defined Verilog code</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION007660000000000000000">&nbsp;</A>
+<BR>
+6.6.6 ROM inference 
+</H2>
+Some synthesis tools can infer a ROM memory from a case statement. The
+Verilog converter can perform the expansion into a case statement
+automatically, based on a higher level description. The ROM access is
+described in a single line, by indexing into a tuple of integers. The
+tuple can be described manually, but also by programmatical
+means. Note that a tuple is used instead of a list to stress the
+read-only character of the memory.
+
+<P>
+The following example illustrates this functionality. ROM access
+is described as follows:
+
+<P>
+<div class="verbatim"><pre>
+def rom(dout, addr, CONTENT):
+                                                                                
+    @always_comb
+    def read():
+        dout.next = CONTENT[int(addr)]
+                                                                                
+    return read
+</pre></div>
+
+<P>
+The ROM content is described as a tuple of integers. When the
+ROM content is defined, the conversion can be performed:
+
+<P>
+<div class="verbatim"><pre>
+CONTENT = (17, 134, 52, 9)
+dout = Signal(intbv(0)[8:])
+addr = Signal(intbv(0)[4:])
+                                                                                
+toVerilog(rom, dout, addr, CONTENT)
+</pre></div>
+
+<P>
+The Verilog output code is as follows:
+
+<P>
+<div class="verbatim"><pre>
+module rom (
+    dout,
+    addr
+);
+                                                                                
+output [7:0] dout;
+reg [7:0] dout;
+input [3:0] addr;
+                                                                       
+always @(addr) begin: _rom_read
+    // synthesis parallel_case full_case
+    case (addr)
+        0: dout &lt;= 17;
+        1: dout &lt;= 134;
+        2: dout &lt;= 52;
+        default: dout &lt;= 9;
+    endcase
+end
+                                                                                
+endmodule
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conf-usage-RAM.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-usage.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conf-usage-custom.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conf-usage-RAM.html">6.6.5 RAM inference</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-usage.html">6.6 Converter usage</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conf-usage-custom.html">6.6.7 User-defined Verilog code</A>
+<hr>
+<span class="release-info">Release 0.5.1, documentation updated on May 1, 2006.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

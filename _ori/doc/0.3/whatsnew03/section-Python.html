@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="whatsnew03.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="whatsnew03.html" title='What's New in MyHDL 0.3'>
+<link rel="contents" href="contents.html" title="Contents"><link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="about.html">
+<LINK REL="previous" href="section-concat.html">
+<LINK REL="up" HREF="whatsnew03.html">
+<LINK REL="next" href="about.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="8 Python 2.3 support">
+<META NAME="keywords" CONTENT="whatsnew03">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>8 Python 2.3 support</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="section-concat.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A HREF="whatsnew03.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="about.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">What's New in MyHDL 0.3</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="section-concat.html">7 Function concat()</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew03.html">What's New in MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="about.html">About this document ...</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000900000000000000000">&nbsp;</A>
+<BR>
+8 Python 2.3 support
+</H1>
+
+<P>
+Python&nbsp;2.3 was released on July 29, 2003, and as of this writing, it
+is the latest stable Python release.  MyHDL&nbsp;0.3 works with both
+Python&nbsp;2.2 and Python&nbsp;2.3. In good Python tradition, MyHDL code
+developed with Python&nbsp;2.2 should run without changes or problems in
+Python&nbsp;2.3.
+
+<P>
+In general, I am not that keen on early upgrading. However, as it
+happens, the evolution of Python enables features that are really
+important or even crucial to MyHDL.  Python&nbsp;2.2 generators are the
+best example: they are the cornerstone of MyHDL. But Python&nbsp;2.3
+also has significant benefits, which I will summarize below.
+
+<P>
+First, generators and the <code>yield</code> statement are a default 
+Python&nbsp;2.3 feature. This means that <code>from __future__ import generators</code>
+statements are no longer required.
+
+<P>
+Second, Python&nbsp;2.3 has a <tt class="class">bool</tt> type, which is implemented as a
+subtype of <tt class="class">int</tt>. For general Python use, the implications are
+rather limited - the main difference is that logical result values
+will print as <code>False</code> and <code>True</code> instead of <code>0</code> and
+<code>1</code>. However, in MyHDL, I can use the <tt class="class">bool</tt> type to
+infer a bit width.  If a <tt class="class">Signal</tt> is constructed with a
+<tt class="class">bool</tt> value, it is a single bit <tt class="class">Signal</tt>. One application
+is waveform viewing as in Section&nbsp;<A href="section-wave.html#section-wave">1</A>. In the waveform,
+note how single bit signals are displayed as level changes.  With
+Python 2.2, the waveforms of these signals would only show value
+changes, which is not as clear for single bits.
+
+<P>
+Finally, Python&nbsp;2.3 is significantly faster. MyHDL code runs
+25-35% faster in Python&nbsp;2.3. This is a very nice speedup compared to
+the small burden of a straightforward upgrade.
+
+<P>
+Python is a very stable language, so upgrading to Python&nbsp;2.3 is
+virtually risk free. Given the additional benefits, I recommend
+MyHDL users to do so as soon as possible. For the next major MyHDL release, the new features will become required and only Python&nbsp;2.3
+(and higher) will be supported.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="section-concat.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A HREF="whatsnew03.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="about.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">What's New in MyHDL 0.3</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="section-concat.html">7 Function concat()</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew03.html">What's New in MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="about.html">About this document ...</A>
+<hr>
+<span class="release-info">Release 0.3.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

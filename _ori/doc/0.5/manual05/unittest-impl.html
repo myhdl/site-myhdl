@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="unittest-change.html">
+<LINK REL="previous" href="unittest-first.html">
+<LINK REL="up" href="unittest-dev.html">
+<LINK REL="next" href="unittest-change.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="4.3.3 Test-driven implementation ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>4.3.3 Test-driven implementation </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="unittest-first.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="unittest-dev.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="unittest-change.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="unittest-first.html">4.3.2 Writing the test</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="unittest-dev.html">4.3 Unit test development</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="unittest-change.html">4.3.4 Changing requirements</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION005330000000000000000">&nbsp;</A>
+<BR>
+4.3.3 Test-driven implementation 
+</H2>
+
+<P>
+With the test written, we begin with the implementation. For
+illustration purposes, we will intentionally write some incorrect
+implementations to see how the test behaves.
+
+<P>
+The easiest way to run tests defined with the <code>unittest</code>
+framework, is to put a call to its <code>main</code> method at the end of
+the test module:
+
+<P>
+<div class="verbatim"><pre>
+unittest.main()
+</pre></div>
+
+<P>
+Let's run the test using the dummy Gray encoder shown earlier:
+
+<P>
+<div class="verbatim"><pre>
+% python test_gray.py -v
+Check that only one bit changes in successive codewords ... FAIL
+Check that all codewords occur exactly once ... FAIL
+&lt;trace backs not shown&gt;
+</pre></div>
+
+<P>
+As expected, this fails completely. Let us try an incorrect
+implementation, that puts the lsb of in the input on the output:
+
+<P>
+<div class="verbatim"><pre>
+def bin2gray(B, G, width):
+    ### INCORRECT - DEMO PURPOSE ONLY! ###
+
+    @always_comb
+    def logic():
+        G.next = B[0]
+
+    return logic
+</pre></div>
+
+<P>
+Running the test produces:
+
+<P>
+<div class="verbatim"><pre>
+% python test_gray.py -v
+Check that only one bit changes in successive codewords ... ok
+Check that all codewords occur exactly once ... FAIL
+
+======================================================================
+FAIL: Check that all codewords occur exactly once
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "test_gray.py", line 109, in testUniqueCodeWords
+    sim.run(quiet=1)
+...
+  File "test_gray.py", line 104, in test
+    self.assertEqual(actual, expected)
+  File "/usr/local/lib/python2.2/unittest.py", line 286, in failUnlessEqual
+    raise self.failureException, \
+AssertionError: [0, 0, 1, 1] != [0, 1, 2, 3]
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.785s
+</pre></div>
+
+<P>
+Now the test passes the first requirement, as expected, but fails the
+second one. After the test feedback, a full traceback is shown that
+can help to debug the test output.
+
+<P>
+Finally, if we use the correct implementation as in
+section&nbsp;<A href="intro-indexing.html#intro-indexing">2.4.1</A>, the output is:
+
+<P>
+<div class="verbatim"><pre>
+% python test_gray.py -v
+Check that only one bit changes in successive codewords ... ok
+Check that all codewords occur exactly once ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 6.364s
+
+OK
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="unittest-first.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="unittest-dev.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="unittest-change.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="unittest-first.html">4.3.2 Writing the test</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="unittest-dev.html">4.3 Unit test development</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="unittest-change.html">4.3.4 Changing requirements</A>
+<hr>
+<span class="release-info">Release 0.5, documentation updated on December 29, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="previous" href="intro-indexing.html">
+<LINK REL="up" href="intro-bit.html">
+<LINK REL="next" href="intro-bfm.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="2.4.2 Bit slicing ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>2.4.2 Bit slicing </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="intro-indexing.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="intro-bit.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="intro-bfm.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="intro-indexing.html">2.4.1 Bit indexing</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="intro-bit.html">2.4 Bit oriented operations</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="intro-bfm.html">2.5 Bus-functional procedures</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION003420000000000000000">&nbsp;</A>
+<a name="l2h-6">&nbsp;</a>
+<BR>
+2.4.2 Bit slicing 
+</H2>
+
+<P>
+For a change, we will use a plain function as an example to illustrate
+slicing.  The following function calculates the HEC byte of an ATM
+header.
+
+<P>
+<div class="verbatim"><pre>
+from myhdl import intbv
+concat = intbv.concat # shorthand alias
+
+COSET = 0x55
+
+def calculateHec(header):
+    """ Return hec for an ATM header, represented as an intbv.
+
+    The hec polynomial is 1 + x + x**2 + x**8.
+    """
+    hec = intbv(0)
+    for bit in header[32:]:
+        hec[8:] = concat(hec[7:2],
+                         bit ^ hec[1] ^ hec[7],
+                         bit ^ hec[0] ^ hec[7],
+                         bit ^ hec[7]
+                        )
+    return hec ^ COSET
+</pre></div>
+
+<P>
+The code shows how slicing access and assignment is supported on the
+<tt class="class">intbv</tt> data type. In accordance with the most common hardware
+convention, and unlike standard Python, slicing ranges are
+downward. The code also demonstrates concatenation of <tt class="class">intbv</tt>
+objects.
+
+<P>
+As in standard Python, the slicing range is half-open: the highest
+index bit is not included. Unlike standard Python however, this index
+corresponds to the <i>leftmost</i> item. Both indices can be omitted
+from the slice. If the leftmost index is omitted, the meaning is to
+access ``all'' higher order bits.  If the rightmost index is omitted,
+it is <code>0</code> by default.
+
+<P>
+The half-openness of a slice may seem awkward at first, but it helps
+to avoid one-off count issues in practice. For example, the slice
+<code>hex[8:]</code> has exactly <code>8</code> bits. Likewise, the slice
+<code>hex[7:2]</code> has <code>7-2=5</code> bits. You can think about it as
+follows: for a slice <code>[i:j]</code>, only bits below index <code>i</code> are
+included, and the bit with index <code>j</code> is the last bit included.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="intro-indexing.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="intro-bit.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="intro-bfm.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="intro-indexing.html">2.4.1 Bit indexing</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="intro-bit.html">2.4 Bit oriented operations</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="intro-bfm.html">2.5 Bus-functional procedures</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on February 4, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

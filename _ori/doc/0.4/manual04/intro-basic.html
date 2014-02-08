@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="intro-conc.html">
+<LINK REL="previous" href="intro.html">
+<LINK REL="up" href="intro.html">
+<LINK REL="next" href="intro-conc.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="2.1 A basic MyHDL simulation ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>2.1 A basic MyHDL simulation </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="intro.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="intro.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="intro-conc.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="intro.html">2. Introduction to MyHDL</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="intro.html">2. Introduction to MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="intro-conc.html">2.2 Concurrent generators and</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION003100000000000000000">&nbsp;</A><a name="l2h-2">&nbsp;</a>
+<BR>
+2.1 A basic MyHDL simulation 
+</H1>
+
+<P>
+We will introduce MyHDL with a classic <code>Hello World</code> style
+example. Here are the contents of a MyHDL simulation script called
+<span class="file">hello1.py</span>:
+
+<P>
+<div class="verbatim"><pre>
+from myhdl import delay, now, Simulation
+
+def sayHello():
+    while 1:
+        yield delay(10)
+        print "%s Hello World!" % now()
+
+gen = sayHello()
+sim = Simulation(gen)
+sim.run(30)
+</pre></div>
+
+<P>
+All example code can be found in the distribution directory under
+<span class="file">example/manual</span>.  When we run this simulation, we get the
+following output:
+
+<P>
+<div class="verbatim"><pre>
+% python hello1.py
+10 Hello World!
+20 Hello World!
+30 Hello World!
+StopSimulation: Simulated for duration 30
+</pre></div>
+
+<P>
+The first line of the script imports a number of objects from the
+<code>myhdl</code> package. In good Python style, and unlike most other
+languages, we can only use identifiers that are
+<i>literally</i> defined in the source file 
+<A NAME="tex2html3"
+  HREF="#foot375"><SUP>2.1</SUP></A>.
+
+<P>
+Next, we define a generator function called
+<code>sayHello</code>. This is a generator function (as opposed to
+a classic Python function) because it contains a <tt class="keyword">yield</tt>
+statement (instead of <tt class="keyword">return</tt> statement).
+When called, a generator function returns a <i class="dfn">generator</i>,
+which is the basic simulation object in MyHDL.
+
+<P>
+The <tt class="keyword">yield</tt> statement in MyHDL has a similar meaning as
+the <tt class="keyword">wait</tt> statement in VHDL: the statement suspends execution
+of a generator, and its clauses specify the conditions on which the
+generator should wait before resuming. In this case, it should
+wait for a delay.
+
+<P>
+To make sure that a generator runs ``forever'', we wrap its behavior
+in a <code>while 1</code> loop. This is a standard Python idiom, and it is
+the MyHDL equivalent of the implicit looping behavior of a 
+Verilog <tt class="keyword">always</tt> block
+and a VHDL <tt class="keyword">process</tt>.
+
+<P>
+In the example, variable
+<code>gen</code> refers to a generator. To simulate it, we pass
+it as an argument to a <tt class="class">Simulation</tt> object constructor.  We then
+run the simulation for the desired amount of time. In MyHDL, time
+is modeled as a natural integer.
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot375">... file</A><A
+ href="intro-basic.html#tex2html3"><SUP>2.1</SUP></A></DT>
+<DD>The exception is the "<tt class="samp">from module import *</tt>" syntax,
+that imports all the symbols from a module. Although this is generally
+considered bad practice, it can be tolerated for large modules that
+export a lot of symbols. One may argue that
+<code>myhdl</code> falls into that category.
+
+</DD>
+</DL>
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="intro.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="intro.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="intro-conc.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="intro.html">2. Introduction to MyHDL</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="intro.html">2. Introduction to MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="intro-conc.html">2.2 Concurrent generators and</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on February 4, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

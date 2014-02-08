@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="previous" href="ref-conv-conv.html">
+<LINK REL="up" href="ref-conv.html">
+<LINK REL="next" href="genindex.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="7.4.2 User-defined Verilog code ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>7.4.2 User-defined Verilog code </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ref-conv-conv.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="ref-conv.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="genindex.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ref-conv-conv.html">7.4.1 Conversion</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="ref-conv.html">7.4 Conversion to Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="genindex.html">Index</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION008420000000000000000">&nbsp;</A>
+<BR>
+7.4.2 User-defined Verilog code 
+</H2>
+
+<P>
+A user can insert user-defined code in the Verilog output
+by using the <code>__verilog__</code> hook.
+
+<P>
+<dl><dt><b><a name="l2h-67"><tt>__verilog__</tt></a></b>
+<dd>
+When defined within a function under elaboration, the
+<code>__verilog__</code> hook variable specifies user-defined code that
+should be used instead of converted code for that function.  The
+user-defined code should be a Python format string that uses keys to
+refer to the variables that should be interpolated in the string. Any
+variable in the function context can be referred to.
+
+<P>
+Note that this hook cannot be used inside generator functions or
+decorated local functions, as these are not elaborated.
+</dl>
+
+<P>
+ 
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ref-conv-conv.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="ref-conv.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="genindex.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ref-conv-conv.html">7.4.1 Conversion</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="ref-conv.html">7.4 Conversion to Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="genindex.html">Index</A>
+<hr>
+<span class="release-info">Release 0.5.1, documentation updated on May 1, 2006.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

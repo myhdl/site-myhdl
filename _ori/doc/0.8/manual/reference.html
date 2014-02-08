@@ -1,0 +1,1051 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Reference &mdash; MyHDL 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/myhdl.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="MyHDL 0.8 documentation" href="../index.html" />
+    <link rel="up" title="The MyHDL manual" href="index.html" />
+    <link rel="next" title="What’s new in MyHDL 0.8" href="../whatsnew/0.8.html" />
+    <link rel="prev" title="Conversion examples" href="conversion_examples.html" /> 
+  </head>
+  <body>
+<div style="background-color: white; text-align: left; padding: 5px 5px 2px 15px">
+<a href="http://www.myhdl.org">
+    <img src="../_static/myhdl_logo_header.png" border=0 alt="MyHDL" />
+</a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../whatsnew/0.8.html" title="What’s new in MyHDL 0.8"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="conversion_examples.html" title="Conversion examples"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">The MyHDL manual</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Reference</a><ul>
+<li><a class="reference internal" href="#simulation">Simulation</a><ul>
+<li><a class="reference internal" href="#the-simulation-class">The <tt class="docutils literal"><span class="pre">Simulation</span></tt> class</a></li>
+<li><a class="reference internal" href="#simulation-support-functions">Simulation support functions</a></li>
+<li><a class="reference internal" href="#waveform-tracing">Waveform tracing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#modeling">Modeling</a><ul>
+<li><a class="reference internal" href="#signals">Signals</a><ul>
+<li><a class="reference internal" href="#the-signaltype-type">The <tt class="docutils literal"><span class="pre">SignalType</span></tt> type</a></li>
+<li><a class="reference internal" href="#regular-signals">Regular signals</a></li>
+<li><a class="reference internal" href="#shadow-signals">Shadow signals</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#myhdl-generators-and-trigger-objects">MyHDL generators and trigger objects</a></li>
+<li><a class="reference internal" href="#decorator-functions">Decorator functions</a></li>
+<li><a class="reference internal" href="#myhdl-data-types">MyHDL data types</a><ul>
+<li><a class="reference internal" href="#the-intbv-class">The <tt class="docutils literal"><span class="pre">intbv</span></tt> class</a></li>
+<li><a class="reference internal" href="#the-modbv-class">The <tt class="docutils literal"><span class="pre">modbv</span></tt> class</a></li>
+<li><a class="reference internal" href="#the-enum-factory-function">The <tt class="docutils literal"><span class="pre">enum()</span></tt> factory function</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#modeling-support-functions">Modeling support functions</a><ul>
+<li><a class="reference internal" href="#bin"><tt class="docutils literal"><span class="pre">bin()</span></tt></a></li>
+<li><a class="reference internal" href="#concat"><tt class="docutils literal"><span class="pre">concat()</span></tt></a></li>
+<li><a class="reference internal" href="#downrange"><tt class="docutils literal"><span class="pre">downrange()</span></tt></a></li>
+<li><a class="reference internal" href="#instances"><tt class="docutils literal"><span class="pre">instances()</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#co-simulation">Co-simulation</a><ul>
+<li><a class="reference internal" href="#myhdl">MyHDL</a></li>
+<li><a class="reference internal" href="#verilog">Verilog</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conversion-to-verilog-and-vhdl">Conversion to Verilog and VHDL</a><ul>
+<li><a class="reference internal" href="#conversion">Conversion</a></li>
+<li><a class="reference internal" href="#user-defined-verilog-and-vhdl-code">User-defined Verilog and VHDL code</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-myhdl.conversion">Conversion output verification</a><ul>
+<li><a class="reference internal" href="#verification-interface">Verification interface</a></li>
+<li><a class="reference internal" href="#hdl-simulator-registration">HDL simulator registration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="conversion_examples.html"
+                        title="previous chapter">Conversion examples</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../whatsnew/0.8.html"
+                        title="next chapter">What&#8217;s new in MyHDL 0.8</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/manual/reference.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <span class="target" id="module-myhdl"></span><div class="section" id="reference">
+<span id="ref"></span><h1>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h1>
+<p>MyHDL is implemented as a Python package called <a class="reference internal" href="#module-myhdl" title="myhdl"><tt class="xref py py-mod docutils literal"><span class="pre">myhdl</span></tt></a>. This chapter
+describes the objects that are exported by this package.</p>
+<div class="section" id="simulation">
+<span id="ref-sim"></span><h2>Simulation<a class="headerlink" href="#simulation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="the-simulation-class">
+<span id="ref-simclass"></span><h3>The <a class="reference internal" href="#myhdl.Simulation" title="myhdl.Simulation"><tt class="xref py py-class docutils literal"><span class="pre">Simulation</span></tt></a> class<a class="headerlink" href="#the-simulation-class" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="myhdl.Simulation">
+<em class="property">class </em><tt class="descname">Simulation</tt><big>(</big><em>arg</em><span class="optional">[</span>, <em>arg ...</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#myhdl.Simulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to construct a new simulation. Each argument should be a MyHDL instance.
+In MyHDL, an instance is recursively defined as being either a sequence of
+instances, or a MyHDL generator, or a Cosimulation object. See section
+<a class="reference internal" href="#ref-gen"><em>MyHDL generators and trigger objects</em></a> for the definition of MyHDL generators and their interaction with
+a <a class="reference internal" href="#myhdl.Simulation" title="myhdl.Simulation"><tt class="xref py py-class docutils literal"><span class="pre">Simulation</span></tt></a> object.  See Section <a class="reference internal" href="#ref-cosim"><em>Co-simulation</em></a> for the
+<a class="reference internal" href="#myhdl.Cosimulation" title="myhdl.Cosimulation"><tt class="xref py py-class docutils literal"><span class="pre">Cosimulation</span></tt></a> object.  At most one <a class="reference internal" href="#myhdl.Cosimulation" title="myhdl.Cosimulation"><tt class="xref py py-class docutils literal"><span class="pre">Cosimulation</span></tt></a> object can be
+passed to a <a class="reference internal" href="#myhdl.Simulation" title="myhdl.Simulation"><tt class="xref py py-class docutils literal"><span class="pre">Simulation</span></tt></a> constructor.</p>
+</dd></dl>
+
+<p>A <a class="reference internal" href="#myhdl.Simulation" title="myhdl.Simulation"><tt class="xref py py-class docutils literal"><span class="pre">Simulation</span></tt></a> object has the following method:</p>
+<dl class="method">
+<dt id="myhdl.Simulation.run">
+<tt class="descclassname">Simulation.</tt><tt class="descname">run</tt><big>(</big><span class="optional">[</span><em>duration</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#myhdl.Simulation.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the simulation forever (by default) or for a specified duration.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="simulation-support-functions">
+<span id="ref-simsupport"></span><h3>Simulation support functions<a class="headerlink" href="#simulation-support-functions" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="myhdl.now">
+<tt class="descname">now</tt><big>(</big><big>)</big><a class="headerlink" href="#myhdl.now" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current simulation time.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="myhdl.StopSimulation">
+<em class="property">exception </em><tt class="descname">StopSimulation</tt><a class="headerlink" href="#myhdl.StopSimulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base exception that is caught by the <tt class="docutils literal"><span class="pre">Simulation.run()</span></tt> method to stop a
+simulation.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="waveform-tracing">
+<span id="ref-trace"></span><h3>Waveform tracing<a class="headerlink" href="#waveform-tracing" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="myhdl.traceSignals">
+<tt class="descname">traceSignals</tt><big>(</big><em>func [, *args] [, **kwargs]</em><big>)</big><a class="headerlink" href="#myhdl.traceSignals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enables signal tracing to a VCD file for waveform viewing. <em>func</em> is a function
+that returns an instance. <a class="reference internal" href="#myhdl.traceSignals" title="myhdl.traceSignals"><tt class="xref py py-func docutils literal"><span class="pre">traceSignals()</span></tt></a> calls <em>func</em> under its control
+and passes <em>*args</em> and <em>**kwargs</em> to the call. In this way, it finds the
+hierarchy and the signals to be traced.</p>
+<p>The return value is the same as would be returned by the call <tt class="docutils literal"><span class="pre">func(*args,</span>
+<span class="pre">**kwargs)</span></tt>.  The top-level instance name and the basename of the VCD output
+filename is <tt class="docutils literal"><span class="pre">func.func_name</span></tt> by default. If the VCD file exists already, it
+will be moved to a backup file by attaching a timestamp to it, before creating
+the new file.</p>
+<p>The <tt class="docutils literal"><span class="pre">traceSignals</span></tt> callable has the following attribute:</p>
+<dl class="attribute">
+<dt id="myhdl.name">
+<tt class="descname">name</tt><a class="headerlink" href="#myhdl.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>This attribute is used to overwrite the default top-level instance name and the
+basename of the VCD output filename.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="myhdl.timescale">
+<tt class="descname">timescale</tt><a class="headerlink" href="#myhdl.timescale" title="Permalink to this definition">¶</a></dt>
+<dd><p>This attribute is used to set the timescale corresponding to unit steps,
+according to the VCD format. The assigned value should be a string.
+The default timescale is &#8220;1ns&#8221;.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="modeling">
+<span id="ref-model"></span><h2>Modeling<a class="headerlink" href="#modeling" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="signals">
+<span id="ref-sig"></span><h3>Signals<a class="headerlink" href="#signals" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="the-signaltype-type">
+<h4>The <a class="reference internal" href="#myhdl.SignalType" title="myhdl.SignalType"><tt class="xref py py-class docutils literal"><span class="pre">SignalType</span></tt></a> type<a class="headerlink" href="#the-signaltype-type" title="Permalink to this headline">¶</a></h4>
+<dl class="class">
+<dt id="myhdl.SignalType">
+<em class="property">class </em><tt class="descname">SignalType</tt><a class="headerlink" href="#myhdl.SignalType" title="Permalink to this definition">¶</a></dt>
+<dd><p>This type is the abstract base type of all signals. It is not used to construct
+signals, but it can be used to check whether an object is a signal.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="regular-signals">
+<h4>Regular signals<a class="headerlink" href="#regular-signals" title="Permalink to this headline">¶</a></h4>
+<dl class="class">
+<dt id="myhdl.Signal">
+<em class="property">class </em><tt class="descname">Signal</tt><big>(</big><em>[val=None] [, delay=0]</em><big>)</big><a class="headerlink" href="#myhdl.Signal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is used to construct a new signal and to initialize its value to
+<em>val</em>. Optionally, a delay can be specified.</p>
+<p>A <a class="reference internal" href="#myhdl.Signal" title="myhdl.Signal"><tt class="xref py py-class docutils literal"><span class="pre">Signal</span></tt></a> object has the following attributes:</p>
+<blockquote>
+<div><dl class="attribute">
+<dt id="myhdl.Signal.posedge">
+<tt class="descname">posedge</tt><a class="headerlink" href="#myhdl.Signal.posedge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute that represents the positive edge of a signal, to be used in
+sensitivity lists.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="myhdl.Signal.negedge">
+<tt class="descname">negedge</tt><a class="headerlink" href="#myhdl.Signal.negedge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute that represents the negative edge of a signal, to be used in
+sensitivity lists.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="myhdl.Signal.next">
+<tt class="descname">next</tt><a class="headerlink" href="#myhdl.Signal.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read-write attribute that represents the next value of the signal.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="myhdl.Signal.val">
+<tt class="descname">val</tt><a class="headerlink" href="#myhdl.Signal.val" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read-only attribute that represents the current value of the signal.</p>
+<p>This attribute is always available to access the current value; however in many
+practical case it will not be needed. Whenever there is no ambiguity, the Signal
+object&#8217;s current value is used implicitly. In particular, all Python&#8217;s standard
+numeric, bit-wise, logical and comparison operators are implemented on a Signal
+object by delegating to its current value. The exception is augmented
+assignment. These operators are not implemented as they would break the rule
+that the current value should be a read-only attribute. In addition, when a
+Signal object is assigned to the <tt class="docutils literal"><span class="pre">next</span></tt> attribute of another Signal object,
+its current value is assigned instead.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="myhdl.Signal.min">
+<tt class="descname">min</tt><a class="headerlink" href="#myhdl.Signal.min" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read-only attribute that is the minimum value (inclusive) of a numeric signal,
+or <tt class="docutils literal"><span class="pre">None</span></tt> for no minimum.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="myhdl.Signal.max">
+<tt class="descname">max</tt><a class="headerlink" href="#myhdl.Signal.max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read-only attribute that is the maximum value (exclusive) of a numeric signal,
+or <tt class="docutils literal"><span class="pre">None</span></tt> for no  maximum.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="myhdl.Signal.driven">
+<tt class="descname">driven</tt><a class="headerlink" href="#myhdl.Signal.driven" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writable attribute that can be used to indicate that the signal is supposed to
+be driven from the MyHDL code, and possibly how it should be declared in Verilog after
+conversion. The allowed values are <tt class="docutils literal"><span class="pre">'reg'</span></tt>, <tt class="docutils literal"><span class="pre">'wire'</span></tt>, <tt class="docutils literal"><span class="pre">True</span></tt> and <tt class="docutils literal"><span class="pre">False</span></tt>.</p>
+<p>This attribute is useful when the  converter cannot infer automatically
+whether and how a signal is driven. This occurs when the signal is driven from
+user-defined code. <tt class="docutils literal"><span class="pre">'reg'</span></tt> and <tt class="docutils literal"><span class="pre">'wire'</span></tt> are &#8220;true&#8221; values that
+permit finer control for the Verilog case.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="myhdl.Signal.read">
+<tt class="descname">read</tt><a class="headerlink" href="#myhdl.Signal.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writable boolean attribute that can be used to indicate that the signal is read.</p>
+<p>This attribute is useful when the converter cannot infer automatically
+whether a signal is read. This occurs when the signal is read from
+user-defined code.</p>
+</dd></dl>
+
+</div></blockquote>
+<p>A <a class="reference internal" href="#myhdl.Signal" title="myhdl.Signal"><tt class="xref py py-class docutils literal"><span class="pre">Signal</span></tt></a> object also has a call interface:</p>
+<blockquote>
+<div><dl class="method">
+<dt id="myhdl.Signal.__call__">
+<tt class="descname">__call__</tt><big>(</big><em>left</em><span class="optional">[</span>, <em>right=None</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#myhdl.Signal.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns a <a class="reference internal" href="#myhdl._SliceSignal" title="myhdl._SliceSignal"><tt class="xref py py-class docutils literal"><span class="pre">_SliceSignal</span></tt></a> shadow signal.</p>
+</dd></dl>
+
+</div></blockquote>
+</dd></dl>
+
+<dl class="class">
+<dt id="myhdl.ResetSignal">
+<em class="property">class </em><tt class="descname">ResetSignal</tt><big>(</big><em>val</em>, <em>active</em>, <em>async</em><big>)</big><a class="headerlink" href="#myhdl.ResetSignal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This Signal subclass defines reset signals. <em>val</em>, <em>active</em>, and <em>async</em>
+are mandatory arguments.
+<em>val</em> is a boolean value that specifies the intial value,
+<em>active</em> is a boolean value that specifies the active level.
+<em>async</em> is a boolean value that specifies the reset style:
+asynchronous (<tt class="docutils literal"><span class="pre">True</span></tt>) or asynchronous (<tt class="docutils literal"><span class="pre">False</span></tt>).</p>
+<p>This class should be used in conjunction with the <a class="reference internal" href="#myhdl.always_seq" title="myhdl.always_seq"><tt class="xref py py-func docutils literal"><span class="pre">always_seq()</span></tt></a>
+decorator.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="shadow-signals">
+<h4>Shadow signals<a class="headerlink" href="#shadow-signals" title="Permalink to this headline">¶</a></h4>
+<dl class="class">
+<dt id="myhdl._SliceSignal">
+<em class="property">class </em><tt class="descname">_SliceSignal</tt><big>(</big><em>sig</em>, <em>left</em><span class="optional">[</span>, <em>right=None</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#myhdl._SliceSignal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class implements read-only structural slicing and indexing. It creates a new
+signal that shadows the slice or index of the parent signal <em>sig</em>. If the
+<em>right</em> parameter is omitted, you get indexing instead of slicing.
+Parameters <em>left</em>  and <em>right</em> have the usual meaning for slice
+indices: in particular, <em>left</em> is non-inclusive but <em>right</em>
+is inclusive. <em>sig</em> should be appropriate for slicing and indexing, which
+means it should be based on <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> in practice.</p>
+<p>The class constructor is not intended to be used explicitly. Instead,
+use the call interface of a regular signal.The following calls are equivalent:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sl</span> <span class="o">=</span> <span class="n">_SliceSignal</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+
+<span class="n">sl</span> <span class="o">=</span> <span class="n">sig</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="myhdl.ConcatSignal">
+<em class="property">class </em><tt class="descname">ConcatSignal</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#myhdl.ConcatSignal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class creates a new signal that shadows the concatenation
+of its parent signal values. You can pass an arbitrary number
+of signals to the constructor. The signal arguments should be bit-oriented
+with a defined number of bits.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="myhdl.TristateSignal">
+<em class="property">class </em><tt class="descname">TristateSignal</tt><big>(</big><em>val</em><big>)</big><a class="headerlink" href="#myhdl.TristateSignal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is used to construct a new tristate signal. The
+underlying type is specified by the <em>val</em>
+parameter.
+It is a Signal subclass and has the usual attributes, with
+one exception: it doesn&#8217;t support the <tt class="docutils literal"><span class="pre">next</span></tt>
+attribute. Consequently, direct signal assignment to a tristate
+signal is not supported.
+The initial value is the tristate value <tt class="docutils literal"><span class="pre">None</span></tt>.
+The current value of a tristate is determined by resolving the
+values from its drivers. When exactly one driver value is
+different from <tt class="docutils literal"><span class="pre">None</span></tt>, that is the resolved value; otherwise
+it is <tt class="docutils literal"><span class="pre">None</span></tt>. When more than one driver value is different
+from <tt class="docutils literal"><span class="pre">None</span></tt>, a contention warning is issued.</p>
+<p>This class has the following method:</p>
+<dl class="method">
+<dt id="myhdl.TristateSignal.driver">
+<tt class="descname">driver</tt><big>(</big><big>)</big><a class="headerlink" href="#myhdl.TristateSignal.driver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new driver to the tristate signal. It is initialized to
+<tt class="docutils literal"><span class="pre">None</span></tt>.  A driver object is an instance of a special
+<a class="reference internal" href="#myhdl.SignalType" title="myhdl.SignalType"><tt class="xref py py-class docutils literal"><span class="pre">SignalType</span></tt></a> subclass. In particular, its <tt class="docutils literal"><span class="pre">next</span></tt>
+attribute can be used to assign a new value to it.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="myhdl-generators-and-trigger-objects">
+<span id="ref-gen"></span><h3>MyHDL generators and trigger objects<a class="headerlink" href="#myhdl-generators-and-trigger-objects" title="Permalink to this headline">¶</a></h3>
+<p id="index-0">MyHDL generators are standard Python generators with specialized
+<a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#yield" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">yield</span></tt></a> statements. In hardware description languages, the equivalent
+statements are called  <em>sensitivity lists</em>. The general format of
+<a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#yield" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">yield</span></tt></a> statements in in MyHDL generators is:</p>
+<p><a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#yield" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">yield</span></tt></a> clause [, clause ...]</p>
+<p>When a generator executes a <a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#yield" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">yield</span></tt></a> statement, its execution is
+suspended at that point. At the same time, each <em>clause</em> is a <em>trigger object</em>
+which defines the condition upon which the generator should be resumed. However,
+per invocation of a <a class="reference external" href="http://docs.python.org/reference/simple_stmts.html#yield" title="(in Python v2.7)"><tt class="xref std std-keyword docutils literal"><span class="pre">yield</span></tt></a> statement, the generator resumes exactly
+once, regardless of the number of clauses. This happens on the first trigger
+that occurs.</p>
+<p>In this section, the trigger objects and their functionality will be described.</p>
+<p>Some MyHDL objects that are described elsewhere can directly be used as trigger
+objects. In particular, a <a class="reference internal" href="#myhdl.Signal" title="myhdl.Signal"><tt class="xref py py-class docutils literal"><span class="pre">Signal</span></tt></a> can be used as a trigger object. Whenever a
+signal changes value, the generator resumes. Likewise, the objects referred to
+by the signal attributes <tt class="docutils literal"><span class="pre">posedge</span></tt> and <tt class="docutils literal"><span class="pre">negedge</span></tt> are trigger objects. The
+generator resumes on the occurrence of a positive or a negative edge on the
+signal, respectively. An edge occurs when there is a change from false to true
+(positive) or vice versa (negative). For the full description of the
+<a class="reference internal" href="#myhdl.Signal" title="myhdl.Signal"><tt class="xref py py-class docutils literal"><span class="pre">Signal</span></tt></a> class and its attributes, see section <a class="reference internal" href="#ref-sig"><em>Signals</em></a>.</p>
+<p>Furthermore, MyHDL generators can be used as clauses in <tt class="docutils literal"><span class="pre">yield</span></tt> statements.
+Such a generator is forked, and starts operating immediately, while the original
+generator waits for it to complete. The original generator resumes when the
+forked generator returns.</p>
+<p>In addition, the following functions return trigger objects:</p>
+<dl class="function">
+<dt id="myhdl.delay">
+<tt class="descname">delay</tt><big>(</big><em>t</em><big>)</big><a class="headerlink" href="#myhdl.delay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a trigger object that specifies that the generator should resume after a
+delay <em>t</em>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="myhdl.join">
+<tt class="descname">join</tt><big>(</big><em>arg</em><span class="optional">[</span>, <em>arg ...</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#myhdl.join" title="Permalink to this definition">¶</a></dt>
+<dd><p>Join a number of trigger objects together and return a joined trigger object.
+The effect is that the joined trigger object will trigger when <em>all</em> of its
+arguments have triggered.</p>
+</dd></dl>
+
+<p>Finally, as a special case, the Python <tt class="docutils literal"><span class="pre">None</span></tt> object can be present in a
+<tt class="docutils literal"><span class="pre">yield</span></tt> statement. It is the do-nothing trigger object. The generator
+immediately resumes, as if no <tt class="docutils literal"><span class="pre">yield</span></tt> statement were present. This can be
+useful if the <tt class="docutils literal"><span class="pre">yield</span></tt> statement also has generator clauses: those generators
+are forked, while the original generator resumes immediately.</p>
+</div>
+<div class="section" id="decorator-functions">
+<span id="ref-deco"></span><h3>Decorator functions<a class="headerlink" href="#decorator-functions" title="Permalink to this headline">¶</a></h3>
+<p>MyHDL defines a number of decorator functions, that make it easier to create
+generators from local generator functions.</p>
+<dl class="function">
+<dt id="myhdl.instance">
+<tt class="descname">instance</tt><big>(</big><big>)</big><a class="headerlink" href="#myhdl.instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#myhdl.instance" title="myhdl.instance"><tt class="xref py py-func docutils literal"><span class="pre">instance()</span></tt></a> decorator is the most general decorator.  It automatically
+creates a generator by calling the decorated generator function.</p>
+<p>It is used as follows:</p>
+<div class="highlight-python"><pre>def top(...):
+    ...
+    @instance
+    def inst():
+        &lt;generator body&gt;
+    ...
+    return inst, ...</pre>
+</div>
+<p>This is equivalent to:</p>
+<div class="highlight-python"><pre>def top(...):
+    ...
+    def _gen_func():
+        &lt;generator body&gt;
+    ...
+    inst = _gen_func()
+    ...
+    return inst, ...</pre>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="myhdl.always">
+<tt class="descname">always</tt><big>(</big><em>arg</em><span class="optional">[</span>, <em>*args</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#myhdl.always" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#myhdl.always" title="myhdl.always"><tt class="xref py py-func docutils literal"><span class="pre">always()</span></tt></a> decorator is a specialized decorator that targets a widely
+used coding pattern. It is used as follows:</p>
+<div class="highlight-python"><pre>def top(...):
+    ...
+    @always(event1, event2, ...)
+    def inst()
+        &lt;body&gt;
+    ...
+    return inst, ...</pre>
+</div>
+<p>This is equivalent to the following:</p>
+<div class="highlight-python"><pre>def top(...):
+    ...
+    def _func():
+        &lt;body&gt;
+
+    def _gen_func()
+        while True:
+            yield event1, event2, ...
+            _func()
+    ...
+    inst = _gen_func()
+    ...
+    return inst, ...</pre>
+</div>
+<p>The argument list of the decorator corresponds to the sensitivity list. Only
+signals, edge specifiers, or delay objects are allowed. The decorated function
+should be a classic function.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="myhdl.always_comb">
+<tt class="descname">always_comb</tt><big>(</big><big>)</big><a class="headerlink" href="#myhdl.always_comb" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#myhdl.always_comb" title="myhdl.always_comb"><tt class="xref py py-func docutils literal"><span class="pre">always_comb()</span></tt></a> decorator is used to describe combinatorial logic.</p>
+<div class="highlight-python"><pre>def top(...):
+    ...
+    @always_comb
+    def comb_inst():
+        &lt;combinatorial body&gt;
+    ...
+    return comb_inst, ...</pre>
+</div>
+<p>The <a class="reference internal" href="#myhdl.always_comb" title="myhdl.always_comb"><tt class="xref py py-func docutils literal"><span class="pre">always_comb()</span></tt></a> decorator infers the inputs of the combinatorial logic
+and the corresponding sensitivity list automatically. The decorated function
+should be a classic function.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="myhdl.always_seq">
+<tt class="descname">always_seq</tt><big>(</big><em>edge</em>, <em>reset</em><big>)</big><a class="headerlink" href="#myhdl.always_seq" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#myhdl.always_seq" title="myhdl.always_seq"><tt class="xref py py-func docutils literal"><span class="pre">always_seq()</span></tt></a> decorator is used to describe sequential (clocked) logic.</p>
+<p>The <em>edge</em> parameter should be a clock edge (<tt class="docutils literal"><span class="pre">clock.posedge</span></tt> or <tt class="docutils literal"><span class="pre">clock.negedge</span></tt>).
+The <em>reset</em> parameter should a <a class="reference internal" href="#myhdl.ResetSignal" title="myhdl.ResetSignal"><tt class="xref py py-class docutils literal"><span class="pre">ResetSignal</span></tt></a> object.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="myhdl-data-types">
+<h3>MyHDL data types<a class="headerlink" href="#myhdl-data-types" title="Permalink to this headline">¶</a></h3>
+<p>MyHDL defines a number of data types that are useful for hardware description.</p>
+<div class="section" id="the-intbv-class">
+<span id="ref-intbv"></span><h4>The <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> class<a class="headerlink" href="#the-intbv-class" title="Permalink to this headline">¶</a></h4>
+<dl class="class">
+<dt id="myhdl.intbv">
+<em class="property">class </em><tt class="descname">intbv</tt><big>(</big><em>[val=0] [, min=None]  [, max=None]</em><big>)</big><a class="headerlink" href="#myhdl.intbv" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class represents <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt>-like objects with some
+additional features that make it suitable for hardware
+design.</p>
+<p>The <em>val</em> argument can be an <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt>, a
+<tt class="xref py py-class docutils literal"><span class="pre">long</span></tt>, an <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> or a bit string (a string with
+only &#8216;0&#8217;s or &#8216;1&#8217;s). For a bit string argument, the value is
+calculated as in <tt class="docutils literal"><span class="pre">int(bitstring,</span> <span class="pre">2)</span></tt>.  The optional <em>min</em> and
+<em>max</em> arguments can be used to specify the minimum and maximum
+value of the <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> object. As in standard Python
+practice for ranges, the minimum value is inclusive and the
+maximum value is exclusive.</p>
+<p>The minimum and maximum values of an <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> object are
+available as attributes:</p>
+<dl class="attribute">
+<dt id="myhdl.intbv.min">
+<tt class="descname">min</tt><a class="headerlink" href="#myhdl.intbv.min" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read-only attribute that is the minimum value (inclusive) of an <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a>,
+or <em>None</em> for no minimum.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="myhdl.intbv.max">
+<tt class="descname">max</tt><a class="headerlink" href="#myhdl.intbv.max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read-only attribute that is the maximum value (exclusive) of an <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a>,
+or <em>None</em> for no  maximum.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="myhdl.intbv.signed">
+<tt class="descname">signed</tt><big>(</big><big>)</big><a class="headerlink" href="#myhdl.intbv.signed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpretes the msb bit as as sign bit and extends it into the higher-order
+bits of the underlying object value. The msb bit is the highest-order bit
+within the object&#8217;s bit width.</p>
+</dd></dl>
+
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">integer</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p>Unlike <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt> objects, <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> objects are mutable; this is also
+the reason for their existence. Mutability is needed to support assignment to
+indexes and slices, as is common in hardware design. For the same reason,
+<a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> is not a subclass from <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt>, even though <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt>
+provides most of the desired functionality. (It is not possible to derive a
+mutable subtype from an immutable base type.)</p>
+<p>An <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> object supports the same comparison, numeric, bitwise,
+logical, and conversion operations as <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt> objects. See
+<a class="reference external" href="http://www.python.org/doc/current/lib/typesnumeric.html">http://www.python.org/doc/current/lib/typesnumeric.html</a> for more information on
+such operations. In all binary operations, <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> objects can work
+together with <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt> objects. For mixed-type numeric operations, the
+result type is an <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt> or a <tt class="xref py py-class docutils literal"><span class="pre">long</span></tt>. For mixed-type bitwise
+operations, the result type is an <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a>.</p>
+<p>In addition, <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> supports a number of sequence operators.
+In particular, the <a class="reference external" href="http://docs.python.org/library/functions.html#len" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">len()</span></tt></a> function returns the object&#8217;s bit width. Furthermore,
+<a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> objects support indexing and slicing operations:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="57%" />
+<col width="14%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Operation</th>
+<th class="head">Result</th>
+<th class="head">Notes</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">bv[i]</span></tt></td>
+<td>item <em>i</em> of <em>bv</em></td>
+<td>(1)</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">bv[i]</span> <span class="pre">=</span> <span class="pre">x</span></tt></td>
+<td>item <em>i</em> of <em>bv</em> is replaced by
+<em>x</em></td>
+<td>(1)</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">bv[i:j]</span></tt></td>
+<td>slice of <em>bv</em> from <em>i</em> downto
+<em>j</em></td>
+<td>(2)(3)</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">bv[i:j]</span> <span class="pre">=</span> <span class="pre">t</span></tt></td>
+<td>slice of <em>bv</em> from <em>i</em> downto
+<em>j</em> is replaced by <em>t</em></td>
+<td>(2)(4)</td>
+</tr>
+</tbody>
+</table>
+<ol class="arabic simple">
+<li>Indexing follows the most common hardware design conventions: the lsb bit is the
+rightmost bit, and it has index 0. This has the following desirable property: if
+the <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> value is decomposed as a sum of powers of 2, the bit with
+index <em>i</em> corresponds to the term <tt class="docutils literal"><span class="pre">2**i</span></tt>.</li>
+<li>In contrast to standard Python sequencing conventions, slicing range are
+downward. This is a consequence of the indexing convention, combined with the
+common convention that the most significant digits of a number are the leftmost
+ones. The Python convention of half-open ranges is followed: the bit with the
+highest index is not included. However, it is the <em>leftmost</em> bit in this case.
+As in standard Python, this takes care of one-off issues in many practical
+cases: in particular, <tt class="docutils literal"><span class="pre">bv[i:]</span></tt> returns <em>i</em> bits; <tt class="docutils literal"><span class="pre">bv[i:j]</span></tt> has <tt class="docutils literal"><span class="pre">i-j</span></tt> bits.
+When the low index <em>j</em> is omitted, it defaults to <tt class="docutils literal"><span class="pre">0</span></tt>. When the high index <em>i</em>
+is omitted, it means &#8220;all&#8221; higher order bits.</li>
+<li>The object returned from a slicing access operation is always a positive
+<a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a>; higher order bits are implicitly assumed to be zero. The bit
+width is implicitly stored in the return object, so that it can be used in
+concatenations and as an iterator. In addition, for a bit width w, the <em>min</em> and
+<em>max</em> attributes are implicitly set to <tt class="docutils literal"><span class="pre">0</span></tt> and <tt class="docutils literal"><span class="pre">2**w</span></tt>, respectively.</li>
+<li>When setting a slice to a value, it is checked whether the slice is wide enough.</li>
+</ol>
+<p>In addition, an <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> object supports the iterator protocol. This makes
+it possible to iterate over all its bits, from the high index to index 0. This
+is only possible for <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> objects with a defined bit width.</p>
+</div>
+<div class="section" id="the-modbv-class">
+<span id="ref-modvb"></span><h4>The <a class="reference internal" href="#myhdl.modbv" title="myhdl.modbv"><tt class="xref py py-class docutils literal"><span class="pre">modbv</span></tt></a> class<a class="headerlink" href="#the-modbv-class" title="Permalink to this headline">¶</a></h4>
+<dl class="class">
+<dt id="myhdl.modbv">
+<em class="property">class </em><tt class="descname">modbv</tt><big>(</big><em>[val=0] [, min=None]  [, max=None]</em><big>)</big><a class="headerlink" href="#myhdl.modbv" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#myhdl.modbv" title="myhdl.modbv"><tt class="xref py py-class docutils literal"><span class="pre">modbv</span></tt></a> class implements modular bit vector types.</p>
+<p>It is implemented as a subclass of <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a>
+and supports the same parameters and operators.
+The difference is in the handling of the <em>min</em> and <em>max</em> boundaries.
+Instead of throwing an exception when those constraints are exceeded,
+the value of <a class="reference internal" href="#myhdl.modbv" title="myhdl.modbv"><tt class="xref py py-class docutils literal"><span class="pre">modbv</span></tt></a> objects wraps around according to the
+following formula:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">val</span> <span class="o">=</span> <span class="p">(</span><span class="n">val</span> <span class="o">-</span> <span class="nb">min</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="nb">max</span> <span class="o">-</span> <span class="nb">min</span><span class="p">)</span> <span class="o">+</span> <span class="nb">min</span>
+</pre></div>
+</div>
+<p>This formula is a generalization of modulo wrap-around behavior that
+is often useful when describing hardware system behavior.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="the-enum-factory-function">
+<h4>The <a class="reference internal" href="#myhdl.enum" title="myhdl.enum"><tt class="xref py py-func docutils literal"><span class="pre">enum()</span></tt></a> factory function<a class="headerlink" href="#the-enum-factory-function" title="Permalink to this headline">¶</a></h4>
+<dl class="function">
+<dt id="myhdl.enum">
+<tt class="descname">enum</tt><big>(</big><em>arg [, arg ...] [, encoding='binary']</em><big>)</big><a class="headerlink" href="#myhdl.enum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an enumeration type.</p>
+<p>The arguments should be string literals that represent the desired names of the
+enumeration type attributes.  The returned type should be assigned to a type
+name.  For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">t_EnumType</span> <span class="o">=</span> <span class="n">enum</span><span class="p">(</span><span class="s">&#39;ATTR_NAME_1&#39;</span><span class="p">,</span> <span class="s">&#39;ATTR_NAME_2&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The enumeration type identifiers are available as attributes of the type name,
+for example: <tt class="docutils literal"><span class="pre">t_EnumType.ATTR_NAME_1</span></tt></p>
+<p>The optional keyword argument <em>encoding</em> specifies the encoding scheme used in
+Verilog output. The available encodings are <tt class="docutils literal"><span class="pre">'binary'</span></tt>, <tt class="docutils literal"><span class="pre">'one_hot'</span></tt>, and
+<tt class="docutils literal"><span class="pre">'one_cold'</span></tt>.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="modeling-support-functions">
+<span id="ref-model-misc"></span><h3>Modeling support functions<a class="headerlink" href="#modeling-support-functions" title="Permalink to this headline">¶</a></h3>
+<p>MyHDL defines a number of additional support functions that are
+useful for hardware description.</p>
+<div class="section" id="bin">
+<h4><a class="reference internal" href="#myhdl.bin" title="myhdl.bin"><tt class="xref py py-func docutils literal"><span class="pre">bin()</span></tt></a><a class="headerlink" href="#bin" title="Permalink to this headline">¶</a></h4>
+<dl class="function">
+<dt id="myhdl.bin">
+<tt class="descname">bin</tt><big>(</big><em>num</em><span class="optional">[</span>, <em>width</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#myhdl.bin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a bit string representation. If the optional <em>width</em> is provided, and if
+it is larger than the width of the default representation, the bit string is
+padded with the sign bit.</p>
+<p>This function complements the standard Python conversion functions <tt class="docutils literal"><span class="pre">hex</span></tt> and
+<tt class="docutils literal"><span class="pre">oct</span></tt>. A binary string representation is often useful in hardware design.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="concat">
+<h4><a class="reference internal" href="#myhdl.concat" title="myhdl.concat"><tt class="xref py py-func docutils literal"><span class="pre">concat()</span></tt></a><a class="headerlink" href="#concat" title="Permalink to this headline">¶</a></h4>
+<dl class="function">
+<dt id="myhdl.concat">
+<tt class="descname">concat</tt><big>(</big><em>base</em><span class="optional">[</span>, <em>arg ...</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#myhdl.concat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> object formed by concatenating the arguments.</p>
+<p>The following argument types are supported: <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> objects with a
+defined bit width, <tt class="xref py py-class docutils literal"><span class="pre">bool</span></tt> objects, signals of the previous objects, and
+bit strings. All these objects have a defined bit width. The first argument
+<em>base</em> is special as it doesn&#8217;t need to have a defined bit width. In addition to
+the previously mentioned objects, unsized <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a>, <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt> and
+<tt class="xref py py-class docutils literal"><span class="pre">long</span></tt> objects are supported, as well as signals of such objects.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="downrange">
+<h4><a class="reference internal" href="#myhdl.downrange" title="myhdl.downrange"><tt class="xref py py-func docutils literal"><span class="pre">downrange()</span></tt></a><a class="headerlink" href="#downrange" title="Permalink to this headline">¶</a></h4>
+<dl class="function">
+<dt id="myhdl.downrange">
+<tt class="descname">downrange</tt><big>(</big><em>high</em><span class="optional">[</span>, <em>low=0</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#myhdl.downrange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a downward range list of integers.</p>
+<p>This function is modeled after the standard <tt class="docutils literal"><span class="pre">range</span></tt> function, but works in the
+downward direction. The returned interval is half-open, with the <em>high</em> index
+not included. <em>low</em> is optional and defaults to zero.  This function is
+especially useful in conjunction with the <a class="reference internal" href="#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> class, that also works
+with downward indexing.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="instances">
+<h4><a class="reference internal" href="#myhdl.instances" title="myhdl.instances"><tt class="xref py py-func docutils literal"><span class="pre">instances()</span></tt></a><a class="headerlink" href="#instances" title="Permalink to this headline">¶</a></h4>
+<dl class="function">
+<dt id="myhdl.instances">
+<tt class="descname">instances</tt><big>(</big><big>)</big><a class="headerlink" href="#myhdl.instances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Looks up all MyHDL instances in the local name space and returns them in a list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+</div>
+<div class="section" id="co-simulation">
+<span id="ref-cosim"></span><h2>Co-simulation<a class="headerlink" href="#co-simulation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="myhdl">
+<span id="ref-cosim-myhdl"></span><h3>MyHDL<a class="headerlink" href="#myhdl" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="myhdl.Cosimulation">
+<em class="property">class </em><tt class="descname">Cosimulation</tt><big>(</big><em>exe</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#myhdl.Cosimulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to construct a new Cosimulation object.</p>
+<p>The <em>exe</em> argument is a command string to execute an HDL simulation. The
+<em>kwargs</em> keyword arguments provide a named association between signals (regs &amp;
+nets) in the HDL simulator and signals in the MyHDL simulator. Each keyword
+should be a name listed in a <tt class="docutils literal"><span class="pre">$to_myhdl</span></tt> or <tt class="docutils literal"><span class="pre">$from_myhdl</span></tt> call in the HDL
+code. Each argument should be a <a class="reference internal" href="#myhdl.Signal" title="myhdl.Signal"><tt class="xref py py-class docutils literal"><span class="pre">Signal</span></tt></a> declared in the MyHDL code.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="verilog">
+<span id="ref-cosim-verilog"></span><h3>Verilog<a class="headerlink" href="#verilog" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt>
+<tt class="descname">$to_myhdl(arg, [, arg ...])</tt></dt>
+<dd><p>Task that defines which signals (regs &amp; nets) should be read by the MyHDL
+simulator. This task should be called at the start of the simulation.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<tt class="descname">$from_myhdl(arg, [, arg ...])</tt></dt>
+<dd><p>Task that defines which signals should be driven by the MyHDL simulator. In
+Verilog, only regs can be specified. This task should be called at the start of
+the simulation.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="conversion-to-verilog-and-vhdl">
+<span id="ref-conv"></span><h2>Conversion to Verilog and VHDL<a class="headerlink" href="#conversion-to-verilog-and-vhdl" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="conversion">
+<span id="ref-conv-conv"></span><h3>Conversion<a class="headerlink" href="#conversion" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="myhdl.toVerilog">
+<tt class="descname">toVerilog</tt><big>(</big><em>func [, *args] [, **kwargs]</em><big>)</big><a class="headerlink" href="#myhdl.toVerilog" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Converts a MyHDL design instance to equivalent Verilog code, and also generates
+a test bench to verify it. <em>func</em> is a function that returns an instance.
+<a class="reference internal" href="#myhdl.toVerilog" title="myhdl.toVerilog"><tt class="xref py py-func docutils literal"><span class="pre">toVerilog()</span></tt></a> calls <em>func</em> under its control and passes <em>*args</em> and
+<em>**kwargs</em> to the call.</p>
+<p>The return value is the same as would be returned by the call <tt class="docutils literal"><span class="pre">func(*args,</span>
+<span class="pre">**kwargs)</span></tt>. It should be assigned to an instance name.</p>
+<p>The top-level instance name and the basename of the Verilog output filename is
+<tt class="docutils literal"><span class="pre">func.func_name</span></tt> by default.</p>
+<p>For more information about the restrictions on convertible MyHDL code, see
+section <a class="reference internal" href="conversion.html#conv-subset"><em>The convertible subset</em></a> in Chapter <a class="reference internal" href="conversion.html#conv"><em>Conversion to Verilog and VHDL</em></a>.</p>
+</div></blockquote>
+<p><a class="reference internal" href="#myhdl.toVerilog" title="myhdl.toVerilog"><tt class="xref py py-func docutils literal"><span class="pre">toVerilog()</span></tt></a> has the following attribute:</p>
+<dl class="attribute">
+<dt>
+<tt class="descname">name</tt></dt>
+<dd><p>This attribute is used to overwrite the default top-level instance name and the
+basename of the Verilog output filename.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">timescale</tt></dt>
+<dd><p>This attribute is used to set the timescale in Verilog format. The assigned value
+should be a string. The default timescale is &#8220;1ns/10ps&#8221;.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="myhdl.toVHDL">
+<tt class="descname">toVHDL</tt><big>(</big><em>func[, *args][, **kwargs]</em><big>)</big><a class="headerlink" href="#myhdl.toVHDL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a MyHDL design instance to equivalent VHDL
+code. <em>func</em> is a function that returns an instance. <a class="reference internal" href="#myhdl.toVHDL" title="myhdl.toVHDL"><tt class="xref py py-func docutils literal"><span class="pre">toVHDL()</span></tt></a>
+calls <em>func</em> under its control and passes <em>*args</em> and
+<em>**kwargs</em> to the call.</p>
+<p>The return value is the same as would be returned by the call
+<tt class="docutils literal"><span class="pre">func(*args,</span> <span class="pre">**kwargs)</span></tt>. It can be assigned to an instance name.
+The top-level instance name and the basename of the Verilog
+output filename is <tt class="docutils literal"><span class="pre">func.func_name</span></tt> by default.</p>
+<p><a class="reference internal" href="#myhdl.toVHDL" title="myhdl.toVHDL"><tt class="xref py py-func docutils literal"><span class="pre">toVHDL()</span></tt></a> has the following attributes:</p>
+<dl class="attribute">
+<dt>
+<tt class="descname">name</tt></dt>
+<dd><p>This attribute is used to overwrite the default top-level
+instance name and the basename of the VHDL output.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="myhdl.component_declarations">
+<tt class="descname">component_declarations</tt><a class="headerlink" href="#myhdl.component_declarations" title="Permalink to this definition">¶</a></dt>
+<dd><p>This attribute can be used to add component declarations to the
+VHDL output. When a string is assigned to it, it will be copied
+to the appropriate place in the output file.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="myhdl.library">
+<tt class="descname">library</tt><a class="headerlink" href="#myhdl.library" title="Permalink to this definition">¶</a></dt>
+<dd><p>This attribute can be used to set the library in the VHDL output
+file. The assigned value should be a string. The default
+library is <tt class="docutils literal"><span class="pre">work</span></tt>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="user-defined-verilog-and-vhdl-code">
+<span id="ref-conv-user"></span><h3>User-defined Verilog and VHDL code<a class="headerlink" href="#user-defined-verilog-and-vhdl-code" title="Permalink to this headline">¶</a></h3>
+<p>User-defined code can be inserted in the Verilog or VHDL output through
+the use of function attributes. Suppose a function <tt class="xref py py-func docutils literal"><span class="pre">&lt;func&gt;()</span></tt> defines
+a hardware module. User-defined code can be specified for the function
+with the following function attributes:</p>
+<dl class="attribute">
+<dt>
+<tt class="descname">&lt;func&gt;.vhdl_code</tt></dt>
+<dd><p>A template string for user-defined code in the VHDL output.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">&lt;func&gt;.verilog_code</tt></dt>
+<dd><p>A template string for user-defined code in the Verilog output.</p>
+</dd></dl>
+
+<p>When such a function attribute is defined, the normal conversion
+process is bypassed and the user-defined code is inserted instead.
+The template strings should be suitable for the standard
+<a class="reference external" href="http://docs.python.org/library/string.html#string.Template" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">string.Template</span></tt></a> constructor. They can contain interpolation
+variables (indicated by a <tt class="docutils literal"><span class="pre">$</span></tt> prefix) for all signals in the
+context. Note that the function attribute can be defined anywhere where
+<tt class="xref py py-func docutils literal"><span class="pre">&lt;func&gt;()</span></tt> is visible, either outside or inside the function
+itself.</p>
+<p>These function attributes cannot be used with generator functions or
+decorated local functions, as these are not elaborated before
+simulation or conversion.  In other words, they can only be used with
+functions that define structure.</p>
+</div>
+</div>
+<div class="section" id="module-myhdl.conversion">
+<span id="conversion-output-verification"></span><h2>Conversion output verification<a class="headerlink" href="#module-myhdl.conversion" title="Permalink to this headline">¶</a></h2>
+<p>MyHDL provides an interface to verify converted designs.
+This is used extensively in the package itself to verify the conversion
+functionality. This capability is exported by the package so that users
+can use it also.</p>
+<div class="section" id="verification-interface">
+<h3>Verification interface<a class="headerlink" href="#verification-interface" title="Permalink to this headline">¶</a></h3>
+<p>All functions related to conversion verification are implemented in
+the <a class="reference internal" href="#module-myhdl.conversion" title="myhdl.conversion"><tt class="xref py py-mod docutils literal"><span class="pre">myhdl.conversion</span></tt></a> package.</p>
+<dl class="function">
+<dt id="myhdl.conversion.verify">
+<tt class="descname">verify</tt><big>(</big><em>func[, *args][, **kwargs]</em><big>)</big><a class="headerlink" href="#myhdl.conversion.verify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used like <tt class="xref py py-func docutils literal"><span class="pre">toVHDL()</span></tt> and  <tt class="xref py py-func docutils literal"><span class="pre">toVerilog()</span></tt>. It converts MyHDL code,
+simulates both the MyHDL code and the HDL code and reports any
+differences. The default HDL simulator is GHDL.</p>
+<p>This function has the following attribute:</p>
+<dl class="attribute">
+<dt id="myhdl.conversion.simulator">
+<tt class="descname">simulator</tt><a class="headerlink" href="#myhdl.conversion.simulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to set the name of the HDL simulator. <tt class="docutils literal"><span class="pre">&quot;GHDL&quot;</span></tt>
+is the default.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="myhdl.conversion.analyze">
+<tt class="descname">analyze</tt><big>(</big><em>func[, *args][, **kwargs]</em><big>)</big><a class="headerlink" href="#myhdl.conversion.analyze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used like <tt class="xref py py-func docutils literal"><span class="pre">toVHDL()</span></tt> and <tt class="xref py py-func docutils literal"><span class="pre">toVerilog()</span></tt>. It converts MyHDL code, and analyzes the
+resulting HDL.
+Used to verify whether the HDL output is syntactically correct.</p>
+<p>This function has the following attribute:</p>
+<dl class="attribute">
+<dt>
+<tt class="descname">simulator</tt></dt>
+<dd><p>Used to set the name of the HDL simulator used to analyze the code. <tt class="docutils literal"><span class="pre">&quot;GHDL&quot;</span></tt>
+is the default.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="hdl-simulator-registration">
+<h3>HDL simulator registration<a class="headerlink" href="#hdl-simulator-registration" title="Permalink to this headline">¶</a></h3>
+<p>To use a HDL simulator to verify conversions, it needs to
+be registered first. This is needed once per simulator.</p>
+<p>A number of HDL simulators are preregistered in the
+MyHDL distribution, as follows:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="34%" />
+<col width="66%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Identifier</th>
+<th class="head">Simulator</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">&quot;GHDL&quot;</span></tt></td>
+<td>The GHDL VHDL simulator</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">&quot;vsim&quot;</span></tt></td>
+<td>The ModelSim VHDL simulator</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">&quot;icarus&quot;</span></tt></td>
+<td>The Icarus Verilog simulator</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">&quot;cver&quot;</span></tt></td>
+<td>The cver Verilog simulator</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">&quot;vlog&quot;</span></tt></td>
+<td>The Modelsim VHDL simulator</td>
+</tr>
+</tbody>
+</table>
+<p>Of course, a simulator has to be installed before it can be used.</p>
+<p>If another simulator is required, it has to be registered by the user.
+This is done with the function <tt class="xref py py-func docutils literal"><span class="pre">registerSimulation()</span></tt> that lives
+in the module <tt class="xref py py-mod docutils literal"><span class="pre">myhdl.conversion._verify</span></tt>. The same module also has the
+registrations for the predefined simulators.</p>
+<p>The verification functions work by comparing the HDL simulator
+output with the MyHDL simulator output. Therefore, they have
+to deal with the specific details of each HDL simulator output,
+which may be somewhat tricky. This is reflected in the interface
+of the <tt class="xref py py-func docutils literal"><span class="pre">registerSimulation()</span></tt> function. As registration
+is rarely needed, this interface is not further described here.</p>
+<p>Please refer to the source code in <tt class="xref py py-mod docutils literal"><span class="pre">myhdl.conversion._verify</span></tt>
+to learn how registration works. If you need help, please
+contact the MyHDL community.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../whatsnew/0.8.html" title="What’s new in MyHDL 0.8"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="conversion_examples.html" title="Conversion examples"
+             >previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" >The MyHDL manual</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Jan Decaluwe.
+      Last updated on May 20, 2013.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

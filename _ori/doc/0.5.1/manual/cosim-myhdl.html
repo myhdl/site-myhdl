@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="cosim-restr.html">
+<LINK REL="previous" href="cosim-hdl.html">
+<LINK REL="up" href="cosim.html">
+<LINK REL="next" href="cosim-restr.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="5.3 The MyHDL side ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>5.3 The MyHDL side </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-hdl.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-restr.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-hdl.html">5.2 The HDL side</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim.html">5. Co-simulation with Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-restr.html">5.4 Restrictions</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION006300000000000000000">&nbsp;</A>
+<BR>
+5.3 The MyHDL side 
+</H1>
+
+<P>
+MyHDL supports co-simulation by a <code>Cosimulation</code> object. 
+A <code>Cosimulation</code> object must know how to run a HDL simulation.
+Therefore, the first argument to its constructor is a command string
+to execute a simulation.
+
+<P>
+The way to generate and run an simulation executable is simulator
+dependent.  For example, in Icarus Verilog, a simulation executable
+for our example can be obtained obtained by running the
+<code>iverilog</code> compiler as follows:
+
+<P>
+<div class="verbatim"><pre>
+% iverilog -o bin2gray -Dwidth=4 bin2gray.v dut_bin2gray.v
+</pre></div>
+
+<P>
+This generates a <code>bin2gray</code> executable for a parameter <code>width</code>
+of 4, by compiling the contributing verilog files.
+
+<P>
+The simulation itself is run by the <code>vvp</code> command:
+
+<P>
+<div class="verbatim"><pre>
+% vvp -m ./myhdl.vpi bin2gray
+</pre></div>
+
+<P>
+This runs the <code>bin2gray</code> simulation, and specifies to use the
+<code>myhdl.vpi</code> PLI module present in the current directory. (This is 
+just a command line usage example; actually simulating with the
+<code>myhdl.vpi</code> module is only meaningful from a
+<code>Cosimulation</code> object.)
+
+<P>
+We can use a <code>Cosimulation</code> object to provide a HDL
+version of a design to the MyHDL simulator. Instead of a generator
+function, we write a function that returns a <code>Cosimulation</code>
+object. For our example and the Icarus Verilog simulator, this is done
+as follows:
+
+<P>
+<div class="verbatim"><pre>
+import os
+
+from myhdl import Cosimulation
+
+cmd = "iverilog -o bin2gray -Dwidth=%s bin2gray.v dut_bin2gray.v"
+      
+def bin2gray(B, G, width):
+    os.system(cmd % width)
+    return Cosimulation("vvp -m ./myhdl.vpi bin2gray", B=B, G=G)
+</pre></div>
+
+<P>
+After the executable command argument, the <code>Cosimulation</code>
+constructor takes an arbitrary number of keyword arguments. Those
+arguments make the link between MyHDL Signals and HDL nets, regs, or
+signals, by named association. The keyword is the name of an argument
+in a <code>$to_myhdl</code> or <code>$from_myhdl</code> call; the argument is
+a MyHDL Signal.
+
+<P>
+With all this in place, we can now use the existing unit test
+to verify the Verilog implementation. Note that we kept the
+same name and parameters for the the <code>bin2gray</code> function:
+all we need to do is to provide this alternative definition
+to the existing unit test.
+
+<P>
+Let's try it on the Verilog design:
+
+<P>
+<div class="verbatim"><pre>
+module bin2gray(B, G);
+
+   parameter width = 8;
+   input [width-1:0]  B;
+   output [width-1:0] G;
+   reg [width-1:0] G;
+   integer i;
+   wire [width:0] extB;
+
+   assign extB = {1'b0, B}; // zero-extend input
+
+   always @(extB) begin
+      for (i=0; i &lt; width; i=i+1)
+        G[i] &lt;= extB[i+1] ^ extB[i];
+   end
+
+endmodule
+</pre></div>
+
+<P>
+When we run our unit test, we get:
+
+<P>
+<div class="verbatim"><pre>
+% python test_bin2gray.py 
+Check that only one bit changes in successive codewords ... ok
+Check that all codewords occur exactly once ... ok
+Check that the code is an original Gray code ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 2.729s
+
+OK
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-hdl.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-restr.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-hdl.html">5.2 The HDL side</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim.html">5. Co-simulation with Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-restr.html">5.4 Restrictions</A>
+<hr>
+<span class="release-info">Release 0.5.1, documentation updated on May 1, 2006.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

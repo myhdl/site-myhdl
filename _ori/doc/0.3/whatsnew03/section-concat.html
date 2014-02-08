@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="whatsnew03.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="whatsnew03.html" title='What's New in MyHDL 0.3'>
+<link rel="contents" href="contents.html" title="Contents"><link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="section-Python.html">
+<LINK REL="previous" href="section-intbv.html">
+<LINK REL="up" HREF="whatsnew03.html">
+<LINK REL="next" href="section-Python.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="7 Function concat() ">
+<META NAME="keywords" CONTENT="whatsnew03">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>7 Function concat() </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="section-intbv.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A HREF="whatsnew03.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="section-Python.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">What's New in MyHDL 0.3</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="section-intbv.html">6 Class intbv enhancements</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew03.html">What's New in MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="section-Python.html">8 Python 2.3 support</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000800000000000000000">&nbsp;</A>
+<BR>
+7 Function <tt class="function">concat()</tt> 
+</H1>
+
+<P>
+In previous versions, the <tt class="class">intbv</tt> class provided a
+<tt class="method">concat()</tt> method.  This method is no longer
+available. Instead, there is now a <tt class="function">concat()</tt> function 
+that supports a much broader range of objects.
+
+<P>
+A function is more natural because MyHDL objects of various types
+can be concatenated: <tt class="class">intbv</tt> objects with a defined bit width,
+<tt class="class">bool</tt> objects, the corresponding signal objects, and bit
+strings. All these objects have a defined bit width.  Moreover, the
+first argument doesn't need to have a defined bit width. It can also be
+an unsized <tt class="class">intbv</tt>, an <tt class="class">int</tt>, a <tt class="class">long</tt>, or a
+corresponding signal object.  Function <tt class="function">concat()</tt> returns an
+<tt class="class">intbv</tt> object.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="section-intbv.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A HREF="whatsnew03.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="section-Python.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">What's New in MyHDL 0.3</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="section-intbv.html">6 Class intbv enhancements</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew03.html">What's New in MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="section-Python.html">8 Python 2.3 support</A>
+<hr>
+<span class="release-info">Release 0.3.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

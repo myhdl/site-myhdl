@@ -1,0 +1,239 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="whatsnew04.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="whatsnew04.html" title='New in MyHDL 0.4: Conversion to Verilog'>
+<link rel="contents" href="contents.html" title="Contents"><link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="previous" href="conv-usage-hier.html">
+<LINK REL="up" href="conv-usage.html">
+<LINK REL="next" href="conv-issues.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="6.4 Optimizations for finite state machines">
+<META NAME="keywords" CONTENT="whatsnew04">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>6.4 Optimizations for finite state machines</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conv-usage-hier.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-usage.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-issues.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">New in MyHDL 0.4: Conversion to Verilog</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conv-usage-hier.html">6.3 A hierarchical design</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-usage.html">6 Converter usage</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-issues.html">7 Known issues</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000740000000000000000">&nbsp;</A>
+<BR>
+6.4 Optimizations for finite state machines
+</H2>
+As often in hardware design, finite state machines deserve special attention.
+
+<P>
+In Verilog and VHDL, finite state machines are typically described
+using case statements.  Python doesn't have a case statement, but the
+converter recognizes particular if-then-else structures and maps them
+to case statements. This optimization occurs when a variable whose
+type is an enumerated type is sequentially tested against enumeration
+items in an if-then-else structure. Also, the appropriate synthesis
+pragmas for efficient synthesis are generated in the Verilog code.
+
+<P>
+As a further optimization, function <tt class="function">enum</tt> was enhanced to support
+alternative encoding schemes elegantly, using an additional parameter
+<var>encoding</var>. For example:
+
+<P>
+<div class="verbatim"><pre>
+t_State = enum('SEARCH', 'CONFIRM', 'SYNC', encoding='one_hot')
+</pre></div>
+
+<P>
+The default encoding is <code>'binary'</code>; the other possibilities are
+<code>'one_hot'</code> and <code>'one_cold'</code>. This parameter only affects
+the conversion output, not the behavior of the type.  The generated
+Verilog code for case statements is optimized for an efficient
+implementation according to the encoding. Note that in contrast, a
+Verilog designer has to make nontrivial code changes to implement a
+different encoding scheme.
+
+<P>
+As an example, consider the following finite state machine, whose
+state variable uses the enumeration type defined above:
+
+<P>
+<div class="verbatim"><pre>
+FRAME_SIZE = 8
+
+def FramerCtrl(SOF, state, syncFlag, clk, reset_n):
+    
+    """ Framing control FSM.
+
+    SOF -- start-of-frame output bit
+    state -- FramerState output
+    syncFlag -- sync pattern found indication input
+    clk -- clock input
+    reset_n -- active low reset
+    
+    """
+    
+    index = intbv(0, min=0, max=8) # position in frame
+    while 1:
+        yield posedge(clk), negedge(reset_n)
+        if reset_n == ACTIVE_LOW:
+            SOF.next = 0
+            index[:] = 0
+            state.next = t_State.SEARCH
+        else:
+            SOF.next = 0
+            if state == t_State.SEARCH:
+                index[:] = 0
+                if syncFlag:
+                    state.next = t_State.CONFIRM
+            elif state == t_State.CONFIRM:
+                if index == 0:
+                    if syncFlag:
+                        state.next = t_State.SYNC
+                    else:
+                        state.next = t_State.SEARCH
+            elif state == t_State.SYNC:
+                if index == 0:
+                    if not syncFlag:
+                        state.next = t_State.SEARCH
+                SOF.next = (index == FRAME_SIZE-1)
+            else:
+                raise ValueError("Undefined state")
+            index[:]= (index + 1) % FRAME_SIZE
+</pre></div>
+
+<P>
+The conversion is done as before:
+
+<P>
+<div class="verbatim"><pre>
+SOF = Signal(bool(0))
+syncFlag = Signal(bool(0))
+clk = Signal(bool(0))
+reset_n = Signal(bool(1))
+state = Signal(t_State.SEARCH)
+framerctrl_inst = toVerilog(FramerCtrl, SOF, state, syncFlag, clk, reset_n)
+</pre></div>
+
+<P>
+The Verilog output looks as follows:
+
+<P>
+<div class="verbatim"><pre>
+module framerctrl_inst (
+    SOF,
+    state,
+    syncFlag,
+    clk,
+    reset_n
+);
+output SOF;
+reg SOF;
+output [2:0] state;
+reg [2:0] state;
+input syncFlag;
+input clk;
+input reset_n;
+
+always @(posedge clk or negedge reset_n) begin: _MYHDL1_BLOCK
+    reg [3-1:0] index;
+    if ((reset_n == 0)) begin
+        SOF &lt;= 0;
+        index[3-1:0] = 0;
+        state &lt;= 3'b001;
+    end
+    else begin
+        SOF &lt;= 0;
+        // synthesis parallel_case full_case
+        casez (state)
+            3'b??1: begin
+                index[3-1:0] = 0;
+                if (syncFlag) begin
+                    state &lt;= 3'b010;
+                end
+            end
+            3'b?1?: begin
+                if ((index == 0)) begin
+                    if (syncFlag) begin
+                        state &lt;= 3'b100;
+                    end
+                    else begin
+                        state &lt;= 3'b001;
+                    end
+                end
+            end
+            3'b1??: begin
+                if ((index == 0)) begin
+                    if ((!syncFlag)) begin
+                        state &lt;= 3'b001;
+                    end
+                end
+                SOF &lt;= (index == (8 - 1));
+            end
+            default: begin
+                $display("Verilog: ValueError(Undefined state)");
+                $finish;
+            end
+        endcase
+        index[3-1:0] = ((index + 1) % 8);
+    end
+end
+endmodule
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conv-usage-hier.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv-usage.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-issues.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">New in MyHDL 0.4: Conversion to Verilog</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conv-usage-hier.html">6.3 A hierarchical design</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv-usage.html">6 Converter usage</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-issues.html">7 Known issues</A>
+<hr>
+<span class="release-info">Release 0.4.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

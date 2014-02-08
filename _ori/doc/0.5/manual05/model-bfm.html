@@ -1,0 +1,416 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="model-mem.html">
+<LINK REL="previous" href="model-hl.html">
+<LINK REL="up" href="model-hl.html">
+<LINK REL="next" href="model-mem.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="3.3.1 Modeling with bus-functional procedures ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>3.3.1 Modeling with bus-functional procedures </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model-hl.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model-hl.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model-mem.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model-hl.html">3.3 High level modeling</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model-hl.html">3.3 High level modeling</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model-mem.html">3.3.2 Modeling memories with</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION004310000000000000000">&nbsp;</A>
+<BR>
+3.3.1 Modeling with bus-functional procedures 
+</H2>
+
+<P>
+<a name="l2h-19">&nbsp;</a>A <i class="dfn">bus-functional procedure</i> is a reusable encapsulation of the
+low-level operations needed to implement some abstract transaction on
+a physical interface. Bus-functional procedures are typically used in
+flexible verification environments.
+
+<P>
+Once again, MyHDL uses generator functions to support
+bus-functional procedures. In MyHDL the difference between
+instances and bus-functional procedure calls comes from the way in
+which a generator function is used.
+
+<P>
+As an example, we will design a bus-functional procedure of a
+simplified UART transmitter. We assume 8 data bits, no parity bit, and
+a single stop bit, and we add print statements to follow the
+simulation behavior:
+
+<P>
+<div class="verbatim"><pre>
+T_9600 = int(1e9 / 9600)
+
+def rs232_tx(tx, data, duration=T_9600):
+    
+    """ Simple rs232 transmitter procedure.
+
+    tx -- serial output data
+    data -- input data byte to be transmitted
+    duration -- transmit bit duration
+    
+    """
+
+    print "-- Transmitting %s --" % hex(data)
+    print "TX: start bit"      
+    tx.next = 0
+    yield delay(duration)
+
+    for i in range(8):
+        print "TX: %s" % data[i]
+        tx.next = data[i]
+        yield delay(duration)
+
+    print "TX: stop bit"      
+    tx.next = 1
+    yield delay(duration)
+</pre></div>
+
+<P>
+This looks exactly like the generator functions in previous sections. It
+becomes a bus-functional procedure when we use it differently. Suppose
+that in a test bench, we want to generate a number of data bytes to be
+transmitted. This can be modeled as follows:
+
+<P>
+<div class="verbatim"><pre>
+testvals = (0xc5, 0x3a, 0x4b)
+
+def stimulus():
+    tx = Signal(1)
+    for val in testvals:
+        txData = intbv(val)
+        yield rs232_tx(tx, txData)
+</pre></div>
+
+<P>
+We use the bus-functional procedure call as a clause in a
+<code>yield</code> statement. This introduces a fourth form of the
+<code>yield</code> statement: using a generator as a clause. Although this is
+a more dynamic usage than in the previous cases, the meaning is
+actually very similar: at that point,
+the original generator should 
+    <a name="l2h-20">&nbsp;</a>wait for the completion of a generator. 
+In this case, the original generator resumes when the
+<code>rs232_tx(tx, txData)</code> generator returns.
+
+<P>
+When simulating this, we get:
+
+<P>
+<div class="verbatim"><pre>
+-- Transmitting 0xc5 --
+TX: start bit
+TX: 1
+TX: 0
+TX: 1
+TX: 0
+TX: 0
+TX: 0
+TX: 1
+TX: 1
+TX: stop bit
+-- Transmitting 0x3a --
+TX: start bit
+TX: 0
+TX: 1
+TX: 0
+TX: 1
+...
+</pre></div>
+
+<P>
+We will continue with this example by designing the corresponding UART
+receiver bus-functional procedure. This will allow us to introduce
+further capabilities of MyHDL and its use of the <code>yield</code>
+statement. 
+
+<P>
+Until now, the <code>yield</code> statements had a single clause. However,
+they can have multiple clauses as well. In that case, the generator
+resumes as soon as the wait condition specified by one
+of the clauses is satisfied. This corresponds to the functionality of
+    <a name="l2h-21">&nbsp;</a>sensitivity lists in Verilog and VHDL.
+
+<P>
+For example, suppose we want to design an UART receive procedure with
+a timeout. We can specify the timeout condition while waiting for the
+start bit, as in the following generator function:
+
+<P>
+<div class="verbatim"><pre>
+def rs232_rx(rx, data, duration=T_9600, timeout=MAX_TIMEOUT):
+    
+    """ Simple rs232 receiver procedure.
+
+    rx -- serial input data
+    data -- data received
+    duration -- receive bit duration
+    
+    """
+
+    # wait on start bit until timeout
+    yield rx.negedge, delay(timeout)
+    if rx == 1:
+        raise StopSimulation, "RX time out error"
+
+    # sample in the middle of the bit duration
+    yield delay(duration // 2)
+    print "RX: start bit"
+
+    for i in range(8):
+        yield delay(duration)
+        print "RX: %s" % rx
+        data[i] = rx
+
+    yield delay(duration)
+    print "RX: stop bit"
+    print "-- Received %s --" % hex(data)
+</pre></div>
+
+<P>
+If the timeout condition is triggered, the receive bit <code>rx</code>
+will still be <code>1</code>. In that case, we raise an exception to stop
+the simulation. The <code>StopSimulation</code> exception is predefined in
+MyHDL for such purposes. In the other case, we proceed by
+positioning the sample point in the middle of the bit duration, and
+sampling the received data bits.
+
+<P>
+When a <code>yield</code> statement has multiple clauses, they can be of any
+type that is supported as a single clause, including generators. For
+example, we can verify the transmitter and receiver generator against
+each other by yielding them together, as follows:
+
+<P>
+<div class="verbatim"><pre>
+def test():
+    tx = Signal(1)
+    rx = tx
+    rxData = intbv(0)
+    for val in testvals:
+        txData = intbv(val)
+        yield rs232_rx(rx, rxData), rs232_tx(tx, txData)
+</pre></div>
+
+<P>
+Both forked generators will run concurrently, and the original
+generator will resume as soon as one of them finishes (which will be
+the transmitter in this case).  The simulation output shows how
+the UART procedures run in lockstep:
+
+<P>
+<div class="verbatim"><pre>
+-- Transmitting 0xc5 --
+TX: start bit
+RX: start bit
+TX: 1
+RX: 1
+TX: 0
+RX: 0
+TX: 1
+RX: 1
+TX: 0
+RX: 0
+TX: 0
+RX: 0
+TX: 0
+RX: 0
+TX: 1
+RX: 1
+TX: 1
+RX: 1
+TX: stop bit
+RX: stop bit
+-- Received 0xc5 --
+-- Transmitting 0x3a --
+TX: start bit
+RX: start bit
+TX: 0
+RX: 0
+...
+</pre></div>
+
+<P>
+For completeness, we will verify the timeout behavior with a test
+bench that disconnects the <code>rx</code> from the <code>tx</code> signal, and we
+specify a small timeout for the receive procedure:
+
+<P>
+<div class="verbatim"><pre>
+def testTimeout():
+    tx = Signal(1)
+    rx = Signal(1)
+    rxData = intbv(0)
+    for val in testvals:
+        txData = intbv(val)
+        yield rs232_rx(rx, rxData, timeout=4*T_9600-1), rs232_tx(tx, txData)
+</pre></div>
+
+<P>
+The simulation now stops with a timeout exception after a few
+transmit cycles:
+
+<P>
+<div class="verbatim"><pre>
+-- Transmitting 0xc5 --
+TX: start bit
+TX: 1
+TX: 0
+TX: 1
+StopSimulation: RX time out error
+</pre></div>
+
+<P>
+Recall that the original generator resumes as soon as one of the
+forked generators returns. In the previous cases, this is just fine,
+as the transmitter and receiver generators run in lockstep. However,
+it may be desirable to resume the caller only when <i>all</i> of the
+forked generators have finished. For example, suppose that we want to
+characterize the robustness of the transmitter and receiver design to
+bit duration differences. We can adapt our test bench as follows, to
+run the transmitter at a faster rate:
+
+<P>
+<div class="verbatim"><pre>
+T_10200 = int(1e9 / 10200)
+
+def testNoJoin():
+    tx = Signal(1)
+    rx = tx
+    rxData = intbv(0)
+    for val in testvals:
+        txData = intbv(val)
+        yield rs232_rx(rx, rxData), rs232_tx(tx, txData, duration=T_10200)
+</pre></div>
+
+<P>
+Simulating this shows how the transmission of the new byte starts
+before the previous one is received, potentially creating additional
+transmission errors:
+
+<P>
+<div class="verbatim"><pre>
+-- Transmitting 0xc5 --
+TX: start bit
+RX: start bit
+...
+TX: 1
+RX: 1
+TX: 1
+TX: stop bit
+RX: 1
+-- Transmitting 0x3a --
+TX: start bit
+RX: stop bit
+-- Received 0xc5 --
+RX: start bit
+TX: 0
+</pre></div>
+
+<P>
+It is more likely that we want to characterize the design on a byte
+by byte basis, and align the two generators before transmitting each
+byte. In MyHDL, this is done with the <tt class="function">join</tt> function. By
+joining clauses together in a <code>yield</code> statement, we create a new
+clause that triggers only when all of its clause arguments have
+triggered. For example, we can adapt the test bench as follows:
+
+<P>
+<div class="verbatim"><pre>
+def testJoin():
+    tx = Signal(1)
+    rx = tx
+    rxData = intbv(0)
+    for val in testvals:
+        txData = intbv(val)
+        yield join(rs232_rx(rx, rxData), rs232_tx(tx, txData, duration=T_10200))
+</pre></div>
+
+<P>
+Now, transmission of a new byte only starts when the previous one is received:
+
+<P>
+<div class="verbatim"><pre>
+-- Transmitting 0xc5 --
+TX: start bit
+RX: start bit
+...
+TX: 1
+RX: 1
+TX: 1
+TX: stop bit
+RX: 1
+RX: stop bit
+-- Received 0xc5 --
+-- Transmitting 0x3a --
+TX: start bit
+RX: start bit
+TX: 0
+RX: 0
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model-hl.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model-hl.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model-mem.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model-hl.html">3.3 High level modeling</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model-hl.html">3.3 High level modeling</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model-mem.html">3.3.2 Modeling memories with</A>
+<hr>
+<span class="release-info">Release 0.5, documentation updated on December 29, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

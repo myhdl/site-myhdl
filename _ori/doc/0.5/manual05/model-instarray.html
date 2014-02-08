@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="model-infer-instlist.html">
+<LINK REL="previous" href="model-conf.html">
+<LINK REL="up" href="model-structure.html">
+<LINK REL="next" href="model-infer-instlist.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="3.1.2 Arrays of instances ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>3.1.2 Arrays of instances </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model-conf.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model-structure.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model-infer-instlist.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model-conf.html">3.1.1 Conditional instantiation</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model-structure.html">3.1 Structural modeling</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model-infer-instlist.html">3.1.3 Inferring the list</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION004120000000000000000">&nbsp;</A>
+<a name="l2h-12">&nbsp;</a>
+<BR>
+3.1.2 Arrays of instances 
+</H2>
+
+<P>
+Python lists are easy to create. We can use them
+to model arrays of instances. 
+
+<P>
+Suppose we have a top module that instantiates a
+single <code>channel</code> submodule, as follows:
+
+<P>
+<div class="verbatim"><pre>
+def top(...):
+
+    din = Signal(0)
+    dout = Signal(0)
+    clk = Signal(bool(0))
+    reset = Signal(bool(0))
+
+    channel_inst = channel(dout, din, clk, reset)
+
+    return channel_inst
+</pre></div>
+
+<P>
+If we wanted to support an arbitrary number of channels,
+we can use lists of signals and a list of instances,
+as follows:
+
+<P>
+<div class="verbatim"><pre>
+def top(..., n=8):
+
+    din = [Signal(0) for i in range(n)]
+    dout = [Signal(0) for in range(n)]
+    clk = Signal(bool(0))
+    reset = Signal(bool(0))
+    channel_inst = [None for i in range(n)]
+
+    for i in range(n):
+        channel_inst[i] = channel(dout[i], din[i], clk, reset)
+
+    return channel_inst
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model-conf.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model-structure.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model-infer-instlist.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model-conf.html">3.1.1 Conditional instantiation</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model-structure.html">3.1 Structural modeling</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model-infer-instlist.html">3.1.3 Inferring the list</A>
+<hr>
+<span class="release-info">Release 0.5, documentation updated on December 29, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

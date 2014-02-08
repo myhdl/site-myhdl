@@ -10,8 +10,8 @@ There are [many good reasons](:why) to consider MyHDL. However, to use it
 effectively, it is important to have realistic expectations. The easiest way to
 achieve this is perhaps to describe what MyHDL is *not*. 
 
-Not a way to turn arbitrary Python into silicon
-===============================================
+It does not turn arbitrary Python into silicon
+==============================================
 
 Arbitrary Python into silicon, that sounds like a dream, right? And it is :-)
 Don't expect this from MyHDL.
@@ -21,7 +21,7 @@ To convert MyHDL code into hardware, you will have to learn about
 the modeling constraints that it imposes. These constraints are significant,
 and therefore synthesizable code may be suprisingly low-level to newcomers.
 
-Not a radically new approach
+Not a radically new approach 
 ============================
 
 The mainstream Hardware Description Languages are Verilog and VHDL. MyHDL was
@@ -40,8 +40,8 @@ test-driven design (TDD).
 However, fundamentally MyHDL is based on the same event-driven paradigm as
 Verilog and VHDL. This has proven to be the winning solution for HDL design.
 
-Not a synthesis tool
-====================
+It is not a synthesis tool
+==========================
 
 MyHDL alone is not sufficient to convert code into a hardware implementation.
 In other words, it is not a synthesis tool.
@@ -55,7 +55,7 @@ from FPGA vendors are cheap or even free.
 Although the convertor in MyHDL is not a synthesis tool, it automates a number
 of tasks which are harder to do in Verilog or VHDL directly.
 
-Not an IP block library
+It is not an IP library
 =======================
 
 The term *IP* (Intellectual Property) is used in the context of hardware design
@@ -67,7 +67,7 @@ design them. Actually, MyHDL is the ideal platform for IP block development,
 because of its powerful Python foundation, and because it provides a path into
 both Verilog and VHDL design flows with a single development effort.
 
-Not only for implementation
+Not just for implementation
 ===========================
 
 MyHDL is very effective to describe a hardware implementation. The

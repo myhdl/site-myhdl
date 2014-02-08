@@ -1,0 +1,487 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Hardware-oriented types &mdash; MyHDL 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/myhdl.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="MyHDL 0.8 documentation" href="../index.html" />
+    <link rel="up" title="The MyHDL manual" href="index.html" />
+    <link rel="next" title="Structural modeling" href="structure.html" />
+    <link rel="prev" title="Introduction to MyHDL" href="intro.html" /> 
+  </head>
+  <body>
+<div style="background-color: white; text-align: left; padding: 5px 5px 2px 15px">
+<a href="http://www.myhdl.org">
+    <img src="../_static/myhdl_logo_header.png" border=0 alt="MyHDL" />
+</a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="structure.html" title="Structural modeling"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="Introduction to MyHDL"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">The MyHDL manual</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Hardware-oriented types</a><ul>
+<li><a class="reference internal" href="#the-intbv-class">The <tt class="docutils literal"><span class="pre">intbv</span></tt> class</a></li>
+<li><a class="reference internal" href="#bit-indexing">Bit indexing</a></li>
+<li><a class="reference internal" href="#bit-slicing">Bit slicing</a></li>
+<li><a class="reference internal" href="#the-modbv-class">The <tt class="docutils literal"><span class="pre">modbv</span></tt> class</a></li>
+<li><a class="reference internal" href="#unsigned-and-signed-representation">Unsigned and signed representation</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="intro.html"
+                        title="previous chapter">Introduction to MyHDL</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="structure.html"
+                        title="next chapter">Structural modeling</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/manual/hwtypes.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="hardware-oriented-types">
+<span id="hwtypes"></span><h1>Hardware-oriented types<a class="headerlink" href="#hardware-oriented-types" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="the-intbv-class">
+<span id="hwtypes-intbv"></span><h2>The <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> class<a class="headerlink" href="#the-intbv-class" title="Permalink to this headline">¶</a></h2>
+<p id="index-0">Hardware design involves dealing with bits and bit-oriented operations. The
+standard Python type <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt> has most of the desired features, but lacks
+support for indexing and slicing. For this reason, MyHDL provides the
+<a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> class. The name was chosen to suggest an integer with bit vector
+flavor.</p>
+<p><a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> works transparently with other integer-like types. Like
+class <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt>, it provides access to the underlying two&#8217;s complement
+representation for bitwise operations. However, unlike <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt>, it is
+a mutable type. This means that its value can be changed after object
+creation, through methods and operators such as slice assignment.</p>
+<p><a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> supports the same operators as <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt> for arithmetic.
+In addition, it provides a number of features to make it
+suitable for hardware design. First, the range of allowed values can
+be constrained. This makes it possible to check the value at run time
+during simulation. Moreover, back end tools can determine the smallest
+possible bit width for representing the object.
+Secondly, it supports bit level operations by providing an indexing
+and slicing interface.</p>
+<p><a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> objects are constructed in general as follows:</p>
+<div class="highlight-python"><pre>intbv([val=None] [, min=None]  [, max=None])</pre>
+</div>
+<p><em>val</em> is the initial value. <em>min</em> and <em>max</em> can be used to constrain
+the value. Following the Python conventions, <em>min</em> is inclusive, and
+<em>max</em> is exclusive. Therefore, the allowed value range is <em>min</em> .. <em>max</em>-1.</p>
+<p>Let&#8217;s us look at some examples. First, an unconstrained <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a>
+object is created as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">24</span><span class="p">)</span>
+</pre></div>
+</div>
+<p id="index-1">After object creation, <em>min</em> and <em>max</em> are available as attributes for
+inspection. Also, the standard Python function <a class="reference external" href="http://docs.python.org/library/functions.html#len" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">len()</span></tt></a> can be used
+to determine the bit width. If we inspect the previously created
+object, we get:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">min</span>
+<span class="go">None</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">max</span>
+<span class="go">None</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<p>As the instantiation was unconstrained, the <em>min</em> and <em>max</em> attributes
+are undefined. Likewise, the bit width is undefined, which is indicated
+by a return value <tt class="docutils literal"><span class="pre">0</span></tt>.</p>
+<p>A constrained <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> object is created as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Inspecting the object now gives:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">min</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">max</span>
+<span class="go">25</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">5</span>
+</pre></div>
+</div>
+<p>We see that the allowed value range is 0 .. 24,  and that 5 bits are
+required to represent the object.</p>
+<p>Sometimes hardware engineers prefer to constrain an object by defining
+its bit width directly, instead of the range of allowed values.
+The following example shows how to do that:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">24</span><span class="p">)[</span><span class="mi">5</span><span class="p">:]</span>
+</pre></div>
+</div>
+<p>What actually happens here is that first an unconstrained <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a>
+is created, which is then sliced. Slicing an <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> returns a new
+<a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> with the constraints set up appropriately.
+Inspecting the object now shows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">min</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">max</span>
+<span class="go">32</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">5</span>
+</pre></div>
+</div>
+<p>Note that the <em>max</em> attribute is 32, as with 5 bits it is possible to represent
+the range 0 .. 31.  Creating an <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> this way has the disadvantage
+that only positive value ranges can be specified. Slicing is described in more
+detail in <a class="reference internal" href="#hwtypes-slicing"><em>Bit slicing</em></a>.</p>
+<p>To summarize, there are two ways to constrain an <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> object: by
+defining its bit width, or by defining its value range. The bit
+width method is more traditional in hardware design. However, there
+are two reasons to use the range method instead: to represent
+negative values as observed above, and for fine-grained control over the
+value range.</p>
+<p>Fine-grained control over the value range permits better error
+checking, as there is no need for the <em>min</em> and <em>max</em> bounds
+to be symmetric or powers of 2. In all cases, the bit width
+is set appropriately to represent all values in
+the range. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="nb">min</span><span class="o">=-</span><span class="mi">3</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="nb">min</span><span class="o">=-</span><span class="mi">13</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">5</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="bit-indexing">
+<span id="hwtypes-indexing"></span><h2>Bit indexing<a class="headerlink" href="#bit-indexing" title="Permalink to this headline">¶</a></h2>
+<p id="index-2">As an example, we will consider the design of a Gray encoder. The following code
+is a Gray encoder modeled in MyHDL:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">Simulation</span><span class="p">,</span> <span class="n">always_comb</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">intbv</span><span class="p">,</span> <span class="nb">bin</span>
+
+<span class="k">def</span> <span class="nf">bin2gray</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Gray encoder.</span>
+
+<span class="sd">    B -- input intbv signal, binary encoded</span>
+<span class="sd">    G -- output intbv signal, gray encoded</span>
+<span class="sd">    width -- bit width</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@always_comb</span>
+    <span class="k">def</span> <span class="nf">logic</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">width</span><span class="p">):</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">next</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">^</span> <span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">logic</span>
+</pre></div>
+</div>
+<p>This code introduces a few new concepts. The string in triple quotes at the
+start of the function is a <em class="dfn">doc string</em>. This is standard Python practice
+for structured documentation of code.</p>
+<p id="index-3">Furthermore, we introduce a third decorator: <a class="reference internal" href="reference.html#myhdl.always_comb" title="myhdl.always_comb"><tt class="xref py py-func docutils literal"><span class="pre">always_comb()</span></tt></a>.  It is used
+with a classic function and specifies that the  resulting generator should wait
+for a value change on any input signal. This is typically used to describe
+combinatorial logic. The <a class="reference internal" href="reference.html#myhdl.always_comb" title="myhdl.always_comb"><tt class="xref py py-func docutils literal"><span class="pre">always_comb()</span></tt></a> decorator automatically infers
+which signals are used as inputs.</p>
+<p>Finally, the code contains bit indexing operations and an exclusive-or operator
+as required for a Gray encoder. By convention, the lsb of an <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a>
+object has index <tt class="docutils literal"><span class="pre">0</span></tt>.</p>
+<p>To verify the Gray encoder, we write a test bench that prints input and output
+for all possible input values:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">testBench</span><span class="p">(</span><span class="n">width</span><span class="p">):</span>
+
+    <span class="n">B</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+    <span class="n">dut</span> <span class="o">=</span> <span class="n">bin2gray</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+
+    <span class="nd">@instance</span>
+    <span class="k">def</span> <span class="nf">stimulus</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">width</span><span class="p">):</span>
+            <span class="n">B</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s">&quot;B: &quot;</span> <span class="o">+</span> <span class="nb">bin</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;| G: &quot;</span> <span class="o">+</span> <span class="nb">bin</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dut</span><span class="p">,</span> <span class="n">stimulus</span>
+</pre></div>
+</div>
+<p>We use the conversion function <a class="reference internal" href="reference.html#myhdl.bin" title="myhdl.bin"><tt class="xref py py-func docutils literal"><span class="pre">bin()</span></tt></a> to get a binary string representation of
+the signal values. This function is exported by the <a class="reference internal" href="reference.html#module-myhdl" title="myhdl"><tt class="xref py py-mod docutils literal"><span class="pre">myhdl</span></tt></a> package and
+supplements the standard Python <a class="reference external" href="http://docs.python.org/library/functions.html#hex" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">hex()</span></tt></a> and <a class="reference external" href="http://docs.python.org/library/functions.html#oct" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">oct()</span></tt></a> conversion functions.</p>
+<p>As a demonstration, we set up a simulation for a small width:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">testBench</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The simulation produces the following output:</p>
+<div class="highlight-python"><pre>% python bin2gray.py
+B: 000 | G: 000
+B: 001 | G: 001
+B: 010 | G: 011
+B: 011 | G: 010
+B: 100 | G: 110
+B: 101 | G: 111
+B: 110 | G: 101
+B: 111 | G: 100
+StopSimulation: No more events</pre>
+</div>
+</div>
+<div class="section" id="bit-slicing">
+<span id="hwtypes-slicing"></span><h2>Bit slicing<a class="headerlink" href="#bit-slicing" title="Permalink to this headline">¶</a></h2>
+<p id="index-4">For a change, we will use a traditional function as an example to illustrate
+slicing.  The following function calculates the HEC byte of an ATM header.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="n">intbv</span><span class="p">,</span> <span class="n">concat</span>
+
+<span class="n">COSET</span> <span class="o">=</span> <span class="mh">0x55</span>
+
+<span class="k">def</span> <span class="nf">calculateHec</span><span class="p">(</span><span class="n">header</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Return hec for an ATM header, represented as an intbv.</span>
+
+<span class="sd">    The hec polynomial is 1 + x + x**2 + x**8.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hec</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="n">header</span><span class="p">[</span><span class="mi">32</span><span class="p">:]:</span>
+        <span class="n">hec</span><span class="p">[</span><span class="mi">8</span><span class="p">:]</span> <span class="o">=</span> <span class="n">concat</span><span class="p">(</span><span class="n">hec</span><span class="p">[</span><span class="mi">7</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span>
+                         <span class="n">bit</span> <span class="o">^</span> <span class="n">hec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">^</span> <span class="n">hec</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+                         <span class="n">bit</span> <span class="o">^</span> <span class="n">hec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">^</span> <span class="n">hec</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+                         <span class="n">bit</span> <span class="o">^</span> <span class="n">hec</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>
+                        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">hec</span> <span class="o">^</span> <span class="n">COSET</span>
+</pre></div>
+</div>
+<p>The code shows how slicing access and assignment is supported on the
+<a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> data type. In accordance with the most common hardware
+convention, and unlike standard Python, slicing ranges are downward. The code
+also demonstrates concatenation of <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> objects.</p>
+<p>As in standard Python, the slicing range is half-open: the highest index bit is
+not included. Unlike standard Python however, this index corresponds to the
+<em>leftmost</em> item. Both indices can be omitted from the slice. If the leftmost
+index is omitted, the meaning is to access &#8220;all&#8221; higher order bits.  If the
+rightmost index is omitted, it is <tt class="docutils literal"><span class="pre">0</span></tt> by default.</p>
+<p>The half-openness of a slice may seem awkward at first, but it helps to avoid
+one-off count issues in practice. For example, the slice <tt class="docutils literal"><span class="pre">hex[8:]</span></tt> has exactly
+<tt class="docutils literal"><span class="pre">8</span></tt> bits. Likewise, the slice <tt class="docutils literal"><span class="pre">hex[7:2]</span></tt> has <tt class="docutils literal"><span class="pre">7-2=5</span></tt> bits. You can think
+about it as follows: for a slice <tt class="docutils literal"><span class="pre">[i:j]</span></tt>, only bits below index <tt class="docutils literal"><span class="pre">i</span></tt> are
+included, and the bit with index <tt class="docutils literal"><span class="pre">j</span></tt> is the last bit included.</p>
+<p>When an <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> object is sliced, a new <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> object is returned.
+This new <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> object is always positive, and the value bounds are
+set up in accordance with the bit width specified by the slice. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="nb">min</span><span class="o">=-</span><span class="mi">3</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span>
+<span class="go">intbv(6L)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="go">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">min</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">max</span>
+<span class="go">16</span>
+</pre></div>
+</div>
+<p>In the example, the original object is sliced with a slice equal to its bit width.
+The returned object has the same value and bit width, but its value
+range consists of all positive values that can be represented by
+the bit width.</p>
+<p>The object returned by a slice is positive, even when the
+original object is negative:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">bin</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">&#39;11101&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span>
+<span class="go">intbv(29L)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">bin</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="go">&#39;11101&#39;</span>
+</pre></div>
+</div>
+<p>The bit pattern of the two objects is identical within the bit width,
+but their values have opposite sign.</p>
+</div>
+<div class="section" id="the-modbv-class">
+<span id="hwtypes-modbv"></span><h2>The <a class="reference internal" href="reference.html#myhdl.modbv" title="myhdl.modbv"><tt class="xref py py-class docutils literal"><span class="pre">modbv</span></tt></a> class<a class="headerlink" href="#the-modbv-class" title="Permalink to this headline">¶</a></h2>
+<p>In hardware modeling, there is often a need for the elegant modeling of
+wrap-around behavior. <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> instances do not support this
+automatically, as they assert that any assigned value is within the bound
+constraints. However, wrap-around modeling can be straightforward.  For
+example, the wrap-around condition for a counter is often decoded explicitly,
+as it is needed for other purposes. Also, the modulo operator provides an
+elegant one-liner in many scenarios:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">count</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="p">(</span><span class="n">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="o">**</span><span class="mi">8</span>
+</pre></div>
+</div>
+<p>However, some interesting cases are not supported by the <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> type.
+For example, we would like to describe a free running counter using a variable
+and augmented assignment as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">count_var</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>This is not possible with the <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> type, as we cannot add the modulo
+behavior to this description. A similar problem exist for an augmented left
+shift as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">shifter</span> <span class="o">&lt;&lt;=</span> <span class="mi">4</span>
+</pre></div>
+</div>
+<p>To support these operations directly, MyHDL provides the <a class="reference internal" href="reference.html#myhdl.modbv" title="myhdl.modbv"><tt class="xref py py-class docutils literal"><span class="pre">modbv</span></tt></a>
+type. <a class="reference internal" href="reference.html#myhdl.modbv" title="myhdl.modbv"><tt class="xref py py-class docutils literal"><span class="pre">modbv</span></tt></a> is implemented as a subclass of  <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a>.
+The two classes have an identical interface and work together
+in a straightforward way for arithmetic operations.
+The only difference is how the bounds are handled: out-of-bound values
+result in an error with <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a>, and in wrap-around with
+<a class="reference internal" href="reference.html#myhdl.modbv" title="myhdl.modbv"><tt class="xref py py-class docutils literal"><span class="pre">modbv</span></tt></a>. For example, the modulo counter as above can be
+modeled as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">count</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">modbv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">2</span><span class="o">**</span><span class="mi">8</span><span class="p">))</span>
+<span class="o">...</span>
+<span class="n">count</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>The wrap-around behavior is defined in general as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">val</span> <span class="o">=</span> <span class="p">(</span><span class="n">val</span> <span class="o">-</span> <span class="nb">min</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="nb">max</span> <span class="o">-</span> <span class="nb">min</span><span class="p">)</span> <span class="o">+</span> <span class="nb">min</span>
+</pre></div>
+</div>
+<p>In a typical case when <tt class="docutils literal"><span class="pre">min==0</span></tt>, this reduces to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">val</span> <span class="o">=</span> <span class="n">val</span> <span class="o">%</span> <span class="nb">max</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="unsigned-and-signed-representation">
+<span id="hwtypes-signed"></span><h2>Unsigned and signed representation<a class="headerlink" href="#unsigned-and-signed-representation" title="Permalink to this headline">¶</a></h2>
+<p id="index-5"><a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> is designed to be as high level as possible. The underlying
+value of an <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> object is a Python <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt>, which is
+represented as a two&#8217;s complement number with &#8220;indefinite&#8221; bit
+width. The range bounds are only used for error checking, and to
+calculate the minimum required bit width for representation. As a
+result, arithmetic can be performed like with normal integers.</p>
+<p>In contrast, HDLs such as Verilog and VHDL typically require designers
+to deal with representational issues, especially for synthesizable code.
+They provide low-level types like <tt class="docutils literal"><span class="pre">signed</span></tt> and <tt class="docutils literal"><span class="pre">unsigned</span></tt> for
+arithmetic. The rules for arithmetic with such types are much more
+complicated than with plain integers.</p>
+<p>In some cases it can be useful to interpret <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> objects
+in terms of &#8220;signed&#8221; and &#8220;unsigned&#8221;. Basically, it depends on attribute <em>min</em>.
+if <em>min</em> &lt; 0, then the object is &#8220;signed&#8221;, otherwise it is &#8220;unsigned&#8221;.
+In particular, the bit width of a &#8220;signed&#8221; object will account for
+a sign bit, but that of an &#8220;unsigned&#8221; will not, because that would
+be redundant. From earlier sections, we have learned that the
+return value from a slicing operation is always &#8220;unsigned&#8221;.</p>
+<p>In some applications, it is desirable to convert an &#8220;unsigned&#8221;
+<a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> to  a &#8220;signed&#8221;, in other words, to interpret the msb bit
+as a sign bit.  The msb bit is the highest order bit within the object&#8217;s
+bit width.  For this purpose, <a class="reference internal" href="reference.html#myhdl.intbv" title="myhdl.intbv"><tt class="xref py py-class docutils literal"><span class="pre">intbv</span></tt></a> provides the
+<a class="reference internal" href="reference.html#myhdl.intbv.signed" title="myhdl.intbv.signed"><tt class="xref py py-meth docutils literal"><span class="pre">intbv.signed()</span></tt></a> method. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">bin</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">&#39;1100&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">signed</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span>
+<span class="go">-4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">bin</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">&#39;1100&#39;</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="reference.html#myhdl.intbv.signed" title="myhdl.intbv.signed"><tt class="xref py py-meth docutils literal"><span class="pre">intbv.signed()</span></tt></a> extends the msb bit into the higher-order bits of the
+underlying object value, and returns the result as an integer.
+Naturally, for a &#8220;signed&#8221; the return value will always be identical
+to the original value, as it has the sign bit already.</p>
+<p>As an example let&#8217;s take a 8 bit wide data bus that would be modeled as
+follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">data_bus</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">8</span><span class="p">:]</span>
+</pre></div>
+</div>
+<p>Now consider that a complex number is transferred over this data
+bus. The upper 4 bits of the data bus are used for the real value and
+the lower 4 bits for the imaginary value. As real and imaginary values
+have a positive and negative value range, we can slice them off from
+the data bus and convert them as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">real</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">data_bus</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">signed</span><span class="p">()</span>
+<span class="n">imag</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">data_bus</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span><span class="o">.</span><span class="n">signed</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="structure.html" title="Structural modeling"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="Introduction to MyHDL"
+             >previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" >The MyHDL manual</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Jan Decaluwe.
+      Last updated on May 20, 2013.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="previous" href="cosim-restr.html">
+<LINK REL="up" href="cosim.html">
+<LINK REL="next" href="cosim-icarus.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="5.5 Implementation notes ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>5.5 Implementation notes </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-race.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-icarus.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-race.html">5.4.2 Race sensitivity issues</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim.html">5. Co-simulation with Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-icarus.html">5.5.1 Icarus Verilog</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION006500000000000000000">&nbsp;</A>
+<BR>
+5.5 Implementation notes 
+</H1>
+
+<P>
+<BLOCKQUOTE>
+<EM>This section requires some knowledge of PLI terminology.
+
+</EM></BLOCKQUOTE>
+
+<P>
+Enabling a simulator for co-simulation requires a PLI module written
+in C. In Verilog, the PLI is part of the ``standard''.  However,
+different simulators implement different versions and portions of the
+standard. Worse yet, the behavior of certain PLI callbacks is not
+defined on some essential points.  As a result, one should plan to
+write or at least customize a specific PLI module for any simulator.
+The release contains a PLI module for the open source Icarus
+and Cver simulators. 
+
+<P>
+This section documents the current approach and status of the PLI
+module implementation and some reflections on future
+implementations.
+
+<P>
+
+<p><hr>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></a>
+
+<UL CLASS="ChildLinks">
+<LI><A href="cosim-icarus.html">5.5.1 Icarus Verilog</a>
+<UL>
+<LI><A href="cosim-icarus-delta.html">5.5.1.1 Delta cycle implementation</a>
+<LI><A href="cosim-icarus-pass.html">5.5.1.2 Passive Verilog check</a>
+</ul>
+<LI><A href="cosim-cver.html">5.5.2 Cver</a>
+<LI><A href="cosim-impl-verilog.html">5.5.3 Other Verilog simulators</a>
+<LI><A href="cosim-impl-syscalls.html">5.5.4 Interrupted system calls</a>
+<LI><A href="cosim-impl-vhdl.html">5.5.5 VHDL</a>
+</ul>
+<!--End of Table of Child-Links-->
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-race.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-icarus.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-race.html">5.4.2 Race sensitivity issues</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim.html">5. Co-simulation with Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-icarus.html">5.5.1 Icarus Verilog</A>
+<hr>
+<span class="release-info">Release 0.5, documentation updated on December 29, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

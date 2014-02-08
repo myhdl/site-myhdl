@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="conv-features.html">
+<LINK REL="previous" href="conv-intro.html">
+<LINK REL="up" href="conv.html">
+<LINK REL="next" href="conv-features.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="6.2 Solution description">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>6.2 Solution description</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conv-intro.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-features.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conv-intro.html">6.1 Introduction</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv.html">6. Conversion to Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-features.html">6.3 Features</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION007200000000000000000">&nbsp;</A>
+<BR>
+6.2 Solution description
+</H1>
+
+<P>
+The solution works as follows. The hardware description should
+satisfy certain constraints that are typical for
+implementation-oriented hardware modeling.  Subsequently, such a
+design is converted to an equivalent model in the Verilog language,
+using the function <tt class="function">toVerilog</tt> from the MyHDL library. Finally, a third-party <i>synthesis tool</i> is used to
+convert the Verilog design to a gate implementation for an ASIC or
+FPGA. There are a number of Verilog synthesis tools available, varying
+in price, capabilities, and target implementation technology.
+
+<P>
+The conversion does not start from source files, but from an
+instantiated design that has been <i>elaborated</i> by the Python
+interpreter. The converter uses the Python profiler to track the
+interpreter's operation and to infer the design structure and name
+spaces. It then selectively compiles pieces of source code for
+additional analysis and for conversion. This is done using the Python
+compiler package.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="conv-intro.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="conv.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="conv-features.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="conv-intro.html">6.1 Introduction</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="conv.html">6. Conversion to Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="conv-features.html">6.3 Features</A>
+<hr>
+<span class="release-info">Release 0.5, documentation updated on December 29, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

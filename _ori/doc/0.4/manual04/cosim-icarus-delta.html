@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="cosim-icarus-pass.html">
+<LINK REL="previous" href="cosim-icarus.html">
+<LINK REL="up" href="cosim-icarus.html">
+<LINK REL="next" href="cosim-icarus-pass.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="5.5.1.1 Delta cycle implementation ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>5.5.1.1 Delta cycle implementation </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-icarus.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim-icarus.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-icarus-pass.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-icarus.html">5.5.1 Icarus Verilog</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim-icarus.html">5.5.1 Icarus Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-icarus-pass.html">5.5.1.2 Passive Verilog check</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION006511000000000000000">&nbsp;</A>
+<BR>
+5.5.1.1 Delta cycle implementation 
+</H3>
+
+<P>
+To make co-simulation work, a specific type of PLI callback is
+needed. The callback should be run when all pending events have been
+processed, while allowing the creation of new events in the current
+time step (e.g. by the MyHDL simulator).  In some Verilog
+simulators, the <code>cbReadWriteSync</code> callback does exactly
+that. However, in others, including Icarus, it does not. The
+callback's behavior is not fully standardized; some simulators run the
+callback before non-blocking assignment events have been processed.
+
+<P>
+Consequently, I had to look for a workaround. One half of the solution
+is to use the <code>cbReadOnlySync</code> callback.  This callback runs
+after all pending events have been processed.  However, it does not
+permit to create new events in the current time step.  The second half
+of the solution is to map MyHDL delta cycles onto real Verilog time
+steps.  Note that fortunately I had some freedom here because of the
+restriction that only passive HDL code can be co-simulated.
+
+<P>
+I chose to make the time granularity in the Verilog simulator a 1000
+times finer than in the MyHDL simulator. For each MyHDL time
+step, 1000 Verilog time steps are available for MyHDL delta
+cycles. In practice, only a few delta cycles per time step should be
+needed. Exceeding this limit almost certainly indicates a design error;
+the limit is checked at run-time. The factor 1000 also makes it
+easy to distinguish ``real'' time from delta cycle time when printing
+out the Verilog time.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-icarus.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim-icarus.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-icarus-pass.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-icarus.html">5.5.1 Icarus Verilog</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim-icarus.html">5.5.1 Icarus Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-icarus-pass.html">5.5.1.2 Passive Verilog check</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on February 4, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

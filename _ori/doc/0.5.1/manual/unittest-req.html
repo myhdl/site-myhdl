@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="unittest-first.html">
+<LINK REL="previous" href="unittest-dev.html">
+<LINK REL="up" href="unittest-dev.html">
+<LINK REL="next" href="unittest-first.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="4.3.1 Defining the requirements ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>4.3.1 Defining the requirements </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="unittest-dev.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="unittest-dev.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="unittest-first.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="unittest-dev.html">4.3 Unit test development</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="unittest-dev.html">4.3 Unit test development</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="unittest-first.html">4.3.2 Writing the test</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION005310000000000000000">&nbsp;</A>
+<BR>
+4.3.1 Defining the requirements 
+</H2>
+
+<P>
+We start by defining the requirements. For a Gray encoder, we want to
+the output to comply with Gray code characteristics. Let's define a
+<i class="dfn">code</i> as a list of <i class="dfn">codewords</i>, where a codeword is a bit
+string. A code of order <code>n</code> has <code>2**n</code> codewords.
+
+<P>
+A well-known characteristic is the one that Gray codes are all about:
+
+<P>
+ <P>
+<DIV><B>Requirement  1</B> &nbsp; 
+<I>Consecutive codewords in a Gray code should differ in a single bit.</I></DIV><P></P>
+
+<P>
+Is this sufficient? Not quite: suppose for example that an
+implementation returns the lsb of each binary input. This would comply
+with the requirement, but is obviously not what we want. Also, we don't
+want the bit width of Gray codewords to exceed the bit width of the
+binary codewords.
+
+<P>
+<P>
+<DIV><B>Requirement  2</B> &nbsp; 
+<I>Each codeword in a Gray code of order n must occur exactly once in the
+binary code of the same order.</I></DIV><P></P>
+
+<P>
+With the requirements written down we can proceed.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="unittest-dev.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="unittest-dev.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="unittest-first.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="unittest-dev.html">4.3 Unit test development</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="unittest-dev.html">4.3 Unit test development</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="unittest-first.html">4.3.2 Writing the test</A>
+<hr>
+<span class="release-info">Release 0.5.1, documentation updated on May 1, 2006.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

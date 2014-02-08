@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="cosim-impl-vhdl.html">
+<LINK REL="previous" href="cosim-icarus.html">
+<LINK REL="up" href="cosim-impl.html">
+<LINK REL="next" href="cosim-impl-vhdl.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="5.5.2 Other Verilog simulators ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>5.5.2 Other Verilog simulators </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-impl-syscalls.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim-impl.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-impl-vhdl.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-impl-syscalls.html">5.5.1.3 Interrupted system calls</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim-impl.html">5.5 Implementation notes</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-impl-vhdl.html">5.5.3 VHDL</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION006520000000000000000">&nbsp;</A>
+<BR>
+5.5.2 Other Verilog simulators 
+</H2>
+
+<P>
+The Icarus module is written with VPI calls, which are provided by the
+most recent generation of the Verilog PLI. Some simulators may only
+support TF/ACC calls, requiring a complete redesign of the interface
+module.
+
+<P>
+If the simulator supports VPI, the Icarus module should be reusable to
+a large extent. However, it may be possible to improve on it.  The
+workaround to support delta cycles described in
+Section&nbsp;<A href="cosim-icarus-delta.html#cosim-icarus-delta">5.5.1</A> may not be necessary. In some
+simulators, the <code>cbReadWriteSync</code> callback occurs after all
+events (including non-blocking assignments) have been processed. In
+that case, the functionality can be supported without a finer time
+granularity in the Verilog simulator.
+
+<P>
+There are also Verilog standardization efforts underway to resolve the
+ambiguity of the <code>cbReadWriteSync</code> callback. The solution will be
+to introduce new, well defined callbacks. From reading some proposals,
+I conclude that the <code>cbEndOfSimTime</code> callback would provide the
+required functionality.
+
+<P>
+I currently have no access to commercial Verilog simulators, so
+progress in co-simulation support will depend on external interest and
+participation. Contact me for more information if you are interested.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-impl-syscalls.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim-impl.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-impl-vhdl.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-impl-syscalls.html">5.5.1.3 Interrupted system calls</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim-impl.html">5.5 Implementation notes</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-impl-vhdl.html">5.5.3 VHDL</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on February 4, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

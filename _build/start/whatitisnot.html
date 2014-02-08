@@ -79,11 +79,11 @@
                     <div class="toc">
 <ul>
 <li><a href="#introduction">Introduction</a></li>
-<li><a href="#not-a-way-to-turn-arbitrary-python-into-silicon">Not a way to turn arbitrary Python into silicon</a></li>
+<li><a href="#it-does-not-turn-arbitrary-python-into-silicon">It does not turn arbitrary Python into silicon</a></li>
 <li><a href="#not-a-radically-new-approach">Not a radically new approach</a></li>
-<li><a href="#not-a-synthesis-tool">Not a synthesis tool</a></li>
-<li><a href="#not-an-ip-block-library">Not an IP block library</a></li>
-<li><a href="#not-only-for-implementation">Not only for implementation</a></li>
+<li><a href="#it-is-not-a-synthesis-tool">It is not a synthesis tool</a></li>
+<li><a href="#it-is-not-an-ip-library">It is not an IP library</a></li>
+<li><a href="#not-just-for-implementation">Not just for implementation</a></li>
 <li><a href="#not-well-suited-for-timing-simulation">Not well suited for timing simulation</a></li>
 </ul>
 </div>
@@ -112,12 +112,13 @@ window.__gcfg = {
   })();
 </script>
 
-<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>
+<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>            <p><em>Last edit on 08-Feb-2014 by Jan Decaluwe</em></p>
+
             <h2 id="introduction">Introduction</h2>
 <p>There are <a href=":why">many good reasons</a> to consider MyHDL. However, to use it
 effectively, it is important to have realistic expectations. The easiest way to
 achieve this is perhaps to describe what MyHDL is <em>not</em>. </p>
-<h2 id="not-a-way-to-turn-arbitrary-python-into-silicon">Not a way to turn arbitrary Python into silicon</h2>
+<h2 id="it-does-not-turn-arbitrary-python-into-silicon">It does not turn arbitrary Python into silicon</h2>
 <p>Arbitrary Python into silicon, that sounds like a dream, right? And it is :-)
 Don't expect this from MyHDL.</p>
 <p>To convert MyHDL code into hardware, you will have to learn about
@@ -137,7 +138,7 @@ public, and opens the way to modern software development techniques such as
 test-driven design (TDD).</p>
 <p>However, fundamentally MyHDL is based on the same event-driven paradigm as
 Verilog and VHDL. This has proven to be the winning solution for <abbr title="Hardware Description Language">HDL</abbr> design.</p>
-<h2 id="not-a-synthesis-tool">Not a synthesis tool</h2>
+<h2 id="it-is-not-a-synthesis-tool">It is not a synthesis tool</h2>
 <p>MyHDL alone is not sufficient to convert code into a hardware implementation.
 In other words, it is not a synthesis tool.</p>
 <p>However, MyHDL contains a convertor tool that you can use to convert
@@ -147,7 +148,7 @@ tools are available from EDA vendors and FPGA vendors. Some synthesis tools
 from FPGA vendors are cheap or even free.</p>
 <p>Although the convertor in MyHDL is not a synthesis tool, it automates a number
 of tasks which are harder to do in Verilog or VHDL directly.</p>
-<h2 id="not-an-ip-block-library">Not an IP block library</h2>
+<h2 id="it-is-not-an-ip-library">It is not an IP library</h2>
 <p>The term <em>IP</em> (Intellectual Property) is used in the context of hardware design
 to refer to hardware blocks that are designed to be easily reusable in other
 designs.</p>
@@ -155,7 +156,7 @@ designs.</p>
 design them. Actually, MyHDL is the ideal platform for IP block development,
 because of its powerful Python foundation, and because it provides a path into
 both Verilog and VHDL design flows with a single development effort.</p>
-<h2 id="not-only-for-implementation">Not only for implementation</h2>
+<h2 id="not-just-for-implementation">Not just for implementation</h2>
 <p>MyHDL is very effective to describe a hardware implementation. The
 corresponding abstraction level is called <em>RTL</em> (Register Transfer Level).
 Typically, RTL code is converted into hardware implementation by a <em>synthesis</em>

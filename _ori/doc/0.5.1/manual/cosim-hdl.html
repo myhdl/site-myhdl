@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="cosim-myhdl.html">
+<LINK REL="previous" href="cosim-intro.html">
+<LINK REL="up" href="cosim.html">
+<LINK REL="next" href="cosim-myhdl.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="5.2 The HDL side ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>5.2 The HDL side </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-intro.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-myhdl.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-intro.html">5.1 Introduction</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim.html">5. Co-simulation with Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-myhdl.html">5.3 The MyHDL side</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION006200000000000000000">&nbsp;</A>
+<BR>
+5.2 The HDL side 
+</H1>
+
+<P>
+To introduce co-simulation, we will continue to use the Gray encoder
+example from the previous chapters. Suppose that we want to
+synthesize it and write it in Verilog for that purpose. Clearly we would
+like to reuse our unit test verification environment. 
+
+<P>
+To start, let's recall how the Gray encoder in MyHDL looks like:
+
+<P>
+<div class="verbatim"><pre>
+def bin2gray(B, G, width):
+    """ Gray encoder.
+
+    B -- input intbv signal, binary encoded
+    G -- output intbv signal, gray encoded
+    width -- bit width
+    """
+
+    @always_comb
+    def logic():
+        for i in range(width):
+            G.next[i] = B[i+1] ^ B[i]
+
+    return logic
+</pre></div>
+
+<P>
+To show the co-simulation flow, we don't need the Verilog
+implementation yet, but only the interface.  Our Gray encoder in
+Verilog would have the following interface:
+
+<P>
+<div class="verbatim"><pre>
+module bin2gray(B, G);
+
+   parameter width = 8;
+   input [width-1:0]  B;     
+   output [width-1:0] G;
+   ....
+</pre></div>
+
+<P>
+To write a test bench, one creates a new module that instantiates the
+design under test (DUT).  The test bench declares nets and
+regs (or signals in VHDL) that are attached to the DUT, and to
+stimulus generators and response checkers. In an all-HDL flow, the
+generators and checkers are written in the HDL itself, but we will
+want to write them in MyHDL. To make the connection, we need to
+declare which regs &amp; nets are driven and read by the MyHDL simulator. For our example, this is done as follows:
+
+<P>
+<div class="verbatim"><pre>
+module dut_bin2gray;
+
+   reg [`width-1:0] B;
+   wire [`width-1:0] G;
+
+   initial begin
+      $from_myhdl(B);
+      $to_myhdl(G);
+   end
+
+   bin2gray dut (.B(B), .G(G));
+   defparam dut.width = `width;
+
+endmodule
+</pre></div>
+
+<P>
+The <code>$from_myhdl</code> task call declares which regs are driven by
+MyHDL, and the <code>$to_myhdl</code> task call which regs &amp; nets are read
+by it. These tasks take an arbitrary number of arguments.  They are
+defined in a PLI module written in C and made available in a
+simulator-dependent manner.  In Icarus Verilog, the tasks are defined
+in a <code>myhdl.vpi</code> module that is compiled from C source code.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="cosim-intro.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="cosim.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="cosim-myhdl.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="cosim-intro.html">5.1 Introduction</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="cosim.html">5. Co-simulation with Verilog</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="cosim-myhdl.html">5.3 The MyHDL side</A>
+<hr>
+<span class="release-info">Release 0.5.1, documentation updated on May 1, 2006.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

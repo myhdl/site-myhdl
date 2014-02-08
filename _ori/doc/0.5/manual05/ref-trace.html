@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="previous" href="ref-simsupport.html">
+<LINK REL="up" href="ref-sim.html">
+<LINK REL="next" href="ref-model.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="7.1.3 Waveform tracing">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>7.1.3 Waveform tracing</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ref-simsupport.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="ref-sim.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="ref-model.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ref-simsupport.html">7.1.2 Simulation support functions</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="ref-sim.html">7.1 Simulation</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="ref-model.html">7.2 Modeling</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION008130000000000000000">&nbsp;</A>
+<BR>
+7.1.3 Waveform tracing
+</H2>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-31"><tt class="function">traceSignals</tt></a></b>(</nobr></td>
+  <td><var>func </var><big>[</big><var>, *args</var><big>]</big><big>[</big><var>, **kwargs</var><big>]</big>)</td></tr></table>
+<dd>
+Enables signal tracing to a VCD file for waveform viewing.
+<var>func</var> is a function that returns an instance.
+<tt class="function">traceSignals()</tt> calls <var>func</var> under its control
+and passes <var>*args</var> and <var>**kwargs</var> to the call. In this way, it
+finds the hierarchy and the signals to be traced.
+
+<P>
+The return value is the same as would be returned by the call
+<code>func(*args, **kwargs)</code>.  The top-level instance name and the
+basename of the VCD output filename is <code>func.func_name</code> by
+default. If the VCD file exists already, it will be moved to a backup
+file by attaching a timestamp to it, before creating the new file.
+</dl>
+
+<P>
+The <code>traceSignals</code> callable has the following attribute:
+
+<P>
+<dl><dt><b><a name="l2h-32"><tt class="member">name</tt></a></b>
+<dd>
+
+<P>
+This attribute is used to overwrite the default top-level instance
+name and the basename of the VCD output filename.
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ref-simsupport.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="ref-sim.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="ref-model.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ref-simsupport.html">7.1.2 Simulation support functions</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="ref-sim.html">7.1 Simulation</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="ref-model.html">7.2 Modeling</A>
+<hr>
+<span class="release-info">Release 0.5, documentation updated on December 29, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="whatsnew03.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="whatsnew03.html" title='What's New in MyHDL 0.3'>
+<link rel="contents" href="contents.html" title="Contents"><link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="section-combinatorial.html">
+<LINK REL="previous" href="section-wave.html">
+<LINK REL="up" HREF="whatsnew03.html">
+<LINK REL="next" href="section-combinatorial.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="2 Enumeration types">
+<META NAME="keywords" CONTENT="whatsnew03">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>2 Enumeration types</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="section-wave.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A HREF="whatsnew03.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="section-combinatorial.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">What's New in MyHDL 0.3</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="section-wave.html">1 VCD output for</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew03.html">What's New in MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="section-combinatorial.html">3 Inferring the sensitivity</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000300000000000000000">&nbsp;</A>
+<BR>
+2 Enumeration types
+</H1>
+
+<P>
+It is often desirable to define a set of identifiers.  A standard
+Python idiom for this purpose is to assign a range of integers to a
+tuple of identifiers, like so:
+
+<P>
+<div class="verbatim"><pre>
+&gt;&gt;&gt; SEARCH, CONFIRM, SYNC = range(3)
+&gt;&gt;&gt; CONFIRM
+1
+</pre></div>
+
+<P>
+However, this technique has some drawbacks. Though it is clearly
+the intention that the identifiers belong together, this information
+is lost as soon as they are defined. Also, the identifiers evaluate to
+integers, whereas a string representation of the identifiers
+would be preferable. To solve these issues, we need an
+<i>enumeration type</i>.
+
+<P>
+MyHDL 0.3 supports enumeration types by providing a function
+<tt class="function">enum()</tt>.  The arguments to <tt class="function">enum()</tt> are the string
+representations of the identifiers, and its return value is an
+enumeration type. The identifiers are available as attributes of the
+type. For example:
+
+<P>
+<div class="verbatim"><pre>
+&gt;&gt;&gt; from myhdl import enum
+&gt;&gt;&gt; t_State = enum('SEARCH', 'CONFIRM', 'SYNC')
+&gt;&gt;&gt; t_State
+&lt;Enum: SEARCH, CONFIRM, SYNC&gt;
+&gt;&gt;&gt; t_State.CONFIRM
+CONFIRM
+</pre></div>
+
+<P>
+Enumeration types are often used for the state variable in a finite
+state machine.  In the waveform in Section&nbsp;<A href="section-wave.html#section-wave">1</A>, you see
+a <tt class="class">Signal</tt> called <var>state</var>. Note how the waveforms show the
+string representation of the enumeration type identifiers The
+<var>state</var> signal has been constructed with an enumeration type
+identifier as its initial value, as follows:
+
+<P>
+<div class="verbatim"><pre>
+state = Signal(t_State.SEARCH)
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="section-wave.html"><img src='../icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A HREF="whatsnew03.html"><img src='../icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="section-combinatorial.html"><img src='../icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">What's New in MyHDL 0.3</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="section-wave.html">1 VCD output for</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew03.html">What's New in MyHDL</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="section-combinatorial.html">3 Inferring the sensitivity</A>
+<hr>
+<span class="release-info">Release 0.3.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="MyHDL.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="../icons/pyfav.gif">
+<link rel="start" href="../Overview.html" title='Overview'>
+<link rel="first" href="MyHDL.html" title='The MyHDL manual'>
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+
+<LINK REL="next" href="model-comb-ex.html">
+<LINK REL="previous" href="model-comb.html">
+<LINK REL="up" href="model-comb.html">
+<LINK REL="next" href="model-comb-ex.html">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="3.2.1.1 Template ">
+<META NAME="keywords" CONTENT="MyHDL">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>3.2.1.1 Template </title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model-comb.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model-comb.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model-comb-ex.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model-comb.html">3.2.1 Combinatorial logic</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model-comb.html">3.2.1 Combinatorial logic</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model-comb-ex.html">3.2.1.2 Example</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION004211000000000000000">&nbsp;</A>
+<BR>
+3.2.1.1 Template 
+</H3>
+
+<P>
+Combinatorial logic is described with a code pattern as
+follows: 
+
+<P>
+<div class="verbatim"><pre>
+def top(&lt;parameters&gt;):
+    ...
+    @always_comb
+    def combLogic():
+        &lt;functional code&gt;
+    ...
+    return combLogic, ...
+</pre></div>
+
+<P>
+The <tt class="function">always_comb</tt> decorator describes
+combinatorial logic.
+<A NAME="tex2html5"
+  HREF="#foot790"><SUP>3.1</SUP></A>.
+The decorated function is a local function that specifies what
+happens when one of the input signals of the logic changes.  The
+<tt class="function">always_comb</tt> decorator infers the input signals
+automatically. It returns a generator that is sensitive to all inputs,
+and that executes the function whenever an input changes.
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot790">... logic.</A><A
+ href="model-comb-templ.html#tex2html5"><SUP>3.1</SUP></A></DT>
+<DD>The name <tt class="function">always_comb</tt> refers to a construct with
+similar semantics in SystemVerilog.
+
+</DD>
+</DL>
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="model-comb.html"><img src='../icons/previous.gif'
+  border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><A href="model-comb.html"><img src='../icons/up.gif'
+  border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><A href="model-comb-ex.html"><img src='../icons/next.gif'
+  border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">The MyHDL manual</td>
+<td><A href="contents.html"><img src='../icons/contents.gif'
+  border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='../icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+<td><A href="genindex.html"><img src='../icons/index.gif'
+  border='0' height='32'  alt='Index' width='32'></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="model-comb.html">3.2.1 Combinatorial logic</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="model-comb.html">3.2.1 Combinatorial logic</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="model-comb-ex.html">3.2.1.2 Example</A>
+<hr>
+<span class="release-info">Release 0.5, documentation updated on December 29, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<i><a href="about.html">About this document</a></i>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,436 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction to MyHDL &mdash; MyHDL 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/myhdl.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="MyHDL 0.8 documentation" href="../index.html" />
+    <link rel="up" title="The MyHDL manual" href="index.html" />
+    <link rel="next" title="Hardware-oriented types" href="hwtypes.html" />
+    <link rel="prev" title="Background information" href="background.html" /> 
+  </head>
+  <body>
+<div style="background-color: white; text-align: left; padding: 5px 5px 2px 15px">
+<a href="http://www.myhdl.org">
+    <img src="../_static/myhdl_logo_header.png" border=0 alt="MyHDL" />
+</a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="hwtypes.html" title="Hardware-oriented types"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="background.html" title="Background information"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">The MyHDL manual</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction to MyHDL</a><ul>
+<li><a class="reference internal" href="#a-basic-myhdl-simulation">A basic MyHDL simulation</a></li>
+<li><a class="reference internal" href="#signals-ports-and-concurrency">Signals, ports, and concurrency</a></li>
+<li><a class="reference internal" href="#parameters-and-hierarchy">Parameters and hierarchy</a></li>
+<li><a class="reference internal" href="#some-remarks-on-myhdl-and-python">Some remarks on MyHDL and Python</a></li>
+<li><a class="reference internal" href="#summary-and-perspective">Summary and perspective</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="background.html"
+                        title="previous chapter">Background information</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="hwtypes.html"
+                        title="next chapter">Hardware-oriented types</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/manual/intro.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="introduction-to-myhdl">
+<span id="intro"></span><h1>Introduction to MyHDL<a class="headerlink" href="#introduction-to-myhdl" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="a-basic-myhdl-simulation">
+<span id="intro-basic"></span><h2>A basic MyHDL simulation<a class="headerlink" href="#a-basic-myhdl-simulation" title="Permalink to this headline">¶</a></h2>
+<p>We will introduce MyHDL with a classic <tt class="docutils literal"><span class="pre">Hello</span> <span class="pre">World</span></tt> style example. All
+example code can be found in the distribution directory under
+<tt class="file docutils literal"><span class="pre">example/manual/</span></tt>.  Here are the contents of a MyHDL simulation script
+called <tt class="file docutils literal"><span class="pre">hello1.py</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">always</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">Simulation</span>
+
+<span class="k">def</span> <span class="nf">HelloWorld</span><span class="p">():</span>
+
+    <span class="n">interval</span> <span class="o">=</span> <span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">sayHello</span><span class="p">():</span>
+        <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> Hello World!&quot;</span> <span class="o">%</span> <span class="n">now</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">sayHello</span>
+
+
+<span class="n">inst</span> <span class="o">=</span> <span class="n">HelloWorld</span><span class="p">()</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">inst</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When we run this simulation, we get the following output:</p>
+<div class="highlight-python"><pre>% python hello1.py
+10 Hello World!
+20 Hello World!
+30 Hello World!
+_SuspendSimulation: Simulated 30 timesteps</pre>
+</div>
+<p>The first line of the script imports a number of objects from the <tt class="docutils literal"><span class="pre">myhdl</span></tt>
+package. In Python we can only use identifiers that are literally defined in the
+source file   <a class="footnote-reference" href="#id3" id="id1">[1]</a>.</p>
+<p>Then, we define a function called <tt class="xref py py-func docutils literal"><span class="pre">HelloWorld()</span></tt>. In MyHDL, hardware
+modules can be modeled using classic functions.  In particular, the parameter list
+is then used to define the interface. In this first example, the interface is empty.</p>
+<p id="index-0">Inside the top level function we declare a local function called
+<tt class="xref py py-func docutils literal"><span class="pre">sayHello()</span></tt> that defines the desired behavior. This function is decorated
+with an <a class="reference internal" href="reference.html#myhdl.always" title="myhdl.always"><tt class="xref py py-func docutils literal"><span class="pre">always()</span></tt></a> decorator that has a delay  object as its parameter.  The
+meaning is that the function will be executed whenever the specified delay
+interval has expired.</p>
+<p>Behind the curtains, the <a class="reference internal" href="reference.html#myhdl.always" title="myhdl.always"><tt class="xref py py-func docutils literal"><span class="pre">always()</span></tt></a> decorator creates a Python <em>generator</em>
+and reuses the name of the decorated function for it. Generators are the
+fundamental objects in MyHDL, and we will say much more about them further on.</p>
+<p>Finally, the top level function returns the local generator. This is the
+simplest case of the basic MyHDL code pattern to define the contents of a
+hardware module. We will describe the general case further on.</p>
+<p>In MyHDL, we create an <em>instance</em> of a hardware module by calling the
+corresponding function. In the example, variable <tt class="docutils literal"><span class="pre">inst</span></tt> refers to an instance
+of <tt class="xref py py-func docutils literal"><span class="pre">HelloWorld()</span></tt>.  To simulate the instance, we pass it as an argument to a
+<a class="reference internal" href="reference.html#myhdl.Simulation" title="myhdl.Simulation"><tt class="xref py py-class docutils literal"><span class="pre">Simulation</span></tt></a> object constructor.  We then run the simulation for the
+desired amount of timesteps.</p>
+</div>
+<div class="section" id="signals-ports-and-concurrency">
+<span id="intro-conc"></span><h2>Signals, ports, and concurrency<a class="headerlink" href="#signals-ports-and-concurrency" title="Permalink to this headline">¶</a></h2>
+<p>In the previous section, we simulated a design with a single generator and no
+concurrency. Real hardware descriptions are typically
+massively concurrent. MyHDL supports this by allowing an arbitrary number of
+concurrently running generators.</p>
+<p>With concurrency comes the problem of deterministic communication. Hardware
+languages use special objects to support deterministic communication between
+concurrent code. In particular, MyHDL  has a <a class="reference internal" href="reference.html#myhdl.Signal" title="myhdl.Signal"><tt class="xref py py-class docutils literal"><span class="pre">Signal</span></tt></a> object which is
+roughly modeled after VHDL signals.</p>
+<p>We will demonstrate signals and concurrency by extending and modifying our first
+example. We define two hardware modules, one that drives a clock signal, and one
+that is sensitive to a positive edge on a clock signal:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">always</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">Simulation</span>
+
+
+<span class="k">def</span> <span class="nf">ClkDriver</span><span class="p">(</span><span class="n">clk</span><span class="p">):</span>
+
+    <span class="n">halfPeriod</span> <span class="o">=</span> <span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">halfPeriod</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">driveClk</span><span class="p">():</span>
+        <span class="n">clk</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">clk</span>
+
+    <span class="k">return</span> <span class="n">driveClk</span>
+
+
+<span class="k">def</span> <span class="nf">HelloWorld</span><span class="p">(</span><span class="n">clk</span><span class="p">):</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">sayHello</span><span class="p">():</span>
+        <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> Hello World!&quot;</span> <span class="o">%</span> <span class="n">now</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">sayHello</span>
+
+
+<span class="n">clk</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">clkdriver_inst</span> <span class="o">=</span> <span class="n">ClkDriver</span><span class="p">(</span><span class="n">clk</span><span class="p">)</span>
+<span class="n">hello_inst</span> <span class="o">=</span> <span class="n">HelloWorld</span><span class="p">(</span><span class="n">clk</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">clkdriver_inst</span><span class="p">,</span> <span class="n">hello_inst</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+</pre></div>
+</div>
+<p id="index-1">The clock driver function <tt class="xref py py-func docutils literal"><span class="pre">ClkDriver()</span></tt> has a clock signal as its parameter.
+This is how a <em>port</em> is modeled in MyHDL. The function defines a generator that
+continuously toggles a clock signal after a certain delay. A new value of a
+signal is specified by assigning to its <tt class="docutils literal"><span class="pre">next</span></tt> attribute. This is the MyHDL
+equivalent of  the VHDL signal assignment and the  Verilog non-blocking
+assignment.</p>
+<p id="index-2">The <tt class="xref py py-func docutils literal"><span class="pre">HelloWorld()</span></tt> function is modified from the first example. It now also
+takes a clock signal as parameter. Its generator is made sensitive to a rising
+edge of the clock signal. This is specified by the <tt class="docutils literal"><span class="pre">posedge</span></tt> attribute of a
+signal. The edge specifier is the argument of the <tt class="docutils literal"><span class="pre">always</span></tt> decorator. As a
+result, the decorated function will be executed on every rising clock edge.</p>
+<p>The <tt class="docutils literal"><span class="pre">clk</span></tt> signal is constructed with an initial value <tt class="docutils literal"><span class="pre">0</span></tt>. When creating an
+instance of each  hardware module, the same clock signal is passed as the
+argument. The result is that the instances are now connected through the clock
+signal. The <a class="reference internal" href="reference.html#myhdl.Simulation" title="myhdl.Simulation"><tt class="xref py py-class docutils literal"><span class="pre">Simulation</span></tt></a> object is constructed with the two instances.</p>
+<p>When we run the simulation, we get:</p>
+<div class="highlight-python"><pre>% python hello2.py
+10 Hello World!
+30 Hello World!
+50 Hello World!
+_SuspendSimulation: Simulated 50 timesteps</pre>
+</div>
+</div>
+<div class="section" id="parameters-and-hierarchy">
+<span id="intro-hier"></span><h2>Parameters and hierarchy<a class="headerlink" href="#parameters-and-hierarchy" title="Permalink to this headline">¶</a></h2>
+<p>We have seen that MyHDL uses functions to model hardware modules. We have also
+seen that ports are modeled by using signals as parameters. To make designs
+reusable we will also want to use other objects as parameters. For example, we
+can change the clock generator function to make it more general and reusable, by
+making the clock period parametrizable, as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">always</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">Simulation</span>
+
+<span class="k">def</span> <span class="nf">ClkDriver</span><span class="p">(</span><span class="n">clk</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+
+    <span class="n">lowTime</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">period</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">highTime</span> <span class="o">=</span> <span class="n">period</span> <span class="o">-</span> <span class="n">lowTime</span>
+
+    <span class="nd">@instance</span>
+    <span class="k">def</span> <span class="nf">driveClk</span><span class="p">():</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="n">lowTime</span><span class="p">)</span>
+            <span class="n">clk</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="n">highTime</span><span class="p">)</span>
+            <span class="n">clk</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="n">driveClk</span>
+</pre></div>
+</div>
+<p>In addition to the clock signal, the clock period is a parameter, with a default
+value of <tt class="docutils literal"><span class="pre">20</span></tt>.</p>
+<p id="index-3">As the low time of the clock may differ from the high time in case of an odd
+period, we cannot use the <a class="reference internal" href="reference.html#myhdl.always" title="myhdl.always"><tt class="xref py py-func docutils literal"><span class="pre">always()</span></tt></a> decorator with a single delay value
+anymore. Instead, the <tt class="xref py py-func docutils literal"><span class="pre">driveClk()</span></tt> function is now a generator function with
+an explicit definition of the desired behavior. It is decorated with the
+<a class="reference internal" href="reference.html#myhdl.instance" title="myhdl.instance"><tt class="xref py py-func docutils literal"><span class="pre">instance()</span></tt></a> decorator.  You can see that <tt class="xref py py-func docutils literal"><span class="pre">driveClk()</span></tt> is a generator
+function because it contains <tt class="docutils literal"><span class="pre">yield</span></tt> statements.</p>
+<p>When a generator function is called, it returns a generator object. This is
+basically what the <a class="reference internal" href="reference.html#myhdl.instance" title="myhdl.instance"><tt class="xref py py-func docutils literal"><span class="pre">instance()</span></tt></a> decorator does. It is less sophisticated
+than the <a class="reference internal" href="reference.html#myhdl.always" title="myhdl.always"><tt class="xref py py-func docutils literal"><span class="pre">always()</span></tt></a> decorator, but it can be used to create a generator from
+any local generator function.</p>
+<p>The <tt class="docutils literal"><span class="pre">yield</span></tt> statement is a general Python construct, but MyHDL uses it in a
+dedicated way.  In MyHDL, it has a similar meaning as the wait statement in
+VHDL: the statement suspends execution of a generator, and its clauses specify
+the conditions on which the generator should wait before resuming. In this case,
+the generator waits for a certain delay.</p>
+<p>Note that to make sure that the generator runs &#8220;forever&#8221;, we wrap its behavior
+in a <tt class="docutils literal"><span class="pre">while</span> <span class="pre">True</span></tt> loop.</p>
+<p>Similarly, we can define a general <tt class="xref py py-func docutils literal"><span class="pre">Hello()</span></tt> function as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">Hello</span><span class="p">(</span><span class="n">clk</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s">&quot;World!&quot;</span><span class="p">):</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">sayHello</span><span class="p">():</span>
+        <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> Hello </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="n">to</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">sayHello</span>
+</pre></div>
+</div>
+<p id="index-4">We can create any number of instances by calling the functions with the
+appropriate parameters. Hierarchy can be modeled by defining the instances in a
+higher-level function, and returning them. This pattern can be repeated for an
+arbitrary number of hierarchical levels. Consequently, the general definition of
+a MyHDL instance is recursive: an instance is either a sequence of instances, or
+a generator.</p>
+<p>As an example, we will create a higher-level function with four instances of the
+lower-level functions, and simulate it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">greetings</span><span class="p">():</span>
+
+    <span class="n">clk1</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">clk2</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">clkdriver_1</span> <span class="o">=</span> <span class="n">ClkDriver</span><span class="p">(</span><span class="n">clk1</span><span class="p">)</span> <span class="c"># positional and default association</span>
+    <span class="n">clkdriver_2</span> <span class="o">=</span> <span class="n">ClkDriver</span><span class="p">(</span><span class="n">clk</span><span class="o">=</span><span class="n">clk2</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="mi">19</span><span class="p">)</span> <span class="c"># named association</span>
+    <span class="n">hello_1</span> <span class="o">=</span> <span class="n">Hello</span><span class="p">(</span><span class="n">clk</span><span class="o">=</span><span class="n">clk1</span><span class="p">)</span> <span class="c"># named and default association</span>
+    <span class="n">hello_2</span> <span class="o">=</span> <span class="n">Hello</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="s">&quot;MyHDL&quot;</span><span class="p">,</span> <span class="n">clk</span><span class="o">=</span><span class="n">clk2</span><span class="p">)</span> <span class="c"># named association</span>
+
+    <span class="k">return</span> <span class="n">clkdriver_1</span><span class="p">,</span> <span class="n">clkdriver_2</span><span class="p">,</span> <span class="n">hello_1</span><span class="p">,</span> <span class="n">hello_2</span>
+
+
+<span class="n">inst</span> <span class="o">=</span> <span class="n">greetings</span><span class="p">()</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">inst</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As in standard Python, positional or named parameter association can be used in
+instantiations, or a mix of both <a class="footnote-reference" href="#id4" id="id2">[2]</a>. All these styles are demonstrated in the
+example above. Named association can be very useful if there are a lot of
+parameters, as the argument order in the call does not matter in that case.</p>
+<p>The simulation produces the following output:</p>
+<div class="highlight-python"><pre>% python greetings.py
+9 Hello MyHDL
+10 Hello World!
+28 Hello MyHDL
+30 Hello World!
+47 Hello MyHDL
+50 Hello World!
+_SuspendSimulation: Simulated 50 timesteps</pre>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>Some commonly used terminology has different meanings in Python versus hardware
+design. Rather than artificially changing terminology, I think it&#8217;s best to keep
+it and explicitly describing the differences.</p>
+<p id="index-5">A <em class="dfn">module</em> in Python refers to all source code in a particular file. A
+module can be reused by other modules by importing. In hardware design, a module
+is  a reusable block of hardware with a well defined interface. It can be reused
+in  another module by <em class="dfn">instantiating</em> it.</p>
+<p id="index-6">An <em class="dfn">instance</em> in Python (and other object-oriented languages) refers to the
+object created by a class constructor. In hardware design, an instance is a
+particular incarnation of a hardware module.</p>
+<p class="last">Normally, the meaning should be clear from the context. Occasionally, I may
+qualify terms  with the words &#8220;hardware&#8221; or &#8220;MyHDL&#8221; to  avoid ambiguity.</p>
+</div>
+</div>
+<div class="section" id="some-remarks-on-myhdl-and-python">
+<span id="intro-python"></span><h2>Some remarks on MyHDL and Python<a class="headerlink" href="#some-remarks-on-myhdl-and-python" title="Permalink to this headline">¶</a></h2>
+<p>To conclude this introductory chapter, it is useful to stress that MyHDL is not
+a language in itself. The underlying language is Python,  and MyHDL is
+implemented as a Python package called <tt class="docutils literal"><span class="pre">myhdl</span></tt>. Moreover, it is a design goal
+to keep the <tt class="docutils literal"><span class="pre">myhdl</span></tt> package as minimalistic as possible, so that MyHDL
+descriptions are very much &#8220;pure Python&#8221;.</p>
+<p>To have Python as the underlying language is significant in several ways:</p>
+<ul class="simple">
+<li>Python is a very powerful high level language. This translates into high
+productivity and elegant solutions to complex problems.</li>
+<li>Python is continuously improved by some very clever  minds, supported by a
+large and fast growing user base. Python profits fully from the open source
+development model.</li>
+<li>Python comes with an extensive standard library. Some functionality is likely
+to be of direct interest to MyHDL users: examples include string handling,
+regular expressions, random number generation, unit test support, operating
+system interfacing and GUI development. In addition, there are modules for
+mathematics, database connections, networking programming, internet data
+handling, and so on.</li>
+<li>Python has a powerful C extension model. All built-in types are written with
+the same C API that is available for custom extensions. To a module user, there
+is no difference between a standard Python module and a C extension module &#8212;
+except performance. The typical Python development model is to prototype
+everything in Python until the application is stable, and (only) then rewrite
+performance critical modules in C if necessary.</li>
+</ul>
+</div>
+<div class="section" id="summary-and-perspective">
+<span id="intro-summary"></span><h2>Summary and perspective<a class="headerlink" href="#summary-and-perspective" title="Permalink to this headline">¶</a></h2>
+<p>Here is an overview of what we have learned in this chapter:</p>
+<ul class="simple">
+<li>Generators are the basic building blocks of MyHDL models. They provide the way
+to model massive concurrency and sensitivity lists.</li>
+<li>MyHDL provides decorators that create useful generators from local functions.</li>
+<li>Hardware structure and hierarchy is described with classic Python functions.</li>
+<li><a class="reference internal" href="reference.html#myhdl.Signal" title="myhdl.Signal"><tt class="xref py py-class docutils literal"><span class="pre">Signal</span></tt></a> objects are used to communicate between concurrent generators.</li>
+<li>A <a class="reference internal" href="reference.html#myhdl.Simulation" title="myhdl.Simulation"><tt class="xref py py-class docutils literal"><span class="pre">Simulation</span></tt></a> object is used to simulate MyHDL models.</li>
+</ul>
+<p>These concepts are sufficient to start modeling and simulating with MyHDL.</p>
+<p>However, there is much more to MyHDL. Here is an overview of what can be learned
+from the following chapters:</p>
+<ul class="simple">
+<li>MyHDL supports hardware-oriented types that make it easier to write
+typical hardware models. These are described in Chapter <a class="reference internal" href="hwtypes.html#hwtypes"><em>Hardware-oriented types</em></a>.</li>
+<li>MyHDL supports sophisticated and high level modeling techniques. This is
+described in Chapter <a class="reference internal" href="highlevel.html#model-hl"><em>High level modeling</em></a>.</li>
+<li>MyHDL enables the use of modern software verification techniques, such as unit
+testing, on hardware designs. This is the topic of Chapter <a class="reference internal" href="unittest.html#unittest"><em>Unit testing</em></a>.</li>
+<li>It is possible to co-simulate MyHDL models with other HDL languages such as
+Verilog and VHDL. This is described in Chapter <a class="reference internal" href="cosimulation.html#cosim"><em>Co-simulation with Verilog</em></a>.</li>
+<li>Last but not least, MyHDL models can be converted to Verilog, providing a path
+to a silicon implementation. This is the topic of Chapter <a class="reference internal" href="conversion.html#conv"><em>Conversion to Verilog and VHDL</em></a>.</li>
+</ul>
+<p class="rubric">Footnotes</p>
+<table class="docutils footnote" frame="void" id="id3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>The exception is the <tt class="docutils literal"><span class="pre">from</span> <span class="pre">module</span> <span class="pre">import</span> <span class="pre">*</span></tt> syntax, that imports all the
+symbols from a module. Although this is generally considered bad practice, it
+can be tolerated for large modules that export a lot of symbols. One may argue
+that <tt class="docutils literal"><span class="pre">myhdl</span></tt> falls into that category.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>All positional parameters have to go before any named parameter.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="hwtypes.html" title="Hardware-oriented types"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="background.html" title="Background information"
+             >previous</a> |</li>
+        <li><a href="../index.html">MyHDL 0.8 documentation</a> &raquo;</li>
+          <li><a href="index.html" >The MyHDL manual</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Jan Decaluwe.
+      Last updated on May 20, 2013.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
