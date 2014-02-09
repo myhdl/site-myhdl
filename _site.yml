@@ -4,6 +4,9 @@ reflinks:
     MyHDL: 
         url: http://www.myhdl.org 
         title: MyHDL site
+    manual:
+        url: http://doc.myhdl.org/en/latest/
+        title: Manual
     Google: 
         url: http://www.google.com
         title: Google
@@ -64,3 +67,4 @@ reflinks:
     bootswatch:
         url: http://bootswatch.com
         title: Bootswatch
+
