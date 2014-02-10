@@ -1,0 +1,51 @@
+====== Installation instructions ======
+
+MyHDL uses the standard Python distutils package for distribution and installation. This page contains detailed instructions for installing MyHDL on a typical Linux or Unix system. For other platforms, you have to follow an equivalent procedure. Remember that MyHDL can be installed on any platform that supports Python. For more information about installing on non-Linux platforms such as Windows, read about
+[[http://docs.python.org/inst/standard-install.html | Installing Python Modules]].
+
+To install MyHDL on your system, first check that you have an appropriate
+python installed. Typing:
+
+    > python
+
+should return a Python interpreter.
+
+Then, [[http://sourceforge.net/project/showfiles.php?group_id=91207|download]]
+the latest release. Untar and unzip the downloaded file:
+
+    > tar xvf myhdl-0.8.tar.gz
+    > gunzip myhdl-0.8.tar
+
+MyHDL uses the Python ''distutils'' utility to install (and create) releases.
+First, go into the release directory:
+
+    > cd myhdl-0.8
+
+If you have superuser power, you can install MyHDL as follows:
+
+    > python setup.py install
+
+This will install the package in the appropriate site-wide Python
+package location.
+ 
+Otherwise, you can install it in a personal directory, e.g. as
+follows:
+
+    > python setup.py install --home=$HOME
+ 
+In this case, be sure to add the appropriate install dir to the
+''$PYTHONPATH''.
+ 
+If necessary, consult the ''distutils'' documentation in the standard
+Python library for more details.
+ 
+You can test the proper installation as follows:
+
+    > cd myhdl/test/core
+    > python test_all.py
+ 
+To install co-simulation support:
+ 
+Go to the directory ''co-simulation/<platform>'' for your target platform
+and following the instructions in the ''README.txt'' file.
+ 

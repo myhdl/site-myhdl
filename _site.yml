@@ -67,4 +67,6 @@ reflinks:
     bootswatch:
         url: http://bootswatch.com
         title: Bootswatch
-
+    virtualenv:
+        url: http://www.virtualenv.org/en/latest/virtualenv.html
+        title: virtualenv

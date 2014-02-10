@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Overview</title>
+    <title>Installation</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <!-- Bootstrap -->
@@ -67,12 +67,12 @@
     <ol class="breadcrumb">
        <li><a href="/">Home</a></li>
        <li><a href="/start/">Start</a></li>
-       <li class="active">Overview</li>
+       <li class="active">Installation</li>
     </ol>
 
     <div class="page-header">
  
-<h1>Overview
+<h1>Installation
 </h1>
     </div>
 
@@ -84,13 +84,12 @@
                  data-offset-top="80" 
                  data-offset-bottom="60">
                 <div class="well">
-                    <a href="#"><em>Overview</em></a>
+                    <a href="#"><em>Installation</em></a>
                     <div class="toc">
 <ul>
-<li><a href="#short-description">Short description</a></li>
-<li><a href="#modeling">Modeling</a></li>
-<li><a href="#simulation-and-verification">Simulation and Verification</a></li>
-<li><a href="#conversion-to-verilog-and-vhdl">Conversion to Verilog and VHDL</a></li>
+<li><a href="#installation-using-pip">Installation using pip</a></li>
+<li><a href="#installation-using-distutils">Installation using distutils</a></li>
+<li><a href="#co-simulation">Co-simulation</a></li>
 </ul>
 </div>
 
@@ -118,51 +117,71 @@ window.__gcfg = {
   })();
 </script>
 
-<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>            <p><em>Last edit on 08-Feb-2014 by Jan Decaluwe</em></p>
+<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>
+            <h2 id="installation-using-pip">Installation using pip</h2>
+<p>You can install MyHDL using pip: </p>
+<div class="codehilite"><pre>pip install myhdl 
+</pre></div>
 
-            <h2 id="short-description">Short description</h2>
-<p>MyHDL is a free, open-source package for using Python as a hardware description
-and verification language. Python is a very high level language, and hardware
-designers can use its full power to model and simulate their designs.
-Moreover, MyHDL can convert a design to Verilog or VHDL. This provides a path
-into a traditional design flow.</p>
-<h2 id="modeling">Modeling</h2>
-<p>Python's power and clarity make MyHDL an ideal solution for high level
-modeling.  Python is famous for enabling elegant solutions to complex modeling
-problems.  Moreover, Python is outstanding for rapid application development
-and experimentation.</p>
-<p>The key idea behind MyHDL modeling is the use of Python generators to model
-hardware concurrency. Generators are best described as resumable functions.
-MyHDL generators are similar to always blocks in Verilog and processes in VHDL.</p>
-<p>A hardware module is modeled as a function that returns generators. This
-approach makes it straightforward to support features such as arbitrary
-hierarchy, named port association, arrays of instances, and conditional
-instantiation.  Furthermore, MyHDL provides classes that implement traditional
-hardware description concepts. It provides a signal class to support
-communication between generators, a class to support bit oriented operations,
-and a class for enumeration types.</p>
-<h2 id="simulation-and-verification">Simulation and Verification</h2>
-<p>The built-in simulator runs on top of the Python interpreter. It supports
-waveform viewing by tracing signal changes in a VCD file.</p>
-<p>With MyHDL, the Python unit test framework can be used on hardware designs.
-Although unit testing is a popular modern software verification technique, it
-is still uncommon in the hardware design world.</p>
-<p>MyHDL can also be used as hardware verification language for Verilog designs,
-by co-simulation with traditional HDL simulators.</p>
-<h2 id="conversion-to-verilog-and-vhdl">Conversion to Verilog and VHDL</h2>
-<p>Subject to some limitations, MyHDL designs can be converted to Verilog or VHDL.
-This provides a path into a traditional design flow, including synthesis and
-implementation.  However, the convertible subset is much wider than the
-standard synthesis subset, and includes features that can be used for high
-level modeling and test benches.</p>
-<p>The converter works on an instantiated design that has been fully elaborated.
-Consequently, the original design structure can be arbitrarily complex.
-Moreover, the conversion limitations apply only to code inside generators.
-Outside generators, Python's full power can be used without compromising
-convertibility.</p>
-<p>Finally, the converter automates a number of tasks that are hard in Verilog or
-VHDL directly. A notable feature is the automated handling of signed arithmetic
-issues.</p>
+
+<p>To upgrade an existing installation to the
+latest version, use:</p>
+<div class="codehilite"><pre>pip install --upgrade myhdl 
+</pre></div>
+
+
+<p>If pip is not yet available on your system, follow the <a href="http://www.pip-installer.org/en/latest/installing.html">pip installation
+instructions</a>.</p>
+<p>You may want to install MyHDL in an isolated environment using <a href="http://www.virtualenv.org/en/latest/virtualenv.html" title="virtualenv">virtualenv</a>.</p>
+<h2 id="installation-using-distutils">Installation using distutils</h2>
+<p>MyHDL uses the standard Python <a href="http://docs.python.org/2/library/distutils.html">distutils</a> package for distribution and
+installation. This page contains detailed instructions for installing MyHDL on
+a typical Linux or Unix system. For other platforms, you have to follow an
+equivalent procedure. Remember that MyHDL can be installed on any platform that
+supports Python. For more information about installing on non-Linux platforms
+such as Windows, read about <a href="http://docs.python.org/inst/standard-install.html">Installing Python
+Modules</a>.</p>
+<p>To install MyHDL on your system,
+<a href="http://sourceforge.net/project/showfiles.php?group_id=91207">download</a> the
+latest release. Untar and unzip the downloaded file:</p>
+<div class="codehilite"><pre>&gt; tar xvf myhdl-0.8.tar.gz
+&gt; gunzip myhdl-0.8.tar
+</pre></div>
+
+
+<p>Go into the release directory:</p>
+<div class="codehilite"><pre>&gt; cd myhdl-0.8
+</pre></div>
+
+
+<p>If you have superuser power, you can install MyHDL as follows:</p>
+<div class="codehilite"><pre>&gt; python setup.py install
+</pre></div>
+
+
+<p>This will install the package in the appropriate site-wide Python
+package location.  </p>
+<p>Otherwise, you can install it in a personal directory, e.g. as
+follows:</p>
+<div class="codehilite"><pre>&gt; python setup.py install --home=$HOME
+</pre></div>
+
+
+<p>In this case, be sure to add the appropriate install dir to the
+<code>$PYTHONPATH</code>.</p>
+<p>If necessary, consult the <a href="http://docs.python.org/2/library/distutils.html">distutils</a> documentation in the standard
+Python library for more details.</p>
+<p>You can test the proper installation as follows:</p>
+<div class="codehilite"><pre>&gt; cd myhdl/test/core
+&gt; python test_all.py
+</pre></div>
+
+
+<h2 id="co-simulation">Co-simulation</h2>
+<p>Co-simulation requires an additional installation step.</p>
+<p>To install co-simulation support:</p>
+<p>Go to the directory <code>co-simulation/&lt;platform&gt;</code> for your target platform
+and following the instructions in the <code>README.txt</code> file.</p>
         </div>
     </div>
 

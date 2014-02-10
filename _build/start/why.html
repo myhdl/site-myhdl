@@ -38,11 +38,19 @@
               <a href="/start/" class="dropdown-toggle" data-toggle="dropdown">Start <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="/start/overview.html">Overview</a></li>    
+                <li><a href="/start/installation.html">Installation</a></li>    
                 <li><a href="/start/why.html">Why MyHDL?</a></li>    
                 <li><a href="/start/whatitisnot.html">What MyHDL is not</a></li>    
               </ul>
             <li><a href="http://doc.myhdl.org/en/latest/">Manual</a></li>
             <li><a href="/examples/">Examples</a></li>
+            <li class="dropdown">
+              <a href="/support/" class="dropdown-toggle" data-toggle="dropdown">Support <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/support/faq.html">FAQ</a></li>    
+              </ul>
+            <li><a href="/resources.html">Resources</a></li>
+            <li><a href="/users.html">Users</a></li>
           </ul>
 
           <ul class="nav navbar-nav navbar-right">
@@ -140,7 +148,7 @@ For example, tcl is popular for tool control.  Also, many designers use perl to
 glue things together. Others use ruby or Python for that purpose.</p>
 <p>It is clear that these high-level dynamic languages play an essential role in
 modern digital design. Verilog or VHDL alone is not enough. Many designers even
-prefer those languages over their <abbr title="Hardware Description Language">HDL</abbr>, because they can get things done quickly
+prefer those languages over their HDL, because they can get things done quickly
 with them.</p>
 <p>Wouldn't it be great if one could use such a language directly to design
 hardware?  That's exactly what MyHDL offers.</p>
@@ -150,7 +158,7 @@ buzzwords such as "agile", "rapid application development", "scrum", and
 "test-driven development".  This is not just hype. The new ideas and techniques
 offer real improvements to the development processes. Naturally, they are
 emerging in the communities of modern software languages, such as Python.</p>
-<p>As <abbr title="Hardware Description Language">HDL</abbr>-based design has many similarities with software development, the new
+<p>As HDL-based design has many similarities with software development, the new
 ideas are potentially quite relevant. Nevertheless, the hardware design world
 seems detached from them. </p>
 <p>By using MyHDL, the newest software development techniques are readily
@@ -159,14 +167,14 @@ example, you can use a Python unit test framework to do test-driven development
 for hardware design.</p>
 <h2 id="algorithm-and-implementation-unified">Algorithm and implementation unified</h2>
 <p>Python is an ideal language for algorithm development and many engineers use it
-for this purpose.  Commonly this work and a subsequent <abbr title="Hardware Description Language">HDL</abbr> implementation are
+for this purpose.  Commonly this work and a subsequent HDL implementation are
 done by different engineers.  They use a different set of tools that require a
 specialized level of knowledge.</p>
 <p>MyHDL is a big step towards the unification of the two domains.  With
-Python/MyHDL an algorithm or model designer can explore <abbr title="Hardware Description Language">HDL</abbr> implementation and
-an <abbr title="Hardware Description Language">HDL</abbr> designer can explore algorithm and model design, all within the same
-environment.  Of course, the conversion from algorithm to an <abbr title="Hardware Description Language">HDL</abbr> implementation
-still requires knowledge of <abbr title="Hardware Description Language">HDL</abbr>-based design. But being able to do this while
+Python/MyHDL an algorithm or model designer can explore HDL implementation and
+an HDL designer can explore algorithm and model design, all within the same
+environment.  Of course, the conversion from algorithm to an HDL implementation
+still requires knowledge of HDL-based design. But being able to do this while
 staying in the powerful Python environment can be a significant boost to
 quality and productivity.  For example, the verification work can directly be
 reused between both design domains.</p>
@@ -236,7 +244,7 @@ assignments and Verilog non-blocking assignments. In both languages, these
 assignments are implemented using a special assignment symbol, which happens to
 be identical: <code>&lt;=</code>.  We will refer to "signal assignments" in the following
 discussion.</p>
-<p>As signal assignments are not natively present in software languages, <abbr title="Hardware Description Language">HDL</abbr>
+<p>As signal assignments are not natively present in software languages, HDL
 newcomers often have problems with them. While this is a normal part of the
 learning process, the VHDL and Verilog approach doesn't help.  Consider the
 following pseudocode snippet of signals assignments:</p>

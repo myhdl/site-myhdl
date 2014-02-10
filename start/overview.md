@@ -3,12 +3,6 @@ title:   Overview
 layout:  article
 ---
 
-Project goal
-============
-
-The goal of the MyHDL project is to empower hardware designers with the
-elegance and simplicity of the Python language.
-
 Short description
 =================
 
