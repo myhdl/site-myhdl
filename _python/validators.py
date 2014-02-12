@@ -2,7 +2,7 @@ import re
 
 hglib_import_error = """\
 The layout validators for this site require hglib.
-Install with: "pip install hglib"
+Install with: "pip install python-hglib"
 """
 
 undefined_key = "'{}' not defined in '{}'"
