@@ -1,0 +1,40 @@
+{% extends "_base.html" %}
+
+{% block body %}
+
+<div class="jumbotron">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7">
+                <h1>{{this.title}}</h1>
+                <p>{{this.abstract}}</p>
+                {{this.body}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="row">
+
+        {% block index_list %}
+        {% for item in this.content %}
+            <div class="col-sm-6 col-lg-4" role="main">
+                    <h4><a href="{{item.url}}">{{item.title}}</a>&nbsp;&nbsp;</h4>
+                    <p>{{item.description}}</p>
+            </div>
+            {% if loop.index0 % 2 == 1 %}
+            <div class="clearfix visible-sm"></div>
+            <div class="clearfix visible-md"></div>
+            {% endif %}
+            {% if loop.index0 % 3 == 2 %}
+            <div class="clearfix visible-lg"></div>
+            {% endif %}
+        {% endfor %}
+        {% endblock %}
+
+    </div>
+</div>
+
+{% endblock %}

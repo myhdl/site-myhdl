@@ -1,4 +1,0 @@
----
-title: Placeholder
-layout: page
----
