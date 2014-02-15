@@ -10,6 +10,6 @@ content:
     - resources
     - users
     - site-info 
-abstract:
+tagline:
     From Python to Silicon!
 ---

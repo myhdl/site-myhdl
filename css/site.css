@@ -32,6 +32,7 @@ body {
   padding-top: 16px;
   color: #777;
   border-top: 1px solid #ecf0f1;
+  text-align: center;
 }
 
 /* code */
@@ -39,7 +40,8 @@ body {
 code {
   padding: 0 2px 0 2px;
   font-size: inherit;
-  color: #333;
+  /* color: #333; */
+  color: inherit;
   white-space: nowrap;
   background-color: transparent;
   border-radius: 0px;

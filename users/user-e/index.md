@@ -1,6 +1,6 @@
 ---
 title:  User E
-layout: index
+layout: page
 content: []
 description:
     Somewhat longer description of activities

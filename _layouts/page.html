@@ -38,20 +38,24 @@
         {% endblock %}
 
         <div class="col-md-6" data-spy="scroll" data-target="#sidenav" role="main">
-             
-            {% block sharing %}
-            {% endblock %}
             {% if this.lastedit|d %}
             <p><em>{{this.lastedit}}</em></p>
             {% endif %}
             {% block preamble %}
             {% endblock %}
+            {% if this.description|d %}
+            <p class="lead">{{this.description}}</p>
+            {% endif %}
 
             {{this.body}}
+
         </div>
     </div>
 
     <div class="footer">
+        <div style="margin: 10px">
+        {% include 'sharing.html' %}
+        </div>
         <p class="text-center"> Content licensed under the
            <a href="{{site.reflinks.license.url}}">{{site.reflinks.license.title}}</a> license.
            See <a href="{{site.reflinks['/terms-of-use'].url}}">Terms of Use</a>.
