@@ -20,6 +20,10 @@ body {
     margin-top: 30px;
 }
 
+h2:first-of-type {
+    margin-top: 0px;
+}
+
 .checklist {
     padding: 0;
     list-style: none;
@@ -33,6 +37,10 @@ body {
   color: #777;
   border-top: 1px solid #ecf0f1;
   text-align: center;
+}
+
+.footer p {
+  margin: 0; 
 }
 
 /* code */
