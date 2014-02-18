@@ -29,6 +29,10 @@ h2:first-of-type {
   margin: 15px auto;
 }
 
+.fa {
+  margin-right: 0.5em;
+}
+
 .checklist {
   padding: 0;
   list-style: none;

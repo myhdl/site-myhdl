@@ -30,7 +30,7 @@ language, providing hardware engineers with unprecedented power.
 <div class="row text-center">
 
     <div class="col-md-4">
-<h3>Integrates seamlessly</h3>
+<h3><i class="fa fa-cogs"></i> Integrates seamlessly</h3>
 <p>
 MyHDL designs can be converted to Verilog or VHDL automatically, and
 implemented using a standard tool flow.
@@ -38,7 +38,7 @@ implemented using a standard tool flow.
     </div>
 
     <div class="col-md-4">
-<h3>Silicon proven</h3>
+<h3><i class="fa fa-check-square-o"></i> Silicon proven</h3>
 <p>
 Many MyHDL designs have been implemented in ASICs and FPGAs,
 including some high volume applications. 
@@ -46,7 +46,7 @@ including some high volume applications.
     </div>
 
     <div class="col-md-4">
-<h3>Open source</h3>
+<h3><i class="fa fa-bitbucket"></i> Open source</h3>
 <p>
 MyHDL is an open source, pure Python package.  
 <a href="start/installation.html">Install with pip</a>
