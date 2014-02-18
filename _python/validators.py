@@ -70,7 +70,7 @@ def validate_mep(item):
 validators= {}
 
 validators['article'] = validate_article 
-validators['mep'] = validate_mep
-for pn in ('page', 'simple_page'):
+validators['simple_article'] = validate_article 
+for pn in ('page', 'simple_page', 'home'):
     validators[pn] = validate_default
 
