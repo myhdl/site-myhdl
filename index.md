@@ -25,6 +25,8 @@ language. This gives unprecedented power to hardware designers.
     </div>
 </div>
 
+<hr class="half-rule">
+
 <div class="row text-center">
 
     <div class="col-md-4">

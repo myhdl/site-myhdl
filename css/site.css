@@ -1,7 +1,7 @@
 body {
-    position: relative;
-    padding-top: 50px;
-    padding-bottom: 20px;
+  position: relative;
+  padding-top: 50px;
+  padding-bottom: 20px;
 }
 
 .navbar-brand {
@@ -9,30 +9,35 @@ body {
 }
 
 .page-header {
-     margin-top: 30px;
+  margin-top: 30px;
 }
 
 .breadcrumb {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 
 .preamble {
-    margin-top: 30px;
+  margin-top: 30px;
 }
 
 h2:first-of-type {
-    margin-top: 0px;
+  margin-top: 0px;
+}
+
+.half-rule {
+  width: 100px;
+  margin: 15px auto;
 }
 
 .checklist {
-    padding: 0;
-    list-style: none;
+  padding: 0;
+  list-style: none;
 }
 
 /* footer */
 
 .footer {
-  margin-top: 20px;
+  margin-top: 30px;
   padding-top: 16px;
   color: #777;
   border-top: 1px solid #ecf0f1;
@@ -75,35 +80,35 @@ blockquote p {
 }
 
 .toc ul  {
-    padding-left: 0;
-    font-size: 90%;
-    list-style: none;
+  padding-left: 0;
+  font-size: 90%;
+  list-style: none;
 }
 
 .toc ul li {
-    padding-top: 3px;
+  padding-top: 3px;
 }
 
 .toc ul ul {
-    padding-left: 10px;
-    font-size: 95%;
+  padding-left: 10px;
+  font-size: 95%;
 }
 
 /* heading scrolling */
 
 h2[id]:before, 
 h3[id]:before{
-    content: "";
-    display: block;
-    height: 70px;
-    margin-top:-70px;
+  content: "";
+  display: block;
+  height: 70px;
+  margin-top:-70px;
 }
 
 
 /* affix hacks from boostrap 3.0 docs */
 
 .sidebar.affix {
-    position: static;
+  position: static;
 }
 
 @media (min-width: 992px) {
