@@ -20,7 +20,7 @@ tagline:
 <h1> Design hardware with Python</h1>
 <p class="lead">
 MyHDL turns Python into a hardware description and verification
-language. This gives unprecedented power to hardware designers.
+language, providing hardware engineers with unprecedented power.
 </p>
     </div>
 </div>
