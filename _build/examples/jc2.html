@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Johnson Counter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Bootstrap -->
+    <link href="/css/bootstrap-flatly.min.css" rel="stylesheet" media="screen">
+    <!-- customizations -->
+    <link href="/css/site.css" rel="stylesheet" media="screen">
+    <!-- pygments -->
+    <link href="/css/syntax.css" rel="stylesheet" media="screen">
+    <!-- icons -->
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">MyHDL</a>
+        </div>
+        <div class="navbar-collapse collapse">
+
+          <ul class="nav navbar-nav navbar-left">
+ 
+            <li class="dropdown">
+              <a href="/start/" class="dropdown-toggle" data-toggle="dropdown">Start <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/start/overview.html">Overview</a></li>    
+                <li><a href="/start/installation.html">Installation</a></li>    
+                <li><a href="/start/why.html">Why MyHDL?</a></li>    
+                <li><a href="/start/whatitisnot.html">What MyHDL is not</a></li>    
+              </ul>
+            <li><a href="http://doc.myhdl.org/en/latest/">Manual</a></li>
+            <li class="active"><a href="/examples/">Examples</a></li>
+            <li class="dropdown">
+              <a href="/support/" class="dropdown-toggle" data-toggle="dropdown">Support <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/support/faq.html">FAQ</a></li>    
+                <li><a href="/support/community.html">Community</a></li>    
+                <li><a href="/support/commercial.html">Commercial support</a></li>    
+              </ul>
+            <li><a href="/resources.html">Resources</a></li>
+            <li><a href="/users/">Users</a></li>
+          </ul>
+
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/site-info.html">Site info</a></li>
+          </ul>
+
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+
+<div class="container">
+
+    <ol class="breadcrumb">
+       <li><a href="/">Home</a></li>
+       <li><a href="/examples/">Examples</a></li>
+       <li class="active">Johnson Counter</li>
+    </ol>
+
+    <div class="page-header">
+ 
+<h1>Johnson Counter
+</h1>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-3" role="navigation"> 
+ 
+            <div class="sidebar" data-spy="affix" 
+                 data-offset-top="80" 
+                 data-offset-bottom="60">
+                <div class="well">
+                    <a href="#"><em>Johnson Counter</em></a>
+                    <div class="toc">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#specification">Specification</a></li>
+<li><a href="#myhdl-code">MyHDL code</a></li>
+<li><a href="#test-bench">Test bench</a></li>
+<li><a href="#automatic-conversion-to-verilog">Automatic conversion to Verilog</a></li>
+<li><a href="#alternative-design">Alternative design</a></li>
+</ul>
+</div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6" data-spy="scroll" data-target="#sidenav" role="main">
+
+            <h2 id="introduction">Introduction</h2>
+<p>On this page we will present the design of a reversable 4 bit Johnson counter.
+A Johnson counter has a special structure that permits glitch-free decoding.</p>
+<p>This example is originally from the Xilinx ISE design environment. If you wish,
+you can <a href="http://www.xilinx.com/ise/logic_design_prod/webpack.htm"> download the free version</a> of the Xilinx
+ISE to review the original design and use it as a reference.</p>
+<h2 id="specification">Specification</h2>
+<p>A Johnson counter basically consists of a circular shift register with an invertor in the loop.</p>
+<p>The specification of the counter operation is as follows:</p>
+<p>The counter is triggered on the rising edge of the clock (clk). 
+A low pulse on the goLeft input will cause the counter to start 
+shifting left from its current state. A low pulse on the goRight
+input will cause the counter to start shifting right from its 
+current state. A low pulse on the stop input will cause the 
+counter to hold its current state until goLeft or goRight is pulsed.
+After power-up, the counter is stopped with all outputs low (LEDs lit).</p>
+<h2 id="myhdl-code">MyHDL code</h2>
+<p>The MyHDL code for this design looks as follows.</p>
+<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">ACTIVE</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">DirType</span> <span class="o">=</span> <span class="n">enum</span><span class="p">(</span><span class="s">&#39;RIGHT&#39;</span><span class="p">,</span> <span class="s">&#39;LEFT&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">jc2</span><span class="p">(</span><span class="n">goLeft</span><span class="p">,</span> <span class="n">goRight</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; A bi-directional 4-bit Johnson counter with stop control.</span>
+
+<span class="sd">    I/O pins:</span>
+<span class="sd">    --------</span>
+<span class="sd">    clk      : input free-running slow clock </span>
+<span class="sd">    goLeft   : input signal to shift left (active-low switch)</span>
+<span class="sd">    goRight    : input signal to shift right (active-low switch)</span>
+<span class="sd">    stop     : input signal to stop counting (active-low switch)</span>
+<span class="sd">    q        : 4-bit counter output (active-low LEDs; q[0] is right-most)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">dir</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">DirType</span><span class="o">.</span><span class="n">LEFT</span><span class="p">)</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">logic</span><span class="p">():</span>
+        <span class="c"># direction</span>
+        <span class="k">if</span> <span class="n">goRight</span> <span class="o">==</span> <span class="n">ACTIVE</span><span class="p">:</span>
+            <span class="nb">dir</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">DirType</span><span class="o">.</span><span class="n">RIGHT</span>
+            <span class="n">run</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">elif</span> <span class="n">goLeft</span> <span class="o">==</span> <span class="n">ACTIVE</span><span class="p">:</span>
+            <span class="nb">dir</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">DirType</span><span class="o">.</span><span class="n">LEFT</span>
+            <span class="n">run</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="c"># stop</span>
+        <span class="k">if</span> <span class="n">stop</span> <span class="o">==</span> <span class="n">ACTIVE</span><span class="p">:</span>
+            <span class="n">run</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="c"># counter action</span>
+        <span class="k">if</span> <span class="n">run</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">dir</span> <span class="o">==</span> <span class="n">DirType</span><span class="o">.</span><span class="n">LEFT</span><span class="p">:</span>
+                <span class="n">q</span><span class="o">.</span><span class="n">next</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+                <span class="n">q</span><span class="o">.</span><span class="n">next</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">q</span><span class="o">.</span><span class="n">next</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">q</span><span class="o">.</span><span class="n">next</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">logic</span>
+</pre></div>
+
+
+<p>We use an enumerated type for the direction state <code>dir</code>. We prefer this for
+clarity when the encoding is not specified.</p>
+<h2 id="test-bench">Test bench</h2>
+<p>The following is a test bench for a basic verification of the design.</p>
+<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">ACTIVE</span><span class="p">,</span> <span class="n">INACTIVE</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="nb">bool</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">jc2</span> <span class="kn">import</span> <span class="n">jc2</span>
+
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">jc2</span><span class="p">):</span>
+
+    <span class="n">goLeft</span><span class="p">,</span> <span class="n">goRight</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">clk</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="n">INACTIVE</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">4</span><span class="p">:])</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">clkgen</span><span class="p">():</span>
+        <span class="n">clk</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">clk</span>
+
+    <span class="n">jc2_inst</span> <span class="o">=</span> <span class="n">jc2</span><span class="p">(</span><span class="n">goLeft</span><span class="p">,</span> <span class="n">goRight</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+
+    <span class="nd">@instance</span>
+    <span class="k">def</span> <span class="nf">stimulus</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">clk</span><span class="o">.</span><span class="n">negedge</span>
+        <span class="k">for</span> <span class="n">sig</span><span class="p">,</span> <span class="n">nrcycles</span> <span class="ow">in</span> <span class="p">((</span><span class="n">goLeft</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="p">(</span><span class="n">stop</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="n">goRight</span><span class="p">,</span> <span class="mi">10</span><span class="p">)):</span>
+            <span class="n">sig</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">ACTIVE</span>
+            <span class="k">yield</span> <span class="n">clk</span><span class="o">.</span><span class="n">negedge</span>
+            <span class="n">sig</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">INACTIVE</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrcycles</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">clk</span><span class="o">.</span><span class="n">negedge</span>
+        <span class="k">raise</span> <span class="n">StopSimulation</span>
+
+    <span class="nd">@instance</span>
+    <span class="k">def</span> <span class="nf">monitor</span><span class="p">():</span>
+        <span class="k">print</span> <span class="s">&quot;goLeft goRight stop clk q&quot;</span>
+        <span class="k">print</span> <span class="s">&quot;-------------------------&quot;</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">clk</span><span class="o">.</span><span class="n">negedge</span>
+            <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s">&quot;</span><span class="si">%d</span><span class="s"> </span><span class="si">%d</span><span class="s"> </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">goLeft</span><span class="p">,</span> <span class="n">goRight</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span> <span class="p">,</span>
+            <span class="k">yield</span> <span class="n">clk</span><span class="o">.</span><span class="n">posedge</span>
+            <span class="k">print</span> <span class="s">&quot;C&quot;</span><span class="p">,</span>
+            <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">print</span> <span class="nb">bin</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">clkgen</span><span class="p">,</span> <span class="n">jc2_inst</span><span class="p">,</span> <span class="n">stimulus</span><span class="p">,</span> <span class="n">monitor</span>
+
+<span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">test</span><span class="p">(</span><span class="n">jc2</span><span class="p">))</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+
+<p>We use a number of decorated functions to create a clock generator, a stimulus
+generator, and a response monitor, together with an instance of the design
+under test. Such a setup is quite typical.</p>
+<p>When we simulate this test bench, the output is as follows:</p>
+<div class="codehilite"><pre>$ python test_jc2.py
+goLeft goRight stop clk q
+-------------------------
+1 1 1 C 0000
+1 1 1 C 0000
+0 1 1 C 0000
+1 1 1 C 0001
+1 1 1 C 0011
+1 1 1 C 0111
+1 1 1 C 1111
+1 1 1 C 1110
+1 1 1 C 1100
+1 1 1 C 1000
+1 1 1 C 0000
+1 1 1 C 0001
+1 1 0 C 0011
+1 1 1 C 0011
+1 1 1 C 0011
+1 0 1 C 0011
+1 1 1 C 0001
+1 1 1 C 0000
+1 1 1 C 1000
+1 1 1 C 1100
+1 1 1 C 1110
+1 1 1 C 1111
+1 1 1 C 0111
+1 1 1 C 0011
+1 1 1 C 0001
+</pre></div>
+
+
+<p>You can see the basic operation of the Johnson counter in action.</p>
+<p>The presented test bench is rather basic. It is fine to get a quick idea about
+the design behavior, but it is inadequate as a verification tool. First, some
+corner case are not verified, such as the simultaneous occurence of some of the
+input signals. Also, it relies on visual inspection which is prone to human
+error  and not suited for regression testing.</p>
+<p>A better approach would be to write a self-checking test bench that checks
+Johnson counter properties automatically, plus a number of directed and random
+tests to cover corner cases. In addition, such a test bench should be written
+using a unit test framework such as Python's <code>unittest</code> package, to facilitate
+test writing and to make it part of a regression test suite. Consult the MyHDL
+manual for more info on such techniques.</p>
+<h2 id="automatic-conversion-to-verilog">Automatic conversion to Verilog</h2>
+<p>A working MyHDL design intended for implementation can be converted to Verilog
+automatically, using the <code>toVerilog</code> function. Remember: there is no point in
+converting when the design doesn't work. The simulation will catch much more
+errors than the converter. In MyHDL, like in Python, the run-time rules.</p>
+<p>Conversion to Verilog can be done with code like the following:</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="n">jc2</span><span class="p">):</span>
+    <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">clk</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="n">INACTIVE</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">4</span><span class="p">:])</span>
+    <span class="n">toVerilog</span><span class="p">(</span><span class="n">jc2</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+
+<span class="n">convert</span><span class="p">(</span><span class="n">jc2</span><span class="p">)</span>
+</pre></div>
+
+
+<p>As you see, conversion works on an instantiated, elaborated design.</p>
+<p>The resulting Verilog code is as follows:</p>
+<div class="codehilite"><pre><span class="k">module</span> <span class="n">jc2</span> <span class="p">(</span>
+    <span class="n">goLeft</span><span class="p">,</span>
+    <span class="n">goRight</span><span class="p">,</span>
+    <span class="n">stop</span><span class="p">,</span>
+    <span class="n">clk</span><span class="p">,</span>
+    <span class="n">q</span>
+<span class="p">);</span>
+
+<span class="k">input</span> <span class="n">goLeft</span><span class="p">;</span>
+<span class="k">input</span> <span class="n">goRight</span><span class="p">;</span>
+<span class="k">input</span> <span class="n">stop</span><span class="p">;</span>
+<span class="k">input</span> <span class="n">clk</span><span class="p">;</span>
+<span class="k">output</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">q</span><span class="p">;</span>
+<span class="kt">reg</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">q</span><span class="p">;</span>
+
+<span class="kt">reg</span> <span class="n">run</span><span class="p">;</span>
+<span class="kt">reg</span> <span class="p">[</span><span class="mh">0</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">dir</span><span class="p">;</span>
+
+
+<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">_jc2_logic</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">goRight</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
+        <span class="n">dir</span> <span class="o">&lt;=</span> <span class="mh">1&#39;b0</span><span class="p">;</span>
+        <span class="n">run</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
+    <span class="k">end</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="n">goLeft</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
+        <span class="n">dir</span> <span class="o">&lt;=</span> <span class="mh">1&#39;b1</span><span class="p">;</span>
+        <span class="n">run</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
+    <span class="k">end</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">stop</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
+        <span class="n">run</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+    <span class="k">end</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">run</span><span class="p">)</span> <span class="k">begin</span>
+        <span class="c1">// synthesis parallel_case full_case</span>
+        <span class="k">casez</span> <span class="p">(</span><span class="n">dir</span><span class="p">)</span>
+            <span class="mh">1&#39;b1</span><span class="o">:</span> <span class="k">begin</span>
+                <span class="n">q</span><span class="p">[</span><span class="mh">4</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+                <span class="n">q</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="o">!</span><span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="p">]);</span>
+            <span class="k">end</span>
+            <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
+                <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">q</span><span class="p">[</span><span class="mh">4</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">1</span><span class="p">];</span>
+                <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="o">!</span><span class="n">q</span><span class="p">[</span><span class="mh">0</span><span class="p">]);</span>
+            <span class="k">end</span>
+        <span class="k">endcase</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">endmodule</span>
+</pre></div>
+
+
+<p>The tests to the <code>dir</code> variable in the MyHDL code are mapped to a Verilog
+<code>case</code> statement. This is because the Verilog convertor handles comparisons to
+enumerated type items in a special way. The goal is to describe finite state
+machines efficiently. For example, it is possible to specify a different
+encoding using the <code>encoding</code> attribute of the enumerated type. The choices are
+<code>binary</code> (the default), <code>one_hot</code>, and <code>one_cold</code>. Of course, with only 2
+states like in this case, this functionality is not relevant. But in general,
+it is an additional advantage of the use of enumerated types.</p>
+<h2 id="alternative-design">Alternative design</h2>
+<p>This is not yet the end of the story.</p>
+<p>The original design in the Xilinx ISE distribution contains 3 views: Abel,
+Verilog, and VHDL. Interestingly, the Verilog and VHDL views are inconsistent:
+they have a different behavior. In Verilog terminology, the Verilog view uses
+blocking assignments only, while the VHDL view uses non-blocking (= signal)
+assignments only. The VHDL view seems to be consistent with the Abel view and
+with the supplied test vectors, so it has been the basis of the design that has
+been discussed so far. However, it is interesting to investigate what the
+implications of the Verilog view would be on the MyHDL code. Actually, the role
+of blocking and non-blocking assignments in Verilog is poorly understood, and I
+believe MyHDL can help to clarify the issues. (The reason is that MyHDL, like
+VHDL but unlike Verilog, makes a clear difference between signals and
+variables).</p>
+<p>Consider how long it takes before a control input change influences the counter
+output. In the discussed design, it takes two clock edges: one edge to set the
+state registers <code>dir</code> and <code>run</code>, and one edge to see the influence of the state
+registers on the count. You can verify this behavior from the test bench
+output. (Note that inputs are sampled before the clock edge, and outputs after
+the clock edge).</p>
+<p>Now suppose we would prefer to influence the count output after a single clock
+edge. Can this be done? The answer is positive: however, to support that we
+will need to use variables instead of signals for the state registers <code>dir</code> and
+<code>run</code>. </p>
+<p>The modified MyHDL code looks as follows:</p>
+<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">ACTIVE</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">DirType</span> <span class="o">=</span> <span class="n">enum</span><span class="p">(</span><span class="s">&#39;RIGHT&#39;</span><span class="p">,</span> <span class="s">&#39;LEFT&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">jc2_alt</span><span class="p">(</span><span class="n">goLeft</span><span class="p">,</span> <span class="n">goRight</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; A bi-directional 4-bit Johnson counter with stop control.</span>
+
+<span class="sd">    I/O pins:</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    clk      : input free-running clock </span>
+<span class="sd">    goLeft   : input signal to shift left (active-low switch)</span>
+<span class="sd">    goRight  : input signal to shift right (active-low switch)</span>
+<span class="sd">    stop     : input signal to stop counting (active-low switch)</span>
+<span class="sd">    q        : 4-bit counter output (active-low LEDs; q[0] is right-most)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@instance</span>
+    <span class="k">def</span> <span class="nf">logic</span><span class="p">():</span>
+        <span class="nb">dir</span> <span class="o">=</span> <span class="n">DirType</span><span class="o">.</span><span class="n">LEFT</span>
+        <span class="n">run</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">clk</span><span class="o">.</span><span class="n">posedge</span>
+            <span class="c"># direction</span>
+            <span class="k">if</span> <span class="n">goRight</span> <span class="o">==</span> <span class="n">ACTIVE</span><span class="p">:</span>
+                <span class="nb">dir</span> <span class="o">=</span> <span class="n">DirType</span><span class="o">.</span><span class="n">RIGHT</span>
+                <span class="n">run</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">elif</span> <span class="n">goLeft</span> <span class="o">==</span> <span class="n">ACTIVE</span><span class="p">:</span>
+                <span class="nb">dir</span> <span class="o">=</span> <span class="n">DirType</span><span class="o">.</span><span class="n">LEFT</span>
+                <span class="n">run</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="c"># stop</span>
+            <span class="k">if</span> <span class="n">stop</span> <span class="o">==</span> <span class="n">ACTIVE</span><span class="p">:</span>
+                <span class="n">run</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="c"># counter action</span>
+            <span class="k">if</span> <span class="n">run</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">dir</span> <span class="o">==</span> <span class="n">DirType</span><span class="o">.</span><span class="n">LEFT</span><span class="p">:</span>
+                    <span class="n">q</span><span class="o">.</span><span class="n">next</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+                    <span class="n">q</span><span class="o">.</span><span class="n">next</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">q</span><span class="o">.</span><span class="n">next</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">q</span><span class="o">.</span><span class="n">next</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">logic</span>
+</pre></div>
+
+
+<p>The <code>instance</code> decorator is used to create the <code>logic</code> generator from the
+corresponding generator function. The main functionality of that function is
+wrapped in a <code>while True</code> loop to keep the generator alive "forever". The first
+statement in the loop is a <code>yield</code> statement that specifies the sensitivity to
+the clock edge. Variables <code>dir</code> and <code>run</code> are local state variables, that keep
+their previous value through each iteration of the <code>while</code> loop.</p>
+<p>You may wonder why we couldn't use the <code>always</code> decorator with a clock edge
+argument as before. The reason is that in that case, the decorated function is
+a classic (= non-generator) function that would be called on every clock edge.
+However, local variables loose their value whenever a function returns, so they
+cannot hold state. Therefore, we need to use a more general approach and code
+the desired behavior explicitly in a generator function.</p>
+<p>This example is more subtle and complex than it may seem at first sight. As
+said before, variables <code>dir</code> and <code>run</code> are state variables and will therefore
+require a flip-flop in an implementation. However, they are also used
+"combinatorially": when they change, they may influence the counter operation
+"in the same clock cycle", that is, before the flip-flop output changes. This
+is perfectly fine behavior and no problem for synthesis tools, but it tends to
+confuse a lot of designers. This coding style is also a favourite theme of this
+author :-) ( --- <em><a href="jan@jandecaluwe.com">Jan Decaluwe</a></em>). </p>
+<p>To verify whether we now have the desired behavior, we can run the original
+test bench on the alternative design:</p>
+<div class="codehilite"><pre>Alternative design
+------------------
+goLeft goRight stop clk q
+-------------------------
+1 1 1 C 0000
+1 1 1 C 0000
+0 1 1 C 0001
+1 1 1 C 0011
+1 1 1 C 0111
+1 1 1 C 1111
+1 1 1 C 1110
+
+1 1 1 C 1100
+1 1 1 C 1000
+1 1 1 C 0000
+1 1 1 C 0001
+1 1 1 C 0011
+1 1 0 C 0011
+1 1 1 C 0011
+1 1 1 C 0011
+1 0 1 C 0001
+1 1 1 C 0000
+1 1 1 C 1000
+1 1 1 C 1100
+1 1 1 C 1110
+1 1 1 C 1111
+1 1 1 C 0111
+1 1 1 C 0011
+1 1 1 C 0001
+1 1 1 C 0000
+</pre></div>
+
+
+<p>If you compare this output with the previous one, you will see that the counter
+response to a control input change is now indeed one clock cycle earlier.</p>
+<p>Like before, we can convert the MyHDL code automatically to Verilog:</p>
+<div class="codehilite"><pre><span class="k">module</span> <span class="n">jc2_alt</span> <span class="p">(</span>
+    <span class="n">goLeft</span><span class="p">,</span>
+    <span class="n">goRight</span><span class="p">,</span>
+    <span class="n">stop</span><span class="p">,</span>
+    <span class="n">clk</span><span class="p">,</span>
+    <span class="n">q</span>
+<span class="p">);</span>
+
+<span class="k">input</span> <span class="n">goLeft</span><span class="p">;</span>
+<span class="k">input</span> <span class="n">goRight</span><span class="p">;</span>
+<span class="k">input</span> <span class="n">stop</span><span class="p">;</span>
+<span class="k">input</span> <span class="n">clk</span><span class="p">;</span>
+<span class="k">output</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">q</span><span class="p">;</span>
+<span class="kt">reg</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">q</span><span class="p">;</span>
+
+
+
+<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">_jc2_alt_logic</span>
+    <span class="kt">reg</span> <span class="n">run</span><span class="p">;</span>
+    <span class="kt">reg</span> <span class="p">[</span><span class="mh">1</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">dir</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">goRight</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
+        <span class="n">dir</span> <span class="o">=</span> <span class="mh">1&#39;b0</span><span class="p">;</span>
+        <span class="n">run</span> <span class="o">=</span> <span class="mh">1</span><span class="p">;</span>
+    <span class="k">end</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="n">goLeft</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
+        <span class="n">dir</span> <span class="o">=</span> <span class="mh">1&#39;b1</span><span class="p">;</span>
+        <span class="n">run</span> <span class="o">=</span> <span class="mh">1</span><span class="p">;</span>
+    <span class="k">end</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">stop</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
+        <span class="n">run</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+    <span class="k">end</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">run</span><span class="p">)</span> <span class="k">begin</span>
+        <span class="c1">// synthesis parallel_case full_case</span>
+        <span class="k">casez</span> <span class="p">(</span><span class="n">dir</span><span class="p">)</span>
+            <span class="mh">1&#39;b1</span><span class="o">:</span> <span class="k">begin</span>
+                <span class="n">q</span><span class="p">[</span><span class="mh">4</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+                <span class="n">q</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="o">!</span><span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="p">]);</span>
+            <span class="k">end</span>
+            <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
+                <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">q</span><span class="p">[</span><span class="mh">4</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">1</span><span class="p">];</span>
+                <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="o">!</span><span class="n">q</span><span class="p">[</span><span class="mh">0</span><span class="p">]);</span>
+            <span class="k">end</span>
+        <span class="k">endcase</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">endmodule</span>
+</pre></div>
+
+
+<p>Verilog's always block is more general than the MyHDL <code>always</code> decorator,
+because you cannot use local state variables with the latter. However, even
+though the MyHDL code for the alternative design doesn't use the <code>always</code>
+decorator, the convertor is smart enough to see that it can still use it in the
+Verilog code in this case.</p>
+<p>Note that blocking and non-blocking assignments are mixed in the always block.
+This is necessary to match the behavior of the alternative MyHDL design. In the
+Verilog world, you may encounter rules that forbid such a coding style. Such
+rules are typically created by designers that prefer to focus on "thinking
+hardware" instead of thinking in terms of code, even when synthesis tools are
+perfectly able to create efficient hardware from that code. The best you can do
+with such rules is to ignore them.</p>
+
+        </div>
+    </div>
+
+    <div class="footer">
+        <div style="margin: 8px">
+<a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+<!-- Place this tag where you want the +1 button to render. -->
+<div class="g-plusone" data-size="medium"></div>
+
+<!-- Place this tag after the last +1 button tag. -->
+<script type="text/javascript">
+window.__gcfg = {
+    lang: 'en-US'
+};
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>        </div>
+        <p>Content licensed under the
+           <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a> license.
+           See <a href="/terms-of-use.html">Terms of Use</a>.
+        </p> 
+    </div>
+</div> 
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/js/bootstrap.min.js"></script>
+
+  </body>
+</html>

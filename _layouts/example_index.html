@@ -1,0 +1,11 @@
+{% extends "index.html" %}
+
+        {% block index_list %}
+        {% for item in this.content %}
+        <div class="col-md-6">
+            <h4><a href="{{item.url}}">{{item.title}}</a>&nbsp;&nbsp;
+                <small>{{item.date|dateformat}}</small></h4>
+            {{item.summary}}
+        </div>
+        {% endfor %}
+        {% endblock %}

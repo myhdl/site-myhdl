@@ -1,6 +1,12 @@
 ---
 title:   Flip-flops and Latches 
 layout:  article
+summary.md: | 
+    Learn about the following MyHDL features and techniques:
+
+    * modelling and simulating small sequential devices
+    * waveform viewing
+    * automatic conversion to Verilog
 ---
 
 Introduction
@@ -13,15 +19,6 @@ Typically, you wouldn't describe flip-flops and latches as individual modules.
 Rather, they can be inferred from higher-level  RTL description by a synthesis
 tool. However, as these circuits are small and widely known, they are well
 suited to explain basic MyHDL usage and to compare MyHDL with other solutions.
-
-What you will learn
-===================
-
-On this page, you will learn about the following MyHDL features and techniques:
-
-* modelling and simulating small sequential devices
-* waveform viewing
-* automatic conversion to Verilog
 
 D flip-flop
 ===========
