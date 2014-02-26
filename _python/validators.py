@@ -2,7 +2,7 @@ import re
 from distutils.version import StrictVersion
 import urubu
 
-urubu_version_required = "0.2.1"
+urubu_version_required = "0.3"
 
 urubu_version_error = """\
 Urubu version should be >= {}
