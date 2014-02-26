@@ -115,9 +115,9 @@
             </div>
         </div>
 
-        <div class="col-md-6" data-spy="scroll" data-target="#sidenav" role="main">
-
-            <h2 id="modeling">Modeling</h2>
+        <div class="content">
+            <div class="col-md-6" data-spy="scroll" data-target="#sidenav" role="main">
+                <h2 id="modeling">Modeling</h2>
 <h3 id="what-is-the-default-width-of-an-intbv">What is the default width of an <code>intbv</code>?</h3>
 <p>By default, an <code>intbv</code> object has an "indefinite" bit width. Although this is a novel concept compared to traditional HDL modeling, it corresponds to the natural way to think about integers and their 2's complement representation. Consider:</p>
 <div class="codehilite"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="n">intbv</span>
@@ -183,7 +183,7 @@ technique is explained
 <p>The implementation of co-simulation in MyHDL relies on unix-style interprocess communication. Therefore, unlike the rest of MyHDL, you cannot use co-simulation on Windows natively.</p>
 <p>To run co-simulation on Windows, use a unix-like environment for Windows, such as cygwin. You will have to compile all co-simulation tools in that environment. This includes Python itself, the HDL simulator, and the PLI module.</p>
 <p>Users have reported co-simulation success on Windows using cygwin and the Verilog simulators Icarus and Cver.</p>
-
+            </div>
         </div>
     </div>
 

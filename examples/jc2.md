@@ -1,6 +1,6 @@
 ---
 title:   Johnson Counter 
-layout:  article
+layout:  wide_article
 summary.md: |
     Learn about the following MyHDL features and techniques:
 

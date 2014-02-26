@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>StopWatch</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Bootstrap -->
+    <link href="/css/bootstrap-flatly.min.css" rel="stylesheet" media="screen">
+    <!-- customizations -->
+    <link href="/css/site.css" rel="stylesheet" media="screen">
+    <!-- pygments -->
+    <link href="/css/syntax.css" rel="stylesheet" media="screen">
+    <!-- icons -->
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">MyHDL</a>
+        </div>
+        <div class="navbar-collapse collapse">
+
+          <ul class="nav navbar-nav navbar-left">
+ 
+            <li class="dropdown">
+              <a href="/start/" class="dropdown-toggle" data-toggle="dropdown">Start <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/start/overview.html">Overview</a></li>    
+                <li><a href="/start/installation.html">Installation</a></li>    
+                <li><a href="/start/why.html">Why MyHDL?</a></li>    
+                <li><a href="/start/whatitisnot.html">What MyHDL is not</a></li>    
+              </ul>
+            <li><a href="http://doc.myhdl.org/en/latest/">Manual</a></li>
+            <li class="active"><a href="/examples/">Examples</a></li>
+            <li class="dropdown">
+              <a href="/support/" class="dropdown-toggle" data-toggle="dropdown">Support <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/support/faq.html">FAQ</a></li>    
+                <li><a href="/support/community.html">Community</a></li>    
+                <li><a href="/support/commercial.html">Commercial support</a></li>    
+              </ul>
+            <li><a href="/resources.html">Resources</a></li>
+            <li><a href="/users/">Users</a></li>
+          </ul>
+
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/site-info.html">Site info</a></li>
+          </ul>
+
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+
+<div class="container">
+
+    <ol class="breadcrumb">
+       <li><a href="/">Home</a></li>
+       <li><a href="/examples/">Examples</a></li>
+       <li class="active">StopWatch</li>
+    </ol>
+
+    <div class="page-header">
+ 
+<h1>StopWatch
+</h1>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-3" role="navigation"> 
+ 
+            <div class="sidebar" data-spy="affix" 
+                 data-offset-top="80" 
+                 data-offset-bottom="60">
+                <div class="well">
+                    <a href="#"><em>StopWatch</em></a>
+                    <div class="toc">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#specification">Specification</a></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#time-counter-design">Time counter design</a><ul>
+<li><a href="#approach">Approach</a></li>
+<li><a href="#unit-test">Unit test</a></li>
+<li><a href="#design">Design</a></li>
+</ul>
+</li>
+<li><a href="#bcd-to-led-convertor-design">bcd to led convertor design</a><ul>
+<li><a href="#approach_1">Approach</a></li>
+<li><a href="#unit-test_1">Unit test</a></li>
+<li><a href="#design_1">Design</a></li>
+</ul>
+</li>
+<li><a href="#top-level-design">Top level design</a></li>
+<li><a href="#implementation">Implementation</a><ul>
+<li><a href="#automatic-conversion-to-verilog">Automatic conversion to Verilog</a></li>
+<li><a href="#synthesis">Synthesis</a></li>
+<li><a href="#fpga-implementation">FPGA implementation</a></li>
+<li><a href="#cpld-implementation">CPLD implementation</a></li>
+</ul>
+</li>
+<li><a href="#more-about-pytest">More about py.test</a></li>
+</ul>
+</div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="col-md-8" data-spy="scroll" data-target="#sidenav" role="main">
+                <h2 id="introduction">Introduction</h2>
+<p>On this page, we will present a stopwatch design. It is similar to the design
+in the <a href="http://www.xilinx.com/support/techsup/tutorials/tutorials7.htm">Xilinx ISE tutorial</a>. We
+will tackle it "the MyHDL way" and take it from spec to implementation.</p>
+<p>This is an extensive example, and we will use it to present all aspects of a
+MyHDL-based design flow. It's also a relatively advanced. If you have
+difficulties understanding the material on this page, consider reading the
+first chapters of the
+<a href="http://www.jandecaluwe.com/Tools/MyHDL/manual/MyHDL.html">manual</a> or the
+earlier examples in this Cookbook first.</p>
+<h2 id="specification">Specification</h2>
+<p>Compared to the design in the Xilinx ISE tutorial, our design is somewhat
+simplified. The intention is not to avoid complexity, but merely to make the
+code and the explanations better fit on a single web page. In particular, our
+stopwatch will only have three digits: two digits for the seconds, and one for
+the tenths of a second. Also, we will not consider clock generation issues and
+simply assume that a 10Hz clock is available.</p>
+<p>The interface of the stopwatch design looks as follows:</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="nf">StopWatch</span><span class="p">(</span><span class="n">tens_led</span><span class="p">,</span> <span class="n">ones_led</span><span class="p">,</span> <span class="n">tenths_led</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">clock</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; 3 digit stopwatch with seconds and tenths of a second.</span>
+
+<span class="sd">    tens_led: 7 segment led for most significant digit of the seconds</span>
+<span class="sd">    ones_led: 7 segment led for least significant digit of the seconds</span>
+<span class="sd">    tenths_led: 7 segment led for tenths of a second</span>
+<span class="sd">    startstop: input that starts or stops the stopwatch on a posedge</span>
+<span class="sd">    reset: reset input</span>
+<span class="sd">    clock: 10Hz clock input</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+</pre></div>
+
+
+<h2 id="architecture">Architecture</h2>
+<p>A stopwatch system is naturally partitioned as follows:</p>
+<ul>
+<li>a subsystem that counts time, expressed as digits in bcd (binary coded decimal) code</li>
+<li>a subsystem that displays the count, by converting each bcd digit to a 7 segment led display</li>
+</ul>
+<p>A natural partitioning often works best, and that's how we will approach the
+design. We will first design a  time counter and then a bcd to led convertor.</p>
+<h2 id="time-counter-design">Time counter design</h2>
+<h3 id="approach">Approach</h3>
+<p>One of the goals of the MyHDL project is to promote the use of modern software
+development techniques for hardware design. One such technique is the concept
+of unit testing, a cornerstone of <em>extreme programming</em> (XP).</p>
+<p>Unit testing means writing a dedicated test for each building block of a
+design, and aggregating all tests in a regression test suite using a unit test
+framework. Moreover, the XP idea is to <em>write the unit test first</em>, before the
+actual implementation. This makes sure that the test writer concentrates on all
+aspects of the high level specification, without being influenced by lower
+level implementation details.</p>
+<p>At the start of an implementation, the existing unit test will fail, and it
+will continue to do so until a valid implementation is achieved. The unit test
+thus serves as a metric for completion. Moreover, to see the unit test fail on
+incomplete or invalid designs enhances the confidence in the test quality
+itself. This is of crucial importance when making design changes later on.</p>
+<h3 id="unit-test">Unit test</h3>
+<p>To write a unit test for building block, we need two things: the specification
+and the interface. The specification was described in previous sections. The
+interface of the time counter looks as follows:</p>
+<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">def</span> <span class="nf">TimeCount</span><span class="p">(</span><span class="n">tens</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">tenths</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">clock</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; 3 digit time counter in seconds and tenths of a second.</span>
+
+<span class="sd">    tens: most significant digit of the seconds</span>
+<span class="sd">    ones: least significant digit of the seconds</span>
+<span class="sd">    tenths: tenths of a second</span>
+<span class="sd">    startstop: input that starts or stops the counter on a posedge</span>
+<span class="sd">    reset: reset input</span>
+<span class="sd">    clock: 10Hz clock input</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+</pre></div>
+
+
+<p>The actual implementation is left open for now. We will first write the test, using the interface.</p>
+<p>The following code is the unit test for the time counter subsystem:</p>
+<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
+
+<span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">TimeCount</span> <span class="kn">import</span> <span class="n">TimeCount</span>
+
+<span class="n">LOW</span><span class="p">,</span> <span class="n">HIGH</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="nb">bool</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">MAX_COUNT</span> <span class="o">=</span> <span class="mi">6</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">*</span> <span class="mi">10</span>
+<span class="n">PERIOD</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="k">def</span> <span class="nf">bench</span><span class="p">():</span>
+
+    <span class="sd">&quot;&quot;&quot; Unit test for time counter. &quot;&quot;&quot;</span>
+
+    <span class="n">tens</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">tenths</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">4</span><span class="p">:])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+    <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">clock</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="n">LOW</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+
+    <span class="n">dut</span> <span class="o">=</span> <span class="n">TimeCount</span><span class="p">(</span><span class="n">tens</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">tenths</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">clock</span><span class="p">)</span>
+
+    <span class="n">count</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">counting</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">delay</span><span class="p">(</span><span class="n">PERIOD</span><span class="o">//</span><span class="mi">2</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">clkgen</span><span class="p">():</span>
+        <span class="n">clock</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">clock</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">startstop</span><span class="o">.</span><span class="n">posedge</span><span class="p">,</span> <span class="n">reset</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">action</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
+            <span class="n">counting</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">count</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">counting</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">counting</span>      
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">clock</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">counter</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">counting</span><span class="p">:</span>
+            <span class="n">count</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="p">(</span><span class="n">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">MAX_COUNT</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">clock</span><span class="o">.</span><span class="n">negedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">monitor</span><span class="p">():</span>
+        <span class="k">assert</span> <span class="p">((</span><span class="n">tens</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">ones</span><span class="o">*</span><span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="n">tenths</span><span class="p">)</span> <span class="o">==</span> <span class="n">count</span>
+
+    <span class="nd">@instance</span>
+    <span class="k">def</span> <span class="nf">stimulus</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">maxInterval</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="n">PERIOD</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">MAX_COUNT</span><span class="o">*</span><span class="n">PERIOD</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">sig</span> <span class="ow">in</span> <span class="p">(</span><span class="n">reset</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span>
+                        <span class="n">reset</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span>
+                        <span class="n">reset</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span>
+                        <span class="n">reset</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">startstop</span><span class="p">):</span>
+               <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="n">randrange</span><span class="p">(</span><span class="mi">10</span><span class="o">*</span><span class="n">PERIOD</span><span class="p">,</span> <span class="n">maxInterval</span><span class="p">))</span>
+               <span class="k">yield</span> <span class="n">clock</span><span class="o">.</span><span class="n">negedge</span> <span class="c"># sync to avoid race condition</span>
+               <span class="n">sig</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">HIGH</span>
+               <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+               <span class="n">sig</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">LOW</span>
+        <span class="k">raise</span> <span class="n">StopSimulation</span>
+
+    <span class="k">return</span> <span class="n">dut</span><span class="p">,</span> <span class="n">clkgen</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">counter</span><span class="p">,</span> <span class="n">monitor</span><span class="p">,</span> <span class="n">stimulus</span>
+
+
+<span class="k">def</span> <span class="nf">test_bench</span><span class="p">():</span>
+    <span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">bench</span><span class="p">())</span>
+    <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+
+<p><code>dut</code> is the design under test. <code>clkgen</code> is a clock generator. <code>action</code> defines
+the stopwatch state, based on a rising edge on either of the input signals
+<code>startstop</code> or <code>reset</code>. <code>counter</code> maintains the expected time count. <code>monitor</code>
+is the actual test: it asserts that the actual time count from the design
+equals the expected time count. Finally, <code>stimulus</code> defines a number of test
+cases for the stopwatch. Note that it has an inner <code>for</code> loop over signals, as
+a concise way to define test patterns. This is straightforward in Python. But
+think for a moment on how you would do it in Verilog or VHDL.</p>
+<p>Also in <code>stimulus</code>, note the <code>yield clock.negedge</code> statement. This statement
+synchronizes signal changes with the falling clock edge. This is needed to
+avoid race conditions when signals change "simultaneously" with the rising
+clock edge. This is commonly done in digital tests. As you can expect, this
+statement was not present in the first version of the test: it was added after
+the test was run against the implementation and found to fail occasionally,
+even when the implementation was believed to be correct. This shows that in
+practice there may be a good reason why a test needs to be adapted to get
+everything working. But it in any case it is better to start with a "general"
+unit test that is not influenced by an implementation.</p>
+<p>Our unit test is now ready to run. We could actually run it directly against an
+implementation. However, we will use it via the unit testing framework
+<code>py.test</code> instead. The framework provides the following functionality:</p>
+<ul>
+<li>it redefines the Python <code>assert</code> statement for extensive error reporting</li>
+<li>it looks up and runs each method whose name starts with "test_"</li>
+<li>it looks up test modules by searching for modules whose name starts with "test_"</li>
+</ul>
+<p>There's a lot more to say about <code>py.test</code> and you are probably also curious
+where to get it from. You can find that info further on this page, in the
+section <a href="cookbook:stopwatch#more_about_py.test">More about py.test</a>.</p>
+<h3 id="design">Design</h3>
+<p>The following is an implementation of the time counter, in file <code>TimeCount.py</code>:</p>
+<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">def</span> <span class="nf">TimeCount</span><span class="p">(</span><span class="n">tens</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">tenths</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">clock</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; 3 digit time counter in seconds and tenths of a second.</span>
+
+<span class="sd">    tens: most significant digit of the seconds</span>
+<span class="sd">    ones: least significant digit of the seconds</span>
+<span class="sd">    tenths: tenths of a second</span>
+<span class="sd">    startstop: input that starts or stops the counter on a posedge</span>
+<span class="sd">    reset: reset input</span>
+<span class="sd">    clock: 10kHz clock input</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@instance</span>
+    <span class="k">def</span> <span class="nf">logic</span><span class="p">():</span>
+        <span class="n">seen</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">counting</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">clock</span><span class="o">.</span><span class="n">posedge</span><span class="p">,</span> <span class="n">reset</span><span class="o">.</span><span class="n">posedge</span>
+
+            <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
+                <span class="n">tens</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">ones</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">tenths</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">seen</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="n">counting</span> <span class="o">=</span> <span class="bp">False</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">startstop</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">seen</span><span class="p">:</span>
+                    <span class="n">seen</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="n">counting</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">counting</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">startstop</span><span class="p">:</span>
+                    <span class="n">seen</span> <span class="o">=</span> <span class="bp">False</span>
+
+                <span class="k">if</span> <span class="n">counting</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">tenths</span> <span class="o">==</span> <span class="mi">9</span><span class="p">:</span>
+                        <span class="n">tenths</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="k">if</span> <span class="n">ones</span> <span class="o">==</span> <span class="mi">9</span><span class="p">:</span>
+                            <span class="n">ones</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
+                            <span class="k">if</span> <span class="n">tens</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+                                <span class="n">tens</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">tens</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">tens</span> <span class="o">+</span> <span class="mi">1</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">ones</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">ones</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">tenths</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">tenths</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">logic</span>
+</pre></div>
+
+
+<p><code>py.test</code> confirms that this is a valid implementation:</p>
+<div class="codehilite"><pre>$ py.test test_TimeCount.py
+=================================== test process starts ===================================
+testing-mode: inprocess
+executable:   /usr/local/bin/python  (2.4.2-final-0)
+using py lib: /usr/local/lib/python2.4/site-packages/py &lt;rev unknown&gt;
+
+test_TimeCount.py[1] .
+
+======================== tests finished: 1 passed in 1.85 seconds =========================
+</pre></div>
+
+
+<h2 id="bcd-to-led-convertor-design">bcd to led convertor design</h2>
+<h3 id="approach_1">Approach</h3>
+<p>For the design of the bcd to led convertor , we will follow a similar approach
+as before. We will write a unit test first, and then use it to complete the
+design.</p>
+<p>We first put the encoding data in a separate module, <code>seven_segment.py</code>, to
+make it reusable. The appropriate data structure for the encoding is a
+dictionary:</p>
+<div class="codehilite"><pre><span class="c"># 7 segment encoding</span>
+<span class="c">#      0</span>
+<span class="c">#     ---  </span>
+<span class="c">#  5 |   | 1</span>
+<span class="c">#     ---   &lt;- 6</span>
+<span class="c">#  4 |   | 2</span>
+<span class="c">#     ---</span>
+<span class="c">#      3</span>
+
+<span class="n">encoding</span> <span class="o">=</span>  <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s">&quot;1000000&quot;</span><span class="p">,</span>
+             <span class="mi">1</span><span class="p">:</span> <span class="s">&quot;1111001&quot;</span><span class="p">,</span>
+             <span class="mi">2</span><span class="p">:</span> <span class="s">&quot;0100100&quot;</span><span class="p">,</span>
+             <span class="mi">3</span><span class="p">:</span> <span class="s">&quot;0110000&quot;</span><span class="p">,</span>
+             <span class="mi">4</span><span class="p">:</span> <span class="s">&quot;0011001&quot;</span><span class="p">,</span> 
+             <span class="mi">5</span><span class="p">:</span> <span class="s">&quot;0010010&quot;</span><span class="p">,</span>
+             <span class="mi">6</span><span class="p">:</span> <span class="s">&quot;0000010&quot;</span><span class="p">,</span>
+             <span class="mi">7</span><span class="p">:</span> <span class="s">&quot;1111000&quot;</span><span class="p">,</span>
+             <span class="mi">8</span><span class="p">:</span> <span class="s">&quot;0000000&quot;</span><span class="p">,</span>
+             <span class="mi">9</span><span class="p">:</span> <span class="s">&quot;0010000&quot;</span>
+            <span class="p">}</span>
+</pre></div>
+
+
+<h3 id="unit-test_1">Unit test</h3>
+<p>This is the unit test, in <code>test_bcd2led.py</code>:</p>
+<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
+<span class="kn">import</span> <span class="nn">seven_segment</span>
+<span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">bcd2led</span> <span class="kn">import</span> <span class="n">bcd2led</span>
+
+
+<span class="n">PERIOD</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="k">def</span> <span class="nf">bench</span><span class="p">():</span>
+
+      <span class="n">led</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">7</span><span class="p">:])</span>
+      <span class="n">bcd</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">4</span><span class="p">:])</span>
+      <span class="n">clock</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+      <span class="n">dut</span> <span class="o">=</span> <span class="n">bcd2led</span><span class="p">(</span><span class="n">led</span><span class="p">,</span> <span class="n">bcd</span><span class="p">,</span> <span class="n">clock</span><span class="p">)</span>
+
+      <span class="nd">@always</span><span class="p">(</span><span class="n">delay</span><span class="p">(</span><span class="n">PERIOD</span><span class="o">//</span><span class="mi">2</span><span class="p">))</span>
+      <span class="k">def</span> <span class="nf">clkgen</span><span class="p">():</span>
+            <span class="n">clock</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">clock</span>
+
+      <span class="nd">@instance</span>
+      <span class="k">def</span> <span class="nf">check</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+                  <span class="n">bcd</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">randrange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+                  <span class="k">yield</span> <span class="n">clock</span><span class="o">.</span><span class="n">posedge</span>
+                  <span class="k">yield</span> <span class="n">clock</span><span class="o">.</span><span class="n">negedge</span>
+                  <span class="n">expected</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">seven_segment</span><span class="o">.</span><span class="n">encoding</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">bcd</span><span class="p">)],</span> <span class="mi">2</span><span class="p">)</span>
+                 <span class="k">assert</span> <span class="n">led</span> <span class="o">==</span> <span class="n">expected</span>
+           <span class="k">raise</span> <span class="n">StopSimulation</span>
+
+      <span class="k">return</span> <span class="n">dut</span><span class="p">,</span> <span class="n">clkgen</span><span class="p">,</span> <span class="n">check</span>
+
+
+<span class="k">def</span> <span class="nf">test_bench</span><span class="p">():</span>
+      <span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">bench</span><span class="p">())</span>
+      <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+
+<p>This test asserts that the led output from the design matches the appropriate
+encoding for a digit.</p>
+<h3 id="design_1">Design</h3>
+<p>Here is an implementation, in <code>bcd2led.py</code>:</p>
+<div class="codehilite"><pre><span class="kn">import</span> <span class="nn">seven_segment</span>
+
+<span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">code</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span> <span class="o">*</span> <span class="mi">10</span>
+<span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">seven_segment</span><span class="o">.</span><span class="n">encoding</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">key</span> <span class="o">&lt;=</span> <span class="mi">9</span><span class="p">:</span>
+        <span class="n">code</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">code</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">bcd2led</span><span class="p">(</span><span class="n">led</span><span class="p">,</span> <span class="n">bcd</span><span class="p">,</span> <span class="n">clock</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; bcd to seven segment led convertor.</span>
+
+<span class="sd">    led: seven segment led output</span>
+<span class="sd">    bcd: bcd input</span>
+<span class="sd">    clock: clock input</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">clock</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">logic</span><span class="p">():</span>
+        <span class="n">led</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">code</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">bcd</span><span class="p">)]</span>
+
+    <span class="k">return</span> <span class="n">logic</span>
+</pre></div>
+
+
+<p>Note how we derive the tuple <code>code</code> from the <code>encoding</code> dictionary. We need a
+tuple because that's the data structure that the Verilog convertor supports.
+It maps tuple indexing to a case statement to support ROM inferencing by
+synthesis tools.</p>
+<p>When we run <code>py.test</code>, we get the following output:</p>
+<div class="codehilite"><pre>$ py.test
+============================= test process starts ==============================
+testing-mode: inprocess
+executable:   /usr/local/bin/python  (2.4.2-final-0)
+using py lib: /usr/local/lib/python2.4/site-packages/py &lt;rev unknown&gt;
+
+test_TimeCount.py[1] .
+test_bcd2led.py[1] .
+
+=================== tests finished: 2 passed in 2.47 seconds ===================
+</pre></div>
+
+
+<p>Note that when run with no arguments, <code>py.test</code> finds and runs all test
+modules. This is done recursively through all subdirectories, making it
+straightforward to run a full regression test suite.</p>
+<h2 id="top-level-design">Top level design</h2>
+<p>The top-level design in <code>StopWatch.py</code> is just an assembly of the previously
+designed modules:</p>
+<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">TimeCount</span> <span class="kn">import</span> <span class="n">TimeCount</span>
+<span class="kn">from</span> <span class="nn">bcd2led</span> <span class="kn">import</span> <span class="n">bcd2led</span>
+
+<span class="k">def</span> <span class="nf">StopWatch</span><span class="p">(</span><span class="n">tens_led</span><span class="p">,</span> <span class="n">ones_led</span><span class="p">,</span> <span class="n">tenths_led</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">clock</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; 3 digit stopwatch with seconds and tenths of a second.</span>
+
+<span class="sd">    tens_led: 7 segment led for most significant digit of the seconds</span>
+<span class="sd">    ones_led: 7 segment led for least significant digit of the seconds</span>
+<span class="sd">    tenths_led: 7 segment led for tenths of a second</span>
+<span class="sd">    startstop: input that starts or stops the stopwatch on a posedge</span>
+<span class="sd">    reset: reset input</span>
+<span class="sd">    clock: 10Hz clock input</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">tens</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">tenths</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">4</span><span class="p">:])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+
+    <span class="n">timecount_inst</span> <span class="o">=</span> <span class="n">TimeCount</span><span class="p">(</span><span class="n">tens</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">tenths</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">clock</span><span class="p">)</span>
+    <span class="n">bcd2led_tens</span> <span class="o">=</span> <span class="n">bcd2led</span><span class="p">(</span><span class="n">tens_led</span><span class="p">,</span> <span class="n">tens</span><span class="p">,</span> <span class="n">clock</span><span class="p">)</span>
+    <span class="n">bcd2led_ones</span> <span class="o">=</span> <span class="n">bcd2led</span><span class="p">(</span><span class="n">ones_led</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">clock</span><span class="p">)</span>
+    <span class="n">bcd2led_tenths</span> <span class="o">=</span> <span class="n">bcd2led</span><span class="p">(</span><span class="n">tenths_led</span><span class="p">,</span> <span class="n">tenths</span><span class="p">,</span> <span class="n">clock</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">timecount_inst</span><span class="p">,</span> <span class="n">bcd2led_tens</span><span class="p">,</span> <span class="n">bcd2led_ones</span><span class="p">,</span> <span class="n">bcd2led_tenths</span>
+</pre></div>
+
+
+<h2 id="implementation">Implementation</h2>
+<h3 id="automatic-conversion-to-verilog">Automatic conversion to Verilog</h3>
+<p>To go to an implementation, we first convert the design to Verilog
+automatically, using MyHDL's <code>toVerilog</code> function:</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="nf">convert</span><span class="p">():</span>
+
+    <span class="n">tens_led</span><span class="p">,</span> <span class="n">ones_led</span><span class="p">,</span> <span class="n">tenths_led</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">7</span><span class="p">:])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+    <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">clock</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+
+    <span class="n">toVerilog</span><span class="p">(</span><span class="n">StopWatch</span><span class="p">,</span> <span class="n">tens_led</span><span class="p">,</span> <span class="n">ones_led</span><span class="p">,</span> <span class="n">tenths_led</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">clock</span><span class="p">)</span>
+
+<span class="n">convert</span><span class="p">()</span>
+</pre></div>
+
+
+<p>The resulting Verilog code is included in full:</p>
+<div class="codehilite"><pre><span class="k">module</span> <span class="n">StopWatch</span> <span class="p">(</span>
+    <span class="n">tens_led</span><span class="p">,</span>
+    <span class="n">ones_led</span><span class="p">,</span>
+    <span class="n">tenths_led</span><span class="p">,</span>
+    <span class="n">startstop</span><span class="p">,</span>
+    <span class="n">reset</span><span class="p">,</span>
+    <span class="n">clock</span>
+<span class="p">);</span>
+
+<span class="k">output</span> <span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tens_led</span><span class="p">;</span>
+<span class="kt">reg</span> <span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tens_led</span><span class="p">;</span>
+<span class="k">output</span> <span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">ones_led</span><span class="p">;</span>
+<span class="kt">reg</span> <span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">ones_led</span><span class="p">;</span>
+<span class="k">output</span> <span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tenths_led</span><span class="p">;</span>
+<span class="kt">reg</span> <span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tenths_led</span><span class="p">;</span>
+<span class="k">input</span> <span class="n">startstop</span><span class="p">;</span>
+<span class="k">input</span> <span class="n">reset</span><span class="p">;</span>
+<span class="k">input</span> <span class="n">clock</span><span class="p">;</span>
+
+<span class="kt">reg</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">ones</span><span class="p">;</span>
+<span class="kt">reg</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tens</span><span class="p">;</span>
+<span class="kt">reg</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tenths</span><span class="p">;</span>
+
+
+<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clock</span> <span class="k">or</span> <span class="k">posedge</span> <span class="n">reset</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">_StopWatch_timecount_inst_logic</span>
+    <span class="kt">reg</span> <span class="n">seen</span><span class="p">;</span>
+    <span class="kt">reg</span> <span class="n">counting</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">reset</span><span class="p">)</span> <span class="k">begin</span>
+        <span class="n">tens</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+        <span class="n">ones</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+        <span class="n">tenths</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+        <span class="n">seen</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+        <span class="n">counting</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+    <span class="k">end</span>
+    <span class="k">else</span> <span class="k">begin</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">startstop</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="o">!</span><span class="n">seen</span><span class="p">)))</span> <span class="k">begin</span>
+            <span class="n">seen</span> <span class="o">=</span> <span class="mh">1</span><span class="p">;</span>
+            <span class="n">counting</span> <span class="o">=</span> <span class="p">(</span><span class="o">!</span><span class="n">counting</span><span class="p">);</span>
+        <span class="k">end</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="o">!</span><span class="n">startstop</span><span class="p">))</span> <span class="k">begin</span>
+            <span class="n">seen</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+        <span class="k">end</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">counting</span><span class="p">)</span> <span class="k">begin</span>
+            <span class="k">if</span> <span class="p">((</span><span class="n">tenths</span> <span class="o">==</span> <span class="mh">9</span><span class="p">))</span> <span class="k">begin</span>
+                <span class="n">tenths</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">((</span><span class="n">ones</span> <span class="o">==</span> <span class="mh">9</span><span class="p">))</span> <span class="k">begin</span>
+                    <span class="n">ones</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                    <span class="k">if</span> <span class="p">((</span><span class="n">tens</span> <span class="o">==</span> <span class="mh">5</span><span class="p">))</span> <span class="k">begin</span>
+                        <span class="n">tens</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                    <span class="k">end</span>
+                    <span class="k">else</span> <span class="k">begin</span>
+                        <span class="n">tens</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">tens</span> <span class="o">+</span> <span class="mh">1</span><span class="p">);</span>
+                    <span class="k">end</span>
+                <span class="k">end</span>
+                <span class="k">else</span> <span class="k">begin</span>
+                    <span class="n">ones</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">ones</span> <span class="o">+</span> <span class="mh">1</span><span class="p">);</span>
+                <span class="k">end</span>
+            <span class="k">end</span>
+            <span class="k">else</span> <span class="k">begin</span>
+                <span class="n">tenths</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">tenths</span> <span class="o">+</span> <span class="mh">1</span><span class="p">);</span>
+            <span class="k">end</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clock</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">_StopWatch_bcd2led_tens_logic</span>
+    <span class="c1">// synthesis parallel_case full_case</span>
+    <span class="k">case</span> <span class="p">(</span><span class="n">tens</span><span class="p">)</span>
+        <span class="mh">0</span><span class="o">:</span> <span class="n">tens_led</span> <span class="o">&lt;=</span> <span class="mh">64</span><span class="p">;</span>
+        <span class="mh">1</span><span class="o">:</span> <span class="n">tens_led</span> <span class="o">&lt;=</span> <span class="mh">121</span><span class="p">;</span>
+        <span class="mh">2</span><span class="o">:</span> <span class="n">tens_led</span> <span class="o">&lt;=</span> <span class="mh">36</span><span class="p">;</span>
+        <span class="mh">3</span><span class="o">:</span> <span class="n">tens_led</span> <span class="o">&lt;=</span> <span class="mh">48</span><span class="p">;</span>
+        <span class="mh">4</span><span class="o">:</span> <span class="n">tens_led</span> <span class="o">&lt;=</span> <span class="mh">25</span><span class="p">;</span>
+        <span class="mh">5</span><span class="o">:</span> <span class="n">tens_led</span> <span class="o">&lt;=</span> <span class="mh">18</span><span class="p">;</span>
+        <span class="mh">6</span><span class="o">:</span> <span class="n">tens_led</span> <span class="o">&lt;=</span> <span class="mh">2</span><span class="p">;</span>
+        <span class="mh">7</span><span class="o">:</span> <span class="n">tens_led</span> <span class="o">&lt;=</span> <span class="mh">120</span><span class="p">;</span>
+        <span class="mh">8</span><span class="o">:</span> <span class="n">tens_led</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+        <span class="k">default</span><span class="o">:</span> <span class="n">tens_led</span> <span class="o">&lt;=</span> <span class="mh">16</span><span class="p">;</span>
+    <span class="k">endcase</span>
+<span class="k">end</span>
+
+<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clock</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">_StopWatch_bcd2led_ones_logic</span>
+    <span class="c1">// synthesis parallel_case full_case</span>
+    <span class="k">case</span> <span class="p">(</span><span class="n">ones</span><span class="p">)</span>
+        <span class="mh">0</span><span class="o">:</span> <span class="n">ones_led</span> <span class="o">&lt;=</span> <span class="mh">64</span><span class="p">;</span>
+        <span class="mh">1</span><span class="o">:</span> <span class="n">ones_led</span> <span class="o">&lt;=</span> <span class="mh">121</span><span class="p">;</span>
+        <span class="mh">2</span><span class="o">:</span> <span class="n">ones_led</span> <span class="o">&lt;=</span> <span class="mh">36</span><span class="p">;</span>
+        <span class="mh">3</span><span class="o">:</span> <span class="n">ones_led</span> <span class="o">&lt;=</span> <span class="mh">48</span><span class="p">;</span>
+        <span class="mh">4</span><span class="o">:</span> <span class="n">ones_led</span> <span class="o">&lt;=</span> <span class="mh">25</span><span class="p">;</span>
+        <span class="mh">5</span><span class="o">:</span> <span class="n">ones_led</span> <span class="o">&lt;=</span> <span class="mh">18</span><span class="p">;</span>
+        <span class="mh">6</span><span class="o">:</span> <span class="n">ones_led</span> <span class="o">&lt;=</span> <span class="mh">2</span><span class="p">;</span>
+        <span class="mh">7</span><span class="o">:</span> <span class="n">ones_led</span> <span class="o">&lt;=</span> <span class="mh">120</span><span class="p">;</span>
+        <span class="mh">8</span><span class="o">:</span> <span class="n">ones_led</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+        <span class="k">default</span><span class="o">:</span> <span class="n">ones_led</span> <span class="o">&lt;=</span> <span class="mh">16</span><span class="p">;</span>
+    <span class="k">endcase</span>
+<span class="k">end</span>
+
+<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clock</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">_StopWatch_bcd2led_tenths_logic</span>
+    <span class="c1">// synthesis parallel_case full_case</span>
+    <span class="k">case</span> <span class="p">(</span><span class="n">tenths</span><span class="p">)</span>
+        <span class="mh">0</span><span class="o">:</span> <span class="n">tenths_led</span> <span class="o">&lt;=</span> <span class="mh">64</span><span class="p">;</span>
+        <span class="mh">1</span><span class="o">:</span> <span class="n">tenths_led</span> <span class="o">&lt;=</span> <span class="mh">121</span><span class="p">;</span>
+        <span class="mh">2</span><span class="o">:</span> <span class="n">tenths_led</span> <span class="o">&lt;=</span> <span class="mh">36</span><span class="p">;</span>
+        <span class="mh">3</span><span class="o">:</span> <span class="n">tenths_led</span> <span class="o">&lt;=</span> <span class="mh">48</span><span class="p">;</span>
+        <span class="mh">4</span><span class="o">:</span> <span class="n">tenths_led</span> <span class="o">&lt;=</span> <span class="mh">25</span><span class="p">;</span>
+        <span class="mh">5</span><span class="o">:</span> <span class="n">tenths_led</span> <span class="o">&lt;=</span> <span class="mh">18</span><span class="p">;</span>
+        <span class="mh">6</span><span class="o">:</span> <span class="n">tenths_led</span> <span class="o">&lt;=</span> <span class="mh">2</span><span class="p">;</span>
+        <span class="mh">7</span><span class="o">:</span> <span class="n">tenths_led</span> <span class="o">&lt;=</span> <span class="mh">120</span><span class="p">;</span>
+        <span class="mh">8</span><span class="o">:</span> <span class="n">tenths_led</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+        <span class="k">default</span><span class="o">:</span> <span class="n">tenths_led</span> <span class="o">&lt;=</span> <span class="mh">16</span><span class="p">;</span>
+    <span class="k">endcase</span>
+<span class="k">end</span>
+
+<span class="k">endmodule</span>
+</pre></div>
+
+
+<p>Note how the Verilog convertor expands the hierarchical design into a "flat net
+list of always blocks". The Verilog ouput is really an intermediate step
+towards an implementation. The whole design is flat and contained in a single
+file, which may make it easier to hand it off to back-end synthesis and
+implementation tools.</p>
+<p>Note also how the convertor expands tuple indexing in MyHDL into a case
+statement in Verilog.</p>
+<h3 id="synthesis">Synthesis</h3>
+<p>We will synthesize the design with Xilinx ISE 8.1. We first create a project in
+the ISE environment, add the source of the Verilog file to it, and we are ready
+to go.</p>
+<p>The following is extracted from the synthesis report. It shows how the
+synthesis tool recognizes higher-level functions such as ROMs and counters:</p>
+<div class="codehilite"><pre>=========================================================================
+*                           HDL Synthesis                               *
+=========================================================================
+
+Synthesizing Unit &lt;StopWatch&gt;.
+    Related source file is &quot;/home/jand/dev/myhdl/example/cookbook/stopwatch/StopWatch.v&quot;.
+    Found 16x7-bit ROM for signal &lt;$n0007&gt; created at line 68.
+    Found 16x7-bit ROM for signal &lt;$n0008&gt; created at line 84.
+    Found 16x7-bit ROM for signal &lt;$n0009&gt; created at line 100.
+    Found 7-bit register for signal &lt;tenths_led&gt;.
+    Found 7-bit register for signal &lt;ones_led&gt;.
+    Found 7-bit register for signal &lt;tens_led&gt;.
+    Found 1-bit register for signal &lt;_StopWatch_timecount_inst_logic/counting&gt;.
+    Found 1-bit register for signal &lt;_StopWatch_timecount_inst_logic/seen&gt;.
+    Found 4-bit up counter for signal &lt;ones&gt;.
+    Found 4-bit up counter for signal &lt;tens&gt;.
+    Found 4-bit up counter for signal &lt;tenths&gt;.
+    Summary:
+    inferred   3 ROM(s).
+    inferred   3 Counter(s).
+    inferred  23 D-type flip-flop(s).
+Unit &lt;StopWatch&gt; synthesized.
+</pre></div>
+
+
+<p>How these blocks are actually implemented depends on the target technology and
+the capabilities of the synthesis tool.</p>
+<p>You can review the full FPGA synthesis report <a href="synthesis.txt">here</a>.</p>
+<h3 id="fpga-implementation">FPGA implementation</h3>
+<p>The FPGA implementation report can be reviewed <a href="map.txt">here</a>.</p>
+<h3 id="cpld-implementation">CPLD implementation</h3>
+<p>The same design was also targetted to a CPLD technology. The detailed report
+can be viewed <a href="cpldfit.txt">here</a>.</p>
+<h2 id="more-about-pytest">More about py.test</h2>
+<p>To verify the stopwatch design, we have been using <code>py.test</code>. However, this is
+not the only unit testing framework available for Python. In fact, the standard
+unit testing framework that comes with Python is the <code>unittest</code> module. The
+<code>unittest</code> framework is presented in the MyHDL manual, and is used to verify
+MyHDL itself. On the other hand, <code>py.test</code> is not part of the standard Python
+library currently. Why then did we use <code>py.test</code> in this case?</p>
+<p>The reason is that I believe that <code>py.test</code> will be a better option in the
+future. As demonstrated on this page, <code>py.test</code> is non-intrusive. The only
+thing we need to do for basic usage is to obey some simple naming conventions
+and to use the <code>assert</code> statement for testing - things we might want to do
+without a testing framework anyway.  In contrast, <code>unittest</code> requires us to
+wrap our tests into dedicated subclasses and to use special test methods. This
+can be especially awkward with MyHDL, because MyHDL hardware is typically
+described using top-level and embedded functions, not classes and methods.</p>
+<p>In short, it is much easier to develop unit tests with <code>py.test</code> than it is
+with <code>unittest</code>, in particular in the case of MyHDL code. However, <code>py.test</code>
+also has its disadvantages:</p>
+<ul>
+<li>As <code>py.test</code> is not part of the standard Python library, it has to be
+installed separately.</li>
+<li><code>py.test</code> is currently not distributed in a convential way such as a tar
+file. It is part of the <code>py.lib</code> library that has to be checked out from a
+subversion repository. This requires the installation of a subversion client.</li>
+<li>The use of the <code>assert</code> statement for unit testing is controversial in
+Python. The <code>assert</code> statement is originally intended for programmer usage,
+to make programs safer. However, in my opinion the use of <code>assert</code> for
+testing is natural and warranted.</li>
+<li><code>py.test</code> uses a lot of "magic" behind the scenes to modify Python's behavior
+for its purposes, such as extensive error reporting.</li>
+</ul>
+<p>However, I believe that the benefits are far more important than the
+disadvantages. Moreover, some disadvantages may disappear over time.
+Consequently, I plan to promote <code>py.test</code> as the unit testing framework of
+choice for MyHDL in the future.</p>
+<p>More info on the usage and installation of <code>py.test</code> can be found
+<a href="http://pytest.org/latest/getting-started.html">here</a>.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div style="margin: 8px">
+<a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+<!-- Place this tag where you want the +1 button to render. -->
+<div class="g-plusone" data-size="medium"></div>
+
+<!-- Place this tag after the last +1 button tag. -->
+<script type="text/javascript">
+window.__gcfg = {
+    lang: 'en-US'
+};
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>        </div>
+        <p>Content licensed under the
+           <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a> license.
+           See <a href="/terms-of-use.html">Terms of Use</a>.
+        </p> 
+    </div>
+</div> 
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/js/bootstrap.min.js"></script>
+
+  </body>
+</html>
