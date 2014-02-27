@@ -1,0 +1,398 @@
+====== FPGA Synthesis Report ======
+
+Release 8.1.02i - xst I.26
+Copyright (c) 1995-2005 Xilinx, Inc.  All rights reserved.
+--> 
+Parameter TMPDIR set to ./xst/projnav.tmp
+CPU : 0.00 / 0.10 s | Elapsed : 0.00 / 1.00 s
+ 
+--> 
+Parameter xsthdpdir set to ./xst
+CPU : 0.00 / 0.10 s | Elapsed : 0.00 / 1.00 s
+ 
+--> 
+Reading design: SineComputer.prj
+
+TABLE OF CONTENTS
+  1) Synthesis Options Summary
+  2) HDL Compilation
+  3) HDL Analysis
+  4) HDL Synthesis
+     4.1) HDL Synthesis Report
+  5) Advanced HDL Synthesis
+     5.1) Advanced HDL Synthesis Report
+  6) Low Level Synthesis
+  7) Final Report
+     7.1) Device utilization summary
+     7.2) TIMING REPORT
+
+
+=========================================================================
+*                      Synthesis Options Summary                        *
+=========================================================================
+---- Source Parameters
+Input File Name                    : "SineComputer.prj"
+Input Format                       : mixed
+Ignore Synthesis Constraint File   : NO
+
+---- Target Parameters
+Output File Name                   : "SineComputer"
+Output Format                      : NGC
+Target Device                      : xc3s100e-5-tq144
+
+---- Source Options
+Top Module Name                    : SineComputer
+Automatic FSM Extraction           : YES
+FSM Encoding Algorithm             : Auto
+FSM Style                          : lut
+RAM Extraction                     : Yes
+RAM Style                          : Auto
+ROM Extraction                     : Yes
+Mux Style                          : Auto
+Decoder Extraction                 : YES
+Priority Encoder Extraction        : YES
+Shift Register Extraction          : YES
+Logical Shifter Extraction         : YES
+XOR Collapsing                     : YES
+ROM Style                          : Auto
+Mux Extraction                     : YES
+Resource Sharing                   : NO
+Multiplier Style                   : auto
+Automatic Register Balancing       : No
+
+---- Target Options
+Add IO Buffers                     : YES
+Global Maximum Fanout              : 500
+Add Generic Clock Buffer(BUFG)     : 8
+Register Duplication               : YES
+Slice Packing                      : YES
+Pack IO Registers into IOBs        : auto
+Equivalent register Removal        : YES
+
+---- General Options
+Optimization Goal                  : Speed
+Optimization Effort                : 1
+Keep Hierarchy                     : NO
+RTL Output                         : Yes
+Global Optimization                : AllClockNets
+Write Timing Constraints           : NO
+Hierarchy Separator                : /
+Bus Delimiter                      : <>
+Case Specifier                     : maintain
+Slice Utilization Ratio            : 100
+Slice Utilization Ratio Delta      : 5
+
+---- Other Options
+lso                                : SineComputer.lso
+Read Cores                         : YES
+cross_clock_analysis               : NO
+verilog2001                        : YES
+safe_implementation                : No
+Optimize Instantiated Primitives   : NO
+use_clock_enable                   : Yes
+use_sync_set                       : Yes
+use_sync_reset                     : Yes
+
+=========================================================================
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling verilog file "/home/jand/dev/myhdl/example/cookbook/sinecomp/SineComputer.v" in library work
+Module <SineComputer> compiled
+No errors in compilation
+Analysis of file <"SineComputer.prj"> succeeded.
+ 
+
+=========================================================================
+*                            HDL Analysis                               *
+=========================================================================
+Analyzing top module <SineComputer>.
+Module <SineComputer> is correct for synthesis.
+ 
+
+=========================================================================
+*                           HDL Synthesis                               *
+=========================================================================
+
+Synthesizing Unit <SineComputer>.
+    Related source file is "/home/jand/dev/myhdl/example/cookbook/sinecomp/SineComputer.v".
+WARNING:Xst:646 - Signal <_SineComputer_processor/dx> is assigned but never used.
+WARNING:Xst:646 - Signal <_SineComputer_processor/dy> is assigned but never used.
+WARNING:Xst:646 - Signal <_SineComputer_processor/dz> is assigned but never used.
+    Found 32x20-bit ROM for signal <$old__SineComputer_processor/dz_3>.
+    Found 20-bit register for signal <cos_z0>.
+    Found 1-bit register for signal <done>.
+    Found 20-bit register for signal <sin_z0>.
+    Found 20-bit subtractor for signal <$n0007> created at line 82.
+    Found 20-bit adder for signal <$n0008> created at line 87.
+    Found 20-bit adder for signal <$n0009> created at line 83.
+    Found 20-bit subtractor for signal <$n0010> created at line 88.
+    Found 20-bit shifter arithmetic right for signal <$n0011>.
+    Found 20-bit shifter arithmetic right for signal <$n0012>.
+    Found 20-bit subtractor for signal <$n0013> created at line 84.
+    Found 20-bit adder for signal <$n0014> created at line 89.
+    Found 5-bit adder for signal <$n0015> created at line 98.
+    Found 21-bit comparator greatequal for signal <$n0016> created at line 81.
+    Found 5-bit register for signal <_SineComputer_processor/i>.
+    Found 1-bit register for signal <_SineComputer_processor/state<0>>.
+    Found 20-bit register for signal <_SineComputer_processor/x>.
+    Found 20-bit register for signal <_SineComputer_processor/y>.
+    Found 20-bit register for signal <_SineComputer_processor/z>.
+    Summary:
+	inferred   1 ROM(s).
+	inferred  87 D-type flip-flop(s).
+	inferred   7 Adder/Subtractor(s).
+	inferred   1 Comparator(s).
+	inferred   2 Combinational logic shifter(s).
+Unit <SineComputer> synthesized.
+
+
+=========================================================================
+HDL Synthesis Report
+
+Macro Statistics
+# ROMs                                                 : 1
+ 32x20-bit ROM                                         : 1
+# Adders/Subtractors                                   : 7
+ 20-bit adder                                          : 3
+ 20-bit subtractor                                     : 3
+ 5-bit adder                                           : 1
+# Registers                                            : 8
+ 1-bit register                                        : 2
+ 20-bit register                                       : 5
+ 5-bit register                                        : 1
+# Comparators                                          : 1
+ 21-bit comparator greatequal                          : 1
+# Logic shifters                                       : 2
+ 20-bit shifter arithmetic right                       : 2
+
+=========================================================================
+
+=========================================================================
+*                       Advanced HDL Synthesis                          *
+=========================================================================
+
+
+=========================================================================
+Advanced HDL Synthesis Report
+
+Macro Statistics
+# ROMs                                                 : 1
+ 32x20-bit ROM                                         : 1
+# Adders/Subtractors                                   : 7
+ 20-bit adder                                          : 3
+ 20-bit subtractor                                     : 3
+ 5-bit adder                                           : 1
+# Registers                                            : 107
+ Flip-Flops                                            : 107
+# Comparators                                          : 1
+ 21-bit comparator greatequal                          : 1
+# Logic shifters                                       : 2
+ 20-bit shifter arithmetic right                       : 2
+
+=========================================================================
+
+=========================================================================
+*                         Low Level Synthesis                           *
+=========================================================================
+Loading device for application Rf_Device from file '3s100e.nph' in environment /home/jand/Xilinx.
+
+Optimizing unit <SineComputer> ...
+
+Mapping all equations...
+Building and optimizing final netlist ...
+Found area constraint ratio of 100 (+ 5) on block SineComputer, actual ratio is 28.
+FlipFlop _SineComputer_processor_i_0 has been replicated 6 time(s)
+FlipFlop _SineComputer_processor_i_1 has been replicated 4 time(s)
+FlipFlop _SineComputer_processor_i_2 has been replicated 5 time(s)
+FlipFlop _SineComputer_processor_i_3 has been replicated 3 time(s)
+FlipFlop _SineComputer_processor_i_4 has been replicated 3 time(s)
+FlipFlop _SineComputer_processor_x_19 has been replicated 2 time(s)
+FlipFlop _SineComputer_processor_y_19 has been replicated 1 time(s)
+
+=========================================================================
+*                            Final Report                               *
+=========================================================================
+Final Results
+RTL Top Level Output File Name     : SineComputer.ngr
+Top Level Output File Name         : SineComputer
+Output Format                      : NGC
+Optimization Goal                  : Speed
+Keep Hierarchy                     : NO
+
+Design Statistics
+# IOs                              : 64
+
+Cell Usage :
+# BELS                             : 814
+#      GND                         : 1
+#      INV                         : 2
+#      LUT1                        : 2
+#      LUT2                        : 51
+#      LUT2_D                      : 2
+#      LUT2_L                      : 28
+#      LUT3                        : 48
+#      LUT3_D                      : 10
+#      LUT3_L                      : 186
+#      LUT4                        : 74
+#      LUT4_D                      : 5
+#      LUT4_L                      : 77
+#      MUXCY                       : 114
+#      MUXF5                       : 96
+#      VCC                         : 1
+#      XORCY                       : 117
+# FlipFlops/Latches                : 131
+#      FDC                         : 91
+#      FDCE                        : 39
+#      FDPE                        : 1
+# Clock Buffers                    : 1
+#      BUFGP                       : 1
+# IO Buffers                       : 63
+#      IBUF                        : 22
+#      OBUF                        : 41
+=========================================================================
+
+Device utilization summary:
+---------------------------
+
+Selected Device : 3s100etq144-5 
+
+ Number of Slices:                     252  out of    960    26%  
+ Number of Slice Flip Flops:           131  out of   1920     6%  
+ Number of 4 input LUTs:               483  out of   1920    25%  
+ Number of bonded IOBs:                 64  out of    108    59%  
+ Number of GCLKs:                        1  out of     24     4%  
+
+
+=========================================================================
+TIMING REPORT
+
+NOTE: THESE TIMING NUMBERS ARE ONLY A SYNTHESIS ESTIMATE.
+      FOR ACCURATE TIMING INFORMATION PLEASE REFER TO THE TRACE REPORT
+      GENERATED AFTER PLACE-and-ROUTE.
+
+Clock Information:
+------------------
+-----------------------------------+------------------------+-------+
+Clock Signal                       | Clock buffer(FF name)  | Load  |
+-----------------------------------+------------------------+-------+
+clock                              | BUFGP                  | 131   |
+-----------------------------------+------------------------+-------+
+
+Timing Summary:
+---------------
+Speed Grade: -5
+
+   Minimum period: 11.444ns (Maximum Frequency: 87.385MHz)
+   Minimum input arrival time before clock: 4.081ns
+   Maximum output required time after clock: 4.169ns
+   Maximum combinational path delay: No path found
+
+Timing Detail:
+--------------
+All values displayed in nanoseconds (ns)
+
+=========================================================================
+Timing constraint: Default period analysis for Clock 'clock'
+  Clock period: 11.444ns (frequency: 87.385MHz)
+  Total number of paths / destination ports: 72214 / 171
+-------------------------------------------------------------------------
+Delay:               11.444ns (Levels of Logic = 28)
+  Source:            _SineComputer_processor_i_0_1 (FF)
+  Destination:       _SineComputer_processor_y_19 (FF)
+  Source Clock:      clock rising
+  Destination Clock: clock rising
+
+  Data Path: _SineComputer_processor_i_0_1 to _SineComputer_processor_y_19
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDC:C->Q             17   0.514   1.173  _SineComputer_processor_i_0_1 (_SineComputer_processor_i_0_1)
+     LUT3:I2->O            2   0.612   0.814  Mshift__n0012_Sh<10>1 (Mshift__n0012_Sh<10>)
+     LUT3_L:I1->LO         1   0.612   0.000  Mshift__n0012_Sh<40>1_G (N1701)
+     MUXF5:I1->O           3   0.193   0.840  Mshift__n0012_Sh<40>1 (Mshift__n0012_Sh<40>)
+     LUT3_L:I1->LO         1   0.612   0.103  Mshift__n0012_Result<0>89 (Mshift__n0012_Result<0>_map256)
+     LUT4:I3->O            4   0.612   0.848  Mshift__n0012_Result<0>96 (_n0012<0>)
+     LUT2_L:I1->LO         1   0.612   0.000  SineComputer__n0009<0>lut (N93)
+     MUXCY:S->O            1   0.404   0.000  SineComputer__n0009<0>cy (SineComputer__n0009<0>_cyo)
+     MUXCY:CI->O           1   0.052   0.000  SineComputer__n0009<1>cy (SineComputer__n0009<1>_cyo)
+     MUXCY:CI->O           1   0.052   0.000  SineComputer__n0009<2>cy (SineComputer__n0009<2>_cyo)
+     MUXCY:CI->O           1   0.052   0.000  SineComputer__n0009<3>cy (SineComputer__n0009<3>_cyo)
+     MUXCY:CI->O           1   0.052   0.000  SineComputer__n0009<4>cy (SineComputer__n0009<4>_cyo)
+     MUXCY:CI->O           1   0.052   0.000  SineComputer__n0009<5>cy (SineComputer__n0009<5>_cyo)
+     MUXCY:CI->O           1   0.052   0.000  SineComputer__n0009<6>cy (SineComputer__n0009<6>_cyo)
+     MUXCY:CI->O           1   0.052   0.000  SineComputer__n0009<7>cy (SineComputer__n0009<7>_cyo)
+     MUXCY:CI->O           1   0.052   0.000  SineComputer__n0009<8>cy (SineComputer__n0009<8>_cyo)
+     MUXCY:CI->O           1   0.052   0.000  SineComputer__n0009<9>cy (SineComputer__n0009<9>_cyo)
+     MUXCY:CI->O           1   0.052   0.000  SineComputer__n0009<10>cy (SineComputer__n0009<10>_cyo)
+     MUXCY:CI->O           1   0.052   0.000  SineComputer__n0009<11>cy (SineComputer__n0009<11>_cyo)
+     MUXCY:CI->O           1   0.052   0.000  SineComputer__n0009<12>cy (SineComputer__n0009<12>_cyo)
+     MUXCY:CI->O           1   0.052   0.000  SineComputer__n0009<13>cy (SineComputer__n0009<13>_cyo)
+     MUXCY:CI->O           1   0.052   0.000  SineComputer__n0009<14>cy (SineComputer__n0009<14>_cyo)
+     MUXCY:CI->O           1   0.052   0.000  SineComputer__n0009<15>cy (SineComputer__n0009<15>_cyo)
+     MUXCY:CI->O           1   0.052   0.000  SineComputer__n0009<16>cy (SineComputer__n0009<16>_cyo)
+     MUXCY:CI->O           1   0.052   0.000  SineComputer__n0009<17>cy (SineComputer__n0009<17>_cyo)
+     MUXCY:CI->O           0   0.052   0.000  SineComputer__n0009<18>cy (SineComputer__n0009<18>_cyo)
+     XORCY:CI->O           2   0.679   0.814  SineComputer__n0009<19>_xor (_n0009<19>)
+     LUT3_L:I1->LO         1   0.612   0.000  _n0002<19>1111_G (N1617)
+     MUXF5:I1->O           2   0.193   0.000  _n0002<19>1111 (_n0002<19>)
+     FDC:D                     0.268          _SineComputer_processor_y_19
+    ----------------------------------------
+    Total                     11.444ns (6.850ns logic, 4.594ns route)
+                                       (59.9% logic, 40.1% route)
+
+=========================================================================
+Timing constraint: Default OFFSET IN BEFORE for Clock 'clock'
+  Total number of paths / destination ports: 113 / 91
+-------------------------------------------------------------------------
+Offset:              4.081ns (Levels of Logic = 3)
+  Source:            start (PAD)
+  Destination:       _SineComputer_processor_z_0 (FF)
+  Destination Clock: clock rising
+
+  Data Path: start to _SineComputer_processor_z_0
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     IBUF:I->O            68   1.106   1.902  start_IBUF (start_IBUF)
+     LUT3:I0->O            1   0.612   0.000  _n0003<1>1111_F (N1692)
+     MUXF5:I0->O           1   0.193   0.000  _n0003<1>1111 (_n0003<1>)
+     FDC:D                     0.268          _SineComputer_processor_z_1
+    ----------------------------------------
+    Total                      4.081ns (2.179ns logic, 1.902ns route)
+                                       (53.4% logic, 46.6% route)
+
+=========================================================================
+Timing constraint: Default OFFSET OUT AFTER for Clock 'clock'
+  Total number of paths / destination ports: 41 / 41
+-------------------------------------------------------------------------
+Offset:              4.169ns (Levels of Logic = 1)
+  Source:            done (FF)
+  Destination:       done (PAD)
+  Source Clock:      clock rising
+
+  Data Path: done to done
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDC:C->Q              2   0.514   0.745  done (done_OBUF)
+     OBUF:I->O                 2.910          done_OBUF (done)
+    ----------------------------------------
+    Total                      4.169ns (3.424ns logic, 0.745ns route)
+                                       (82.1% logic, 17.9% route)
+
+=========================================================================
+CPU : 17.06 / 17.18 s | Elapsed : 20.00 / 21.00 s
+ 
+--> 
+
+
+Total memory usage is 95712 kilobytes
+
+Number of errors   :    0 (   0 filtered)
+Number of warnings :    3 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+
+

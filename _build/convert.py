@@ -15,6 +15,7 @@ code_vhdl = re.compile(r'<code vhdl>')
 endcode = re.compile(r'</code>')
 wikilink = re.compile(r'\[\[([^|]*)\]\]')
 link = re.compile(r'\[\[(.*?)\|(.*?)\]\]')
+br = re.compile(r"\\\\$")
 
 def wikilinkrepl(match):
     id = match.group(1)
@@ -29,7 +30,9 @@ def linkrepl(match):
 with open(fn) as f:
     print '---'
     for line in f:
-        if line[:6] == '======':
+        if line[:7] == '=======':
+            pass
+        elif line[:6] == '======':
             m = heading.match(line[6:])
             if m: 
                 print 'title: ', m.group(1)
@@ -59,4 +62,5 @@ with open(fn) as f:
             line = endcode.sub(r'```', line)
             line = wikilink.sub(wikilinkrepl, line)
             line = link.sub(linkrepl, line)
+            line = br.sub('  ', line)
             print line

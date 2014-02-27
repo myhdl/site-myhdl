@@ -2,10 +2,14 @@
 
         {% block index_list %}
         {% for item in this.content %}
-        <div class="col-md-6">
-            <h4><a href="{{item.url}}">{{item.title}}</a>&nbsp;&nbsp;
-                <small>{{item.date|dateformat}}</small></h4>
-            {{item.summary}}
-        </div>
+            <div class="col-md-6">
+                <h4><a href="{{item.url}}">{{item.title}}</a>&nbsp;&nbsp;
+                    <small>{{item.date|dateformat}}</small></h4>
+                {{item.summary}}
+            </div>
+            {% if loop.index0 % 2 == 1 %}
+            <div class="clearfix visible-md"></div>
+            <div class="clearfix visible-lg"></div>
+            {% endif %}
         {% endfor %}
         {% endblock %}

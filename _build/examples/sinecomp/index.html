@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cordic-based Sine Computer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Bootstrap -->
+    <link href="/css/bootstrap-flatly.min.css" rel="stylesheet" media="screen">
+    <!-- customizations -->
+    <link href="/css/site.css" rel="stylesheet" media="screen">
+    <!-- pygments -->
+    <link href="/css/syntax.css" rel="stylesheet" media="screen">
+    <!-- icons -->
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">MyHDL</a>
+        </div>
+        <div class="navbar-collapse collapse">
+
+          <ul class="nav navbar-nav navbar-left">
+ 
+            <li class="dropdown">
+              <a href="/start/" class="dropdown-toggle" data-toggle="dropdown">Start <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/start/overview.html">Overview</a></li>    
+                <li><a href="/start/installation.html">Installation</a></li>    
+                <li><a href="/start/why.html">Why MyHDL?</a></li>    
+                <li><a href="/start/whatitisnot.html">What MyHDL is not</a></li>    
+              </ul>
+            <li><a href="http://doc.myhdl.org/en/latest/">Manual</a></li>
+            <li class="active"><a href="/examples/">Examples</a></li>
+            <li class="dropdown">
+              <a href="/support/" class="dropdown-toggle" data-toggle="dropdown">Support <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/support/faq.html">FAQ</a></li>    
+                <li><a href="/support/community.html">Community</a></li>    
+                <li><a href="/support/commercial.html">Commercial support</a></li>    
+              </ul>
+            <li><a href="/resources.html">Resources</a></li>
+            <li><a href="/users/">Users</a></li>
+          </ul>
+
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/site-info.html">Site info</a></li>
+          </ul>
+
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+
+<div class="container">
+
+    <ol class="breadcrumb">
+       <li><a href="/">Home</a></li>
+       <li><a href="/examples/">Examples</a></li>
+       <li class="active">Cordic-based Sine Computer</li>
+    </ol>
+
+    <div class="page-header">
+ 
+<h1>Cordic-based Sine Computer
+</h1>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-3" role="navigation"> 
+ 
+            <div class="sidebar" data-spy="affix" 
+                 data-offset-top="80" 
+                 data-offset-bottom="60">
+                <div class="well">
+                    <a href="#"><em>Cordic-based Sine Computer</em></a>
+                    <div class="toc">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#specification">Specification</a></li>
+<li><a href="#unit-test">Unit test</a></li>
+<li><a href="#algorithm">Algorithm</a></li>
+<li><a href="#design">Design</a></li>
+<li><a href="#automatic-conversion-to-verilog">Automatic conversion to Verilog</a></li>
+<li><a href="#a-discussion-about-some-convertor-features">A discussion about some convertor features</a><ul>
+<li><a href="#taking-advantage-of-the-elaboration-phase">Taking advantage of the elaboration phase</a></li>
+<li><a href="#handling-negative-numbers">Handling negative numbers</a></li>
+</ul>
+</li>
+<li><a href="#verilog-co-simulation">Verilog co-simulation</a></li>
+<li><a href="#implementation">Implementation</a></li>
+</ul>
+</div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="col-md-9" data-spy="scroll" data-target="#sidenav" role="main">
+                <h2 id="introduction">Introduction</h2>
+<p>On this page we will present the design of a sine and cosine computer.</p>
+<h2 id="specification">Specification</h2>
+<p>We will assume that the input angle is represented in radians, and that it is
+in the range between <code>-π/2</code> and <code>π/2</code>. Other angles can be handled by adding a
+factor <code>π</code> first (modulo <code>2π</code>) and changing the sign of the sine and cosine
+result.</p>
+<p>The floating point numbers are represented as integers. Technically, this means
+rounding them to a fixed number of bits, and then multiplying them with the
+factor <code>2**F</code>, where <code>F</code> is the number of bits after the point.</p>
+<p>Both the sine and the cosine of the input angle will be computed. The interface
+of the module looks as follows:</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="nf">SineComputer</span><span class="p">(</span><span class="n">cos_z0</span><span class="p">,</span> <span class="n">sin_z0</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Sine and cosine computer.</span>
+
+<span class="sd">    This module computes the sine and cosine of an input angle. The</span>
+<span class="sd">    floating point numbers are represented as integers by scaling them</span>
+<span class="sd">    up with a factor corresponding to the number of bits after the point.</span>
+
+<span class="sd">    Ports:</span>
+<span class="sd">    -----</span>
+<span class="sd">    cos_z0: cosine of the input angle</span>
+<span class="sd">    sin_z0: sine of the input angle</span>
+<span class="sd">    done: output flag indicating completion of the computation</span>
+<span class="sd">    z0: input angle; -pi/2 &lt;= z0 &lt;= pi/2</span>
+<span class="sd">    start: input that starts the computation on a posedge</span>
+<span class="sd">    clock: clock input</span>
+<span class="sd">    reset: reset input</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+</pre></div>
+
+
+<h2 id="unit-test">Unit test</h2>
+<p>We will first write a unit test for the design. The idea is to use the <code>cos</code>
+and <code>sin</code> functions from the <code>math</code> module to compute the expected results on a
+number of input angles, and to compare them with the outputs from the design
+under test. Here is the code:</p>
+<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">log</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">SineComputer</span> <span class="kn">import</span> <span class="n">SineComputer</span><span class="p">,</span> <span class="n">SineComputer_v</span>
+
+
+<span class="k">def</span> <span class="nf">bench</span><span class="p">(</span><span class="n">fractionSize</span><span class="p">,</span> <span class="n">errorMargin</span><span class="p">,</span> <span class="n">nrTests</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Test bench for SineComputer.</span>
+
+<span class="sd">    fractionSize: number of bits after the point</span>
+<span class="sd">    errorMargin: margin for rounding errors on result</span>
+<span class="sd">    nrTests: number of tests vectors</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># scaling factor to represent floats as integers</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">fractionSize</span>
+
+    <span class="c"># maximum angle</span>
+    <span class="n">ZMAX</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">M</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="c"># error margin shorthand</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">errorMargin</span>
+
+    <span class="c"># signals</span>
+    <span class="n">cos_z0</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=-</span><span class="n">D</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">M</span><span class="o">+</span><span class="n">D</span><span class="p">))</span>
+    <span class="n">sin_z0</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=-</span><span class="n">M</span><span class="o">-</span><span class="n">D</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">M</span><span class="o">+</span><span class="n">D</span><span class="p">))</span>
+    <span class="n">z0</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=-</span><span class="n">ZMAX</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">ZMAX</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">done</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">clock</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">reset</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="c"># design under test</span>
+    <span class="n">dut</span> <span class="o">=</span> <span class="n">SineComputer</span><span class="p">(</span><span class="n">cos_z0</span><span class="p">,</span> <span class="n">sin_z0</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">)</span>
+
+    <span class="c"># clock generator</span>
+    <span class="nd">@always</span><span class="p">(</span><span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">clockgen</span><span class="p">():</span>
+        <span class="n">clock</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">clock</span>
+
+    <span class="c"># test vector setup</span>
+    <span class="n">testAngles</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">testAngles</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrTests</span><span class="p">)])</span>
+
+    <span class="c"># actual test </span>
+    <span class="nd">@instance</span>
+    <span class="k">def</span> <span class="nf">check</span><span class="p">():</span>
+        <span class="k">yield</span> <span class="n">clock</span><span class="o">.</span><span class="n">negedge</span>
+        <span class="n">reset</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">testAngles</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">clock</span><span class="o">.</span><span class="n">negedge</span>
+            <span class="n">z0</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">M</span><span class="o">*</span><span class="n">z</span><span class="p">))</span>
+            <span class="n">start</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">yield</span> <span class="n">clock</span><span class="o">.</span><span class="n">negedge</span>
+            <span class="n">start</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">yield</span> <span class="n">done</span><span class="o">.</span><span class="n">posedge</span>
+            <span class="n">exp_cos_z0</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">cos</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="o">*</span><span class="n">M</span><span class="p">))</span>
+            <span class="n">exp_sin_z0</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">sin</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="o">*</span><span class="n">M</span><span class="p">))</span>
+            <span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">cos_z0</span> <span class="o">-</span> <span class="n">exp_cos_z0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">D</span>
+            <span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sin_z0</span> <span class="o">-</span> <span class="n">exp_sin_z0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">D</span>
+
+        <span class="k">raise</span> <span class="n">StopSimulation</span>
+
+    <span class="k">return</span> <span class="n">dut</span><span class="p">,</span> <span class="n">clockgen</span><span class="p">,</span> <span class="n">check</span>
+</pre></div>
+
+
+<p>As the design will perform its calculations in finite precision, there will be
+rounding errors. Therefore, the comparisons between expected and actual results
+are performed using an error margin. We may want to use the test bench for
+designs with different characteristics; therefore, the error margin is made a
+parameter.</p>
+<p>The precision is specified in terms of the number of bits after the point,
+using the parameter <code>fractionSize</code>.</p>
+<p>To represent the numbers, we use the <code>intbv</code> class, which is basically an
+integer-like type with bit-vector capabilities. Note that we constrain the
+<code>intbv</code> instances by specifying the range of valid integer values, not by a bit
+width. For high-level, algorithmic work, this is much easier. Moreover, it
+enables fine-grained range error checking at run-time.</p>
+<p>By filling in the parameters of the <code>bench</code> function, we can construct an
+actual test bench that runs a simulation, as follows:</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="nf">test_bench</span><span class="p">():</span>
+    <span class="n">fractionSize</span> <span class="o">=</span> <span class="mi">18</span>
+    <span class="n">errorMargin</span> <span class="o">=</span> <span class="n">fractionSize</span>
+    <span class="n">tb</span> <span class="o">=</span> <span class="n">bench</span><span class="p">(</span><span class="n">fractionSize</span><span class="p">,</span> <span class="n">errorMargin</span><span class="p">)</span>
+    <span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span>
+    <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+
+<p>A function with a name starting with <code>test_</code> is automatically recognized and run by a unit testing framework such as <code>py.test</code>.</p>
+<h2 id="algorithm">Algorithm</h2>
+<p>To implement the design, we will use the Cordic algorithm, a very popular
+algorithm to compute trigonometric functions in hardware. On this page, we are
+mainly interested in the mechanical characteristics of the algorithm and their
+hardware implications. For more information and background on the algorithm
+itself, please consult other sources, such as <a href="http://www.andraka.com/files/crdcsrvy.pdf">this paper by Ray
+Andraka</a>.</p>
+<p>The Cordic algorithm is an iterative algorithm based on vector rotations over
+elementary angles. The algorithm normally operates in one of two modes. In
+rotation mode, it rotates a vector (x<sub>0</sub>, y<sub>0</sub>) in the
+Cartesian plane over an input angle z<sub>0</sub>. The Cordic equations for
+this mode are:</p>
+<p>x<sub>i +1</sub> = x<sub>i</sub> - y<sub>i</sub>d<sub>i</sub>2<sup>-i</sup><br />
+y<sub>i +1</sub> = y<sub>i</sub> - x<sub>i</sub>d<sub>i</sub>2<sup>-i</sup><br />
+z<sub>i +1</sub> = y<sub>i</sub> - d<sub>i</sub>tan<sup>-i</sup>(2<sup>-i</sup>)</p>
+<p>where</p>
+<p>d<sub>i</sub> = -1 if z<sub>i</sub> &lt; 0, else +1.</p>
+<p>These equations can be implemented with relatively simple hardware. This is the
+characteristic that makes the Cordic algorithm attractive. In particular,
+multiplications with a factor 2<sup>-i</sup> are simply shift-right operations.
+Also, the arctangent values tan<sup>-i</sup>(2<sup>-i</sup>) can be precomputed
+and stored in a small look-up table.</p>
+<p>The Cordic equations can be used for a variety of computations. For our
+purposes, it can be shown that</p>
+<p>x<sub>n</sub> = cos z<sub>0</sub><br />
+y<sub>n</sub> = sin z<sub>0</sub></p>
+<p>for the following initial conditions:</p>
+<p>x<sub>0</sub> = 1 / A<sub>n</sub><br />
+y<sub>0</sub> = 0</p>
+<p>where</p>
+<p>A<sub>n</sub> = Product[ sqrt(1 + 2<sup>-2i</sup>) ] with i = 0 ... n-1</p>
+<h2 id="design">Design</h2>
+<p>The Cordic algorithm can be implemented in many ways, with various
+characteristics and advantages. On this page, we will implement a parallel,
+iterative processor, which is a fairly straightforward mapping of the equations
+into a bit-parallel data path and a state machine.</p>
+<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">atan</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">ceil</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span> <span class="n">pi</span>
+
+<span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">t_State</span> <span class="o">=</span> <span class="n">enum</span><span class="p">(</span><span class="s">&quot;WAITING&quot;</span><span class="p">,</span> <span class="s">&quot;CALCULATING&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">SineComputer</span><span class="p">(</span><span class="n">cos_z0</span><span class="p">,</span> <span class="n">sin_z0</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Sine and cosine computer.</span>
+
+<span class="sd">    This module computes the sine and cosine of an input angle. The</span>
+<span class="sd">    floating point numbers are represented as integers by scaling them</span>
+<span class="sd">    up with a factor corresponding to the number of bits after the point.</span>
+
+<span class="sd">    Ports:</span>
+<span class="sd">    -----</span>
+<span class="sd">    cos_z0: cosine of the input angle</span>
+<span class="sd">    sin_z0: sine of the input angle</span>
+<span class="sd">    done: output flag indicated completion of the computation</span>
+<span class="sd">    z0: input angle</span>
+<span class="sd">    start: input that starts the computation on a posedge</span>
+<span class="sd">    clock: clock input</span>
+<span class="sd">    reset: reset input</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># angle input bit width</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">z0</span><span class="p">)</span>
+
+    <span class="c"># angle input z0 represents number between -pi/2 and pi/2</span>
+    <span class="c"># scaling factor corresponds to the nr of bits after the point</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">W</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c"># nr of iterations equals nr of significant input bits</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">W</span><span class="o">-</span><span class="mi">1</span>
+
+    <span class="c"># calculate X0</span>
+    <span class="n">An</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="n">An</span> <span class="o">*=</span> <span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">)))</span>
+
+    <span class="c"># X0</span>
+    <span class="n">X0</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">M</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="n">An</span><span class="p">))</span>
+
+    <span class="c"># tuple with elementary angles</span>
+    <span class="n">angles</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">M</span><span class="o">*</span><span class="n">atan</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">i</span><span class="p">))))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)])</span>
+
+    <span class="c"># iterative cordic processor</span>
+    <span class="nd">@instance</span>
+    <span class="k">def</span> <span class="nf">processor</span><span class="p">():</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="n">sin_z0</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">sin_z0</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="n">sin_z0</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">sin_z0</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="n">z0</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">z0</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="n">sin_z0</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">sin_z0</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="n">sin_z0</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">sin_z0</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>
+        <span class="n">dz</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="n">z0</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">z0</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>       
+        <span class="n">state</span> <span class="o">=</span> <span class="n">t_State</span><span class="o">.</span><span class="n">WAITING</span>
+
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">clock</span><span class="o">.</span><span class="n">posedge</span><span class="p">,</span> <span class="n">reset</span><span class="o">.</span><span class="n">posedge</span>
+
+            <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
+                <span class="n">state</span> <span class="o">=</span> <span class="n">t_State</span><span class="o">.</span><span class="n">WAITING</span>
+                <span class="n">cos_z0</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">sin_z0</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">done</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="n">x</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">y</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">z</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">i</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="n">t_State</span><span class="o">.</span><span class="n">WAITING</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">start</span><span class="p">:</span>
+                        <span class="n">x</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">X0</span>
+                        <span class="n">y</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="n">z</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">z0</span>
+                        <span class="n">i</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="n">done</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">False</span>
+                        <span class="n">state</span> <span class="o">=</span> <span class="n">t_State</span><span class="o">.</span><span class="n">CALCULATING</span>
+
+                <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="n">t_State</span><span class="o">.</span><span class="n">CALCULATING</span><span class="p">:</span>
+                    <span class="n">dx</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">y</span> <span class="o">&gt;&gt;</span> <span class="n">i</span>
+                    <span class="n">dy</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">x</span> <span class="o">&gt;&gt;</span> <span class="n">i</span>
+                    <span class="n">dz</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">angles</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">z</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">):</span>
+                        <span class="n">x</span> <span class="o">-=</span> <span class="n">dx</span>
+                        <span class="n">y</span> <span class="o">+=</span> <span class="n">dy</span>
+                        <span class="n">z</span> <span class="o">-=</span> <span class="n">dz</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">x</span> <span class="o">+=</span> <span class="n">dx</span>
+                        <span class="n">y</span> <span class="o">-=</span> <span class="n">dy</span>
+                        <span class="n">z</span> <span class="o">+=</span> <span class="n">dz</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                        <span class="n">cos_z0</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">x</span>
+                        <span class="n">sin_z0</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">y</span>
+                        <span class="n">state</span> <span class="o">=</span> <span class="n">t_State</span><span class="o">.</span><span class="n">WAITING</span>
+                        <span class="n">done</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">processor</span>
+</pre></div>
+
+
+<p>The actual computation is done by the <code>processor</code> generator. Note that outside
+the generator function, we calculate some data such as the <code>X0</code> constant, and
+the look-up table of elementary arctangents, represented by the <code>angles</code> tuple.</p>
+<p>The internal number variables are represented by <code>intbv</code> instances. The dual
+nature of this class comes in very handy. On the one hand, we can constrain the
+instances as integer subtypes by specifying the valid integer range at
+construction time. On the other hand, we can access their two's complement
+representation as a bit vector, for example for slicing or right-shifting. </p>
+<p>It seems obvious that a type that unifies the integer and the bit vector views
+should be very useful for hardware design. One would therefore expect a similar
+feature in other HDLs. However, I believe that it is actually a unique
+capability offered by MyHDL. Other HDLs seem to try to solve the issues by
+creating more and more integer and bit-vector like types. In MyHDL, a single
+type does it all - the <code>intbv</code> class.</p>
+<p><code>py.test</code> confirms that this is a valid impementation:</p>
+<div class="codehilite"><pre>&gt; py.test
+testing-mode: inprocess
+executable:   /usr/local/bin/python  (2.4.2-final-0)
+using py lib: /usr/local/lib/python2.4/site-packages/py &lt;rev unknown&gt;
+
+test_SineComputer.py[1] .
+</pre></div>
+
+
+<h2 id="automatic-conversion-to-verilog">Automatic conversion to Verilog</h2>
+<p>Now that we have a working design (and only now!) we can attempt to convert it
+to Verilog automatically. In MyHDL, this is done by using the <code>toVerilog</code>
+function. For example, consider the instantiation of the design under test in
+the test bench:</p>
+<div class="codehilite"><pre>    <span class="c"># design under test</span>
+    <span class="n">dut</span> <span class="o">=</span> <span class="n">SineComputer</span><span class="p">(</span><span class="n">cos_z0</span><span class="p">,</span> <span class="n">sin_z0</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">)</span>
+</pre></div>
+
+
+<p>To convert the design instance to Verilog, this line can be replaced by the following:</p>
+<div class="codehilite"><pre>    <span class="c"># design under test</span>
+    <span class="n">dut</span> <span class="o">=</span> <span class="n">toVerilog</span><span class="p">(</span><span class="n">SineComputer</span><span class="p">,</span> <span class="n">cos_z0</span><span class="p">,</span> <span class="n">sin_z0</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">)</span>
+</pre></div>
+
+
+<p>As before, the <code>dut</code> object is a simulatable design instance, but as a side
+effect of the instantiation, an equivalent Verilog module file will be
+generated. The Verilog output is as follows:</p>
+<div class="codehilite"><pre><span class="k">module</span> <span class="n">SineComputer</span> <span class="p">(</span>
+    <span class="n">cos_z0</span><span class="p">,</span>
+    <span class="n">sin_z0</span><span class="p">,</span>
+    <span class="n">done</span><span class="p">,</span>
+    <span class="n">z0</span><span class="p">,</span>
+    <span class="n">start</span><span class="p">,</span>
+    <span class="n">clock</span><span class="p">,</span>
+    <span class="n">reset</span>
+<span class="p">);</span>
+
+<span class="k">output</span> <span class="k">signed</span> <span class="p">[</span><span class="mh">19</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">cos_z0</span><span class="p">;</span>
+<span class="kt">reg</span> <span class="k">signed</span> <span class="p">[</span><span class="mh">19</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">cos_z0</span><span class="p">;</span>
+<span class="k">output</span> <span class="k">signed</span> <span class="p">[</span><span class="mh">19</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">sin_z0</span><span class="p">;</span>
+<span class="kt">reg</span> <span class="k">signed</span> <span class="p">[</span><span class="mh">19</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">sin_z0</span><span class="p">;</span>
+<span class="k">output</span> <span class="n">done</span><span class="p">;</span>
+<span class="kt">reg</span> <span class="n">done</span><span class="p">;</span>
+<span class="k">input</span> <span class="k">signed</span> <span class="p">[</span><span class="mh">19</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">z0</span><span class="p">;</span>
+<span class="k">input</span> <span class="n">start</span><span class="p">;</span>
+<span class="k">input</span> <span class="n">clock</span><span class="p">;</span>
+<span class="k">input</span> <span class="n">reset</span><span class="p">;</span>
+
+
+
+<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clock</span> <span class="k">or</span> <span class="k">posedge</span> <span class="n">reset</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">_SineComputer_processor</span>
+    <span class="kt">reg</span> <span class="p">[</span><span class="mh">5</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">i</span><span class="p">;</span>
+    <span class="kt">reg</span> <span class="p">[</span><span class="mh">1</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">state</span><span class="p">;</span>
+    <span class="kt">reg</span> <span class="k">signed</span> <span class="p">[</span><span class="mh">20</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">dz</span><span class="p">;</span>
+    <span class="kt">reg</span> <span class="k">signed</span> <span class="p">[</span><span class="mh">20</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">dx</span><span class="p">;</span>
+    <span class="kt">reg</span> <span class="k">signed</span> <span class="p">[</span><span class="mh">20</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">dy</span><span class="p">;</span>
+    <span class="kt">reg</span> <span class="k">signed</span> <span class="p">[</span><span class="mh">20</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">y</span><span class="p">;</span>
+    <span class="kt">reg</span> <span class="k">signed</span> <span class="p">[</span><span class="mh">20</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">x</span><span class="p">;</span>
+    <span class="kt">reg</span> <span class="k">signed</span> <span class="p">[</span><span class="mh">20</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">z</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">reset</span><span class="p">)</span> <span class="k">begin</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="mh">1&#39;b0</span><span class="p">;</span>
+        <span class="n">cos_z0</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
+        <span class="n">sin_z0</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+        <span class="n">done</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+    <span class="k">end</span>
+    <span class="k">else</span> <span class="k">begin</span>
+        <span class="c1">// synthesis parallel_case full_case</span>
+        <span class="k">casez</span> <span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            <span class="mh">1&#39;b0</span><span class="o">:</span> <span class="k">begin</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="k">begin</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="mh">159188</span><span class="p">;</span>
+                    <span class="n">y</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+                    <span class="n">z</span> <span class="o">=</span> <span class="n">z0</span><span class="p">;</span>
+                    <span class="n">i</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+                    <span class="n">done</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                    <span class="n">state</span> <span class="o">=</span> <span class="mh">1&#39;b1</span><span class="p">;</span>
+                <span class="k">end</span>
+            <span class="k">end</span>
+            <span class="mh">1&#39;b1</span><span class="o">:</span> <span class="k">begin</span>
+                <span class="n">dx</span> <span class="o">=</span> <span class="err">$</span><span class="k">signed</span><span class="p">(</span><span class="n">y</span> <span class="o">&gt;&gt;&gt;</span> <span class="err">$</span><span class="k">signed</span><span class="p">({</span><span class="mh">1&#39;b0</span><span class="p">,</span> <span class="n">i</span><span class="p">}));</span>
+                <span class="n">dy</span> <span class="o">=</span> <span class="err">$</span><span class="k">signed</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;&gt;&gt;</span> <span class="err">$</span><span class="k">signed</span><span class="p">({</span><span class="mh">1&#39;b0</span><span class="p">,</span> <span class="n">i</span><span class="p">}));</span>
+                <span class="c1">// synthesis parallel_case full_case</span>
+                <span class="k">case</span> <span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                    <span class="mh">0</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">205887</span><span class="p">;</span>
+                    <span class="mh">1</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">121542</span><span class="p">;</span>
+                    <span class="mh">2</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">64220</span><span class="p">;</span>
+                    <span class="mh">3</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">32599</span><span class="p">;</span>
+                    <span class="mh">4</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">16363</span><span class="p">;</span>
+                    <span class="mh">5</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">8189</span><span class="p">;</span>
+                    <span class="mh">6</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">4096</span><span class="p">;</span>
+                    <span class="mh">7</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">2048</span><span class="p">;</span>
+                    <span class="mh">8</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">1024</span><span class="p">;</span>
+                    <span class="mh">9</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">512</span><span class="p">;</span>
+                    <span class="mh">10</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">256</span><span class="p">;</span>
+                    <span class="mh">11</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">128</span><span class="p">;</span>
+                    <span class="mh">12</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">64</span><span class="p">;</span>
+                    <span class="mh">13</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">32</span><span class="p">;</span>
+                    <span class="mh">14</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">16</span><span class="p">;</span>
+                    <span class="mh">15</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">8</span><span class="p">;</span>
+                    <span class="mh">16</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">4</span><span class="p">;</span>
+                    <span class="mh">17</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">2</span><span class="p">;</span>
+                    <span class="k">default</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">1</span><span class="p">;</span>
+                <span class="k">endcase</span>
+                <span class="k">if</span> <span class="p">((</span><span class="n">z</span> <span class="o">&gt;=</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">dx</span><span class="p">;</span>
+                    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">dy</span><span class="p">;</span>
+                    <span class="n">z</span> <span class="o">=</span> <span class="n">z</span> <span class="o">-</span> <span class="n">dz</span><span class="p">;</span>
+                <span class="k">end</span>
+                <span class="k">else</span> <span class="k">begin</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">dx</span><span class="p">;</span>
+                    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">dy</span><span class="p">;</span>
+                    <span class="n">z</span> <span class="o">=</span> <span class="n">z</span> <span class="o">+</span> <span class="n">dz</span><span class="p">;</span>
+                <span class="k">end</span>
+                <span class="k">if</span> <span class="p">((</span><span class="n">i</span> <span class="o">==</span> <span class="p">(</span><span class="mh">19</span> <span class="o">-</span> <span class="mh">1</span><span class="p">)))</span> <span class="k">begin</span>
+                    <span class="n">cos_z0</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">;</span>
+                    <span class="n">sin_z0</span> <span class="o">&lt;=</span> <span class="n">y</span><span class="p">;</span>
+                    <span class="n">state</span> <span class="o">=</span> <span class="mh">1&#39;b0</span><span class="p">;</span>
+                    <span class="n">done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
+                <span class="k">end</span>
+                <span class="k">else</span> <span class="k">begin</span>
+                    <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span>
+                <span class="k">end</span>
+            <span class="k">end</span>
+        <span class="k">endcase</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">endmodule</span>
+</pre></div>
+
+
+<h2 id="a-discussion-about-some-convertor-features">A discussion about some convertor features</h2>
+<p>With this example, some interesting features of the Verilog convertor can be
+illustrated.</p>
+<h3 id="taking-advantage-of-the-elaboration-phase">Taking advantage of the elaboration phase</h3>
+<p>It is important to realize that the conversion occurs on a design <em>instance</em>.
+This means that the code has already been <em>elaborated</em> by the Python
+interpreter. Therefore, the convertor works on the simulatable data structure,
+which is a (hierarchical) list of generators. This means that only the source
+code of generator functions is converted. The pleasant consequence is that the
+restrictions of the "convertible subset" apply only to the code inside
+generator functions, not to any code outside them. </p>
+<p>For example, consider how the look-up table of elementary arctangents is set up
+in the <code>SineComputer</code> design:</p>
+<div class="codehilite"><pre>    <span class="c"># tuple with elementary angles</span>
+    <span class="n">angles</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">M</span><span class="o">*</span><span class="n">atan</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">i</span><span class="p">))))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)])</span>
+</pre></div>
+
+
+<p>This line uses things like a list comprehension and a call to the trigonometric
+function <code>atan</code> from the <code>math</code> library, At this point, this is beyond the
+scope of the convertible subset, and it may stay like that forever. But as this
+code is outside a generator function, it doesn't matter.</p>
+<p>Inside the <code>processor</code> function, the lookup-up table is used as follows:</p>
+<div class="codehilite"><pre>     <span class="n">z</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">angles</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
+</pre></div>
+
+
+<p>This is just fine for the convertor. Note how this single-line lookup is
+expanded into a case statement in the Verilog output.</p>
+<p>Note that we have been talking about the convertible subset, and not about the
+"synthesizable subset". The reason is that the convertible subset is much less
+restrictive. You can find more information about the convertible subset in the
+MyHDL manual. </p>
+<p>Obviously, MyHDL code intended for synthesis also has to take synthesis-related
+restrictions into account. But again, these restrictions only apply to the code
+inside generator functions, because only that code is actually converted.</p>
+<p>The described behavior is a unique feature of the MyHDL design flow. Outside
+generator functions, you can use Python's full power to describe designs. As
+long as the code inside them obeys the constraints of the convertible subset,
+the design instance can always be converted to Verilog. And if that code also
+obeys the constraints of the synthesizable subset, the result will be
+synthesizable Verilog.</p>
+<h3 id="handling-negative-numbers">Handling negative numbers</h3>
+<p>One important feature of the convertor is that it handles the details of signed
+and unsigned representations automatically. When writing synthesizable code, a
+MyHDL designer can use a high-level view for integer operations by using the
+<code>intbv</code> type, and rely on the underlying two's complement representation to do
+the right thing automatically. In contrast, a Verilog designer is forced to
+deal with low-level representational issues explicitly. This can become very
+tricky, especially with negative numbers and the signed representation.</p>
+<p>First of all, note in the Verilog output that the convertor infers which
+variables have to be declared as <code>signed</code>. This is the easy part.</p>
+<p>Now consider the following line in the MyHDL code of <code>SineComputer</code>:</p>
+<div class="codehilite"><pre>    <span class="n">dx</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">y</span> <span class="o">&gt;&gt;</span> <span class="n">i</span>
+</pre></div>
+
+
+<p>I believe it's quite clear what this is supposed to do. With the underlying
+two's complement representation, it works for positive and negative values of
+<code>y</code>.</p>
+<p>Now consider how this has been translated into Verilog:</p>
+<div class="codehilite"><pre><span class="n">dx</span> <span class="o">=</span> <span class="err">$</span><span class="k">signed</span><span class="p">(</span><span class="n">y</span> <span class="o">&gt;&gt;&gt;</span> <span class="err">$</span><span class="k">signed</span><span class="p">({</span><span class="mh">1&#39;b0</span><span class="p">,</span> <span class="n">i</span><span class="p">}));</span>
+</pre></div>
+
+
+<p>The convertor has to deal with several potential pitfalls. The fundamental
+problem is that Verilog uses an unsigned interpretation by default, which is
+the opposite from what you should do to get the naturally expected results.</p>
+<p>First, the convertor uses arithmetic shift (<code>&gt;&gt;&gt;</code>) instead of bit-wise shift
+(<code>&gt;&gt;</code>), to have the sign bit shifted in instead of a zero.</p>
+<p>Secondly, the second (unsigned) operand is typecasted to <code>$signed</code>, after
+adding a sign bit. Otherwise, Verilog will interprete all operands in a mixed
+expression as unsigned. Having said that, the Verilog literature seems to
+indicate that a shift operation is an exception to this rule. But the convertor
+doesn't take risks and inserts the typecast as a general measure. It may be
+redundant in this case.</p>
+<p>Finally, the whole expression is typecasted to <code>$signed</code>. Actually, I would
+have expected that this typecast would not be necessary - after all, we are
+shifting a signed number. However, my current simulator (Cver) tells me that it
+is. It may be wrong, I don't know. Anyway, the cast is an additional safety
+net.</p>
+<p>The message you should get from this discussion is the following: working with
+the signed representation in Verilog is tricky. I believe that writing the code
+in a natural, high-level way in MyHDL, and letting the convertor take care of
+the low-level representation issues, is a better option. (Of course, we still
+need to make sure that the convertor gets it right, which is hard enough.)</p>
+<h2 id="verilog-co-simulation">Verilog co-simulation</h2>
+<p>Clearly we will want to verify that the Verilog output from the convertor is
+correct. For this purpose, MyHDL supports co-simulation with Verilog.</p>
+<p>To set up a co-simulation, we need to create a Cosimulation object for the
+Verilog design. The Verilog convertor makes this task easier. In addition to
+the Verilog code for the design itself, it also generates a Verilog test bench
+stub that defines an interface between the Verilog design and a Cosimulation
+object.</p>
+<p>The following function creates a Cosimulation object for our design:</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="nf">SineComputer_v</span><span class="p">(</span><span class="n">cos_z0</span><span class="p">,</span> <span class="n">sin_z0</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">):</span>
+    <span class="n">toVerilog</span><span class="p">(</span><span class="n">SineComputer</span><span class="p">,</span> <span class="n">cos_z0</span><span class="p">,</span> <span class="n">sin_z0</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">)</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s">&quot;cver -q +loadvpi=myhdl_vpi:vpi_compat_bootstrap &quot;</span> <span class="o">+</span> \
+          <span class="s">&quot;SineComputer.v tb_SineComputer.v&quot;</span>
+    <span class="k">return</span> <span class="n">Cosimulation</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="o">**</span><span class="nb">locals</span><span class="p">())</span>
+</pre></div>
+
+
+<p>We start by doing the Verilog conversion itself first. Then, we define the
+command to start up the Verilog simulator. This is of course
+simulator-specific. The command shown is for the open-source Cver simulator. It
+loads a vpi module that defines the interface between the MyHDL simulator and
+the Verilog simulator. Also, both the Verilog code for the design and the test
+bench stub are compiled. </p>
+<p>The Cosimulation object is then constructed with the command as its first
+parameter, followed by a number of keyword arguments. The keyword arguments
+make the link between signal names declared in the Verilog test bench stub and
+signals in the MyHDL code. When the signal names in MyHDL and Verilog are
+identical we can use a little trick and simply pass the local namespace
+dictionary <code>locals()</code> to the constructor.</p>
+<p>In the test bench code, we replace the instantiation of the MyHDL module with
+this function:</p>
+<div class="codehilite"><pre>    <span class="n">dut</span> <span class="o">=</span> <span class="n">SineComputer_v</span><span class="p">(</span><span class="n">cos_z0</span><span class="p">,</span> <span class="n">sin_z0</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">)</span>
+</pre></div>
+
+
+<p>When running py.test again, we now run a co-simulation between the MyHDL test
+bench and the Verilog code:</p>
+<div class="codehilite"><pre>testing-mode: inprocess
+executable:   /usr/local/bin/python  (2.4.2-final-0)
+using py lib: /usr/local/lib/python2.4/site-packages/py &lt;rev unknown&gt;
+
+test_SineComputer.py[1] Copyright (c) 1991-2005 Pragmatic C Software Corp.
+  All Rights reserved.  Licensed under the GNU General Public License (GPL).
+  See the &#39;COPYING&#39; file for details.  NO WARRANTY provided.
+</pre></div>
+
+
+<p>So the test bench confirms that the Verilog code is correct.</p>
+<p><strong>Historical note</strong> When this example was developed with MyHDL 0.5, this test
+failed, showing that the convertor had bugs. It turned out that the handling of
+signed variables with shift operations had not been implemented and tested
+properly. Therefore, this example has been the trigger to fix these bugs and
+develop MyHDL 0.5.1.</p>
+<h2 id="implementation">Implementation</h2>
+<p>To confirm synthesizablity, this example was synthesized with Xilinx ISE and
+targeted to a Spartan FPGA. For detailed information, you can review the
+<a href="synthesis.txt">synthesis report</a>.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div style="margin: 8px">
+<a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+<!-- Place this tag where you want the +1 button to render. -->
+<div class="g-plusone" data-size="medium"></div>
+
+<!-- Place this tag after the last +1 button tag. -->
+<script type="text/javascript">
+window.__gcfg = {
+    lang: 'en-US'
+};
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>        </div>
+        <p>Content licensed under the
+           <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a> license.
+           See <a href="/terms-of-use.html">Terms of Use</a>.
+        </p> 
+    </div>
+</div> 
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/js/bootstrap.min.js"></script>
+
+  </body>
+</html>

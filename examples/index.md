@@ -5,6 +5,7 @@ content:
     - flipflops 
     - jc2
     - stopwatch
+    - sinecomp
 description.md: >
     Jump right in with MyHDL examples.
     Consult the [manual] when needed.
