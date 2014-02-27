@@ -6,11 +6,10 @@ summary.md: |
     Learn about the following MyHDL features and techniques:
 
     * writing a unit test before the implementation
-    * using `py.test` as a unit test framework (as an alternative to `unittest`)
-    * writing a hierarchical design
-    * how to write code for ROM inference
-    * automatic conversion to Verilog
-    * synthesis of the output Verilog code with Xilinx XST, and implementation in different target technologies
+    * using `py.test` as a unit test framework 
+    * coding a hierarchical design
+    * coding for ROM inference
+    * synthesis of the output Verilog code
 ---
 
 Introduction

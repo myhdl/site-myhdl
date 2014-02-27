@@ -6,6 +6,7 @@ content:
     - jc2
     - stopwatch
     - sinecomp
+    - bitonic
 description.md: >
     Jump right in with MyHDL examples.
     Consult the [manual] when needed.

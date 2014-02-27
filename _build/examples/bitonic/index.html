@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bitonic Sort</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Bootstrap -->
+    <link href="/css/bootstrap-flatly.min.css" rel="stylesheet" media="screen">
+    <!-- customizations -->
+    <link href="/css/site.css" rel="stylesheet" media="screen">
+    <!-- pygments -->
+    <link href="/css/syntax.css" rel="stylesheet" media="screen">
+    <!-- icons -->
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">MyHDL</a>
+        </div>
+        <div class="navbar-collapse collapse">
+
+          <ul class="nav navbar-nav navbar-left">
+ 
+            <li class="dropdown">
+              <a href="/start/" class="dropdown-toggle" data-toggle="dropdown">Start <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/start/overview.html">Overview</a></li>    
+                <li><a href="/start/installation.html">Installation</a></li>    
+                <li><a href="/start/why.html">Why MyHDL?</a></li>    
+                <li><a href="/start/whatitisnot.html">What MyHDL is not</a></li>    
+              </ul>
+            <li><a href="http://doc.myhdl.org/en/latest/">Manual</a></li>
+            <li class="active"><a href="/examples/">Examples</a></li>
+            <li class="dropdown">
+              <a href="/support/" class="dropdown-toggle" data-toggle="dropdown">Support <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/support/faq.html">FAQ</a></li>    
+                <li><a href="/support/community.html">Community</a></li>    
+                <li><a href="http://sourceforge.net/p/myhdl/bugs/">Bug Tracker</a></li>    
+                <li><a href="/support/commercial.html">Commercial support</a></li>    
+                <li><a href="http://dev.myhdl.org">Development site</a></li>    
+              </ul>
+            <li><a href="/resources.html">Resources</a></li>
+            <li><a href="/users/">Users</a></li>
+          </ul>
+
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/site-info.html">Site info</a></li>
+          </ul>
+
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+
+<div class="container">
+
+    <ol class="breadcrumb">
+       <li><a href="/">Home</a></li>
+       <li><a href="/examples/">Examples</a></li>
+       <li class="active">Bitonic Sort</li>
+    </ol>
+
+    <div class="page-header">
+ 
+<h1>Bitonic Sort
+</h1>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-3" role="navigation"> 
+ 
+            <div class="sidebar" data-spy="affix" 
+                 data-offset-top="80" 
+                 data-offset-bottom="60">
+                <div class="well">
+                    <a href="#"><em>Bitonic Sort</em></a>
+                    <div class="toc">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#specification">Specification</a></li>
+<li><a href="#reference-implementation-in-java">Reference implementation in Java</a></li>
+<li><a href="#myhdl-implementation">MyHDL implementation</a></li>
+<li><a href="#verification">Verification</a></li>
+<li><a href="#verilog-generation-and-synthesis">Verilog generation and synthesis</a></li>
+</ul>
+</div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="col-md-9" data-spy="scroll" data-target="#sidenav" role="main">
+                <h2 id="introduction">Introduction</h2>
+<p>This page focusses on the possibilities to describe hardware structure in
+MyHDL. MyHDL uses classic functions for this purpose. </p>
+<p>Before simulation or conversion to Verilog, a design is <em>elaborated</em> by running
+the Python interpreter. This implies that all structure is flattened out. As a
+consequence, the complexity of the structural description has no impact on the
+possibility to convert to Verilog.</p>
+<p>As an example, this page shows how to describe recursive structures in MyHDL.
+Python is very well suited to do this elegantly. But after conversion to
+Verilog, all recursion is flattened out, so it doesn't matter whether the
+back-end language or tools support it or not.</p>
+<h2 id="specification">Specification</h2>
+<p>We will develop a circuit that sorts an array of integer values. More
+specifically, the array to be sorted is the input, and the sorted array the
+output. We are looking for a data-flow oriented circuit, where the output
+follows the input "combinatorially".</p>
+<p>We will use the bitonic sort algorithm. We will not explain it here: for more
+info, read this <a href="http://www.inf.fh-flensburg.de/lang/algorithmen/sortieren/bitonic/bitonicen.htm">web page that explains the bitonic sort
+algorithm</a>.</p>
+<p>For our purposes, it is sufficient to know that the bitonic algorithm is well
+suited for a hardware implementation, and that it is recursive in nature. To
+develop the MyHDL code, we will start from a reference software implementation.</p>
+<h2 id="reference-implementation-in-java">Reference implementation in Java</h2>
+<p>The <a href="http://www.inf.fh-flensburg.de/lang/algorithmen/sortieren/bitonic/bitonicen.htm">web page</a>
+mentioned earlier also contains an annotated reference implementation in Java.
+We will use this as a starting point to develop the MyHDL code. Therefore, the
+original Java code and annotations are quoted literally in the remainder of
+this section.</p>
+<p><em>(start quote)</em></p>
+<p>In the following, an implementation of bitonic sort in Java is given. The number of elements to be sorted must be a power of 2.</p>
+<p>The program is assumed to be encapsulated in a class with the following elements:</p>
+<div class="codehilite"><pre>private static int[] a;         // the array to be sorted
+private final static boolean ASCENDING=true, DESCENDING=false; // sorting direction
+</pre></div>
+
+
+<p>A comparator is modelled by the procedure <code>compare</code>, where the parameter <code>dir</code>
+indicates the sorting direction. If <code>dir</code> is <code>ASCENDING</code> and <code>a[i] &gt; a[j]</code> is
+true or <code>dir</code> is DESCENDING and <code>a[i] &gt; a[j]</code> is false then <code>a[i]</code> and <code>a[j]</code>
+are interchanged.</p>
+<div class="codehilite"><pre>private static void compare(int i, int j, boolean dir)
+{
+    if (dir==(a[i]&gt;a[j]))
+    {
+        int h=a[i];
+        a[i]=a[j];
+        a[j]=h;
+    }
+}
+</pre></div>
+
+
+<p>The procedure <code>bitonicMerge</code> recursively sorts a bitonic sequence in ascending
+order, if <code>dir = ASCENDING</code>, and in descending order otherwise. The sequence to
+be sorted starts at index position <code>lo</code>, the number of elements is <code>n</code>.</p>
+<div class="codehilite"><pre>private static void bitonicMerge(int lo, int n, boolean dir)
+{
+    if (n&gt;1)
+    {
+        int k=n/2;
+        for (int i=lo; i&lt;lo+k; i++)
+            compare(i, i+k, dir);
+        bitonicMerge(lo, k, dir);
+        bitonicMerge(lo+k, k, dir);
+    }
+}
+</pre></div>
+
+
+<p>Procedure <code>bitonicSort</code> first produces a bitonic sequence by recursively
+sorting its two halves in opposite directions, and then calls <code>bitonicMerge</code>.</p>
+<div class="codehilite"><pre>private static void bitonicSort(int lo, int n, boolean dir)
+{
+    if (n&gt;1)
+    {
+        int k=n/2;
+        bitonicSort(lo, k, ASCENDING);
+        bitonicSort(lo+k, k, DESCENDING);
+        bitonicMerge(lo, n, dir);
+    }
+}
+</pre></div>
+
+
+<p>When called with parameters <code>lo = 0</code>, <code>n = a.length()</code> and <code>dir = ASCENDING</code>,
+procedure <code>bitonicSort</code> sorts the whole array <code>a</code>.</p>
+<div class="codehilite"><pre>public static void sort()
+{
+    bitonicSort(0, a.length(), ASCENDING);
+}
+</pre></div>
+
+
+<p><em>(end quote)</em></p>
+<h2 id="myhdl-implementation">MyHDL implementation</h2>
+<p>Let's start with some general considerations.</p>
+<p>First, note that the Jave code consists of a number of procedures and procedure
+calls. In MyHDL, we can map each procedure to a function that models a hardware
+module and each procedure call to an instantiation. The Java procedures return
+nothing; they are run solely for their side effects. In MyHDL, we will build
+the hardware structure by returning the instances that compose each module.</p>
+<p>Secondly, note that the Java code sorts the array in-place, and the procedure
+parameters consist of the indices of the array elements to be manipulated. In
+our data-flow oriented MyHDL solution, we will have to use a separate input and
+output array instead. The array will be represented by a list of signals. If a
+function performs several transformations, we have to introduce additional
+lists of signals internally.</p>
+<p>Finally, in the Java code the recursion stops by "doing nothing". In the MyHDL
+code, the equivalent is to assign the input to the output signal. We will need
+a "feedthrough" circuit for this purpose.</p>
+<p>Now we are ready to fill in the details, in the same order as in the original
+Java version.</p>
+<p>We start by importing the <code>myhdl</code> library, and by defining some boolean
+constants:</p>
+<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">DESCENDING</span><span class="p">,</span> <span class="n">ASCENDING</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">True</span>
+</pre></div>
+
+
+<p>The <code>compare</code> leaf module is a combinatorial circuit with two input and two
+output signals. By default, the inputs are "fed through" to the outputs, but
+under the same condition as in the Java code, they are interchanged:</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">z1</span><span class="p">,</span> <span class="n">z2</span><span class="p">,</span> <span class="nb">dir</span><span class="p">):</span>
+
+    <span class="nd">@always_comb</span>
+    <span class="k">def</span> <span class="nf">logic</span><span class="p">():</span>
+        <span class="n">z1</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">a1</span>
+        <span class="n">z2</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">a2</span>
+        <span class="k">if</span> <span class="nb">dir</span> <span class="o">==</span> <span class="p">(</span><span class="n">a1</span> <span class="o">&gt;</span> <span class="n">a2</span><span class="p">):</span>
+            <span class="n">z1</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">a2</span>
+            <span class="n">z2</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">a1</span>
+
+    <span class="k">return</span> <span class="n">logic</span>
+</pre></div>
+
+
+<p>As mentioned, we will also need a feedthrough circuit, the equivalent of "doing
+nothing" in the Java code:</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="nf">feedthru</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+
+    <span class="nd">@always_comb</span>
+    <span class="k">def</span> <span class="nf">logic</span><span class="p">():</span>
+        <span class="n">z</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">a</span>
+
+    <span class="k">return</span> <span class="n">logic</span>
+</pre></div>
+
+
+<p>Function <code>bitonicMerge</code> describes a higher-level module that takes a list of
+signals as its input and its output. Instead of manipulating array elements
+based on indices as in Java, it generates the output from the input list of
+signals. Note how an additional list of signals is introduced in the case of 
+<code>n &gt; 1</code>, and how the recursion stops with a <code>feedthru</code> instance.</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="nf">bitonicMerge</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="nb">dir</span><span class="p">):</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">n</span><span class="o">//</span><span class="mi">2</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="n">w</span><span class="p">:])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+        <span class="n">comp</span> <span class="o">=</span> <span class="p">[</span><span class="n">compare</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">k</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">k</span><span class="p">],</span> <span class="nb">dir</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span>
+        <span class="n">loMerge</span> <span class="o">=</span> <span class="n">bitonicMerge</span><span class="p">(</span><span class="n">t</span><span class="p">[:</span><span class="n">k</span><span class="p">],</span> <span class="n">z</span><span class="p">[:</span><span class="n">k</span><span class="p">],</span> <span class="nb">dir</span><span class="p">)</span>
+        <span class="n">hiMerge</span> <span class="o">=</span> <span class="n">bitonicMerge</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">k</span><span class="p">:],</span> <span class="n">z</span><span class="p">[</span><span class="n">k</span><span class="p">:],</span> <span class="nb">dir</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">comp</span><span class="p">,</span> <span class="n">loMerge</span><span class="p">,</span> <span class="n">hiMerge</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">feed</span> <span class="o">=</span> <span class="n">feedthru</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">feed</span>
+</pre></div>
+
+
+<p>Function <code>bitonicSort</code> is written in a similar fashion:</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="nf">bitonicSort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="nb">dir</span><span class="p">):</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">n</span><span class="o">//</span><span class="mi">2</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="n">w</span><span class="p">:])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+        <span class="n">loSort</span> <span class="o">=</span> <span class="n">bitonicSort</span><span class="p">(</span><span class="n">a</span><span class="p">[:</span><span class="n">k</span><span class="p">],</span> <span class="n">t</span><span class="p">[:</span><span class="n">k</span><span class="p">],</span> <span class="n">ASCENDING</span><span class="p">)</span>
+        <span class="n">hiSort</span> <span class="o">=</span> <span class="n">bitonicSort</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">:],</span> <span class="n">t</span><span class="p">[</span><span class="n">k</span><span class="p">:],</span> <span class="n">DESCENDING</span><span class="p">)</span>
+        <span class="n">merge</span> <span class="o">=</span> <span class="n">bitonicMerge</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="nb">dir</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">loSort</span><span class="p">,</span> <span class="n">hiSort</span><span class="p">,</span> <span class="n">merge</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">feed</span> <span class="o">=</span> <span class="n">feedthru</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">feed</span>
+</pre></div>
+
+
+<p>Now we can define a top level module, for example to sort an array of 8 values.
+There is a slight restriction however. The Verilog convertor cannot handle
+lists of signals in a top level interface. (This is related to the fact that
+Verilog memories cannot be used as ports.) To make the design suited for
+conversion, we have to splice the lists into individual signals:</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="nf">Array8Sorter</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span><span class="p">,</span>
+                 <span class="n">z0</span><span class="p">,</span> <span class="n">z1</span><span class="p">,</span> <span class="n">z2</span><span class="p">,</span> <span class="n">z3</span><span class="p">,</span> <span class="n">z4</span><span class="p">,</span> <span class="n">z5</span><span class="p">,</span> <span class="n">z6</span><span class="p">,</span> <span class="n">z7</span><span class="p">):</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span><span class="p">]</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="p">[</span><span class="n">z0</span><span class="p">,</span> <span class="n">z1</span><span class="p">,</span> <span class="n">z2</span><span class="p">,</span> <span class="n">z3</span><span class="p">,</span> <span class="n">z4</span><span class="p">,</span> <span class="n">z5</span><span class="p">,</span> <span class="n">z6</span><span class="p">,</span> <span class="n">z7</span><span class="p">]</span>
+    <span class="n">sort</span> <span class="o">=</span> <span class="n">bitonicSort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">ASCENDING</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sort</span>
+</pre></div>
+
+
+<h2 id="verification">Verification</h2>
+<p>Verifying the sorter design is easy enough. We set up a list of random data
+values, assign it to the inputs of the circuit, then sort the data list and
+compare it with the outputs.</p>
+<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
+
+<span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">bitonic</span> <span class="kn">import</span> <span class="n">Array8Sorter</span>
+
+<span class="k">def</span> <span class="nf">bench</span><span class="p">():</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="mi">4</span>
+
+    <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span> <span class="o">=</span> <span class="n">inputs</span> <span class="o">=</span> \
+        <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="n">w</span><span class="p">:])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+    <span class="n">z0</span><span class="p">,</span> <span class="n">z1</span><span class="p">,</span> <span class="n">z2</span><span class="p">,</span> <span class="n">z3</span><span class="p">,</span> <span class="n">z4</span><span class="p">,</span> <span class="n">z5</span><span class="p">,</span> <span class="n">z6</span><span class="p">,</span> <span class="n">z7</span> <span class="o">=</span> <span class="n">outputs</span> <span class="o">=</span> \
+        <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="n">w</span><span class="p">:])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+
+
+    <span class="n">inst</span> <span class="o">=</span> <span class="n">Array8Sorter</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span><span class="p">,</span>
+                        <span class="n">z0</span><span class="p">,</span> <span class="n">z1</span><span class="p">,</span> <span class="n">z2</span><span class="p">,</span> <span class="n">z3</span><span class="p">,</span> <span class="n">z4</span><span class="p">,</span> <span class="n">z5</span><span class="p">,</span> <span class="n">z6</span><span class="p">,</span> <span class="n">z7</span><span class="p">)</span>
+
+    <span class="nd">@instance</span>
+    <span class="k">def</span> <span class="nf">check</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">randrange</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                <span class="n">inputs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="n">data</span> <span class="o">==</span> <span class="n">outputs</span>
+
+    <span class="k">return</span> <span class="n">inst</span><span class="p">,</span> <span class="n">check</span>
+
+
+<span class="k">def</span> <span class="nf">test_bench</span><span class="p">():</span>
+    <span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">bench</span><span class="p">())</span>
+    <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+
+<p>This test bench can be used with a unit test framework such as <code>py.test</code>.</p>
+<h2 id="verilog-generation-and-synthesis">Verilog generation and synthesis</h2>
+<p>The sorter design can be converted to Verilog as usual, with the <code>toVerilog</code>
+function. See the <a href="verilog.txt">Verilog code</a> for the result. Note that it is a
+"net list of always blocks", with all structure and recursion flattened out.</p>
+<p>Of course, you will want to verify that the generated Verilog code is correct.
+This can be done by using Verilog co-simulation with the same test bench as
+used for the MyHDL code. You can find the details about the procedure
+<a href="cookbook:sinecomp#verilog_co-simulation">here</a>.</p>
+<p>To get an idea of the hardware implementation characteristics, check out the
+<a href="synthesis.txt">synthesis results</a>.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div style="margin: 8px">
+<a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+<!-- Place this tag where you want the +1 button to render. -->
+<div class="g-plusone" data-size="medium"></div>
+
+<!-- Place this tag after the last +1 button tag. -->
+<script type="text/javascript">
+window.__gcfg = {
+    lang: 'en-US'
+};
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>        </div>
+        <p>Content licensed under the
+           <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a> license.
+           See <a href="/terms-of-use.html">Terms of Use</a>.
+        </p> 
+    </div>
+</div> 
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/js/bootstrap.min.js"></script>
+
+  </body>
+</html>
