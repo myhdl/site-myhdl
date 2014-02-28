@@ -6,8 +6,8 @@ content:
     - title: Manual
       url: http://doc.myhdl.org/en/latest/
     - examples
+    - faq
     - support
-    - resources
     - users
     - site-info 
 tagline:

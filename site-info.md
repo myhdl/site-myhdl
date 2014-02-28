@@ -1,5 +1,5 @@
 ---
-title: Site info 
+title: Info 
 layout: page 
 ---
 
