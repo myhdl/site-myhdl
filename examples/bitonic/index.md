@@ -3,8 +3,6 @@ title:   Bitonic Sort
 layout:  wide_article
 content: []
 summary.md: |
-    Learn about the following techniques:
-
     * writing structural MyHDL code using recursion and lists of signals
     * using a reference software implementation
 ---

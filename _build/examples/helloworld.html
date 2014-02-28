@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello World</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Bootstrap -->
+    <link href="/css/bootstrap-flatly.min.css" rel="stylesheet" media="screen">
+    <!-- customizations -->
+    <link href="/css/site.css" rel="stylesheet" media="screen">
+    <!-- pygments -->
+    <link href="/css/syntax.css" rel="stylesheet" media="screen">
+    <!-- icons -->
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">MyHDL</a>
+        </div>
+        <div class="navbar-collapse collapse">
+
+          <ul class="nav navbar-nav navbar-left">
+ 
+            <li class="dropdown">
+              <a href="/start/" class="dropdown-toggle" data-toggle="dropdown">Start <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/start/overview.html">Overview</a></li>    
+                <li><a href="/start/installation.html">Installation</a></li>    
+                <li><a href="/start/why.html">Why MyHDL?</a></li>    
+                <li><a href="/start/whatitisnot.html">What MyHDL is not</a></li>    
+              </ul>
+            <li><a href="http://doc.myhdl.org/en/latest/">Manual</a></li>
+            <li class="active"><a href="/examples/">Examples</a></li>
+            <li><a href="/faq.html">FAQ</a></li>
+            <li class="dropdown">
+              <a href="/support/" class="dropdown-toggle" data-toggle="dropdown">Support <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/support/community.html">Community</a></li>    
+                <li><a href="http://sourceforge.net/p/myhdl/bugs/">Bug Tracker</a></li>    
+                <li><a href="/support/commercial.html">Commercial support</a></li>    
+                <li><a href="/support/resources.html">Resources</a></li>    
+                <li><a href="http://dev.myhdl.org">Development site</a></li>    
+              </ul>
+            <li><a href="/users/">Users</a></li>
+          </ul>
+
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/site-info.html">Info</a></li>
+          </ul>
+
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+
+<div class="container">
+
+    <ol class="breadcrumb">
+       <li><a href="/">Home</a></li>
+       <li><a href="/examples/">Examples</a></li>
+       <li class="active">Hello World</li>
+    </ol>
+
+    <div class="page-header">
+ 
+<h1>Hello World
+</h1>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-3" role="navigation"> 
+ 
+            <div class="sidebar" data-spy="affix" 
+                 data-offset-top="80" 
+                 data-offset-bottom="60">
+                <div class="well">
+                    <a href="#"><em>Hello World</em></a>
+                    <div class="toc">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#design-decisions">Design decisions</a></li>
+<li><a href="#myhdl-code">MyHDL code</a></li>
+<li><a href="#issues">Issues</a></li>
+<li><a href="#conversion-to-vhdl-and-verilog">Conversion to VHDL and Verilog</a></li>
+<li><a href="#generated-vhdl-code">Generated VHDL code</a></li>
+<li><a href="#generated-verilog-code">Generated Verilog code</a></li>
+</ul>
+</div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="col-md-9" data-spy="scroll" data-target="#sidenav" role="main">
+                <h2 id="introduction">Introduction</h2>
+<p>The purpose of this example is to show how a demonstrator design that is
+originally coded in VHDL can be done in MyHDL.</p>
+<p>The original design is
+<a href="http://hamsterworks.co.nz/mediawiki/index.php/Papilio_Plus/Hello_World">here</a>.
+Basically, it draws the message "Hello World" on a screen.</p>
+<p>We will show how MyHDL can make the design task easier. For example, it is not
+necessary to worry about VHDL type conversions anymore: the MyHDL type system
+gives hardware designers exactly the right types for synthesizable code. In
+particular, MyHDL has integers that "just work" instead of low level <code>signed</code>
+and <code>unsigned</code> types. Furthermore, we will show how MyHDL's embedded scripting
+capabilities can be used to automate tasks that are traditionally done outside
+synthesizable code, resulting in a clearer and less error prone design.</p>
+<p>It may be interesting to compare the original VHDL code with the code generated
+by the MyHDL convertor. Therefore, the generated VHDL and Verilog code is
+listed also.</p>
+<h2 id="design-decisions">Design decisions</h2>
+<p>To demonstrate the capabilities of MyHDL, we made a number of design decisions
+that are different from the original:</p>
+<ul>
+<li>We start from ascii art generated by a program instead of a table of '0's and '1's as in the original code. This makes it easier to visualize the message right in the code. We use embedded scripting to generate the desired format in-place.</li>
+<li>While we were at it, we used a nicer font :-)</li>
+<li>The whole image is set up as a table so that we can do a one-liner indexing operation in the hardware behavior description.</li>
+<li>We describe the actual hardware behavior in a sequential instead of a combinatorial process. This is a more abstract view that leads to shorter and more robust code.</li>
+<li>We introduced a <code>row</code> variable to make the intention clearer.</li>
+</ul>
+<h2 id="myhdl-code">MyHDL code</h2>
+<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="k">def</span> <span class="nf">HelloWorld</span><span class="p">(</span>
+    <span class="n">pixelClock</span><span class="p">,</span>
+    <span class="n">Red</span><span class="p">,</span>
+    <span class="n">Green</span><span class="p">,</span>
+    <span class="n">Blue</span><span class="p">,</span>
+    <span class="n">hSync</span><span class="p">,</span>
+    <span class="n">vSync</span>
+<span class="p">):</span>
+
+    <span class="c">### Image ###</span>
+
+    <span class="c"># From: figlet -f alphabet &quot; Hello World &quot;</span>
+    <span class="n">MSG</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">&quot;    H  H     l l        W     W         l    d    &quot;</span><span class="p">,</span>
+    <span class="s">&quot;    H  H     l l        W     W         l    d    &quot;</span><span class="p">,</span>
+    <span class="s">&quot;    HHHH eee l l ooo    W  W  W ooo rrr l  ddd    &quot;</span><span class="p">,</span>
+    <span class="s">&quot;    H  H e e l l o o     W W W  o o r   l d  d    &quot;</span><span class="p">,</span>
+    <span class="s">&quot;    H  H ee  l l ooo      W W   ooo r   l  ddd    &quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="c"># Convert spaces, letters to 0, 1</span>
+    <span class="k">def</span> <span class="nf">to_10</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert letters to 1, then spaces to 0&quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">r&#39;\w&#39;</span><span class="p">,</span> <span class="s">&#39;1&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">r&#39;\s&#39;</span><span class="p">,</span> <span class="s">&#39;0&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s</span>
+
+    <span class="n">MSG</span> <span class="o">=</span> <span class="p">[</span><span class="n">to_10</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">MSG</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">MSG</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="mi">50</span>
+
+    <span class="c"># Setup image as a concatenation of rows</span>
+    <span class="n">BORDER</span> <span class="o">=</span>  <span class="s">&#39;1&#39;</span> <span class="o">+</span>  <span class="s">&#39;0&#39;</span> <span class="o">*</span> <span class="mi">48</span> <span class="o">+</span> <span class="s">&#39;1&#39;</span>
+    <span class="n">NULL</span> <span class="o">=</span> <span class="s">&#39;0&#39;</span> <span class="o">*</span> <span class="mi">50</span>
+    <span class="n">IMAGE</span> <span class="o">=</span> <span class="p">[</span><span class="n">BORDER</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">NULL</span><span class="p">]</span> <span class="o">+</span> <span class="n">MSG</span> <span class="o">+</span> <span class="p">[</span><span class="n">NULL</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">37</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">MSG</span><span class="p">)</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">BORDER</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">IMAGE</span><span class="p">)</span> <span class="o">==</span> <span class="mi">37</span>
+
+    <span class="c"># Convert strings to ints for use in convertible code</span>
+    <span class="n">TABLE</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">IMAGE</span><span class="p">])</span>
+
+    <span class="c">### Hardware behavior ###</span>
+
+    <span class="c"># Timing constants</span>
+    <span class="n">hMaxCount</span> <span class="o">=</span> <span class="mi">1056</span><span class="o">-</span><span class="mi">1</span>
+    <span class="n">hStartSync</span> <span class="o">=</span> <span class="mi">840</span>
+    <span class="n">hEndSync</span> <span class="o">=</span> <span class="mi">968</span>
+    <span class="n">vMaxCount</span> <span class="o">=</span> <span class="mi">628</span><span class="o">-</span><span class="mi">1</span>
+    <span class="n">vStartSync</span> <span class="o">=</span> <span class="mi">601</span>
+    <span class="n">vEndSync</span> <span class="o">=</span> <span class="mi">605</span>
+
+    <span class="c"># Signals</span>
+    <span class="n">hCounter</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">11</span><span class="p">:])</span>
+    <span class="n">vCounter</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">10</span><span class="p">:])</span>
+    <span class="n">shiftReg</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">modbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">50</span><span class="p">:])</span>
+
+    <span class="nd">@always_comb</span>
+    <span class="k">def</span> <span class="nf">assign</span><span class="p">():</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">4</span><span class="p">:]</span>
+        <span class="n">v</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">shiftReg</span><span class="p">[</span><span class="mi">49</span><span class="p">]</span>
+        <span class="n">Red</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="n">Green</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="n">Blue</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">v</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">pixelClock</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">draw</span><span class="p">():</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">6</span><span class="p">:]</span>
+        <span class="k">if</span> <span class="n">hCounter</span> <span class="o">==</span> <span class="n">hMaxCount</span><span class="p">:</span>
+            <span class="n">hCounter</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">vCounter</span> <span class="o">==</span> <span class="n">vMaxCount</span><span class="p">:</span>
+                <span class="n">vCounter</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">row</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">vCounter</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+                <span class="n">shiftReg</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">TABLE</span><span class="p">[</span><span class="n">row</span><span class="p">]</span>
+                <span class="n">vCounter</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">vCounter</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">hCounter</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">hCounter</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">hCounter</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span> <span class="o">==</span> <span class="mi">15</span><span class="p">:</span>
+                <span class="n">shiftReg</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">shiftReg</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span>
+
+        <span class="n">hSync</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">hCounter</span> <span class="o">&gt;=</span> <span class="n">hStartSync</span> <span class="ow">and</span> <span class="n">hCounter</span> <span class="o">&lt;</span> <span class="n">hEndSync</span>
+        <span class="n">vSync</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">vCounter</span> <span class="o">&gt;=</span> <span class="n">vStartSync</span> <span class="ow">and</span> <span class="n">vCounter</span> <span class="o">&lt;</span> <span class="n">vEndSync</span>
+
+    <span class="k">return</span> <span class="n">assign</span><span class="p">,</span> <span class="n">draw</span>
+</pre></div>
+
+
+<h2 id="issues">Issues</h2>
+<ul>
+<li>This is a draft version - work in progress</li>
+<li>No simulations done yet, so there will be bugs :-)</li>
+<li>Where is the reset???</li>
+</ul>
+<h2 id="conversion-to-vhdl-and-verilog">Conversion to VHDL and Verilog</h2>
+<p>The MyHDL code can be converted to VHDL and Verilog
+as follows:</p>
+<div class="codehilite"><pre><span class="c">### Conversion to VHDL &amp; Verilog</span>
+
+<span class="n">pixelClock</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">Red</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">4</span><span class="p">:])</span>
+<span class="n">Green</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">4</span><span class="p">:])</span>
+<span class="n">Blue</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">4</span><span class="p">:])</span>
+<span class="n">hSync</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">vsync</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">(</span><span class="n">toVHDL</span><span class="p">,</span> <span class="n">toVerilog</span><span class="p">):</span>
+    <span class="n">f</span><span class="p">(</span><span class="n">HelloWorld</span><span class="p">,</span>
+      <span class="n">pixelClock</span><span class="p">,</span>
+      <span class="n">Red</span><span class="p">,</span>
+      <span class="n">Green</span><span class="p">,</span>
+      <span class="n">Blue</span><span class="p">,</span>
+      <span class="n">hSync</span><span class="p">,</span>
+      <span class="n">vsync</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<h2 id="generated-vhdl-code">Generated VHDL code</h2>
+<div class="codehilite"><pre><span class="c1">-- File: HelloWorld.vhd</span>
+<span class="c1">-- Generated by MyHDL 0.8dev</span>
+<span class="c1">-- Date: Thu Aug 16 17:20:37 2012</span>
+
+
+<span class="k">library</span> <span class="nn">IEEE</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">IEEE.std_logic_1164.all</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">IEEE.numeric_std.all</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">std.textio.all</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nn">work.pck_myhdl_08.all</span><span class="p">;</span>
+
+<span class="k">entity</span> <span class="nc">HelloWorld</span> <span class="k">is</span>
+    <span class="k">port</span> <span class="p">(</span>
+        <span class="n">pixelClock</span><span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+        <span class="n">Red</span><span class="o">:</span> <span class="k">out</span> <span class="n">unsigned</span><span class="p">(</span><span class="mi">3</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="n">Green</span><span class="o">:</span> <span class="k">out</span> <span class="n">unsigned</span><span class="p">(</span><span class="mi">3</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="n">Blue</span><span class="o">:</span> <span class="k">out</span> <span class="n">unsigned</span><span class="p">(</span><span class="mi">3</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="n">hSync</span><span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
+        <span class="n">vSync</span><span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span>
+    <span class="p">);</span>
+<span class="k">end</span> <span class="k">entity</span> <span class="nc">HelloWorld</span><span class="p">;</span>
+
+
+<span class="k">architecture</span> <span class="nc">MyHDL</span> <span class="k">of</span> <span class="nc">HelloWorld</span> <span class="k">is</span>
+
+<span class="k">signal</span> <span class="n">hCounter</span><span class="o">:</span> <span class="n">unsigned</span><span class="p">(</span><span class="mi">10</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+<span class="k">signal</span> <span class="n">vCounter</span><span class="o">:</span> <span class="n">unsigned</span><span class="p">(</span><span class="mi">9</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+<span class="k">signal</span> <span class="n">shiftReg</span><span class="o">:</span> <span class="n">unsigned</span><span class="p">(</span><span class="mi">49</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+
+<span class="k">begin</span>
+
+
+<span class="n">HELLOWORLD_ASSIGN</span><span class="o">:</span> <span class="k">process</span> <span class="p">(</span><span class="n">shiftReg</span><span class="p">)</span> <span class="k">is</span>
+    <span class="k">variable</span> <span class="n">v</span><span class="o">:</span> <span class="n">unsigned</span><span class="p">(</span><span class="mi">3</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+<span class="k">begin</span>
+    <span class="n">v</span> <span class="o">:=</span> <span class="n">to_unsigned</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>
+    <span class="n">v</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">:=</span> <span class="n">shiftReg</span><span class="p">(</span><span class="mi">49</span><span class="p">);</span>
+    <span class="n">Red</span> <span class="o">&lt;=</span> <span class="n">v</span><span class="p">;</span>
+    <span class="n">Green</span> <span class="o">&lt;=</span> <span class="n">v</span><span class="p">;</span>
+    <span class="n">Blue</span> <span class="o">&lt;=</span> <span class="n">v</span><span class="p">;</span>
+<span class="k">end</span> <span class="k">process</span> <span class="nc">HELLOWORLD_ASSIGN</span><span class="p">;</span>
+
+
+<span class="n">HELLOWORLD_DRAW</span><span class="o">:</span> <span class="k">process</span> <span class="p">(</span><span class="n">pixelClock</span><span class="p">)</span> <span class="k">is</span>
+    <span class="k">variable</span> <span class="n">row</span><span class="o">:</span> <span class="n">unsigned</span><span class="p">(</span><span class="mi">5</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+<span class="k">begin</span>
+    <span class="k">if</span> <span class="n">rising_edge</span><span class="p">(</span><span class="n">pixelClock</span><span class="p">)</span> <span class="k">then</span>
+        <span class="n">row</span> <span class="o">:=</span> <span class="n">to_unsigned</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">hCounter</span> <span class="o">=</span> <span class="mi">1055</span><span class="p">)</span> <span class="k">then</span>
+            <span class="n">hCounter</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000&quot;</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">vCounter</span> <span class="o">=</span> <span class="mi">627</span><span class="p">)</span> <span class="k">then</span>
+                <span class="n">vCounter</span> <span class="o">&lt;=</span> <span class="s">&quot;0000000000&quot;</span><span class="p">;</span>
+            <span class="k">else</span>
+                <span class="n">row</span> <span class="o">:=</span> <span class="n">vCounter</span><span class="p">(</span><span class="mi">10</span><span class="o">-</span><span class="mi">1</span> <span class="k">downto</span> <span class="mi">4</span><span class="p">);</span>
+                <span class="k">case</span> <span class="n">to_integer</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">is</span>
+                    <span class="k">when</span> <span class="mi">0</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;10000000000000000000000000000000000000000000000001&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">1</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">2</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00001001000001010000000010000010000000001000010000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">3</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00001001000001010000000010000010000000001000010000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">4</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00001111011101010111000010010010111011101001110000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">5</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00001001010101010101000001010100101010001010010000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">6</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00001001011001010111000000101000111010001001110000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">7</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">8</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">9</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">10</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">11</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">12</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">13</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">14</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">15</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">16</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">17</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">18</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">19</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">20</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">21</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">22</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">23</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">24</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">25</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">26</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">27</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">28</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">29</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">30</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">31</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">32</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">33</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">34</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="mi">35</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;00000000000000000000000000000000000000000000000000&quot;</span><span class="p">;</span>
+                    <span class="k">when</span> <span class="k">others</span> <span class="o">=&gt;</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="s">&quot;10000000000000000000000000000000000000000000000001&quot;</span><span class="p">;</span>
+                <span class="k">end</span> <span class="k">case</span><span class="p">;</span>
+                <span class="n">vCounter</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">vCounter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+            <span class="k">end</span> <span class="k">if</span><span class="p">;</span>
+        <span class="k">else</span>
+            <span class="n">hCounter</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">hCounter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">hCounter</span><span class="p">(</span><span class="mi">4</span><span class="o">-</span><span class="mi">1</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="mi">15</span><span class="p">)</span> <span class="k">then</span>
+                <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="n">shift_left</span><span class="p">(</span><span class="n">shiftReg</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+            <span class="k">end</span> <span class="k">if</span><span class="p">;</span>
+        <span class="k">end</span> <span class="k">if</span><span class="p">;</span>
+        <span class="n">hSync</span> <span class="o">&lt;=</span> <span class="n">stdl</span><span class="p">((</span><span class="n">hCounter</span> <span class="o">&gt;=</span> <span class="mi">840</span><span class="p">)</span> <span class="k">and</span> <span class="p">(</span><span class="n">hCounter</span> <span class="o">&lt;</span> <span class="mi">968</span><span class="p">));</span>
+        <span class="n">vSync</span> <span class="o">&lt;=</span> <span class="n">stdl</span><span class="p">((</span><span class="n">vCounter</span> <span class="o">&gt;=</span> <span class="mi">601</span><span class="p">)</span> <span class="k">and</span> <span class="p">(</span><span class="n">vCounter</span> <span class="o">&lt;</span> <span class="mi">605</span><span class="p">));</span>
+    <span class="k">end</span> <span class="k">if</span><span class="p">;</span>
+<span class="k">end</span> <span class="k">process</span> <span class="nc">HELLOWORLD_DRAW</span><span class="p">;</span>
+
+<span class="k">end</span> <span class="k">architecture</span> <span class="nc">MyHDL</span><span class="p">;</span>
+</pre></div>
+
+
+<h2 id="generated-verilog-code">Generated Verilog code</h2>
+<div class="codehilite"><pre><span class="c1">// File: HelloWorld.v</span>
+<span class="c1">// Generated by MyHDL 0.8dev</span>
+<span class="c1">// Date: Thu Aug 16 17:20:37 2012</span>
+
+<span class="no">`timescale</span> <span class="mh">1</span><span class="n">ns</span><span class="o">/</span><span class="mh">10</span><span class="n">ps</span>
+
+<span class="k">module</span> <span class="n">HelloWorld</span> <span class="p">(</span>
+    <span class="n">pixelClock</span><span class="p">,</span>
+    <span class="n">Red</span><span class="p">,</span>
+    <span class="n">Green</span><span class="p">,</span>
+    <span class="n">Blue</span><span class="p">,</span>
+    <span class="n">hSync</span><span class="p">,</span>
+    <span class="n">vSync</span>
+<span class="p">);</span>
+
+<span class="k">input</span> <span class="n">pixelClock</span><span class="p">;</span>
+<span class="k">output</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">Red</span><span class="p">;</span>
+<span class="kt">reg</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">Red</span><span class="p">;</span>
+<span class="k">output</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">Green</span><span class="p">;</span>
+<span class="kt">reg</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">Green</span><span class="p">;</span>
+<span class="k">output</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">Blue</span><span class="p">;</span>
+<span class="kt">reg</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">Blue</span><span class="p">;</span>
+<span class="k">output</span> <span class="n">hSync</span><span class="p">;</span>
+<span class="kt">reg</span> <span class="n">hSync</span><span class="p">;</span>
+<span class="k">output</span> <span class="n">vSync</span><span class="p">;</span>
+<span class="kt">reg</span> <span class="n">vSync</span><span class="p">;</span>
+
+<span class="kt">reg</span> <span class="p">[</span><span class="mh">10</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">hCounter</span><span class="p">;</span>
+<span class="kt">reg</span> <span class="p">[</span><span class="mh">9</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">vCounter</span><span class="p">;</span>
+<span class="kt">reg</span> <span class="p">[</span><span class="mh">49</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">shiftReg</span><span class="p">;</span>
+
+
+<span class="k">always</span> <span class="p">@(</span><span class="n">shiftReg</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="no">HELLOWORLD_ASSIGN</span>
+    <span class="kt">reg</span> <span class="p">[</span><span class="mh">4</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">v</span><span class="p">;</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="mh">4&#39;h0</span><span class="p">;</span>
+    <span class="n">v</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">shiftReg</span><span class="p">[</span><span class="mh">49</span><span class="p">];</span>
+    <span class="n">Red</span> <span class="o">=</span> <span class="n">v</span><span class="p">;</span>
+    <span class="n">Green</span> <span class="o">=</span> <span class="n">v</span><span class="p">;</span>
+    <span class="n">Blue</span> <span class="o">=</span> <span class="n">v</span><span class="p">;</span>
+<span class="k">end</span>
+
+
+<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">pixelClock</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="no">HELLOWORLD_DRAW</span>
+    <span class="kt">reg</span> <span class="p">[</span><span class="mh">6</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">row</span><span class="p">;</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="mh">6&#39;h0</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">hCounter</span> <span class="o">==</span> <span class="mh">1055</span><span class="p">))</span> <span class="k">begin</span>
+        <span class="n">hCounter</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">vCounter</span> <span class="o">==</span> <span class="mh">627</span><span class="p">))</span> <span class="k">begin</span>
+            <span class="n">vCounter</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+        <span class="k">end</span>
+        <span class="k">else</span> <span class="k">begin</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">vCounter</span><span class="p">[</span><span class="mh">10</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">4</span><span class="p">];</span>
+            <span class="k">case</span> <span class="p">(</span><span class="n">row</span><span class="p">)</span>
+                <span class="mh">0</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">51&#39;h2000000000001</span><span class="p">;</span>
+                <span class="mh">1</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">2</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">47&#39;h241402080210</span><span class="p">;</span>
+                <span class="mh">3</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">47&#39;h241402080210</span><span class="p">;</span>
+                <span class="mh">4</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">47&#39;h3dd5c24bba70</span><span class="p">;</span>
+                <span class="mh">5</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">47&#39;h25554152a290</span><span class="p">;</span>
+                <span class="mh">6</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">47&#39;h2595c0a3a270</span><span class="p">;</span>
+                <span class="mh">7</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">8</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">9</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">10</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">11</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">12</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">13</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">14</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">15</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">16</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">17</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">18</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">19</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">20</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">21</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">22</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">23</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">24</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">25</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">26</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">27</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">28</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">29</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">30</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">31</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">32</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">33</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">34</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="mh">35</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+                <span class="k">default</span><span class="o">:</span> <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="mh">51&#39;h2000000000001</span><span class="p">;</span>
+            <span class="k">endcase</span>
+            <span class="n">vCounter</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">vCounter</span> <span class="o">+</span> <span class="mh">1</span><span class="p">);</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="k">else</span> <span class="k">begin</span>
+        <span class="n">hCounter</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">hCounter</span> <span class="o">+</span> <span class="mh">1</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">hCounter</span><span class="p">[</span><span class="mh">4</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">==</span> <span class="mh">15</span><span class="p">))</span> <span class="k">begin</span>
+            <span class="n">shiftReg</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">shiftReg</span> <span class="o">&lt;&lt;</span> <span class="mh">1</span><span class="p">);</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="n">hSync</span> <span class="o">&lt;=</span> <span class="p">((</span><span class="n">hCounter</span> <span class="o">&gt;=</span> <span class="mh">840</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">hCounter</span> <span class="o">&lt;</span> <span class="mh">968</span><span class="p">));</span>
+    <span class="n">vSync</span> <span class="o">&lt;=</span> <span class="p">((</span><span class="n">vCounter</span> <span class="o">&gt;=</span> <span class="mh">601</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">vCounter</span> <span class="o">&lt;</span> <span class="mh">605</span><span class="p">));</span>
+<span class="k">end</span>
+
+<span class="k">endmodule</span>
+</pre></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div style="margin: 8px">
+<a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+<!-- Place this tag where you want the +1 button to render. -->
+<div class="g-plusone" data-size="medium"></div>
+
+<!-- Place this tag after the last +1 button tag. -->
+<script type="text/javascript">
+window.__gcfg = {
+    lang: 'en-US'
+};
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>        </div>
+        <p>Content licensed under the
+           <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a> license.
+           See <a href="/terms-of-use.html">Terms of Use</a>.
+        </p> 
+    </div>
+</div> 
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/js/bootstrap.min.js"></script>
+
+  </body>
+</html>

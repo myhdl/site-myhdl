@@ -7,6 +7,7 @@ content:
     - stopwatch
     - sinecomp
     - bitonic
+    - helloworld
 description.md: >
     Jump right in with MyHDL examples.
     Consult the [manual] when needed.

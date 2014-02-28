@@ -2,8 +2,6 @@
 title:   Flip-flops and Latches 
 layout:  article
 summary.md: | 
-    Learn about the following MyHDL features and techniques:
-
     * modelling and simulating small sequential devices
     * waveform viewing
     * automatic conversion to Verilog

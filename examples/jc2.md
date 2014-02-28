@@ -2,8 +2,6 @@
 title:   Johnson Counter 
 layout:  wide_article
 summary.md: |
-    Learn about the following MyHDL features and techniques:
-
     * modelling a counter
     * writing a test bench for the counter and simulating it
     * automatic conversion to Verilog

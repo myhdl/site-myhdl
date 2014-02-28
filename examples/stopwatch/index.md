@@ -3,8 +3,6 @@ title:   StopWatch
 layout:  wide_article
 content: []
 summary.md: |
-    Learn about the following MyHDL features and techniques:
-
     * writing a unit test before the implementation
     * using `py.test` as a unit test framework 
     * coding a hierarchical design

@@ -3,10 +3,8 @@ title:   Cordic-based Sine Computer
 layout:  wide_article
 content: []
 summary.md: |
-    Learn about the following MyHDL features and techniques:
-
     * using the `intbv` class to model negative numbers 
-    * let the convertor take care of the details of signed and unsigned representations
+    * using conversion to handle the details of signed and unsigned representations
     * taking advantage of the elaboration phase for conversion 
     * using co-simulation to verify the output Verilog code
 ---
