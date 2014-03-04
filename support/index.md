@@ -6,8 +6,7 @@ content:
     - url: http://sourceforge.net/p/myhdl/bugs/
       title: Bug Tracker
     - commercial
-    - resources
     - url: http://dev.myhdl.org
-      title: Development site 
+      title: Development documentation 
 navstyle: expand
 ---
