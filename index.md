@@ -18,8 +18,7 @@ tagline:
 <div class="row text-center">
     <div class="col-md-6 col-md-offset-3">
 <div class="alert-info">
-This is the new site for MyHDL. The transition from
-the old site is ongoing, so some information may be missing.
+This is the new site for MyHDL.
 <a class="alert-link" href="http://www.myhdl.org">Visit the old site</a>
 </div>
     </div>
