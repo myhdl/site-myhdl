@@ -10,20 +10,10 @@ content:
     - support
     - resources
     - users
-    - site-info 
+    - info 
 tagline:
     From Python to Silicon!
 ---
-
-<div class="row text-center">
-    <div class="col-md-6 col-md-offset-3">
-<div class="alert-info">
-This is the new site for MyHDL.
-<a class="alert-link" href="http://www.myhdl.org">Visit the old site</a>
-</div>
-    </div>
-</div>
-
 
 <div class="row text-center">
     <div class="col-md-8 col-md-offset-2">
@@ -35,7 +25,6 @@ language, providing hardware engineers with unprecedented power.
     </div>
 </div>
 
-<hr class="half-rule">
 
 <div class="row text-center">
 
@@ -65,3 +54,5 @@ and enjoy the Python ecosystem immediately.
     </div>
 
 </div>
+
+<hr class="half-rule">

@@ -1,17 +1,14 @@
 ---
 title:  Users 
 layout: users_index
-order:  title 
+content:
+    - jandecaluwe
 description:
     MyHDL users and their projects
 ---
 
-How to add user info {: .text-info}
-====================
+[/user-guide]
 
-MyHDL users can add their info here.  If a single page is sufficient, put the
-info in a `<username>.md` file. Otherwise, create a directory `<username>` and
-add an `index.md` and other pages there.  There are some placeholder files and
-directories to show how it works. You can start by picking a placeholder and
-rename it. Use a `simple_page` layout if you don't need a sidebar. 
+A lot of user info is not yet available on this site. 
+You can view it [on the old site](http://old.myhdl.org/doku.php/projects:intro).
 {: .text-info}

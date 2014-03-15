@@ -6,18 +6,31 @@
 {% block body %}
 
 <div class="jumbotron">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <h1>{{this.title}}</h1>
-                <h2>{{this.tagline}}</h2>
-             </div>
-        </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-center">
+         <h1>{{this.title}}</h1>
+         <h2>{{this.tagline}}</h2>
+       </div>
     </div>
+ </div>
 </div>
 
 <div class="container">
 {{this.body}}
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 text-center">
+      {% set news = site.reflinks['/news/releases'].content[0] %}
+      <p class="lead">{{news.date|dateformat}}&nbsp;&nbsp;<a href="news/releases">{{news.title}}</a></p>
+    </div>
+    <div class="col-md-6 text-center">
+      {% set news = site.reflinks['/news/general'].content[0] %}
+      <p class="lead">{{news.date|dateformat}}&nbsp;&nbsp;<a href="news/general">{{news.title}}</a></p>
+   </div>
+  </div>
 </div>
 
 {% include 'footer.html' %}

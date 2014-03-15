@@ -1,13 +1,16 @@
 brand: MyHDL
 
 reflinks:
-    MyHDL: 
+    myhdl: 
         url: http://www.myhdl.org 
         title: MyHDL site
+    myhdl-old: 
+        url: http://old.myhdl.org 
+        title: Old MyHDL site
     manual:
         url: http://doc.myhdl.org/en/latest/
         title: Manual
-    Google: 
+    google: 
         url: http://www.google.com
         title: Google
     jandecaluwe:
@@ -49,6 +52,9 @@ reflinks:
     myhdl.org:
         url: http://www.myhdl.org 
         title: myhdl.org 
+    old.myhdl.org:
+        url: http://old.myhdl.org 
+        title: old.myhdl.org 
     content_license:
         url: http://creativecommons.org/licenses/by-sa/3.0/
         title: CC-BY-SA License
