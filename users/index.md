@@ -9,6 +9,6 @@ description:
 
 [/user-guide]
 
-A lot of user info is not yet available on this site. 
-You can view it [on the old site](http://old.myhdl.org/doku.php/projects:intro).
+**Under construction** The user info is still being migrated from the old site.
+[Visit the old site](http://old.myhdl.org/doku.php/projects:intro)
 {: .text-info}
