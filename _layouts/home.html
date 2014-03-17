@@ -24,11 +24,21 @@
   <div class="row">
     <div class="col-md-6 text-center">
       {% set news = site.reflinks['/news/releases'].content[0] %}
-      <p class="lead">{{news.date|dateformat}}&nbsp;&nbsp;<a href="news/releases">{{news.title}}</a></p>
+      <div class="panel panel-default">
+        <div class="panel-heading">Release news</div>
+        <div class="panel-body">
+          {{news.date|dateformat}}&nbsp;&nbsp;<a href="news/releases">{{news.title}}</a>
+        </div>
+      </div>
     </div>
     <div class="col-md-6 text-center">
       {% set news = site.reflinks['/news/general'].content[0] %}
-      <p class="lead">{{news.date|dateformat}}&nbsp;&nbsp;<a href="news/general">{{news.title}}</a></p>
+      <div class="panel panel-default">
+        <div class="panel-heading">General news</div>
+        <div class="panel-body">
+          {{news.date|dateformat}}&nbsp;&nbsp;<a href="news/general">{{news.title}}</a>
+        </div>
+      </div>
    </div>
   </div>
 </div>
