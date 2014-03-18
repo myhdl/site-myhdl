@@ -9,7 +9,7 @@
         <div class="col-md-8 role="main">
             {% for item in this.content %}
                 <div class="page-header">
-                    <h2>{{item.date|dateformat}}&nbsp;&nbsp;{{item.title}}</h2>
+                    <h1>{{item.title}}&nbsp;&nbsp;<small>{{item.date|dateformat}}</small></h1>
                 </div>
                 <div class="lead">
                     {{item.body}}

@@ -4,7 +4,7 @@ layout: home
 content:
     - start 
     - title: Manual
-      url: http://doc.myhdl.org/en/latest/
+      url: http://docs.myhdl.org/en/latest/
     - examples
     - faq
     - support
