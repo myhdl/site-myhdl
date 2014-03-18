@@ -29,6 +29,10 @@ body {
   margin: 30px auto 50px;
 }
 
+.nobr {
+  white-space: nowrap;
+}
+
 .fa {
   margin-right: 0.5em;
 }
