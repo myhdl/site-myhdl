@@ -3,11 +3,15 @@
         {% include 'sharing.html' %}
         </div>
         {% if this.lastedit|d %}
-        <p>{{this.lastedit}}</p>
+        <p>{{this.lastedit}}.</p>
         {% endif %}
-        <p>Content licensed under the
+        <p>
+           Content licensed under the
            <a href="{{site.reflinks.license.url}}">{{site.reflinks.license.title}}</a> license.
            See <a href="{{site.reflinks['/terms-of-use'].url}}">Terms of Use</a>.
+        </p> 
+        <p>
+           Website powered by <a href="{{site.reflinks.urubu.url}}">{{site.reflinks.urubu.title}}</a>.
         </p> 
     </div>
 
