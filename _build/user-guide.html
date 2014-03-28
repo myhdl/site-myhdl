@@ -100,12 +100,18 @@
                 <p>To add user info, please first read the <a href="/site-development.html" title="Site development guide">Site development guide</a>.</p>
 <p>MyHDL users can add their info under the <code>/users</code> directory.  If a single page
 is sufficient, put the info in a <code>&lt;username&gt;.md</code> file. Otherwise, create a
-directory <code>&lt;username&gt;</code> and add an <code>index.md</code> and other pages there.  There are
-some placeholder files and directories to show how it works. You can start by
-picking a placeholder and rename it. Use a <code>simple_page</code> layout if you don't
-need a sidebar. </p>
-<p>Be sure to add the page or folder name in the <code>content</code> field of the
-<code>users/index</code>.</p>
+directory <code>&lt;username&gt;</code> and add an <code>index.md</code> and other pages there. 
+In the latter case, use <code>index.md</code> as the main entry point
+for your info, it works best for nice urls.</p>
+<p>File and directory names map to urls, so avoid whitespace and use
+all lowercase names.</p>
+<p>There are some placeholder files and directories to show how it works. You can
+start by picking a placeholder and rename it. </p>
+<p>A typical layout for your content pages would be <code>article</code>. If you don't need a
+sidebar, use <code>simple_article</code>. If you need a wider area for the text, use
+<code>wide_article</code>.</p>
+<p>Be sure to add the page or folder name as a list item entry in the <code>content</code>
+field of the <code>users/index</code>.</p>
             </div>
         </div>
     </div>
