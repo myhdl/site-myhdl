@@ -3,6 +3,7 @@ title:  Users
 layout: users_index
 content:
     - jandecaluwe
+    - benallard
 description:
     MyHDL users and their projects
 ---
