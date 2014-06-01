@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import re
 from distutils.version import StrictVersion
 import urubu
@@ -31,7 +33,7 @@ def check_keys(item, keys):
         if key not in item:
             raise KeyError(undefined_key.format(key, item['id']))
 
-mailinfo = re.compile(r'<.*>') 
+mailinfo = re.compile(r'<.*>', re.UNICODE) 
 
 # open hg interface
 hg = hglib.open('.')
@@ -43,10 +45,11 @@ def infer_lastedit(item):
     if log:
         log = log[0]
         # convert date to readable format
-        dateformat="%d-%b-%Y"
+        dateformat = "%d-%b-%Y"
         date = log.date.strftime(dateformat)
         # remove mailinfo from author info
-        author = mailinfo.sub('', log.author).strip() 
+        author = unicode(log.author, 'utf-8')
+        author = mailinfo.sub('', author).strip()
         item['lastedit'] = "Last edit on {} by {}".format(date, author)
 
 def validate_default(item):
