@@ -3,10 +3,9 @@ title:   Community
 layout:  simple_page
 ---
 
-[The MyHDL Mailing List](http://sourceforge.net/mail?group_id=91207)
-is used to exchange information about MyHDL. However, there are
-more convenient interfaces than email to the same information, so
-read on.
+[The MyHDL Mailing List](https://sourceforge.net/p/myhdl/mailman) is used to
+exchange information about MyHDL. However, there are more convenient interfaces
+than email to the same information, so read on.
 
 The mailing list is archived on <http://gmane.org>, which
 provides a bidirectional gateway to the mailing list. Gmane
@@ -19,4 +18,4 @@ All interface options are described here:
 
 In particular, to access the list as a usenet newsgroup, you
 can use this link:
-[The MyHDL Newsgroup](http://news.gmane.org/gmane.comp.python.myhdl)
+[The MyHDL Newsgroup](http://news.gmane.org/gmane.comp.python.myhdl).
