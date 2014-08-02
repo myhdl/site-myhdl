@@ -8,7 +8,6 @@ content:
     - examples
     - faq
     - support
-    - resources
     - users
     - info 
 tagline:
