@@ -3,10 +3,8 @@ title: MyHDL
 layout: home
 content:
     - start 
-    - title: Manual
-      url: http://docs.myhdl.org/en/latest/
+    - documentation
     - examples
-    - faq
     - support
     - users
     - info 
