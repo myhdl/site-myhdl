@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Performance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Bootstrap -->
+    <link href="/css/bootstrap-flatly.min.css" rel="stylesheet" media="screen">
+    <!-- customizations -->
+    <link href="/css/site.css" rel="stylesheet" media="screen">
+    <!-- pygments -->
+    <link href="/css/syntax.css" rel="stylesheet" media="screen">
+    <!-- icons -->
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-48954307-2', 'myhdl.org');
+  ga('send', 'pageview');
+
+</script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">MyHDL</a>
+        </div>
+        <div class="navbar-collapse collapse">
+
+          <ul class="nav navbar-nav navbar-left">
+ 
+            <li class="dropdown">
+              <a href="/start/" class="dropdown-toggle" data-toggle="dropdown">Start <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/start/overview.html">Overview</a></li>    
+                <li><a href="/start/installation.html">Installation</a></li>    
+                <li><a href="/start/why.html">Why MyHDL?</a></li>    
+                <li><a href="/start/whatitisnot.html">What MyHDL is not</a></li>    
+              </ul>
+            </li>
+            <li class="active" class="dropdown">
+              <a href="/documentation/" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="http://docs.myhdl.org/en/latest/">Manual</a></li>    
+                <li><a href="/documentation/faq.html">FAQ</a></li>    
+                <li><a href="/documentation/performance.html">Performance</a></li>    
+              </ul>
+            </li>
+            <li><a href="/examples/">Examples</a></li>
+            <li class="dropdown">
+              <a href="/support/" class="dropdown-toggle" data-toggle="dropdown">Support <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/support/community.html">Community</a></li>    
+                <li><a href="https://bitbucket.org/jandecaluwe/myhdl/issues?status=new&status=open">Bug Tracker</a></li>    
+                <li><a href="/support/commercial.html">Commercial support</a></li>    
+                <li><a href="/support/resources.html">Resources</a></li>    
+                <li><a href="http://dev.myhdl.org">Development documentation</a></li>    
+              </ul>
+            </li>
+            <li><a href="/users/">Users</a></li>
+          </ul>
+
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/info.html">Info</a></li>
+          </ul>
+
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+
+<div class="container">
+
+    <ol class="breadcrumb">
+       <li><a href="/">Home</a></li>
+       <li><a href="/documentation/">Documentation</a></li>
+       <li class="active">Performance</li>
+    </ol>
+
+    <div class="page-header">
+ 
+<h1>Performance
+</h1>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-3" role="navigation"> 
+ 
+            <div class="sidebar" data-spy="affix" 
+                 data-offset-top="80" 
+                 data-offset-bottom="60">
+                <div class="well">
+                    <a href="#"><strong style="font-size:90%">Performance</strong></a>
+                    <div class="toc">
+<ul>
+<li><a href="#myhdl-is-fast">MyHDL is fast!</a></li>
+<li><a href="#using-pypy-to-speed-up-myhdl-simulations">Using PyPy to speed up MyHDL simulations</a></li>
+<li><a href="#comparison-to-vhdl-and-verilog">Comparison to VHDL and Verilog</a></li>
+<li><a href="#a-note-on-paid-license-commercial-simulators">A note on paid-license commercial simulators</a></li>
+<li><a href="#analysis">Analysis</a></li>
+<li><a href="#a-personal-note">A personal note</a></li>
+<li><a href="#technical-details">Technical details</a><ul>
+<li><a href="#benchmark-details">Benchmark details</a></li>
+<li><a href="#computing-environment">Computing environment</a></li>
+<li><a href="#the-jit-warming-up-phase">The JIT warming-up phase</a></li>
+<li><a href="#installation-hints-and-known-issues">Installation, hints, and known issues</a></li>
+</ul>
+</li>
+<li><a href="#historical-data">Historical data</a></li>
+</ul>
+</div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="col-md-6" data-spy="scroll" data-target="#sidenav" role="main">
+                <h2 id="myhdl-is-fast">MyHDL is fast!</h2>
+<p>The message from this page is loud and clear: <strong>MyHDL is fast!</strong></p>
+<p>MyHDL is implemented as a pure Python application. Python is a very
+high-level, dynamically typed language. Traditionally, such languages have
+a much worse performance than statically typed languages. Moreover, it is
+usually taken for granted that there is a trade-off between expressive
+power and performance.</p>
+<p>However, thanks to technological advances it is time to challenge the
+conventional wisdom, for Python and for MyHDL in particular. In contrast to
+what you might expect, using MyHDL does <em>not</em> necessarily imply a
+simulation performance penalty when compared to statically typed HDLs like
+Verilog or VHDL. If you think this is impossible, read on.</p>
+<p>To make MyHDL simulations fast, all you have to do is to use the right
+Python interpreter, which may be different than the one you are using
+today. The interpreter of choice is developed by the <a href="http://pypy.org">the PyPy
+project</a> and comes with a Just-In-Time (JIT) compiler. The
+JIT compiler does the trick: it can aggressively optimize those parts of
+the code that matter, by inspecting the characteristics of the running
+program.</p>
+<p>If the prospect of using a different, unfamiliar interpreter sounds scary,
+don't worry. Compatiblity with Python is a major goal of the PyPy project.
+PyPy is highly compliant with Python 2.7 and can basically be used as a
+drop-in replacement. The process is similar to upgrading to a new version
+of Python. However, it is an upgrade with spectacular consequences.</p>
+<h2 id="using-pypy-to-speed-up-myhdl-simulations">Using PyPy to speed up MyHDL simulations</h2>
+<p>To demonstrate what PyPy can do for MyHDL simulations, I have compiled a
+number of representative hardware design benchmarks. I run them both with
+the reference Python interpreter (<code>cPython</code>) and with the JIT-enabled PyPy
+interpreter (<code>pypy</code>) and time them. The results are as follows (times in
+seconds):</p>
+<table class="table">
+<thead>
+<tr>
+<th>Benchmark</th>
+<th align="center">MyHDL@cPython</th>
+<th align="center">MyHDL@pypy</th>
+<th align="center">Speedup factor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>timer</td>
+<td align="center">902</td>
+<td align="center">61</td>
+<td align="center">14.8</td>
+</tr>
+<tr>
+<td>lfsr2</td>
+<td align="center">1,307</td>
+<td align="center">67</td>
+<td align="center">19.5</td>
+</tr>
+<tr>
+<td>randgen</td>
+<td align="center">763</td>
+<td align="center">62</td>
+<td align="center">12.3</td>
+</tr>
+<tr>
+<td>longdiv</td>
+<td align="center">752</td>
+<td align="center">69</td>
+<td align="center">10.9</td>
+</tr>
+<tr>
+<td>findmax</td>
+<td align="center">670</td>
+<td align="center">86</td>
+<td align="center">7.8</td>
+</tr>
+</tbody>
+</table>
+<p>As you can see, the results are spectacular. By simply using a different
+interpreter, our simulations run <strong>8 to 20</strong> times faster. When it comes to
+instant improvements without compromises, it doesn't get better than this!</p>
+<p>I have initially engineered the benchmarks so that they run for about 100s
+for PyPy 1.5. This leaves some margin to easily compare them in the future
+with runs on better machines and with future PyPy versions. Also, to get a
+realistic idea of the speedup factor, the simulations should run long
+enough. More details can be found
+<a href="performance#the_jit_warming-up_phase">here</a>.</p>
+<p>Perhaps we should temper our initial enthusiasm a little. After all, we are
+still comparing MyHDL to MyHDL. Perhaps we have merely gone from extremely
+bad to very bad. To get more insight in were we are, we should compare with
+equivalent benchmarks in Verilog and VHDL.</p>
+<h2 id="comparison-to-vhdl-and-verilog">Comparison to VHDL and Verilog</h2>
+<p>The benchmarks are implemented as self-contained test benches that can be
+converted automatically to Verilog and VHDL (by MyHDL). I have run them on
+two Verilog simulators and two VHDL simulators. All simulators are
+available at no cost, but two of them have to be kept anonymous. I have
+called those simulators <Verilog> and <VHDL>. The other ones are the open
+source simulators Icarus (Verilog) and GHDL (VHDL). Here are the results
+(times in seconds):</p>
+<table class="table">
+<thead>
+<tr>
+<th>Benchmark</th>
+<th>MyHDL@pypy</th>
+<th>Icarus</th>
+<th>GHDL</th>
+<th><Verilog></th>
+<th><VHDL></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>timer</td>
+<td>61</td>
+<td>106</td>
+<td>146</td>
+<td>260</td>
+<td>219</td>
+</tr>
+<tr>
+<td>lfsr24</td>
+<td>67</td>
+<td>79</td>
+<td>71</td>
+<td>266</td>
+<td>240</td>
+</tr>
+<tr>
+<td>randgen</td>
+<td>62</td>
+<td>197</td>
+<td>34</td>
+<td>76</td>
+<td>67</td>
+</tr>
+<tr>
+<td>longdiv</td>
+<td>69</td>
+<td>43</td>
+<td>224</td>
+<td>96</td>
+<td>98</td>
+</tr>
+<tr>
+<td>findmax</td>
+<td>86</td>
+<td>56</td>
+<td>2256</td>
+<td>21</td>
+<td>37</td>
+</tr>
+</tbody>
+</table>
+<p>A first thing to note is that the results go in all directions, sometimes
+in an astonishing way. There is no clear "winner". Some simulators perform
+bad in some benchmarks, and good in others. Therefore, the data suggests
+that the benchmarks form a good set that covers various aspects of hardware
+simulation. </p>
+<p>Moreover, there seems no correlation between the VHDL simulators, nor
+between the Verilog simulators. This indicates that there is nothing wrong
+with the quality of the Verilog and VHDL code generated by MyHDL.</p>
+<p>The most important conclusion: <strong>MyHDL is doing just fine.</strong> In two benchmarks, it is actually the fastest simulator, and it is never the slowest one. The comparatively weakest performance is in the <code>findmax</code> benchmark, which is also the benchmark with the smallest speedup factor from using PyPy. </p>
+<p>The results for other simulators are remarkable also. For example, GHDL
+shows a very good performance in the <code>randgen</code> benchmark, but a very bad
+one for the <code>findmax</code> benchmark. In the latter case it is 100 times slower
+than the fastest simulator. Clearly, it should be interesting for other
+developers to look into the details of the benchmarks.</p>
+<p>More info on the benchmarks can be found
+<a href=":performance#benchmark_details">here</a>.</p>
+<h2 id="a-note-on-paid-license-commercial-simulators">A note on paid-license commercial simulators</h2>
+<p>The benchmark data are all from zero cost HDL simulators. I think that is
+fair and the reasons are understandable. Note that even if I would have the
+numbers for paid-license commercial simulators, I would typically not be
+legally allowed to publish them.</p>
+<p>As performance is such an important competitive driver, you can reasonably
+expect significantly better performance from paid-license Verilog and VHDL
+simulators. One simulation vendor has granted permission to publish
+numbers: <a href="http://www.tachyon-da.com">Tachyon</a> with their cvc Verilog
+simulator. Performance is the name of the game for cvc, and it really is
+blazingly fast: in compiled mode, all benchmarks but one run in times
+between 2.2s and 2.5s. (<code>longdiv</code> takes just 1s.) If you need
+high-performance Verilog simulation, cvc is definitely worth a look.</p>
+<p>Tachyon convincingly claims that it outperforms any other commercial
+simulator with a factor 2-20. This would mean that the benchmarks would run
+in times between 4.4s and 50s for other paid-license simulators. (2s-20s
+for <code>longdiv</code>).</p>
+<h2 id="analysis">Analysis</h2>
+<p>By simply changing the Python interpreter, MyHDL is playing in the same
+league as Verilog and VHDL simulators. This is a remarkable achievement,
+given that Python's power stays completely available. There is no reason
+anymore to avoid MyHDL because of performance concerns.</p>
+<p>The results are a great validation the concept behind MyHDL. MyHDL is based
+on the idea that digital hardware design is not special enough to warrant
+the design of a dedicated hardware description language, at least not at
+the RTL level and higher. Instead, everything needed can be done with a
+dedicated library and dedicated usage of a general purpose language. The
+implication is that one benefits from all advances in the underlying
+language, even if they seem unrelated to the specific purpose. For example,
+the PyPy team is not trying to make hardware simulation fast. What they do
+is making Python fast in general.</p>
+<p>The numbers are much better than the average speedup of the standard PyPy
+benchmark set, which stands at <strong>4.1</strong> for PyPy 1.6. This suggests that
+MyHDL simulation is well suited for JIT optimization. I believe this can be
+explained by considering the characteristics of a typical MyHDL simulation
+run. It consists of two phases: first an elaboration phase that creates a
+simulatable data structure, followed by the actual simulation phase. The
+elaboration phase is typically very fast and may use a lot of Python's
+dynamic features. The simulation phase can run for a long time. However,
+the simulatable data structure is typically rather "static" and probably a
+good target for the JIT compiler. It consists of generators, connected by
+signals and controlled by a simulation engine. The code within the
+generators is typically a loop containing integer arithmetic and bit
+operations.</p>
+<h2 id="a-personal-note">A personal note</h2>
+<p>--- <em><a href="jan@jandecaluwe.com">Jan Decaluwe</a> 2011/06/06 04:57</em></p>
+<p>Occasionally, I make bold predictions. In many cases they just stay wishful
+thinking. This is one of the rare cases when they turn out to be right.
+Therefore, please allow me a brief moment of glory. Here is a quote from a
+post in 2006:</p>
+<div class="codehilite"><pre>&gt; From: Jan Decaluwe jan@jandecaluwe.com
+&gt; Subject: Re: MyHDL performance
+&gt; Newsgroups: gmane.comp.python.myhdl
+&gt; Date: 2006-11-30 10:19:47 GMT 
+&gt; 
+&gt; ...
+&gt; Finally, there is PyPy. I once saw a demo by
+&gt; Armin Rigo showing a massive speedup by using
+&gt; psyco. Unfortunately, psyco cannot handle 
+&gt; generators. Instead, Armin and others started
+&gt; the PyPy project that at one time may bring
+&gt; psyco-like advantages to general Python code.
+&gt; It would seem to me that MyHDL is a good
+&gt; candidate, because a lot of code is run over
+&gt; and over again during simulation.
+
+&gt; So perhaps one day I&#39;ll be able to report a 
+&gt; massive speedup  without having to do anything
+&gt; myself :-) That will be the day!
+&gt; ...
+</pre></div>
+
+
+<p>The day when I can report a massive speedup has arrived now. As it turns
+out, the results for MyHDL are indeed particularly good. And it really was
+Armin Rigo and his fellow PyPy team members who have pulled it off.</p>
+<p>I would like to express my respect and gratitude to the PyPy team and their
+achievements. They have a great vision, as well as the technical excellence
+and perseverance to make it happen.</p>
+<p>When I briefly described JIT optimization earlier, I tried to make it sound
+intuitive and easy. Intuitive it may be, but easy certainly not. There have
+been several attempts to speed up Python in the past, including one
+sponsored by Google (Unladen Swallow.) So far, the PyPy project is the
+first and only one that can truly be called a great success.</p>
+<p>Interestingly, the PyPy team did not really write a JIT compiler for
+Python. I guess that would have been too easy :-). Instead they wrote a JIT
+compiler <em>generator</em>, that can generate a JIT enabled interpreter for any
+language written in a Python subset called RPython (for "Restricted
+Python"). In other words, the goodies they provide are not restricted to
+the Python world.</p>
+<p>I see glimpses of greatness in the PyPy project, and I believe we are going
+to hear a lot more about them in the future.</p>
+<h2 id="technical-details">Technical details</h2>
+<h3 id="benchmark-details">Benchmark details</h3>
+<p>All benchmarks are implemented as self-contained test benches. The design
+under test in each test bench is a synthesizable RTL description of a
+typical hardware module. The test benches are self-checking using assert
+statements, except <code>randgen</code> which creates an output file. They have been
+written in MyHDL in such a way that they can be converted automatically to
+Verilog and VHDL.</p>
+<p>The functionality corresponding to the design under test in the benchmarks
+is the following:</p>
+<p><strong>timer</strong> A circuit that continuously emits a pulse after a fixed number of
+clock cycles. Implemented using an incrementer.</p>
+<p><strong>lfsr24</strong> A classical bit-serial linear feedback shift register, based on
+a polynomial of length 24.</p>
+<p><strong>randgen</strong> A pseudo-random generator in hardware with a 32-bit output
+word. Implemented by putting a loop around an lfsr of length 64.</p>
+<p><strong>longdiv</strong> A long division algorithm. Implemented as an FSM that
+calculates one bit per clock cycle.</p>
+<p><strong>findmax</strong> A combinatorial network that finds a maximum value out of a set
+of 32 16-bit inputs.</p>
+<p>The benchmarks are developed in the MyHDL repository. They can be found
+under <code>myhdl/test/benchmarks</code>.</p>
+<h3 id="computing-environment">Computing environment</h3>
+<p>I have run all simulations on my laptop with the following characteristics:</p>
+<table class="table">
+<thead>
+<tr>
+<th>Processor</th>
+<th>Intel(R) Core(TM) i3 CPU M 350  @ 2.27GHz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Memory</td>
+<td>2.4 GiB</td>
+</tr>
+<tr>
+<td>Operating System</td>
+<td>Ubuntu 10.04 (lucid)</td>
+</tr>
+<tr>
+<td>Python</td>
+<td>2.6.5</td>
+</tr>
+<tr>
+<td>PyPy</td>
+<td>1.6.0</td>
+</tr>
+<tr>
+<td>MyHDL</td>
+<td>0.8-dev</td>
+</tr>
+<tr>
+<td>Icarus</td>
+<td>0.9.4</td>
+</tr>
+<tr>
+<td>GHDL</td>
+<td>0.29</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-jit-warming-up-phase">The JIT warming-up phase</h3>
+<p>A JIT compiler has a slow warm-up phase, during which it examines and
+optimizes the running program. Very fast runs can therefore even be slower
+with a JIT than without. On the other hand, the longer a program runs, the
+faster it gets. From what I read, the warm-up phase can take a few seconds
+up to a minute, depending on the size of the program. To get a feeling for
+what it may mean for MyHDL, I have run one of the benchmarks (<code>longdiv</code>)
+several times, each time doubling the number of test vectors. The results
+are as follows:</p>
+<table class="table">
+<thead>
+<tr>
+<th align="center">log<sub>2</sub>(#vectors)</th>
+<th align="left">MyHDL@cPython</th>
+<th align="left">MyHDL@pypy</th>
+<th align="center">Speedup factor</th>
+<th align="center"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">9</td>
+<td align="left">1.7</td>
+<td align="left">1.9</td>
+<td align="center">0.9</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">10</td>
+<td align="left">3.1</td>
+<td align="left">2.2</td>
+<td align="center">1.4</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">11</td>
+<td align="left">6.0</td>
+<td align="left">2.5</td>
+<td align="center">2.4</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">12</td>
+<td align="left">11.9</td>
+<td align="left">3.1</td>
+<td align="center">3.8</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">13</td>
+<td align="left">23.4</td>
+<td align="left">4.2</td>
+<td align="center">5.6</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">14</td>
+<td align="left">46.8</td>
+<td align="left">6.3</td>
+<td align="center">7.4</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">15</td>
+<td align="left">93.9</td>
+<td align="left">10.7</td>
+<td align="center">8.8</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">16</td>
+<td align="left">186.6</td>
+<td align="left">19.1</td>
+<td align="center">9.8</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">17</td>
+<td align="left">373.1</td>
+<td align="left">35.8</td>
+<td align="center">10.4</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">18</td>
+<td align="left">750.7</td>
+<td align="left">69.4</td>
+<td align="center">10.8</td>
+<td align="center"></td>
+</tr>
+</tbody>
+</table>
+<p>As you can see, the simulation gets up to speed after a few seconds. To get
+the initial offset out of the speedup factor, it has to run long enough.
+For this reason, I have engineered the benchmarks so that the PyPy version
+runs for around 100s.</p>
+<h3 id="installation-hints-and-known-issues">Installation, hints, and known issues</h3>
+<p>To get started with PyPy, you may want to install it alongside your current
+Python interpreter. This is fairly easy to do by following these
+<a href="http://pypy.org/download.html#installing">installation instructions</a>.  In
+this way you can have a <code>pypy</code> interpreter next to your <code>python</code>
+interpreter and switch between them as needed.</p>
+<p>If you use a test framework like <code>py.test</code> you can select the desired
+interpreter by using the command <code>python -m py.test</code> or <code>pypy -m py.test</code>.</p>
+<h2 id="historical-data">Historical data</h2>
+<p>The PyPy project is under intensive development. New revisions can result
+in significant improvements, but this depends heavily on the application.</p>
+<p>Between pypy-1.6 and pypy-1.9, the results for the MyHDL benchmarks have
+stagnated or become slightly worse. The following table keeps track
+of the historical benchmark data.</p>
+<table class="table">
+<thead>
+<tr>
+<th>Benchmark</th>
+<th align="center">pypy-1.5</th>
+<th align="center">pypy-1.6</th>
+<th align="center">pypy-1.7</th>
+<th align="center">pypy-1.8</th>
+<th align="center">pypy-1.9</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>timer</td>
+<td align="center">85</td>
+<td align="center">61</td>
+<td align="center">60</td>
+<td align="center">62</td>
+<td align="center">65</td>
+</tr>
+<tr>
+<td>lfsr24</td>
+<td align="center">104</td>
+<td align="center">67</td>
+<td align="center">82</td>
+<td align="center">78</td>
+<td align="center">75</td>
+</tr>
+<tr>
+<td>randgen</td>
+<td align="center">91</td>
+<td align="center">62</td>
+<td align="center">56</td>
+<td align="center">62</td>
+<td align="center">63</td>
+</tr>
+<tr>
+<td>longdiv</td>
+<td align="center">87</td>
+<td align="center">69</td>
+<td align="center">81</td>
+<td align="center">71</td>
+<td align="center">70</td>
+</tr>
+<tr>
+<td>findmax</td>
+<td align="center">112</td>
+<td align="center">86</td>
+<td align="center">89</td>
+<td align="center">98</td>
+<td align="center">98</td>
+</tr>
+</tbody>
+</table>
+<p>The benchmark data has not yet been updated for the latest pypy versions.  At
+the time this update, pypy is at version number 2.2.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div style="margin: 8px">
+<a href="https://twitter.com/MyHDL" class="twitter-follow-button" data-show-count="true">Follow @MyHDL</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+<a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+<!-- Place this tag where you want the +1 button to render. -->
+<div class="g-plusone" data-size="medium"></div>
+
+<!-- Place this tag after the last +1 button tag. -->
+<script type="text/javascript">
+window.__gcfg = {
+    lang: 'en-US'
+};
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>        </div>
+        <p>
+           Content licensed under the
+           <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a> license.
+           See <a href="/terms-of-use.html">Terms of Use</a>.
+        </p> 
+        <p>
+           Website powered by <a href="http://urubu.jandecaluwe.com">Urubu</a>.
+        </p> 
+    </div>
+</div> 
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/js/bootstrap.min.js"></script>
+
+  </body>
+</html>
