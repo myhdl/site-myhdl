@@ -3,7 +3,7 @@ title: Support
 layout: index
 content:
     - community
-    - url: http://sourceforge.net/p/myhdl/bugs/
+    - url: https://bitbucket.org/jandecaluwe/myhdl/issues?status=new&status=open
       title: Bug Tracker
     - commercial
     - resources
