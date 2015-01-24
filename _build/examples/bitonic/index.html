@@ -137,13 +137,13 @@ consequence, the complexity of the structural description has no impact on the
 possibility to convert to Verilog.</p>
 <p>As an example, this page shows how to describe recursive structures in MyHDL.
 Python is very well suited to do this elegantly. But after conversion to
-Verilog, all recursion is flattened out, so it doesn't matter whether the
+Verilog, all recursion is flattened out, so it doesn&rsquo;t matter whether the
 back-end language or tools support it or not.</p>
 <h2 id="specification">Specification</h2>
 <p>We will develop a circuit that sorts an array of integer values. More
 specifically, the array to be sorted is the input, and the sorted array the
 output. We are looking for a data-flow oriented circuit, where the output
-follows the input "combinatorially".</p>
+follows the input &ldquo;combinatorially&rdquo;.</p>
 <p>We will use the bitonic sort algorithm. We will not explain it here: for more
 info, read this <a href="http://www.inf.fh-flensburg.de/lang/algorithmen/sortieren/bitonic/bitonicen.htm">web page that explains the bitonic sort
 algorithm</a>.</p>
@@ -223,7 +223,7 @@ procedure <code>bitonicSort</code> sorts the whole array <code>a</code>.</p>
 
 <p><em>(end quote)</em></p>
 <h2 id="myhdl-implementation">MyHDL implementation</h2>
-<p>Let's start with some general considerations.</p>
+<p>Let&rsquo;s start with some general considerations.</p>
 <p>First, note that the Jave code consists of a number of procedures and procedure
 calls. In MyHDL, we can map each procedure to a function that models a hardware
 module and each procedure call to an instantiation. The Java procedures return
@@ -235,9 +235,9 @@ our data-flow oriented MyHDL solution, we will have to use a separate input and
 output array instead. The array will be represented by a list of signals. If a
 function performs several transformations, we have to introduce additional
 lists of signals internally.</p>
-<p>Finally, in the Java code the recursion stops by "doing nothing". In the MyHDL
+<p>Finally, in the Java code the recursion stops by &ldquo;doing nothing&rdquo;. In the MyHDL
 code, the equivalent is to assign the input to the output signal. We will need
-a "feedthrough" circuit for this purpose.</p>
+a &ldquo;feedthrough&rdquo; circuit for this purpose.</p>
 <p>Now we are ready to fill in the details, in the same order as in the original
 Java version.</p>
 <p>We start by importing the <code>myhdl</code> library, and by defining some boolean
@@ -249,7 +249,7 @@ constants:</p>
 
 
 <p>The <code>compare</code> leaf module is a combinatorial circuit with two input and two
-output signals. By default, the inputs are "fed through" to the outputs, but
+output signals. By default, the inputs are &ldquo;fed through&rdquo; to the outputs, but
 under the same condition as in the Java code, they are interchanged:</p>
 <div class="codehilite"><pre><span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">z1</span><span class="p">,</span> <span class="n">z2</span><span class="p">,</span> <span class="nb">dir</span><span class="p">):</span>
 
@@ -265,8 +265,8 @@ under the same condition as in the Java code, they are interchanged:</p>
 </pre></div>
 
 
-<p>As mentioned, we will also need a feedthrough circuit, the equivalent of "doing
-nothing" in the Java code:</p>
+<p>As mentioned, we will also need a feedthrough circuit, the equivalent of &ldquo;doing
+nothing&rdquo; in the Java code:</p>
 <div class="codehilite"><pre><span class="k">def</span> <span class="nf">feedthru</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
 
     <span class="nd">@always_comb</span>
@@ -381,7 +381,7 @@ compare it with the outputs.</p>
 <h2 id="verilog-generation-and-synthesis">Verilog generation and synthesis</h2>
 <p>The sorter design can be converted to Verilog as usual, with the <code>toVerilog</code>
 function. See the <a href="verilog.txt">Verilog code</a> for the result. Note that it is a
-"net list of always blocks", with all structure and recursion flattened out.</p>
+&ldquo;net list of always blocks&rdquo;, with all structure and recursion flattened out.</p>
 <p>Of course, you will want to verify that the generated Verilog code is correct.
 This can be done by using Verilog co-simulation with the same test bench as
 used for the MyHDL code. You can find the details about the procedure

@@ -156,7 +156,7 @@ JIT compiler does the trick: it can aggressively optimize those parts of
 the code that matter, by inspecting the characteristics of the running
 program.</p>
 <p>If the prospect of using a different, unfamiliar interpreter sounds scary,
-don't worry. Compatiblity with Python is a major goal of the PyPy project.
+don&rsquo;t worry. Compatiblity with Python is a major goal of the PyPy project.
 PyPy is highly compliant with Python 2.7 and can basically be used as a
 drop-in replacement. The process is similar to upgrading to a new version
 of Python. However, it is an upgrade with spectacular consequences.</p>
@@ -210,7 +210,7 @@ seconds):</p>
 </table>
 <p>As you can see, the results are spectacular. By simply using a different
 interpreter, our simulations run <strong>8 to 20</strong> times faster. When it comes to
-instant improvements without compromises, it doesn't get better than this!</p>
+instant improvements without compromises, it doesn&rsquo;t get better than this!</p>
 <p>I have initially engineered the benchmarks so that they run for about 100s
 for PyPy 1.5. This leaves some margin to easily compare them in the future
 with runs on better machines and with future PyPy versions. Also, to get a
@@ -284,7 +284,7 @@ source simulators Icarus (Verilog) and GHDL (VHDL). Here are the results
 </tbody>
 </table>
 <p>A first thing to note is that the results go in all directions, sometimes
-in an astonishing way. There is no clear "winner". Some simulators perform
+in an astonishing way. There is no clear &ldquo;winner&rdquo;. Some simulators perform
 bad in some benchmarks, and good in others. Therefore, the data suggests
 that the benchmarks form a good set that covers various aspects of hardware
 simulation. </p>
@@ -319,7 +319,7 @@ for <code>longdiv</code>).</p>
 <h2 id="analysis">Analysis</h2>
 <p>By simply changing the Python interpreter, MyHDL is playing in the same
 league as Verilog and VHDL simulators. This is a remarkable achievement,
-given that Python's power stays completely available. There is no reason
+given that Python&rsquo;s power stays completely available. There is no reason
 anymore to avoid MyHDL because of performance concerns.</p>
 <p>The results are a great validation the concept behind MyHDL. MyHDL is based
 on the idea that digital hardware design is not special enough to warrant
@@ -336,15 +336,15 @@ MyHDL simulation is well suited for JIT optimization. I believe this can be
 explained by considering the characteristics of a typical MyHDL simulation
 run. It consists of two phases: first an elaboration phase that creates a
 simulatable data structure, followed by the actual simulation phase. The
-elaboration phase is typically very fast and may use a lot of Python's
+elaboration phase is typically very fast and may use a lot of Python&rsquo;s
 dynamic features. The simulation phase can run for a long time. However,
-the simulatable data structure is typically rather "static" and probably a
+the simulatable data structure is typically rather &ldquo;static&rdquo; and probably a
 good target for the JIT compiler. It consists of generators, connected by
 signals and controlled by a simulation engine. The code within the
 generators is typically a loop containing integer arithmetic and bit
 operations.</p>
 <h2 id="a-personal-note">A personal note</h2>
-<p>--- <em><a href="jan@jandecaluwe.com">Jan Decaluwe</a> 2011/06/06 04:57</em></p>
+<p>&mdash; <em><a href="jan@jandecaluwe.com">Jan Decaluwe</a> 2011/06/06 04:57</em></p>
 <p>Occasionally, I make bold predictions. In many cases they just stay wishful
 thinking. This is one of the rare cases when they turn out to be right.
 Therefore, please allow me a brief moment of glory. Here is a quote from a
@@ -386,8 +386,8 @@ first and only one that can truly be called a great success.</p>
 <p>Interestingly, the PyPy team did not really write a JIT compiler for
 Python. I guess that would have been too easy :-). Instead they wrote a JIT
 compiler <em>generator</em>, that can generate a JIT enabled interpreter for any
-language written in a Python subset called RPython (for "Restricted
-Python"). In other words, the goodies they provide are not restricted to
+language written in a Python subset called RPython (for &ldquo;Restricted
+Python&rdquo;). In other words, the goodies they provide are not restricted to
 the Python world.</p>
 <p>I see glimpses of greatness in the PyPy project, and I believe we are going
 to hear a lot more about them in the future.</p>

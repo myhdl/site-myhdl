@@ -141,27 +141,27 @@ considering.  This page describes a number of common situations and opinions,
 and how MyHDL addresses them. If you recognize them, MyHDL may be a good
 solution for you.</p>
 <h2 id="new-to-digital-hardware-design">New to digital hardware design</h2>
-<p>Let's be honest about it: there's a lot to learn and it will be hard work.
+<p>Let&rsquo;s be honest about it: there&rsquo;s a lot to learn and it will be hard work.
 However, choosing the right development language can make the task
 significantly easier. Python is one of the easiest programming languages to
 learn, and MyHDL aims to achieve the same for hardware design.</p>
 <p>Moreover, with MyHDL you can convert your designs automatically to both Verilog
 and VHDL. So you keep all your options open.</p>
 <h2 id="dynamic-language-power">Dynamic language power</h2>
-<p>If you're a practicing hardware designer, you're probably using dynamic
-languages (sometimes called "scripting" languages) in your workflow already.
+<p>If you&rsquo;re a practicing hardware designer, you&rsquo;re probably using dynamic
+languages (sometimes called &ldquo;scripting&rdquo; languages) in your workflow already.
 For example, tcl is popular for tool control.  Also, many designers use perl to
 glue things together. Others use ruby or Python for that purpose.</p>
 <p>It is clear that these high-level dynamic languages play an essential role in
 modern digital design. Verilog or VHDL alone is not enough. Many designers even
 prefer those languages over their HDL, because they can get things done quickly
 with them.</p>
-<p>Wouldn't it be great if one could use such a language directly to design
-hardware?  That's exactly what MyHDL offers.</p>
+<p>Wouldn&rsquo;t it be great if one could use such a language directly to design
+hardware?  That&rsquo;s exactly what MyHDL offers.</p>
 <h2 id="modern-software-techniques">Modern software techniques</h2>
 <p>In the software methodology world, a lot of innovation is going on, with
-buzzwords such as "agile", "rapid application development", "scrum", and
-"test-driven development".  This is not just hype. The new ideas and techniques
+buzzwords such as &ldquo;agile&rdquo;, &ldquo;rapid application development&rdquo;, &ldquo;scrum&rdquo;, and
+&ldquo;test-driven development&rdquo;.  This is not just hype. The new ideas and techniques
 offer real improvements to the development processes. Naturally, they are
 emerging in the communities of modern software languages, such as Python.</p>
 <p>As HDL-based design has many similarities with software development, the new
@@ -188,13 +188,13 @@ reused between both design domains.</p>
 <p>The usage of Verilog versus VHDL differs significantly between regions and
 sectors.  However, there is every indication that the overall ratio is about
 fifty-fifty, and will remain so in the forseeable future. Consequently, it is
-often desirable that a design be available in the "other" language also. For IP
+often desirable that a design be available in the &ldquo;other&rdquo; language also. For IP
 developers, this may even be an explicit design goal.</p>
 <p>Using MyHDL is a solution. A MyHDL design can be automatically converted to
 equivalent code in both Verilog and VHDL.  Actually, using MyHDL and conversion
 is probably the best solution available for language-neutral design. It is
 obviously superior to manual conversion. Moreover, direct convertors between
-Verilog and VHDL don't work very well. Using a syntactically simple language
+Verilog and VHDL don&rsquo;t work very well. Using a syntactically simple language
 like Python as the starting point is an easier way to a create a high-quality
 conversion tool.</p>
 <h2 id="explicit-but-not-verbose">Explicit, but not verbose</h2>
@@ -203,12 +203,12 @@ syntax is verbose and even redundant, and even experts need a manual nearby to
 get the syntax right.</p>
 <p>Python is different. It is concise. One reason is that it is a dynamic language
 without declarations. But the major reason is its well thought out design.
-Moreover, it achieves this without resorting to "magic".  The code remains
+Moreover, it achieves this without resorting to &ldquo;magic&rdquo;.  The code remains
 explicit, but the syntax has been reduced to the essence. Python has been
-called executable pseudocode, and that's actually a quite accurate description.</p>
+called executable pseudocode, and that&rsquo;s actually a quite accurate description.</p>
 <h2 id="power-not-complexity">Power, not complexity</h2>
-<p>SystemVerilog has been called a "dumping ground" for any feature ever dreamed
-up by an EDA company. Through the process of "donations", the language contains
+<p>SystemVerilog has been called a &ldquo;dumping ground&rdquo; for any feature ever dreamed
+up by an EDA company. Through the process of &ldquo;donations&rdquo;, the language contains
 an ever increasing pile of builtin constructs and features. Of course, not all
 of them can be equally important or well designed. The experience can be
 overwhelming.</p>
@@ -220,20 +220,20 @@ core language serving as a common ground. There is an extensive standard
 library that comes with the distribution. In addition, there is a vast amount
 of third-party libraries available for all kinds of functionality. MyHDL is an
 example.</p>
-<p>Python's modular structure explicitly separates the essential from the
+<p>Python&rsquo;s modular structure explicitly separates the essential from the
 secondary.  After learning the small core language, you only need to study and
 import those libraries that contain the functionality that you need.  This is a
 superior and scalable way of dealing with complexity.</p>
 <h2 id="signals-and-variables-like-vhdl">Signals and variables, like VHDL</h2>
 <p>One of the most confusing aspects of Verilog is about the difference between
 blocking and non-blocking assignments.  Actually, if you are <em>not</em> confused
-about this, you probably don't have enough experience :-).</p>
+about this, you probably don&rsquo;t have enough experience :-).</p>
 <p>Here is the problem. The semantics of blocking (<code>=</code>) versus non-blocking (<code>&lt;=)</code>
 assignments are radically different. So different in fact that a language like
 VHDL (and MyHDL) uses dedicated objects called signals to implement
 non-blocking semantics. However, in Verilog, you can use and mix the two types
 of assignments on any object.</p>
-<p>In many cases, Verilog's permissiveness on this matter is senseless and
+<p>In many cases, Verilog&rsquo;s permissiveness on this matter is senseless and
 confusing.  Consequently, most designers follow guidelines on acceptable use
 patterns. Unfortunately, as a testimony to the initial confusion, such
 guidelines can be overly restrictive.  For example, a commonly used guideline
@@ -248,11 +248,11 @@ confusion about the two types of assignment.</p>
 between parallel hardware blocks. This is the purpose of VHDL signal
 assignments and Verilog non-blocking assignments. In both languages, these
 assignments are implemented using a special assignment symbol, which happens to
-be identical: <code>&lt;=</code>.  We will refer to "signal assignments" in the following
+be identical: <code>&lt;=</code>.  We will refer to &ldquo;signal assignments&rdquo; in the following
 discussion.</p>
 <p>As signal assignments are not natively present in software languages, HDL
 newcomers often have problems with them. While this is a normal part of the
-learning process, the VHDL and Verilog approach doesn't help.  Consider the
+learning process, the VHDL and Verilog approach doesn&rsquo;t help.  Consider the
 following pseudocode snippet of signals assignments:</p>
 <div class="codehilite"><pre>a &lt;= b
 b &lt;= a
@@ -272,18 +272,18 @@ b.next = a
 </pre></div>
 
 
-<p>In this way, it is explicitly clear that the assigment on the first line isn't
+<p>In this way, it is explicitly clear that the assigment on the first line isn&rsquo;t
 modifying the current value, but the next value of the signal.</p>
-<p>A MyHDL designer merely has to learn that a signal's future value should be
+<p>A MyHDL designer merely has to learn that a signal&rsquo;s future value should be
 modified by assigning to its <code>next</code> attribute. From there on, the semantics are
 clear from the code.</p>
 <h2 id="straighforward-integer-arithmetic">Straighforward integer arithmetic</h2>
 <p>When writing synthesizable VHDL code, you typically use the signed and unsigned
-types for arithmetic operations. These are "representational" types that focus
+types for arithmetic operations. These are &ldquo;representational&rdquo; types that focus
 on bit representation and bit width. The operators defined for such types have
 stringent requirements on the types and bit widths of operands and results.  As
 a result, you typically need a lot of conversion functions and resizings.  Many
-designers take this for granted and view it as a result of VHDL's strong
+designers take this for granted and view it as a result of VHDL&rsquo;s strong
 typing. In reality, it is a consequence of using low-level types.</p>
 <p>MyHDL follows a different path, but one that has actually been shown by VHDL in
 the first place. It has the <code>intbv</code> type, which is an integer-like type whose
