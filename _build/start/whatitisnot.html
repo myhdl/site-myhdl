@@ -135,7 +135,7 @@ effectively, it is important to have realistic expectations. The easiest way to
 achieve this is perhaps to describe what MyHDL is <em>not</em>. </p>
 <h2 id="it-does-not-turn-arbitrary-python-into-silicon">It does not turn arbitrary Python into silicon</h2>
 <p>Arbitrary Python into silicon, that sounds like a dream, right? And it is :-)
-Don&rsquo;t expect this from MyHDL.</p>
+Don't expect this from MyHDL.</p>
 <p>To convert MyHDL code into hardware, you will have to learn about
 <a href="http://en.wikipedia.org/wiki/Logic_synthesis">synthesis</a>, and especially about
 the modeling constraints that it imposes. These constraints are significant,
@@ -143,7 +143,7 @@ and therefore synthesizable code may be suprisingly low-level to newcomers.</p>
 <h2 id="not-a-radically-new-approach">Not a radically new approach</h2>
 <p>The mainstream Hardware Description Languages are Verilog and VHDL. MyHDL was
 not created because these languages do everything wrong. Quite the contrary.</p>
-<p>According to the analysis of MyHDL&rsquo;s creator, the promise of HDL-based design
+<p>According to the analysis of MyHDL's creator, the promise of HDL-based design
 has not been fulfilled <em>despite</em> the fact that Verilog and VHDL do many things
 right. MyHDL tries to lower the barrier to entry and improve on certain
 language features that make the task more difficult than necessary. </p>
@@ -186,18 +186,18 @@ features, such as system throughput, latency and buffer sizes. You can also
 write high level models for specialized technology-dependent cores that are not
 going through synthesis. Last but not least, you can use MyHDL to write test
 benches that verify a system model or a synthesizable description.</p>
-<p>RTL is just a specific and restrictive way to use MyHDL&rsquo;s modeling capabilities
+<p>RTL is just a specific and restrictive way to use MyHDL's modeling capabilities
 with the goal to create synthesizable code.</p>
 <h2 id="not-well-suited-for-timing-simulation">Not well suited for timing simulation</h2>
-<p>MyHDL&rsquo;s delay model is simple, which is fine for RTL and higher levels of
+<p>MyHDL's delay model is simple, which is fine for RTL and higher levels of
 abstraction. These are the levels where MyHDL is strong.</p>
-<p>However, MyHDL&rsquo;s timing model is not suited for accurate timing simulations,
+<p>However, MyHDL's timing model is not suited for accurate timing simulations,
 which are typically useful at the gate level. For such simulations, it is
 advisable to use industry standard Verilog or VHDL simulators, which are
 optimized for the task. Moreover, gate level simulation libraries are typically
 available in those formats from silicon vendors. In a MyHDL-based design flow,
 this methodology is logical, because all tasks below RTL are part of the
-&ldquo;back-end&rdquo;. The synthesis tool will create a gate level net list in Verilog or
+"back-end". The synthesis tool will create a gate level net list in Verilog or
 VHDL format.</p>
 <p>MyHDL can still play a significant role in gate-level simulations, thanks to
 its co-simulation capabilities. This means that you can reuse all MyHDL test

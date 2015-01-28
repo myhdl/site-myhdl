@@ -299,7 +299,7 @@ y<sub>n</sub> = sin z<sub>0</sub></p>
 <p>x<sub>0</sub> = 1 / A<sub>n</sub><br />
 y<sub>0</sub> = 0</p>
 <p>where</p>
-<p>A<sub>n</sub> = Product[ sqrt(1 + 2<sup>-2i</sup>) ] with i = 0 &hellip; n-1</p>
+<p>A<sub>n</sub> = Product[ sqrt(1 + 2<sup>-2i</sup>) ] with i = 0 ... n-1</p>
 <h2 id="design">Design</h2>
 <p>The Cordic algorithm can be implemented in many ways, with various
 characteristics and advantages. On this page, we will implement a parallel,
@@ -418,7 +418,7 @@ the look-up table of elementary arctangents, represented by the <code>angles</co
 <p>The internal number variables are represented by <code>intbv</code> instances. The dual
 nature of this class comes in very handy. On the one hand, we can constrain the
 instances as integer subtypes by specifying the valid integer range at
-construction time. On the other hand, we can access their two&rsquo;s complement
+construction time. On the other hand, we can access their two's complement
 representation as a bit vector, for example for slicing or right-shifting. </p>
 <p>It seems obvious that a type that unifies the integer and the bit vector views
 should be very useful for hardware design. One would therefore expect a similar
@@ -488,7 +488,7 @@ generated. The Verilog output is as follows:</p>
     <span class="kt">reg</span> <span class="k">signed</span> <span class="p">[</span><span class="mh">20</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">x</span><span class="p">;</span>
     <span class="kt">reg</span> <span class="k">signed</span> <span class="p">[</span><span class="mh">20</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">z</span><span class="p">;</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">reset</span><span class="p">)</span> <span class="k">begin</span>
-        <span class="n">state</span> <span class="o">=</span> <span class="mh">1&#39;b0</span><span class="p">;</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
         <span class="n">cos_z0</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
         <span class="n">sin_z0</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
         <span class="n">done</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
@@ -500,19 +500,19 @@ generated. The Verilog output is as follows:</p>
     <span class="k">else</span> <span class="k">begin</span>
         <span class="c1">// synthesis parallel_case full_case</span>
         <span class="k">casez</span> <span class="p">(</span><span class="n">state</span><span class="p">)</span>
-            <span class="mh">1&#39;b0</span><span class="o">:</span> <span class="k">begin</span>
+            <span class="mh">1</span><span class="mb">&#39;b0</span><span class="o">:</span> <span class="k">begin</span>
                 <span class="k">if</span> <span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="k">begin</span>
                     <span class="n">x</span> <span class="o">=</span> <span class="mh">159188</span><span class="p">;</span>
                     <span class="n">y</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
                     <span class="n">z</span> <span class="o">=</span> <span class="n">z0</span><span class="p">;</span>
                     <span class="n">i</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
                     <span class="n">done</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
-                    <span class="n">state</span> <span class="o">=</span> <span class="mh">1&#39;b1</span><span class="p">;</span>
+                    <span class="n">state</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
                 <span class="k">end</span>
             <span class="k">end</span>
-            <span class="mh">1&#39;b1</span><span class="o">:</span> <span class="k">begin</span>
-                <span class="n">dx</span> <span class="o">=</span> <span class="err">$</span><span class="k">signed</span><span class="p">(</span><span class="n">y</span> <span class="o">&gt;&gt;&gt;</span> <span class="err">$</span><span class="k">signed</span><span class="p">({</span><span class="mh">1&#39;b0</span><span class="p">,</span> <span class="n">i</span><span class="p">}));</span>
-                <span class="n">dy</span> <span class="o">=</span> <span class="err">$</span><span class="k">signed</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;&gt;&gt;</span> <span class="err">$</span><span class="k">signed</span><span class="p">({</span><span class="mh">1&#39;b0</span><span class="p">,</span> <span class="n">i</span><span class="p">}));</span>
+            <span class="mh">1</span><span class="mb">&#39;b1</span><span class="o">:</span> <span class="k">begin</span>
+                <span class="n">dx</span> <span class="o">=</span> <span class="err">$</span><span class="k">signed</span><span class="p">(</span><span class="n">y</span> <span class="o">&gt;&gt;&gt;</span> <span class="err">$</span><span class="k">signed</span><span class="p">({</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="n">i</span><span class="p">}));</span>
+                <span class="n">dy</span> <span class="o">=</span> <span class="err">$</span><span class="k">signed</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;&gt;&gt;</span> <span class="err">$</span><span class="k">signed</span><span class="p">({</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="n">i</span><span class="p">}));</span>
                 <span class="c1">// synthesis parallel_case full_case</span>
                 <span class="k">case</span> <span class="p">(</span><span class="n">i</span><span class="p">)</span>
                     <span class="mh">0</span><span class="o">:</span> <span class="n">dz</span> <span class="o">=</span> <span class="mh">205887</span><span class="p">;</span>
@@ -548,7 +548,7 @@ generated. The Verilog output is as follows:</p>
                 <span class="k">if</span> <span class="p">((</span><span class="n">i</span> <span class="o">==</span> <span class="p">(</span><span class="mh">19</span> <span class="o">-</span> <span class="mh">1</span><span class="p">)))</span> <span class="k">begin</span>
                     <span class="n">cos_z0</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">;</span>
                     <span class="n">sin_z0</span> <span class="o">&lt;=</span> <span class="n">y</span><span class="p">;</span>
-                    <span class="n">state</span> <span class="o">=</span> <span class="mh">1&#39;b0</span><span class="p">;</span>
+                    <span class="n">state</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
                     <span class="n">done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
                 <span class="k">end</span>
                 <span class="k">else</span> <span class="k">begin</span>
@@ -572,7 +572,7 @@ This means that the code has already been <em>elaborated</em> by the Python
 interpreter. Therefore, the convertor works on the simulatable data structure,
 which is a (hierarchical) list of generators. This means that only the source
 code of generator functions is converted. The pleasant consequence is that the
-restrictions of the &ldquo;convertible subset&rdquo; apply only to the code inside
+restrictions of the "convertible subset" apply only to the code inside
 generator functions, not to any code outside them. </p>
 <p>For example, consider how the look-up table of elementary arctangents is set up
 in the <code>SineComputer</code> design:</p>
@@ -584,7 +584,7 @@ in the <code>SineComputer</code> design:</p>
 <p>This line uses things like a list comprehension and a call to the trigonometric
 function <code>atan</code> from the <code>math</code> library, At this point, this is beyond the
 scope of the convertible subset, and it may stay like that forever. But as this
-code is outside a generator function, it doesn&rsquo;t matter.</p>
+code is outside a generator function, it doesn't matter.</p>
 <p>Inside the <code>processor</code> function, the lookup-up table is used as follows:</p>
 <div class="codehilite"><pre>     <span class="n">z</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">angles</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
 </pre></div>
@@ -593,14 +593,14 @@ code is outside a generator function, it doesn&rsquo;t matter.</p>
 <p>This is just fine for the convertor. Note how this single-line lookup is
 expanded into a case statement in the Verilog output.</p>
 <p>Note that we have been talking about the convertible subset, and not about the
-&ldquo;synthesizable subset&rdquo;. The reason is that the convertible subset is much less
+"synthesizable subset". The reason is that the convertible subset is much less
 restrictive. You can find more information about the convertible subset in the
 MyHDL manual. </p>
 <p>Obviously, MyHDL code intended for synthesis also has to take synthesis-related
 restrictions into account. But again, these restrictions only apply to the code
 inside generator functions, because only that code is actually converted.</p>
 <p>The described behavior is a unique feature of the MyHDL design flow. Outside
-generator functions, you can use Python&rsquo;s full power to describe designs. As
+generator functions, you can use Python's full power to describe designs. As
 long as the code inside them obeys the constraints of the convertible subset,
 the design instance can always be converted to Verilog. And if that code also
 obeys the constraints of the synthesizable subset, the result will be
@@ -609,7 +609,7 @@ synthesizable Verilog.</p>
 <p>One important feature of the convertor is that it handles the details of signed
 and unsigned representations automatically. When writing synthesizable code, a
 MyHDL designer can use a high-level view for integer operations by using the
-<code>intbv</code> type, and rely on the underlying two&rsquo;s complement representation to do
+<code>intbv</code> type, and rely on the underlying two's complement representation to do
 the right thing automatically. In contrast, a Verilog designer is forced to
 deal with low-level representational issues explicitly. This can become very
 tricky, especially with negative numbers and the signed representation.</p>
@@ -620,10 +620,11 @@ variables have to be declared as <code>signed</code>. This is the easy part.</p>
 </pre></div>
 
 
-<p>I believe it&rsquo;s quite clear what this is supposed to do. With the underlying
-two&rsquo;s complement representation, it works for positive and negative values of<code>y</code>.</p>
+<p>I believe it's quite clear what this is supposed to do. With the underlying
+two's complement representation, it works for positive and negative values of
+<code>y</code>.</p>
 <p>Now consider how this has been translated into Verilog:</p>
-<div class="codehilite"><pre><span class="n">dx</span> <span class="o">=</span> <span class="err">$</span><span class="k">signed</span><span class="p">(</span><span class="n">y</span> <span class="o">&gt;&gt;&gt;</span> <span class="err">$</span><span class="k">signed</span><span class="p">({</span><span class="mh">1&#39;b0</span><span class="p">,</span> <span class="n">i</span><span class="p">}));</span>
+<div class="codehilite"><pre><span class="n">dx</span> <span class="o">=</span> <span class="err">$</span><span class="k">signed</span><span class="p">(</span><span class="n">y</span> <span class="o">&gt;&gt;&gt;</span> <span class="err">$</span><span class="k">signed</span><span class="p">({</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="n">i</span><span class="p">}));</span>
 </pre></div>
 
 
@@ -636,12 +637,12 @@ the opposite from what you should do to get the naturally expected results.</p>
 adding a sign bit. Otherwise, Verilog will interprete all operands in a mixed
 expression as unsigned. Having said that, the Verilog literature seems to
 indicate that a shift operation is an exception to this rule. But the convertor
-doesn&rsquo;t take risks and inserts the typecast as a general measure. It may be
+doesn't take risks and inserts the typecast as a general measure. It may be
 redundant in this case.</p>
 <p>Finally, the whole expression is typecasted to <code>$signed</code>. Actually, I would
 have expected that this typecast would not be necessary - after all, we are
 shifting a signed number. However, my current simulator (Cver) tells me that it
-is. It may be wrong, I don&rsquo;t know. Anyway, the cast is an additional safety
+is. It may be wrong, I don't know. Anyway, the cast is an additional safety
 net.</p>
 <p>The message you should get from this discussion is the following: working with
 the signed representation in Verilog is tricky. I believe that writing the code

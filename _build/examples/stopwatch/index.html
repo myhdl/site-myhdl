@@ -149,11 +149,12 @@
                 <h2 id="introduction">Introduction</h2>
 <p>On this page, we will present a stopwatch design. It is similar to the design
 in the <a href="http://www.xilinx.com/support/techsup/tutorials/tutorials7.htm">Xilinx ISE tutorial</a>. We
-will tackle it &ldquo;the MyHDL way&rdquo; and take it from spec to implementation.</p>
+will tackle it "the MyHDL way" and take it from spec to implementation.</p>
 <p>This is an extensive example, and we will use it to present all aspects of a
-MyHDL-based design flow. It&rsquo;s also a relatively advanced. If you have
+MyHDL-based design flow. It's also a relatively advanced. If you have
 difficulties understanding the material on this page, consider reading the
-first chapters of the<a href="http://www.jandecaluwe.com/Tools/MyHDL/manual/MyHDL.html">manual</a> or the
+first chapters of the
+<a href="http://www.jandecaluwe.com/Tools/MyHDL/manual/MyHDL.html">manual</a> or the
 earlier examples in this Cookbook first.</p>
 <h2 id="specification">Specification</h2>
 <p>Compared to the design in the Xilinx ISE tutorial, our design is somewhat
@@ -184,7 +185,7 @@ simply assume that a 10Hz clock is available.</p>
 <li>a subsystem that counts time, expressed as digits in bcd (binary coded decimal) code</li>
 <li>a subsystem that displays the count, by converting each bcd digit to a 7 segment led display</li>
 </ul>
-<p>A natural partitioning often works best, and that&rsquo;s how we will approach the
+<p>A natural partitioning often works best, and that's how we will approach the
 design. We will first design a  time counter and then a bcd to led convertor.</p>
 <h2 id="time-counter-design">Time counter design</h2>
 <h3 id="approach">Approach</h3>
@@ -302,23 +303,23 @@ a concise way to define test patterns. This is straightforward in Python. But
 think for a moment on how you would do it in Verilog or VHDL.</p>
 <p>Also in <code>stimulus</code>, note the <code>yield clock.negedge</code> statement. This statement
 synchronizes signal changes with the falling clock edge. This is needed to
-avoid race conditions when signals change &ldquo;simultaneously&rdquo; with the rising
+avoid race conditions when signals change "simultaneously" with the rising
 clock edge. This is commonly done in digital tests. As you can expect, this
 statement was not present in the first version of the test: it was added after
 the test was run against the implementation and found to fail occasionally,
 even when the implementation was believed to be correct. This shows that in
 practice there may be a good reason why a test needs to be adapted to get
-everything working. But it in any case it is better to start with a &ldquo;general&rdquo;
+everything working. But it in any case it is better to start with a "general"
 unit test that is not influenced by an implementation.</p>
 <p>Our unit test is now ready to run. We could actually run it directly against an
 implementation. However, we will use it via the unit testing framework
 <code>py.test</code> instead. The framework provides the following functionality:</p>
 <ul>
 <li>it redefines the Python <code>assert</code> statement for extensive error reporting</li>
-<li>it looks up and runs each method whose name starts with &ldquo;test_&rdquo;</li>
-<li>it looks up test modules by searching for modules whose name starts with &ldquo;test_&rdquo;</li>
+<li>it looks up and runs each method whose name starts with "test_"</li>
+<li>it looks up test modules by searching for modules whose name starts with "test_"</li>
 </ul>
-<p>There&rsquo;s a lot more to say about <code>py.test</code> and you are probably also curious
+<p>There's a lot more to say about <code>py.test</code> and you are probably also curious
 where to get it from. You can find that info further on this page, in the
 section <a href="cookbook:stopwatch#more_about_py.test">More about py.test</a>.</p>
 <h3 id="design">Design</h3>
@@ -496,7 +497,7 @@ encoding for a digit.</p>
 
 
 <p>Note how we derive the tuple <code>code</code> from the <code>encoding</code> dictionary. We need a
-tuple because that&rsquo;s the data structure that the Verilog convertor supports.
+tuple because that's the data structure that the Verilog convertor supports.
 It maps tuple indexing to a case statement to support ROM inferencing by
 synthesis tools.</p>
 <p>When we run <code>py.test</code>, we get the following output:</p>
@@ -551,7 +552,7 @@ designed modules:</p>
 <h2 id="implementation">Implementation</h2>
 <h3 id="automatic-conversion-to-verilog">Automatic conversion to Verilog</h3>
 <p>To go to an implementation, we first convert the design to Verilog
-automatically, using MyHDL&rsquo;s <code>toVerilog</code> function:</p>
+automatically, using MyHDL's <code>toVerilog</code> function:</p>
 <div class="codehilite"><pre><span class="k">def</span> <span class="nf">convert</span><span class="p">():</span>
 
     <span class="n">tens_led</span><span class="p">,</span> <span class="n">ones_led</span><span class="p">,</span> <span class="n">tenths_led</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">7</span><span class="p">:])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
@@ -681,8 +682,8 @@ automatically, using MyHDL&rsquo;s <code>toVerilog</code> function:</p>
 </pre></div>
 
 
-<p>Note how the Verilog convertor expands the hierarchical design into a &ldquo;flat net
-list of always blocks&rdquo;. The Verilog ouput is really an intermediate step
+<p>Note how the Verilog convertor expands the hierarchical design into a "flat net
+list of always blocks". The Verilog ouput is really an intermediate step
 towards an implementation. The whole design is flat and contained in a single
 file, which may make it easier to hand it off to back-end synthesis and
 implementation tools.</p>
@@ -755,7 +756,7 @@ subversion repository. This requires the installation of a subversion client.</l
 Python. The <code>assert</code> statement is originally intended for programmer usage,
 to make programs safer. However, in my opinion the use of <code>assert</code> for
 testing is natural and warranted.</li>
-<li><code>py.test</code> uses a lot of &ldquo;magic&rdquo; behind the scenes to modify Python&rsquo;s behavior
+<li><code>py.test</code> uses a lot of "magic" behind the scenes to modify Python's behavior
 for its purposes, such as extensive error reporting.</li>
 </ul>
 <p>However, I believe that the benefits are far more important than the

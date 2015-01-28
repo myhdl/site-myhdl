@@ -147,7 +147,7 @@
                 <h2 id="introduction">Introduction</h2>
 <p>On this page you will find a number of MyHDL descriptions of flip-flops and
 latches.</p>
-<p>Typically, you wouldn&rsquo;t describe flip-flops and latches as individual modules.
+<p>Typically, you wouldn't describe flip-flops and latches as individual modules.
 Rather, they can be inferred from higher-level  RTL description by a synthesis
 tool. However, as these circuits are small and widely known, they are well
 suited to explain basic MyHDL usage and to compare MyHDL with other solutions.</p>
@@ -169,7 +169,7 @@ suited to explain basic MyHDL usage and to compare MyHDL with other solutions.</
 
 
 <h3 id="simulation">Simulation</h3>
-<p>Let&rsquo;s write a small test bench to simulate the design:</p>
+<p>Let's write a small test bench to simulate the design:</p>
 <div class="codehilite"><pre><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
 
 <span class="k">def</span> <span class="nf">test_dff</span><span class="p">():</span>
@@ -206,10 +206,10 @@ generator and a random stimulus generator around it.</p>
 simulation. This file can be inspecting in a waveform viewer. As a verification
 method, inspecting waveforms has its drawbacks, but it can be very effective to
 debug small designs.</p>
-<p>Here&rsquo;s a screen shot of the simulation waveforms:</p>
+<p>Here's a screen shot of the simulation waveforms:</p>
 <p><img src="test_dff.jpg" class="img-responsive" alt="test_dff waveforms"></p>
 <h3 id="automatic-conversion-to-verilog">Automatic conversion to Verilog</h3>
-<p>With MyHDL&rsquo;s <code>toVerilog</code> function, a D flip-flop instance can be converted to
+<p>With MyHDL's <code>toVerilog</code> function, a D flip-flop instance can be converted to
 Verilog code:</p>
 <div class="codehilite"><pre><span class="k">def</span> <span class="nf">convert</span><span class="p">():</span>
     <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
@@ -365,7 +365,7 @@ When it is closed, the output keeps its value.</p>
 
 
 <p>Note the usage of the <code>always_comb</code> decorator. This is somewhat of a misnomer.
-(The name comes from a similar construct in SystemVerilog). It doesn&rsquo;t mean the
+(The name comes from a similar construct in SystemVerilog). It doesn't mean the
 generator describes a circuit that is necessarily combinatorial, but merely
 that it triggers whenever one of the input signals changes.</p>
 <h3 id="simulation_2">Simulation</h3>

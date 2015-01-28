@@ -290,13 +290,13 @@ error  and not suited for regression testing.</p>
 <p>A better approach would be to write a self-checking test bench that checks
 Johnson counter properties automatically, plus a number of directed and random
 tests to cover corner cases. In addition, such a test bench should be written
-using a unit test framework such as Python&rsquo;s <code>unittest</code> package, to facilitate
+using a unit test framework such as Python's <code>unittest</code> package, to facilitate
 test writing and to make it part of a regression test suite. Consult the MyHDL
 manual for more info on such techniques.</p>
 <h2 id="automatic-conversion-to-verilog">Automatic conversion to Verilog</h2>
 <p>A working MyHDL design intended for implementation can be converted to Verilog
 automatically, using the <code>toVerilog</code> function. Remember: there is no point in
-converting when the design doesn&rsquo;t work. The simulation will catch much more
+converting when the design doesn't work. The simulation will catch much more
 errors than the converter. In MyHDL, like in Python, the run-time rules.</p>
 <p>Conversion to Verilog can be done with code like the following:</p>
 <div class="codehilite"><pre><span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="n">jc2</span><span class="p">):</span>
@@ -331,11 +331,11 @@ errors than the converter. In MyHDL, like in Python, the run-time rules.</p>
 
 <span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">_jc2_logic</span>
     <span class="k">if</span> <span class="p">((</span><span class="n">goRight</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
-        <span class="n">dir</span> <span class="o">&lt;=</span> <span class="mh">1&#39;b0</span><span class="p">;</span>
+        <span class="n">dir</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
         <span class="n">run</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
     <span class="k">end</span>
     <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="n">goLeft</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
-        <span class="n">dir</span> <span class="o">&lt;=</span> <span class="mh">1&#39;b1</span><span class="p">;</span>
+        <span class="n">dir</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
         <span class="n">run</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
     <span class="k">end</span>
     <span class="k">if</span> <span class="p">((</span><span class="n">stop</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
@@ -344,7 +344,7 @@ errors than the converter. In MyHDL, like in Python, the run-time rules.</p>
     <span class="k">if</span> <span class="p">(</span><span class="n">run</span><span class="p">)</span> <span class="k">begin</span>
         <span class="c1">// synthesis parallel_case full_case</span>
         <span class="k">casez</span> <span class="p">(</span><span class="n">dir</span><span class="p">)</span>
-            <span class="mh">1&#39;b1</span><span class="o">:</span> <span class="k">begin</span>
+            <span class="mh">1</span><span class="mb">&#39;b1</span><span class="o">:</span> <span class="k">begin</span>
                 <span class="n">q</span><span class="p">[</span><span class="mh">4</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
                 <span class="n">q</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="o">!</span><span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="p">]);</span>
             <span class="k">end</span>
@@ -444,11 +444,11 @@ will need to use variables instead of signals for the state registers <code>dir<
 
 <p>The <code>instance</code> decorator is used to create the <code>logic</code> generator from the
 corresponding generator function. The main functionality of that function is
-wrapped in a <code>while True</code> loop to keep the generator alive &ldquo;forever&rdquo;. The first
+wrapped in a <code>while True</code> loop to keep the generator alive "forever". The first
 statement in the loop is a <code>yield</code> statement that specifies the sensitivity to
 the clock edge. Variables <code>dir</code> and <code>run</code> are local state variables, that keep
 their previous value through each iteration of the <code>while</code> loop.</p>
-<p>You may wonder why we couldn&rsquo;t use the <code>always</code> decorator with a clock edge
+<p>You may wonder why we couldn't use the <code>always</code> decorator with a clock edge
 argument as before. The reason is that in that case, the decorated function is
 a classic (= non-generator) function that would be called on every clock edge.
 However, local variables loose their value whenever a function returns, so they
@@ -457,11 +457,11 @@ the desired behavior explicitly in a generator function.</p>
 <p>This example is more subtle and complex than it may seem at first sight. As
 said before, variables <code>dir</code> and <code>run</code> are state variables and will therefore
 require a flip-flop in an implementation. However, they are also used
-&ldquo;combinatorially&rdquo;: when they change, they may influence the counter operation
-&ldquo;in the same clock cycle&rdquo;, that is, before the flip-flop output changes. This
+"combinatorially": when they change, they may influence the counter operation
+"in the same clock cycle", that is, before the flip-flop output changes. This
 is perfectly fine behavior and no problem for synthesis tools, but it tends to
 confuse a lot of designers. This coding style is also a favourite theme of this
-author :-) ( &mdash; <em><a href="jan@jandecaluwe.com">Jan Decaluwe</a></em>). </p>
+author :-) ( --- <em><a href="jan@jandecaluwe.com">Jan Decaluwe</a></em>). </p>
 <p>To verify whether we now have the desired behavior, we can run the original
 test bench on the alternative design:</p>
 <div class="codehilite"><pre>Alternative design
@@ -521,11 +521,11 @@ response to a control input change is now indeed one clock cycle earlier.</p>
     <span class="kt">reg</span> <span class="n">run</span><span class="p">;</span>
     <span class="kt">reg</span> <span class="p">[</span><span class="mh">1</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">dir</span><span class="p">;</span>
     <span class="k">if</span> <span class="p">((</span><span class="n">goRight</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
-        <span class="n">dir</span> <span class="o">=</span> <span class="mh">1&#39;b0</span><span class="p">;</span>
+        <span class="n">dir</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
         <span class="n">run</span> <span class="o">=</span> <span class="mh">1</span><span class="p">;</span>
     <span class="k">end</span>
     <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="n">goLeft</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
-        <span class="n">dir</span> <span class="o">=</span> <span class="mh">1&#39;b1</span><span class="p">;</span>
+        <span class="n">dir</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
         <span class="n">run</span> <span class="o">=</span> <span class="mh">1</span><span class="p">;</span>
     <span class="k">end</span>
     <span class="k">if</span> <span class="p">((</span><span class="n">stop</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
@@ -534,7 +534,7 @@ response to a control input change is now indeed one clock cycle earlier.</p>
     <span class="k">if</span> <span class="p">(</span><span class="n">run</span><span class="p">)</span> <span class="k">begin</span>
         <span class="c1">// synthesis parallel_case full_case</span>
         <span class="k">casez</span> <span class="p">(</span><span class="n">dir</span><span class="p">)</span>
-            <span class="mh">1&#39;b1</span><span class="o">:</span> <span class="k">begin</span>
+            <span class="mh">1</span><span class="mb">&#39;b1</span><span class="o">:</span> <span class="k">begin</span>
                 <span class="n">q</span><span class="p">[</span><span class="mh">4</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
                 <span class="n">q</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="o">!</span><span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="p">]);</span>
             <span class="k">end</span>
@@ -550,16 +550,16 @@ response to a control input change is now indeed one clock cycle earlier.</p>
 </pre></div>
 
 
-<p>Verilog&rsquo;s always block is more general than the MyHDL <code>always</code> decorator,
+<p>Verilog's always block is more general than the MyHDL <code>always</code> decorator,
 because you cannot use local state variables with the latter. However, even
-though the MyHDL code for the alternative design doesn&rsquo;t use the <code>always</code>
+though the MyHDL code for the alternative design doesn't use the <code>always</code>
 decorator, the convertor is smart enough to see that it can still use it in the
 Verilog code in this case.</p>
 <p>Note that blocking and non-blocking assignments are mixed in the always block.
 This is necessary to match the behavior of the alternative MyHDL design. In the
 Verilog world, you may encounter rules that forbid such a coding style. Such
-rules are typically created by designers that prefer to focus on &ldquo;thinking
-hardware&rdquo; instead of thinking in terms of code, even when synthesis tools are
+rules are typically created by designers that prefer to focus on "thinking
+hardware" instead of thinking in terms of code, even when synthesis tools are
 perfectly able to create efficient hardware from that code. The best you can do
 with such rules is to ignore them.</p>
             </div>

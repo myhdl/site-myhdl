@@ -139,7 +139,7 @@
             <div class="col-md-6" data-spy="scroll" data-target="#sidenav" role="main">
                 <h2 id="modeling">Modeling</h2>
 <h3 id="what-is-the-default-width-of-an-intbv">What is the default width of an <code>intbv</code>?</h3>
-<p>By default, an <code>intbv</code> object has an &ldquo;indefinite&rdquo; bit width. Although this is a novel concept compared to traditional HDL modeling, it corresponds to the natural way to think about integers and their 2&rsquo;s complement representation. Consider:</p>
+<p>By default, an <code>intbv</code> object has an "indefinite" bit width. Although this is a novel concept compared to traditional HDL modeling, it corresponds to the natural way to think about integers and their 2's complement representation. Consider:</p>
 <div class="codehilite"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="n">intbv</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">a</span><span class="p">[</span><span class="mi">75</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
@@ -159,7 +159,7 @@
 </pre></div>
 
 
-<p>As always in Python, the minimum value is inclusive, but the maximum value is exclusive. Note how this method stresses the &ldquo;integer&rdquo; nature of an <code>intbv</code>.</p>
+<p>As always in Python, the minimum value is inclusive, but the maximum value is exclusive. Note how this method stresses the "integer" nature of an <code>intbv</code>.</p>
 <p>The second method defines the bit width directly, as follows:</p>
 <div class="codehilite"><pre><span class="n">a</span> <span class="o">=</span> <span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">8</span><span class="p">:]</span>
 </pre></div>
@@ -169,7 +169,7 @@
 <p>The range of acceptable values of an <code>intbv</code> object is checked at simulation runtime. This is an interesting application of defining a bit width. Another application is implementation-oriented modeling, such as code that needs to be converted automatically to synthesizable Verilog.</p>
 <h3 id="how-can-i-model-wrap-around-behaviour">How can I model wrap-around behaviour?</h3>
 <p>In HDLs such as Verilog and VHDL, the bit vectors have wrap-around behaviour. This means that when the result of a numeric operation would exceed the bit width, the higher order bits are dropped automatically. In effect, the operations are done modulo the power of 2 of the bit width.</p>
-<p>MyHDL&rsquo;s <code>intbv</code> object is much like an integer. Therefore, it doesn&rsquo;t have this wrap-around behavior. If needed, it has to be described explicitly.</p>
+<p>MyHDL's <code>intbv</code> object is much like an integer. Therefore, it doesn't have this wrap-around behavior. If needed, it has to be described explicitly.</p>
 <p>The most straightforward way to describe wrap-around behavior is with an if-then-else. For example:</p>
 <div class="codehilite"><pre><span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">:</span>
     <span class="n">count</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span>
