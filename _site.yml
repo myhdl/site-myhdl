@@ -13,7 +13,7 @@ reflinks:
     google: 
         url: http://www.google.com
         title: Google
-    jandecaluwe-mail:
+    jandecaluwe_mail:
         url: mailto:jan@jandecaluwe.com
         title: Jan Decaluwe
     bitbucket:
@@ -22,16 +22,19 @@ reflinks:
     mercurial:
         url: http://www.selenic.com/mercurial
         title: mercurial
-    myhdl-repo:
+    myhdl_repo:
         url: https://bitbucket.org/jandecaluwe/myhdl 
         title: MyHDL repository
-    site-myhdl-repo:
+    site_myhdl_repo:
         url: https://bitbucket.org/jandecaluwe/site-myhdl 
         title: MyHDL website repository 
-    site-myhdl-dev-repo:
+    site_myhdl_src:
+        url: https://bitbucket.org/jandecaluwe/site-myhdl/src
+        title: MyHDL website source 
+    site_myhdl_dev_repo:
         url: https://bitbucket.org/jandecaluwe/site-myhdl-dev 
         title: MyHDL development website repository 
-    mailing-list:
+    mailing_list:
         url: http://www.myhdl.org/doku.php/mailing_list
         title: Mailing List  
     license:

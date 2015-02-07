@@ -11,7 +11,7 @@ install the software and get an overview of how it works. As a content
 contributor, you don't need all the details about templating and so on: the
 main task will be editing content in Markdown format.
 
-The site is being developed on BitBucket in the [site-myhdl-repo].  You can
+The site is being developed on BitBucket in the [site_myhdl_repo].  You can
 contribute through pull requests, or I will consider to give you direct access
 to the repository.
 

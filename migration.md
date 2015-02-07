@@ -12,7 +12,7 @@ consult the [urubu] website to install the software and get an overview of how
 it works. As a content contributor, you don't need all the details about
 templating and so on: the main task will be editing content in Markdown format.
 
-The site is being developed on BitBucket in the [site-myhdl-repo]. The
+The site is being developed on BitBucket in the [site_myhdl_repo]. The
 orginal code from myhdl.org is checked in under `_ori`. There is a `convert.py`
 script that can help to convert the original dokuwiki format to Markdown. It is
 far from comprehensive, but should provide a good starting point.
