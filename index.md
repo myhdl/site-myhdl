@@ -42,11 +42,12 @@ including some high volume applications.
     </div>
 
     <div class="col-md-4">
-<h3><i class="fa fa-bitbucket"></i> Open source</h3>
+<h3><i class="fa fa-github"></i> Open source</h3>
 <p>
 MyHDL is an open source, pure Python package.  
 <a href="start/installation.html">Install with pip</a>
-and enjoy the Python ecosystem immediately. 
+and enjoy the Python ecosystem immediately.
+<a href="https://github.com/jandecaluwe/myhdl">Visit the project on Github.</a>
 </p>
     </div>
 
