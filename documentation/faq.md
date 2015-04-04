@@ -79,7 +79,7 @@ How can I use third-party modules?
 ----------------------------------
 
 You can use
-[user-defined code](http://www.myhdl.org/doc/0.6/manual/conversion.html#user-defined-code)
+[user-defined code](http://docs.myhdl.org/en/latest/manual/conversion.html#user-defined-code)
 to replace a MyHDL module by a corresponding instantiation.
 
 Why is the conversion output non-hierarchical?
@@ -93,7 +93,7 @@ You can generate hierarchical designs by some additional work,
 in particular by converting lower level modules and using
 user-defined instantiation code at a higher level. This
 technique is explained
-[here](http://www.myhdl.org/doc/0.6/manual/conversion.html#handling-hierarchy).
+[here](http://docs.myhdl.org/en/latest/manual/conversion.html#handling-hierarchy).
 
 
 
