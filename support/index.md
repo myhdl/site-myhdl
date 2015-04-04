@@ -3,8 +3,8 @@ title: Support
 layout: index
 content:
     - community
-    - url: https://bitbucket.org/jandecaluwe/myhdl/issues?status=new&status=open
-      title: Bug Tracker
+    - url: https://github.com/jandecaluwe/myhdl/issues
+      title: Issue Tracker
     - commercial
     - resources
     - url: http://dev.myhdl.org
