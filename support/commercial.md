@@ -7,8 +7,7 @@ Jan Decaluwe
 ============
 
 Jan Decaluwe, MyHDL's creator and maintainer, is available for commercial MyHDL
-support. In particular, he is available for consulting and contract work on
-MyHDL-based design projects.
+support, consulting and contract work on MyHDL-based design projects.
 
 For more information, check out [his website](http://www.jandecaluwe.com). 
 
