@@ -19,3 +19,6 @@ All interface options are described here:
 In particular, to access the list as a usenet newsgroup, you
 can use this link:
 [The MyHDL Newsgroup](http://news.gmane.org/gmane.comp.python.myhdl).
+
+In addition to the mailing list there is a [#myhdl](https://webchat.freenode.net/) 
+IRC channel on [freenode](https://freenode.net/).
