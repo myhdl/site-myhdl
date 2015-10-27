@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Examples</title>
+    <title>MyHDL 0.9.0 released</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <!-- Bootstrap -->
@@ -66,7 +66,7 @@
                 <li><a href="/documentation/performance.html">Performance</a></li>    
               </ul>
             </li>
-            <li class="active"><a href="/examples/">Examples</a></li>
+            <li><a href="/examples/">Examples</a></li>
             <li class="dropdown">
               <a href="/support/" class="dropdown-toggle" data-toggle="dropdown">Support <b class="caret"></b></a>
               <ul class="dropdown-menu">
@@ -89,85 +89,68 @@
     </div>
 
 
-<div class="jumbotron">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-7">
-                <h1>Examples</h1>
-                <p>Jump right in with MyHDL examples. Consult the <a href="http://docs.myhdl.org" title="Manual">Manual</a> when needed.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="container">
+
+    <ol class="breadcrumb">
+       <li><a href="/">Home</a></li>
+       <li><a href="/news/">News</a></li>
+       <li><a href="/news/releases/">Release news</a></li>
+       <li class="active">MyHDL 0.9.0 released</li>
+    </ol>
+
+    <div class="page-header">
+ 
+        <h1>MyHDL 0.9.0 released</h1>
+    </div>
 
     <div class="row">
 
-            <div class="col-md-6">
-                <h4><a href="/examples/flipflops.html">Flip-flops and Latches</a>&nbsp;&nbsp;
-                    <small></small></h4>
-                <ul>
-<li>modelling and simulating small sequential devices</li>
-<li>waveform viewing</li>
-<li>automatic conversion to Verilog</li>
-</ul>
+        <div class="content">
+            <div class="col-md-7" data-spy="scroll" data-target="#sidenav" role="main">
+                <p>Check out <a href="http://docs.myhdl.org/en/stable/whatsnew/0.9.html">what's new</a>.</p>
             </div>
-            <div class="col-md-6">
-                <h4><a href="/examples/jc2.html">Johnson Counter</a>&nbsp;&nbsp;
-                    <small></small></h4>
-                <ul>
-<li>modelling a counter</li>
-<li>writing a test bench for the counter and simulating it</li>
-<li>automatic conversion to Verilog</li>
-</ul>
-            </div>
-            <div class="clearfix visible-md"></div>
-            <div class="clearfix visible-lg"></div>
-            <div class="col-md-6">
-                <h4><a href="/examples/stopwatch/">StopWatch</a>&nbsp;&nbsp;
-                    <small></small></h4>
-                <ul>
-<li>writing a unit test before the implementation</li>
-<li>using <code>py.test</code> as a unit test framework </li>
-<li>coding a hierarchical design</li>
-<li>coding for ROM inference</li>
-<li>synthesis of the output Verilog code</li>
-</ul>
-            </div>
-            <div class="col-md-6">
-                <h4><a href="/examples/sinecomp/">Cordic-based Sine Computer</a>&nbsp;&nbsp;
-                    <small></small></h4>
-                <ul>
-<li>using the <code>intbv</code> class to model negative numbers </li>
-<li>using conversion to handle the details of signed and unsigned representations</li>
-<li>taking advantage of the elaboration phase for conversion </li>
-<li>using co-simulation to verify the output Verilog code</li>
-</ul>
-            </div>
-            <div class="clearfix visible-md"></div>
-            <div class="clearfix visible-lg"></div>
-            <div class="col-md-6">
-                <h4><a href="/examples/bitonic/">Bitonic Sort</a>&nbsp;&nbsp;
-                    <small></small></h4>
-                <ul>
-<li>writing structural MyHDL code using recursion and lists of signals</li>
-<li>using a reference software implementation</li>
-</ul>
-            </div>
-            <div class="col-md-6">
-                <h4><a href="/examples/helloworld.html">Hello World</a>&nbsp;&nbsp;
-                    <small></small></h4>
-                <ul>
-<li>the advantages of MyHDL integer arithmetic</li>
-<li>embedded scripting in convertible code</li>
-</ul>
-            </div>
-            <div class="clearfix visible-md"></div>
-            <div class="clearfix visible-lg"></div>
+        </div>
+
 
     </div>
-</div>
+
+    <div class="footer">
+        <div style="margin: 8px">
+<a href="https://twitter.com/MyHDL" class="twitter-follow-button" data-show-count="true">Follow @MyHDL</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+<a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+<!-- Place this tag where you want the +1 button to render. -->
+<div class="g-plusone" data-size="medium"></div>
+
+<!-- Place this tag after the last +1 button tag. -->
+<script type="text/javascript">
+window.__gcfg = {
+    lang: 'en-US'
+};
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>        </div>
+        <p></p>
+        <p>
+           <a href="https://bitbucket.org/jandecaluwe/site-myhdl/src">Website source</a>
+        <p>
+           Content licensed under the
+           <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a> license.
+           See <a href="/terms-of-use.html">Terms of Use</a>
+        </p> 
+        <p>
+           Powered by <a href="http://urubu.jandecaluwe.com">Urubu</a>
+        </p> 
+    </div>
+</div> 
 
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

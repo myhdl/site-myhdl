@@ -61,7 +61,7 @@
             <li class="dropdown">
               <a href="/documentation/" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="http://docs.myhdl.org/en/latest/">Manual</a></li>    
+                <li><a href="http://docs.myhdl.org">Manual</a></li>    
                 <li><a href="/documentation/faq.html">FAQ</a></li>    
                 <li><a href="/documentation/performance.html">Performance</a></li>    
               </ul>
@@ -113,7 +113,7 @@ MyHDL. MyHDL uses classic functions for this purpose. </p>
 <p>Before simulation or conversion to Verilog, a design is <em>elaborated</em> by running
 the Python interpreter. This implies that all structure is flattened out. As a
 consequence, the complexity of the structural description has no impact on the
-possibility to convert to Verilog.</p>
+possibility to convert to Verilog or VHDL.</p>
 <p>As an example, this page shows how to describe recursive structures in MyHDL.
 Python is very well suited to do this elegantly. But after conversion to
 Verilog, all recursion is flattened out, so it doesn't matter whether the
@@ -203,7 +203,7 @@ procedure <code>bitonicSort</code> sorts the whole array <code>a</code>.</p>
 <p><em>(end quote)</em></p>
 <h2 id="myhdl-implementation">MyHDL implementation</h2>
 <p>Let's start with some general considerations.</p>
-<p>First, note that the Jave code consists of a number of procedures and procedure
+<p>First, note that the Java code consists of a number of procedures and procedure
 calls. In MyHDL, we can map each procedure to a function that models a hardware
 module and each procedure call to an instantiation. The Java procedures return
 nothing; they are run solely for their side effects. In MyHDL, we will build
@@ -364,7 +364,7 @@ function. See the <a href="verilog.txt">Verilog code</a> for the result. Note th
 <p>Of course, you will want to verify that the generated Verilog code is correct.
 This can be done by using Verilog co-simulation with the same test bench as
 used for the MyHDL code. You can find the details about the procedure
-<a href="cookbook:sinecomp#verilog_co-simulation">here</a>.</p>
+<a href="/examples/sinecomp/#verilog-co-simulation" title="Cordic-based Sine Computer">here</a>.</p>
 <p>To get an idea of the hardware implementation characteristics, check out the
 <a href="synthesis.txt">synthesis results</a>.</p>
             </div>

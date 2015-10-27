@@ -16,7 +16,7 @@ MyHDL. MyHDL uses classic functions for this purpose.
 Before simulation or conversion to Verilog, a design is *elaborated* by running
 the Python interpreter. This implies that all structure is flattened out. As a
 consequence, the complexity of the structural description has no impact on the
-possibility to convert to Verilog.
+possibility to convert to Verilog or VHDL.
 
 As an example, this page shows how to describe recursive structures in MyHDL.
 Python is very well suited to do this elegantly. But after conversion to
@@ -127,7 +127,7 @@ MyHDL implementation
 
 Let's start with some general considerations.
 
-First, note that the Jave code consists of a number of procedures and procedure
+First, note that the Java code consists of a number of procedures and procedure
 calls. In MyHDL, we can map each procedure to a function that models a hardware
 module and each procedure call to an instantiation. The Java procedures return
 nothing; they are run solely for their side effects. In MyHDL, we will build
@@ -305,7 +305,7 @@ function. See the [Verilog code](verilog.txt) for the result. Note that it is a
 Of course, you will want to verify that the generated Verilog code is correct.
 This can be done by using Verilog co-simulation with the same test bench as
 used for the MyHDL code. You can find the details about the procedure
-[here](cookbook:sinecomp#verilog_co-simulation).
+[here][/examples/sinecomp#Verilog co-simulation].
 
 To get an idea of the hardware implementation characteristics, check out the
 [synthesis results](synthesis.txt).

@@ -1,9 +1,9 @@
 ---
 title: Documentation 
-layout: home
+layout: index 
 content:
     - title: Manual
-      url: http://docs.myhdl.org/en/latest/
+      url: http://docs.myhdl.org
     - faq
     - performance
 navstyle: expand
