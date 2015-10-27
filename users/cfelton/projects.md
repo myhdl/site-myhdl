@@ -15,20 +15,22 @@ Only a couple are actively managed by me.
 MyHDL Projects 
 --------------
 
+   * [rhea](https://github.com/cfelton/rhea): A collection
+     of cores writen in MyHDL and an FPGA build framework.
+<!--
    * [krypton](https://github.com/cfelton/krypton): A framework used
      to created DSP systems.
    * [hyperion](https://github.com/cfelton/hyperion): A platform for
      FPGA video processing experimentation.
-   * [minnesota](https://github.com/cfelton/minnesota): A collection
-     of cores writen in MyHDL.
-   * [gizflo](https://github.com/gizflo)
-
+-->     
+     
 
 MyHDL Shared Code
 -----------------
    * [examples](https://bitbucket.com/cfelton/examples)
    * [alt.hdl](https://github.com/cfelton/althdl)
    * [test_jpeg](https://github.com/cfelton/test_jpeg)
+   * [gist](https://gist.github.com/cfelton)
 
 
 Projects Contributing

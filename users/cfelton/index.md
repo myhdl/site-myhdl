@@ -6,10 +6,11 @@ description:
     user and developer
 ---
 
-<!- introduction about myself -->
-
-See the following pages for more information on some of my 
-projects and writings:
+I have been usign MyHDL and contributing to the project for
+many yeaers now.  I have successfully used MyHDL in the creation
+of multiple mixed-signal ASICs and used it for numerous FPGA 
+projects.  See the following pages for more information on some 
+of my projects and writings:
 
   * [/users/cfelton/projects]
   * [/users/cfelton/writings]
