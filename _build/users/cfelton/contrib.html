@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Users</title>
+    <title>Contributions</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <!-- Bootstrap -->
@@ -89,47 +89,95 @@
     </div>
 
 
-<div class="jumbotron">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-7">
-                <h1>Users</h1>
-                <p>MyHDL users and their projects</p>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="container">
 
+    <ol class="breadcrumb">
+       <li><a href="/">Home</a></li>
+       <li><a href="/users/">Users</a></li>
+       <li><a href="/users/cfelton/">Christopher L. Felton</a></li>
+       <li class="active">Contributions</li>
+    </ol>
+
+    <div class="page-header">
+ 
+        <h1>Contributions</h1>
+    </div>
+
     <div class="row">
-        <div class="col-md-7">
-            <p><a href="/user-guide.html" title="How to add user info">How to add user info</a></p>
-<p class="text-info"><strong>Under construction</strong> The user info is still being migrated from the old site.
-<a href="http://old.myhdl.org/doku.php/projects:intro">Visit the old site</a></p>
+
+        <div class="content">
+            <div class="col-md-7" data-spy="scroll" data-target="#sidenav" role="main">
+                <p class="lead">cfelton's contributions</p>
+                <h2 id="meps">MEPs</h2>
+<p>The followign are <a href="http://dev.myhdl.org/meps/">MyHDL enhancement proposals</a> 
+I have contributed (the implementations not always completed by me):</p>
+<ul>
+<li><a href="http://dev.myhdl.org/meps/mep-107.html">Interfaces</a>, object attribute 
+     conversion (implemented by <a href="http://github.com/jck">@jck</a> ).</li>
+<li><a href="http://dev.myhdl.org/meps/mep-108.html">Top-level method conversion</a>.</li>
+<li><a href="http://dev.myhdl.org/meps/mep-111.html">fixed-point</a> object: <code>fixbv</code></li>
+</ul>
+            </div>
         </div>
-    </div>
 
-    <div class="row">
-
-            <div class="col-sm-6 col-lg-4" role="main">
-                    <h4><a href="/users/jandecaluwe.html">Jan Decaluwe</a>&nbsp;&nbsp;</h4>
-                    <p>MyHDL's creator and BDFL</p>
-            </div>
-            <div class="col-sm-6 col-lg-4" role="main">
-                    <h4><a href="/users/benallard.html">Benoît Allard</a>&nbsp;&nbsp;</h4>
-                    <p>MyHDL's page of Benoît Allard</p>
-            </div>
-            <div class="clearfix visible-sm"></div>
-            <div class="clearfix visible-md"></div>
-            <div class="col-sm-6 col-lg-4" role="main">
-                    <h4><a href="/users/cfelton/">Christopher L. Felton</a>&nbsp;&nbsp;</h4>
-                    <p>user and developer</p>
-            </div>
-            <div class="clearfix visible-lg"></div>
-
-    </div>
+ 
+        <div class="col-md-3" role="navigation"> 
+          <nav class="hidden-print hidden-xs hidden-sm">
+            <div class="sidebar" data-spy="affix" 
+                 data-offset-top="80" 
+                 data-offset-bottom="60">
+                <div class="well">
+                    <a href="#"><strong style="font-size:90%">Contributions</strong></a>
+                    <div class="toc">
+<ul>
+<li><a href="#meps">MEPs</a></li>
+</ul>
 </div>
+
+                </div>
+            </div>
+          </nav>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <div style="margin: 8px">
+<a href="https://twitter.com/MyHDL" class="twitter-follow-button" data-show-count="true">Follow @MyHDL</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+<a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+<!-- Place this tag where you want the +1 button to render. -->
+<div class="g-plusone" data-size="medium"></div>
+
+<!-- Place this tag after the last +1 button tag. -->
+<script type="text/javascript">
+window.__gcfg = {
+    lang: 'en-US'
+};
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>        </div>
+        <p></p>
+        <p>
+           <a href="https://bitbucket.org/jandecaluwe/site-myhdl/src">Website source</a>
+        <p>
+           Content licensed under the
+           <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a> license.
+           See <a href="/terms-of-use.html">Terms of Use</a>
+        </p> 
+        <p>
+           Powered by <a href="http://urubu.jandecaluwe.com">Urubu</a>
+        </p> 
+    </div>
+</div> 
 
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
