@@ -4,6 +4,7 @@ layout: users_index
 content:
     - jandecaluwe
     - benallard
+    - cfelton
 description:
     MyHDL users and their projects
 ---

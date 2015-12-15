@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Users</title>
+    <title>Examples</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <!-- Bootstrap -->
@@ -30,7 +30,6 @@
   ga('send', 'pageview');
 
 </script>
- 
   </head>
 
   <body>
@@ -60,11 +59,11 @@
               </ul>
             </li>
             <li class="dropdown">
-              <a href="/docs/" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
+              <a href="/documentation/" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="http://docs.myhdl.org">Manual</a></li>    
-                <li><a href="/docs/faq.html">FAQ</a></li>    
-                <li><a href="/docs/performance.html">Performance</a></li>    
+                <li><a href="/documentation/faq.html">FAQ</a></li>    
+                <li><a href="/documentation/performance.html">Performance</a></li>    
               </ul>
             </li>
             <li><a href="/examples/">Examples</a></li>
@@ -78,13 +77,8 @@
                 <li><a href="http://dev.myhdl.org">Development documentation</a></li>    
               </ul>
             </li>
+            <li class="active"><a href="/users/">Users</a></li>
           </ul>
-
-          <form class="navbar-form navbar-left" action="/search.html" role="search">
-            <div class="form-group">
-              <input type="text" required name="q" id="tipue_search_input" class="form-control" placeholder="Search"> 
-            </div>
-          </form>
 
           <ul class="nav navbar-nav navbar-right">
             <li><a href="/info.html">Info</a></li>
@@ -95,55 +89,75 @@
     </div>
 
 
-<div class="jumbotron">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-7">
-                <h1>Users</h1>
-                <p>MyHDL users and their projects</p>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="container">
 
+    <ol class="breadcrumb">
+       <li><a href="/">Home</a></li>
+       <li><a href="/users/">Users</a></li>
+       <li><a href="/users/cfelton/">Christopher L. Felton</a></li>
+       <li class="active">Examples</li>
+    </ol>
+
+    <div class="page-header">
+ 
+        <h1>Examples</h1>
+    </div>
+
     <div class="row">
-        <div class="col-md-7">
-            <p><a href="/user-guide.html" title="How to add user info">How to add user info</a></p>
-<p class="text-info"><strong>Under construction</strong> The user info is still being migrated from the old site.
-<a href="http://old.myhdl.org/doku.php/projects:intro">Visit the old site</a></p>
+
+        <div class="content">
+            <div class="col-md-7" data-spy="scroll" data-target="#sidenav" role="main">
+                <p class="lead">cfelton's examples</p>
+                
+            </div>
         </div>
-    </div>
 
-    <div class="row">
-
-            <div class="col-sm-6 col-lg-4">
-                    <h4><a href="/users/jandecaluwe.html">Jan Decaluwe</a>&nbsp;&nbsp;</h4>
-                    <p>MyHDL's creator and BDFL</p>
-            </div>
-            <div class="col-sm-6 col-lg-4">
-                    <h4><a href="/users/benallard.html">Benoît Allard</a>&nbsp;&nbsp;</h4>
-                    <p>MyHDL's page of Benoît Allard</p>
-            </div>
-            <div class="clearfix visible-sm"></div>
-            <div class="clearfix visible-md"></div>
-            <div class="col-sm-6 col-lg-4" role="main">
-                    <h4><a href="/users/cfelton/">Christopher L. Felton</a>&nbsp;&nbsp;</h4>
-                    <p>user and developer</p>
-            </div>
-            <div class="clearfix visible-lg"></div>
 
     </div>
-</div>
+
+    <div class="footer">
+        <div style="margin: 8px">
+<a href="https://twitter.com/MyHDL" class="twitter-follow-button" data-show-count="true">Follow @MyHDL</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+<a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+<!-- Place this tag where you want the +1 button to render. -->
+<div class="g-plusone" data-size="medium"></div>
+
+<!-- Place this tag after the last +1 button tag. -->
+<script type="text/javascript">
+window.__gcfg = {
+    lang: 'en-US'
+};
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>        </div>
+        <p></p>
+        <p>
+           <a href="https://bitbucket.org/jandecaluwe/site-myhdl/src">Website source</a>
+        <p>
+           Content licensed under the
+           <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a> license.
+           See <a href="/terms-of-use.html">Terms of Use</a>
+        </p> 
+        <p>
+           Powered by <a href="http://urubu.jandecaluwe.com">Urubu</a>
+        </p> 
+    </div>
+</div> 
 
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <!-- <script src="https://code.jquery.com/jquery.js"></script> -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/js/bootstrap.min.js"></script>
- 
 
   </body>
 </html>
