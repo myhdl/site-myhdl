@@ -23,8 +23,9 @@
     <div class="row">
 
         <div class="content">
+        <main>
             {% block content_div %}
-            <div class="col-md-7" data-spy="scroll" data-target="#sidenav" role="main">
+            <div class="col-md-7" role="main">
             {% endblock %}
                 {% block preamble %}
                 {% endblock %}
@@ -33,6 +34,7 @@
                 {% endif %}
                 {{this.body}}
             </div>
+        </main>
         </div>
 
         {% if this.toc %} 

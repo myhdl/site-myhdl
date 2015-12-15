@@ -21,6 +21,8 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
     {% include 'analytics.html' %}
+    {% block head_addon %}
+    {% endblock %} 
   </head>
 
   <body>
@@ -61,6 +63,12 @@
             {% endfor %}
           </ul>
 
+          <form class="navbar-form navbar-left" action="/search.html" role="search">
+            <div class="form-group">
+              <input type="text" required name="q" id="tipue_search_input" class="form-control" placeholder="Search"> 
+            </div>
+          </form>
+
           <ul class="nav navbar-nav navbar-right">
             {% for item in site.reflinks['/'].content[-1:] %}
             {%   set context = '' %}
@@ -90,9 +98,12 @@
     {% endblock %}
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://code.jquery.com/jquery.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/js/bootstrap.min.js"></script>
+    {% block body_addon %}
+    {% endblock %} 
 
   </body>
 </html>

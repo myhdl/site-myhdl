@@ -30,6 +30,7 @@
   ga('send', 'pageview');
 
 </script>
+ 
   </head>
 
   <body>
@@ -59,11 +60,11 @@
               </ul>
             </li>
             <li class="dropdown">
-              <a href="/documentation/" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
+              <a href="/docs/" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="http://docs.myhdl.org">Manual</a></li>    
-                <li><a href="/documentation/faq.html">FAQ</a></li>    
-                <li><a href="/documentation/performance.html">Performance</a></li>    
+                <li><a href="/docs/faq.html">FAQ</a></li>    
+                <li><a href="/docs/performance.html">Performance</a></li>    
               </ul>
             </li>
             <li><a href="/examples/">Examples</a></li>
@@ -77,8 +78,13 @@
                 <li><a href="http://dev.myhdl.org">Development documentation</a></li>    
               </ul>
             </li>
-            <li><a href="/users/">Users</a></li>
           </ul>
+
+          <form class="navbar-form navbar-left" action="/search.html" role="search">
+            <div class="form-group">
+              <input type="text" required name="q" id="tipue_search_input" class="form-control" placeholder="Search"> 
+            </div>
+          </form>
 
           <ul class="nav navbar-nav navbar-right">
             <li><a href="/info.html">Info</a></li>
@@ -93,7 +99,8 @@
 
     <div class="row">
 
-        <div class="col-md-8 role="main">
+        <div class="col-md-8" role="main">
+        <main>
                 <div class="page-header">
                     <h1>Python3 Support</h1>
                 </div>
@@ -119,6 +126,7 @@ and the <a href="http://www.jandecaluwe.com/blog/i-dont-like-blogs.html">new sys
                     <p>MyHDL is now on twitter: follow
 <a href="http://twitter.com/MyHDL">@MyHDL</a>.</p>
                 </div>
+        </main>
         </div>
 
     </div>
@@ -164,9 +172,11 @@ window.__gcfg = {
 
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://code.jquery.com/jquery.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/js/bootstrap.min.js"></script>
+ 
 
   </body>
 </html>

@@ -30,6 +30,7 @@
   ga('send', 'pageview');
 
 </script>
+ 
   </head>
 
   <body>
@@ -59,11 +60,11 @@
               </ul>
             </li>
             <li class="dropdown">
-              <a href="/documentation/" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
+              <a href="/docs/" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="http://docs.myhdl.org">Manual</a></li>    
-                <li><a href="/documentation/faq.html">FAQ</a></li>    
-                <li><a href="/documentation/performance.html">Performance</a></li>    
+                <li><a href="/docs/faq.html">FAQ</a></li>    
+                <li><a href="/docs/performance.html">Performance</a></li>    
               </ul>
             </li>
             <li><a href="/examples/">Examples</a></li>
@@ -77,8 +78,13 @@
                 <li><a href="http://dev.myhdl.org">Development documentation</a></li>    
               </ul>
             </li>
-            <li><a href="/users/">Users</a></li>
           </ul>
+
+          <form class="navbar-form navbar-left" action="/search.html" role="search">
+            <div class="form-group">
+              <input type="text" required name="q" id="tipue_search_input" class="form-control" placeholder="Search"> 
+            </div>
+          </form>
 
           <ul class="nav navbar-nav navbar-right">
             <li><a href="/info.html">Info</a></li>
@@ -104,7 +110,8 @@
     <div class="row">
 
         <div class="content">
-            <div class="col-md-7" data-spy="scroll" data-target="#sidenav" role="main">
+        <main>
+            <div class="col-md-7" role="main">
                 <p>To add user info, please first read the <a href="/site-development.html" title="Site development guide">Site development guide</a>.</p>
 <p>MyHDL users can add their info under the <code>/users</code> directory.  If a single page
 is sufficient, put the info in a <code>&lt;username&gt;.md</code> file. Otherwise, create a
@@ -121,6 +128,7 @@ sidebar, use <code>simple_article</code>. If you need a wider area for the text,
 <p>Be sure to add the page or folder name as a list item entry in the <code>content</code>
 field of the <code>users/index</code>.</p>
             </div>
+        </main>
         </div>
 
 
@@ -166,9 +174,11 @@ window.__gcfg = {
 
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://code.jquery.com/jquery.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/js/bootstrap.min.js"></script>
+ 
 
   </body>
 </html>

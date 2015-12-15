@@ -19,11 +19,13 @@
 
         {% block index_list %}
         <div class="col-md-6" role="main">
+        <main>
             {% for item in this.content %}
                 <h4><a href="{{item.url}}">{{item.title}}</a>&nbsp;&nbsp;
                     <small>{{item.date|dateformat}}</small></h4>
                 <p>{{item.abstract}}</p>
             {% endfor %}
+        </main>
         </div>
         {% endblock %}
 

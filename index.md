@@ -3,10 +3,9 @@ title: MyHDL
 layout: home
 content:
     - start 
-    - documentation
+    - docs
     - examples
     - support
-    - users
     - info 
 tagline:
     From Python to Silicon!

@@ -1,5 +1,5 @@
 ---
-title: Documentation 
+title: Docs 
 layout: index 
 content:
     - title: Manual

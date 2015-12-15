@@ -30,6 +30,7 @@
   ga('send', 'pageview');
 
 </script>
+ 
   </head>
 
   <body>
@@ -59,11 +60,11 @@
               </ul>
             </li>
             <li class="dropdown">
-              <a href="/documentation/" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
+              <a href="/docs/" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="http://docs.myhdl.org">Manual</a></li>    
-                <li><a href="/documentation/faq.html">FAQ</a></li>    
-                <li><a href="/documentation/performance.html">Performance</a></li>    
+                <li><a href="/docs/faq.html">FAQ</a></li>    
+                <li><a href="/docs/performance.html">Performance</a></li>    
               </ul>
             </li>
             <li><a href="/examples/">Examples</a></li>
@@ -77,8 +78,13 @@
                 <li><a href="http://dev.myhdl.org">Development documentation</a></li>    
               </ul>
             </li>
-            <li class="active"><a href="/users/">Users</a></li>
           </ul>
+
+          <form class="navbar-form navbar-left" action="/search.html" role="search">
+            <div class="form-group">
+              <input type="text" required name="q" id="tipue_search_input" class="form-control" placeholder="Search"> 
+            </div>
+          </form>
 
           <ul class="nav navbar-nav navbar-right">
             <li><a href="/info.html">Info</a></li>
@@ -106,13 +112,15 @@
     <div class="row">
 
         <div class="content">
-            <div class="col-md-7" data-spy="scroll" data-target="#sidenav" role="main">
+        <main>
+            <div class="col-md-7" role="main">
                 <p class="lead">MyHDL's page of Benoît Allard</p>
                 <p>PureDarwin is a pure hardware implementation of CoreWare : <a href="https://bitbucket.org/benallard/puredarwin">https://bitbucket.org/benallard/puredarwin</a></p>
 <p>At the moment, it is not convertible, as lots of tests, as well as some <em>tracebenchs</em> in order to simulate it and observe the output in a vcd file (gtkwave). It is considered as being simulation capable.</p>
 <p>Documentation is available on readthedocs: <a href="http://puredarwin.readthedocs.org/">http://puredarwin.readthedocs.org/</a></p>
 <p><a href="http://puredarwin.readthedocs.org/en/latest/status.html">Status</a> of the project is documented, the <a href="http://puredarwin.readthedocs.org/en/latest/todo.html">ToDo</a> is a good place to start also.</p>
             </div>
+        </main>
         </div>
 
 
@@ -158,9 +166,11 @@ window.__gcfg = {
 
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://code.jquery.com/jquery.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/js/bootstrap.min.js"></script>
+ 
 
   </body>
 </html>
