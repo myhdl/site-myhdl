@@ -4,7 +4,7 @@ layout: index
 content:
     - title: Manual
       url: http://docs.myhdl.org
-    - faq
+    - examples 
     - performance
 navstyle: expand
 ---

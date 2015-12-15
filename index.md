@@ -4,8 +4,8 @@ layout: home
 content:
     - start 
     - docs
-    - examples
     - support
+    - users
     - info 
 tagline:
     From Python to Silicon!

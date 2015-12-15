@@ -30,6 +30,7 @@
   ga('send', 'pageview');
 
 </script>
+ 
   </head>
 
   <body>
@@ -59,26 +60,32 @@
               </ul>
             </li>
             <li class="dropdown">
-              <a href="/documentation/" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
+              <a href="/docs/" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="http://docs.myhdl.org">Manual</a></li>    
-                <li><a href="/documentation/faq.html">FAQ</a></li>    
-                <li><a href="/documentation/performance.html">Performance</a></li>    
+                <li><a href="/docs/examples/">Examples</a></li>    
+                <li><a href="/docs/performance.html">Performance</a></li>    
               </ul>
             </li>
-            <li><a href="/examples/">Examples</a></li>
             <li class="dropdown">
               <a href="/support/" class="dropdown-toggle" data-toggle="dropdown">Support <b class="caret"></b></a>
               <ul class="dropdown-menu">
+                <li><a href="/support/faq.html">FAQ</a></li>    
                 <li><a href="/support/community.html">Community</a></li>    
                 <li><a href="https://github.com/jandecaluwe/myhdl/issues">Issue Tracker</a></li>    
-                <li><a href="/support/commercial.html">Commercial support</a></li>    
                 <li><a href="/support/resources.html">Resources</a></li>    
                 <li><a href="http://dev.myhdl.org">Development documentation</a></li>    
+                <li><a href="/support/commercial.html">Commercial support</a></li>    
               </ul>
             </li>
             <li class="active"><a href="/users/">Users</a></li>
           </ul>
+
+          <form class="navbar-form navbar-left" action="/search.html" role="search">
+            <div class="form-group">
+              <input type="text" required name="q" id="tipue_search_input" class="form-control" placeholder="Search"> 
+            </div>
+          </form>
 
           <ul class="nav navbar-nav navbar-right">
             <li><a href="/info.html">Info</a></li>
@@ -105,7 +112,8 @@
     <div class="row">
 
         <div class="content">
-            <div class="col-md-7" data-spy="scroll" data-target="#sidenav" role="main">
+        <main>
+            <div class="col-md-7" role="main">
                 <p class="lead">user and developer</p>
                 <p>I have been usign MyHDL and contributing to the project for
 many yeaers now.  I have successfully used MyHDL in the creation
@@ -118,6 +126,7 @@ of my projects and writings:</p>
 <li><a href="/users/cfelton/contrib.html" title="Contributions">Contributions</a></li>
 </ul>
             </div>
+        </main>
         </div>
 
 
@@ -163,9 +172,11 @@ window.__gcfg = {
 
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://code.jquery.com/jquery.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/js/bootstrap.min.js"></script>
+ 
 
   </body>
 </html>

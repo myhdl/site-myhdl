@@ -305,7 +305,7 @@ function. See the [Verilog code](verilog.txt) for the result. Note that it is a
 Of course, you will want to verify that the generated Verilog code is correct.
 This can be done by using Verilog co-simulation with the same test bench as
 used for the MyHDL code. You can find the details about the procedure
-[here][/examples/sinecomp#Verilog co-simulation].
+[here][/docs/examples/sinecomp#Verilog co-simulation].
 
 To get an idea of the hardware implementation characteristics, check out the
 [synthesis results](synthesis.txt).
