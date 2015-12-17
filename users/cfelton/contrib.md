@@ -7,7 +7,7 @@ description:
 
 MEPs
 ====
-The followign are [MyHDL enhancement proposals](http://dev.myhdl.org/meps/) 
+The following are [MyHDL enhancement proposals](http://dev.myhdl.org/meps/) 
 I have contributed (the implementations not always completed by me):
 
    * [Interfaces](http://dev.myhdl.org/meps/mep-107.html), object attribute 

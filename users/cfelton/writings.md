@@ -25,7 +25,7 @@ Blog Posts
    * [Python scipy.signal IIR filter design cont.](http://www.dsprelated.com/showarticle/170.php)
    * [Python scipy.signal IIR filter: an example](http://www.dsprelated.com/showarticle/194.php)
    * [Python number crunching faster](http://www.dsprelated.com/showarticle/151.php)
-   * [Impulse response approcimation](http://www.dsprelated.com/showarticle/138.php)
+   * [Impulse response approximation](http://www.dsprelated.com/showarticle/138.php)
 
 
 Conference Papers, Presentations, and Posters
@@ -33,8 +33,8 @@ Conference Papers, Presentations, and Posters
 
 <!-- need to include links -->
 
-   * 2013 Embedded Systems Conference: paper and presentation
    * 2014 Embedded Systems Conference: presentation and examples
+   * 2013 Embedded Systems Conference: paper and presentation   
    * 2013 PyOhio Conference Presentation: presentation video
    * 2011 FPGA Camp: poster
    * 2010 Signal Processing with FPGAs: presentation

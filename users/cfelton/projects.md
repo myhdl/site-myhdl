@@ -7,16 +7,16 @@ description:
 
 Projects
 ========
-The following list of projects is ridonculous.  These are too
-many projects for a single person to manage.  Most of the projects
-are simply code / packages that I have put together and shared.
-Only a couple are actively managed by me.
+The following are the list of MyHDL projects and examples
+I have created and shared.  
+
 
 MyHDL Projects 
 --------------
 
    * [rhea](https://github.com/cfelton/rhea): A collection
      of cores writen in MyHDL and an FPGA build framework.
+     
 <!--
    * [krypton](https://github.com/cfelton/krypton): A framework used
      to created DSP systems.
