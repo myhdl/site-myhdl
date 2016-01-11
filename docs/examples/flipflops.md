@@ -24,7 +24,8 @@ D flip-flop
 Specification
 -------------
 
-he basic D flip-flop is a sequential device that transfers the value of the `d` input to the `q` output on every rising edge of the clock `clk`.
+The basic D flip-flop is a sequential device that transfers the value of the
+`d` input to the `q` output on every rising edge of the clock `clk`.
 
 Description
 -----------
