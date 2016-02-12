@@ -44,12 +44,12 @@ To install MyHDL on your system,
 [download](http://sourceforge.net/project/showfiles.php?group_id=91207) the
 latest release. Untar and unzip the downloaded file:
 
-    > tar xvf myhdl-0.8.tar.gz
-    > gunzip myhdl-0.8.tar
+    > tar xvf myhdl-0.9.0.tar.gz
+    > gunzip myhdl-0.9.0.tar
 
 Go into the release directory:
 
-    > cd myhdl-0.8
+    > cd myhdl-0.9.0
 
 If you have superuser power, you can install MyHDL as follows:
 
@@ -72,7 +72,8 @@ Python library for more details.
 You can test the proper installation as follows:
 
     > cd myhdl/test/core
-    > python test_all.py
+    > py.test
+
 
 Co-simulation
 =============
