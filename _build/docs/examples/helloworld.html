@@ -109,7 +109,7 @@
  
 <h1>Hello World
 </h1>
-        <p><i>Last modified: 17-Dec-2015</i></p> 
+        <p><i>Last modified: 21-Jun-2015</i></p> 
     </div>
 
     <div class="row">
@@ -157,39 +157,39 @@ that are different from the original:</p>
     <span class="n">vSync</span>
 <span class="p">):</span>
 
-    <span class="c1">### Image ###</span>
+    <span class="c">### Image ###</span>
 
-    <span class="c1"># From: figlet -f alphabet &quot; Hello World &quot;</span>
+    <span class="c"># From: figlet -f alphabet &quot; Hello World &quot;</span>
     <span class="n">MSG</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;    H  H     l l        W     W         l    d    &quot;</span><span class="p">,</span>
-    <span class="s2">&quot;    H  H     l l        W     W         l    d    &quot;</span><span class="p">,</span>
-    <span class="s2">&quot;    HHHH eee l l ooo    W  W  W ooo rrr l  ddd    &quot;</span><span class="p">,</span>
-    <span class="s2">&quot;    H  H e e l l o o     W W W  o o r   l d  d    &quot;</span><span class="p">,</span>
-    <span class="s2">&quot;    H  H ee  l l ooo      W W   ooo r   l  ddd    &quot;</span><span class="p">,</span>
+    <span class="s">&quot;    H  H     l l        W     W         l    d    &quot;</span><span class="p">,</span>
+    <span class="s">&quot;    H  H     l l        W     W         l    d    &quot;</span><span class="p">,</span>
+    <span class="s">&quot;    HHHH eee l l ooo    W  W  W ooo rrr l  ddd    &quot;</span><span class="p">,</span>
+    <span class="s">&quot;    H  H e e l l o o     W W W  o o r   l d  d    &quot;</span><span class="p">,</span>
+    <span class="s">&quot;    H  H ee  l l ooo      W W   ooo r   l  ddd    &quot;</span><span class="p">,</span>
     <span class="p">]</span>
 
-    <span class="c1"># Convert spaces, letters to 0, 1</span>
+    <span class="c"># Convert spaces, letters to 0, 1</span>
     <span class="k">def</span> <span class="nf">to_10</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Convert letters to 1, then spaces to 0&quot;&quot;&quot;</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;\w&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;\s&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">r&#39;\w&#39;</span><span class="p">,</span> <span class="s">&#39;1&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">r&#39;\s&#39;</span><span class="p">,</span> <span class="s">&#39;0&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">s</span>
 
     <span class="n">MSG</span> <span class="o">=</span> <span class="p">[</span><span class="n">to_10</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">MSG</span><span class="p">]</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">MSG</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="mi">50</span>
 
-    <span class="c1"># Setup image as a concatenation of rows</span>
-    <span class="n">BORDER</span> <span class="o">=</span>  <span class="s1">&#39;1&#39;</span> <span class="o">+</span>  <span class="s1">&#39;0&#39;</span> <span class="o">*</span> <span class="mi">48</span> <span class="o">+</span> <span class="s1">&#39;1&#39;</span>
-    <span class="n">NULL</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span> <span class="o">*</span> <span class="mi">50</span>
+    <span class="c"># Setup image as a concatenation of rows</span>
+    <span class="n">BORDER</span> <span class="o">=</span>  <span class="s">&#39;1&#39;</span> <span class="o">+</span>  <span class="s">&#39;0&#39;</span> <span class="o">*</span> <span class="mi">48</span> <span class="o">+</span> <span class="s">&#39;1&#39;</span>
+    <span class="n">NULL</span> <span class="o">=</span> <span class="s">&#39;0&#39;</span> <span class="o">*</span> <span class="mi">50</span>
     <span class="n">IMAGE</span> <span class="o">=</span> <span class="p">[</span><span class="n">BORDER</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">NULL</span><span class="p">]</span> <span class="o">+</span> <span class="n">MSG</span> <span class="o">+</span> <span class="p">[</span><span class="n">NULL</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">37</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">MSG</span><span class="p">)</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">BORDER</span><span class="p">]</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">IMAGE</span><span class="p">)</span> <span class="o">==</span> <span class="mi">37</span>
 
-    <span class="c1"># Convert strings to ints for use in convertible code</span>
+    <span class="c"># Convert strings to ints for use in convertible code</span>
     <span class="n">TABLE</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">IMAGE</span><span class="p">])</span>
 
-    <span class="c1">### Hardware behavior ###</span>
+    <span class="c">### Hardware behavior ###</span>
 
-    <span class="c1"># Timing constants</span>
+    <span class="c"># Timing constants</span>
     <span class="n">hMaxCount</span> <span class="o">=</span> <span class="mi">1056</span><span class="o">-</span><span class="mi">1</span>
     <span class="n">hStartSync</span> <span class="o">=</span> <span class="mi">840</span>
     <span class="n">hEndSync</span> <span class="o">=</span> <span class="mi">968</span>
@@ -197,7 +197,7 @@ that are different from the original:</p>
     <span class="n">vStartSync</span> <span class="o">=</span> <span class="mi">601</span>
     <span class="n">vEndSync</span> <span class="o">=</span> <span class="mi">605</span>
 
-    <span class="c1"># Signals</span>
+    <span class="c"># Signals</span>
     <span class="n">hCounter</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">11</span><span class="p">:])</span>
     <span class="n">vCounter</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">10</span><span class="p">:])</span>
     <span class="n">shiftReg</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">modbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">50</span><span class="p">:])</span>
@@ -242,7 +242,7 @@ that are different from the original:</p>
 <h2 id="conversion-to-vhdl-and-verilog">Conversion to VHDL and Verilog</h2>
 <p>The MyHDL code can be converted to VHDL and Verilog
 as follows:</p>
-<div class="codehilite"><pre><span class="c1">### Conversion to VHDL &amp; Verilog</span>
+<div class="codehilite"><pre><span class="c">### Conversion to VHDL &amp; Verilog</span>
 
 <span class="n">pixelClock</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
 <span class="n">Red</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">4</span><span class="p">:])</span>

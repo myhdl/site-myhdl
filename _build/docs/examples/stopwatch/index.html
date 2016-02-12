@@ -109,7 +109,7 @@
  
 <h1>StopWatch
 </h1>
-        <p><i>Last modified: 17-Dec-2015</i></p> 
+        <p><i>Last modified: 21-Jun-2015</i></p> 
     </div>
 
     <div class="row">
@@ -249,7 +249,7 @@ interface of the time counter looks as follows:</p>
                         <span class="n">reset</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span>
                         <span class="n">reset</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">startstop</span><span class="p">):</span>
                <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="n">randrange</span><span class="p">(</span><span class="mi">10</span><span class="o">*</span><span class="n">PERIOD</span><span class="p">,</span> <span class="n">maxInterval</span><span class="p">))</span>
-               <span class="k">yield</span> <span class="n">clock</span><span class="o">.</span><span class="n">negedge</span> <span class="c1"># sync to avoid race condition</span>
+               <span class="k">yield</span> <span class="n">clock</span><span class="o">.</span><span class="n">negedge</span> <span class="c"># sync to avoid race condition</span>
                <span class="n">sig</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">HIGH</span>
                <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
                <span class="n">sig</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">LOW</span>
@@ -371,25 +371,25 @@ design.</p>
 <p>We first put the encoding data in a separate module, <code>seven_segment.py</code>, to
 make it reusable. The appropriate data structure for the encoding is a
 dictionary:</p>
-<div class="codehilite"><pre><span class="c1"># 7 segment encoding</span>
-<span class="c1">#      0</span>
-<span class="c1">#     ---  </span>
-<span class="c1">#  5 |   | 1</span>
-<span class="c1">#     ---   &lt;- 6</span>
-<span class="c1">#  4 |   | 2</span>
-<span class="c1">#     ---</span>
-<span class="c1">#      3</span>
+<div class="codehilite"><pre><span class="c"># 7 segment encoding</span>
+<span class="c">#      0</span>
+<span class="c">#     ---  </span>
+<span class="c">#  5 |   | 1</span>
+<span class="c">#     ---   &lt;- 6</span>
+<span class="c">#  4 |   | 2</span>
+<span class="c">#     ---</span>
+<span class="c">#      3</span>
 
-<span class="n">encoding</span> <span class="o">=</span>  <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;1000000&quot;</span><span class="p">,</span>
-             <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;1111001&quot;</span><span class="p">,</span>
-             <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;0100100&quot;</span><span class="p">,</span>
-             <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;0110000&quot;</span><span class="p">,</span>
-             <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;0011001&quot;</span><span class="p">,</span> 
-             <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;0010010&quot;</span><span class="p">,</span>
-             <span class="mi">6</span><span class="p">:</span> <span class="s2">&quot;0000010&quot;</span><span class="p">,</span>
-             <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;1111000&quot;</span><span class="p">,</span>
-             <span class="mi">8</span><span class="p">:</span> <span class="s2">&quot;0000000&quot;</span><span class="p">,</span>
-             <span class="mi">9</span><span class="p">:</span> <span class="s2">&quot;0010000&quot;</span>
+<span class="n">encoding</span> <span class="o">=</span>  <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s">&quot;1000000&quot;</span><span class="p">,</span>
+             <span class="mi">1</span><span class="p">:</span> <span class="s">&quot;1111001&quot;</span><span class="p">,</span>
+             <span class="mi">2</span><span class="p">:</span> <span class="s">&quot;0100100&quot;</span><span class="p">,</span>
+             <span class="mi">3</span><span class="p">:</span> <span class="s">&quot;0110000&quot;</span><span class="p">,</span>
+             <span class="mi">4</span><span class="p">:</span> <span class="s">&quot;0011001&quot;</span><span class="p">,</span> 
+             <span class="mi">5</span><span class="p">:</span> <span class="s">&quot;0010010&quot;</span><span class="p">,</span>
+             <span class="mi">6</span><span class="p">:</span> <span class="s">&quot;0000010&quot;</span><span class="p">,</span>
+             <span class="mi">7</span><span class="p">:</span> <span class="s">&quot;1111000&quot;</span><span class="p">,</span>
+             <span class="mi">8</span><span class="p">:</span> <span class="s">&quot;0000000&quot;</span><span class="p">,</span>
+             <span class="mi">9</span><span class="p">:</span> <span class="s">&quot;0010000&quot;</span>
             <span class="p">}</span>
 </pre></div>
 

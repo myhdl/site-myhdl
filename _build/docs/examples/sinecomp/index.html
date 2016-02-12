@@ -109,7 +109,7 @@
  
 <h1>Cordic-based Sine Computer
 </h1>
-        <p><i>Last modified: 17-Dec-2015</i></p> 
+        <p><i>Last modified: 21-Jun-2015</i></p> 
     </div>
 
     <div class="row">
@@ -174,16 +174,16 @@ under test. Here is the code:</p>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># scaling factor to represent floats as integers</span>
+    <span class="c"># scaling factor to represent floats as integers</span>
     <span class="n">M</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">fractionSize</span>
 
-    <span class="c1"># maximum angle</span>
+    <span class="c"># maximum angle</span>
     <span class="n">ZMAX</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">M</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
 
-    <span class="c1"># error margin shorthand</span>
+    <span class="c"># error margin shorthand</span>
     <span class="n">D</span> <span class="o">=</span> <span class="n">errorMargin</span>
 
-    <span class="c1"># signals</span>
+    <span class="c"># signals</span>
     <span class="n">cos_z0</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=-</span><span class="n">D</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">M</span><span class="o">+</span><span class="n">D</span><span class="p">))</span>
     <span class="n">sin_z0</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=-</span><span class="n">M</span><span class="o">-</span><span class="n">D</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">M</span><span class="o">+</span><span class="n">D</span><span class="p">))</span>
     <span class="n">z0</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=-</span><span class="n">ZMAX</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">ZMAX</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
@@ -192,19 +192,19 @@ under test. Here is the code:</p>
     <span class="n">clock</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
     <span class="n">reset</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
 
-    <span class="c1"># design under test</span>
+    <span class="c"># design under test</span>
     <span class="n">dut</span> <span class="o">=</span> <span class="n">SineComputer</span><span class="p">(</span><span class="n">cos_z0</span><span class="p">,</span> <span class="n">sin_z0</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">)</span>
 
-    <span class="c1"># clock generator</span>
+    <span class="c"># clock generator</span>
     <span class="nd">@always</span><span class="p">(</span><span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
     <span class="k">def</span> <span class="nf">clockgen</span><span class="p">():</span>
         <span class="n">clock</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">clock</span>
 
-    <span class="c1"># test vector setup</span>
+    <span class="c"># test vector setup</span>
     <span class="n">testAngles</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span>
     <span class="n">testAngles</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrTests</span><span class="p">)])</span>
 
-    <span class="c1"># actual test </span>
+    <span class="c"># actual test </span>
     <span class="nd">@instance</span>
     <span class="k">def</span> <span class="nf">check</span><span class="p">():</span>
         <span class="k">yield</span> <span class="n">clock</span><span class="o">.</span><span class="n">negedge</span>
@@ -291,7 +291,7 @@ into a bit-parallel data path and a state machine.</p>
 
 <span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="n">t_State</span> <span class="o">=</span> <span class="n">enum</span><span class="p">(</span><span class="s2">&quot;WAITING&quot;</span><span class="p">,</span> <span class="s2">&quot;CALCULATING&quot;</span><span class="p">)</span>
+<span class="n">t_State</span> <span class="o">=</span> <span class="n">enum</span><span class="p">(</span><span class="s">&quot;WAITING&quot;</span><span class="p">,</span> <span class="s">&quot;CALCULATING&quot;</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">SineComputer</span><span class="p">(</span><span class="n">cos_z0</span><span class="p">,</span> <span class="n">sin_z0</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">):</span>
 
@@ -313,28 +313,28 @@ into a bit-parallel data path and a state machine.</p>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># angle input bit width</span>
+    <span class="c"># angle input bit width</span>
     <span class="n">W</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">z0</span><span class="p">)</span>
 
-    <span class="c1"># angle input z0 represents number between -pi/2 and pi/2</span>
-    <span class="c1"># scaling factor corresponds to the nr of bits after the point</span>
+    <span class="c"># angle input z0 represents number between -pi/2 and pi/2</span>
+    <span class="c"># scaling factor corresponds to the nr of bits after the point</span>
     <span class="n">M</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">W</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
 
-    <span class="c1"># nr of iterations equals nr of significant input bits</span>
+    <span class="c"># nr of iterations equals nr of significant input bits</span>
     <span class="n">N</span> <span class="o">=</span> <span class="n">W</span><span class="o">-</span><span class="mi">1</span>
 
-    <span class="c1"># calculate X0</span>
+    <span class="c"># calculate X0</span>
     <span class="n">An</span> <span class="o">=</span> <span class="mf">1.0</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
         <span class="n">An</span> <span class="o">*=</span> <span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">)))</span>
 
-    <span class="c1"># X0</span>
+    <span class="c"># X0</span>
     <span class="n">X0</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">M</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="n">An</span><span class="p">))</span>
 
-    <span class="c1"># tuple with elementary angles</span>
+    <span class="c"># tuple with elementary angles</span>
     <span class="n">angles</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">M</span><span class="o">*</span><span class="n">atan</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">i</span><span class="p">))))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)])</span>
 
-    <span class="c1"># iterative cordic processor</span>
+    <span class="c"># iterative cordic processor</span>
     <span class="nd">@instance</span>
     <span class="k">def</span> <span class="nf">processor</span><span class="p">():</span>
 
@@ -423,13 +423,13 @@ test_SineComputer.py[1] .
 to Verilog automatically. In MyHDL, this is done by using the <code>toVerilog</code>
 function. For example, consider the instantiation of the design under test in
 the test bench:</p>
-<div class="codehilite"><pre>    <span class="c1"># design under test</span>
+<div class="codehilite"><pre>    <span class="c"># design under test</span>
     <span class="n">dut</span> <span class="o">=</span> <span class="n">SineComputer</span><span class="p">(</span><span class="n">cos_z0</span><span class="p">,</span> <span class="n">sin_z0</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">)</span>
 </pre></div>
 
 
 <p>To convert the design instance to Verilog, this line can be replaced by the following:</p>
-<div class="codehilite"><pre>    <span class="c1"># design under test</span>
+<div class="codehilite"><pre>    <span class="c"># design under test</span>
     <span class="n">dut</span> <span class="o">=</span> <span class="n">toVerilog</span><span class="p">(</span><span class="n">SineComputer</span><span class="p">,</span> <span class="n">cos_z0</span><span class="p">,</span> <span class="n">sin_z0</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">)</span>
 </pre></div>
 
@@ -558,7 +558,7 @@ restrictions of the "convertible subset" apply only to the code inside
 generator functions, not to any code outside them. </p>
 <p>For example, consider how the look-up table of elementary arctangents is set up
 in the <code>SineComputer</code> design:</p>
-<div class="codehilite"><pre>    <span class="c1"># tuple with elementary angles</span>
+<div class="codehilite"><pre>    <span class="c"># tuple with elementary angles</span>
     <span class="n">angles</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">M</span><span class="o">*</span><span class="n">atan</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">i</span><span class="p">))))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)])</span>
 </pre></div>
 
@@ -642,8 +642,8 @@ object.</p>
 <p>The following function creates a Cosimulation object for our design:</p>
 <div class="codehilite"><pre><span class="k">def</span> <span class="nf">SineComputer_v</span><span class="p">(</span><span class="n">cos_z0</span><span class="p">,</span> <span class="n">sin_z0</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">):</span>
     <span class="n">toVerilog</span><span class="p">(</span><span class="n">SineComputer</span><span class="p">,</span> <span class="n">cos_z0</span><span class="p">,</span> <span class="n">sin_z0</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">)</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;cver -q +loadvpi=myhdl_vpi:vpi_compat_bootstrap &quot;</span> <span class="o">+</span> \
-          <span class="s2">&quot;SineComputer.v tb_SineComputer.v&quot;</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s">&quot;cver -q +loadvpi=myhdl_vpi:vpi_compat_bootstrap &quot;</span> <span class="o">+</span> \
+          <span class="s">&quot;SineComputer.v tb_SineComputer.v&quot;</span>
     <span class="k">return</span> <span class="n">Cosimulation</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="o">**</span><span class="nb">locals</span><span class="p">())</span>
 </pre></div>
 
