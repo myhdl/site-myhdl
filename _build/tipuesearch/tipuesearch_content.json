@@ -32,7 +32,7 @@
         }, 
         {
             "tags": "", 
-            "text": "Design hardware with Python MyHDL turns Python into a hardware description and verification\nlanguage, providing hardware engineers with unprecedented power. Integrates seamlessly MyHDL designs can be converted to Verilog or VHDL automatically, and\nimplemented using a standard tool flow. Silicon proven Many MyHDL designs have been implemented in ASICs and FPGAs,\nincluding some high volume applications. Open source MyHDL is an open source, pure Python package. Install with pip and enjoy the Python ecosystem immediately. Visit the project on Github. Release news 13-Jul-2015 MyHDL 0.9.0 released General news 18-Mar-2015 Python3 Support", 
+            "text": "Design hardware with Python MyHDL turns Python into a hardware description and verification\nlanguage, providing hardware engineers with the power of the Python ecosystem. Integrates seamlessly MyHDL designs can be converted to Verilog or VHDL automatically, and\nimplemented using a standard tool flow. Silicon proven Many MyHDL designs have been implemented in ASICs and FPGAs,\nincluding some high volume applications. Open source MyHDL is an open source, pure Python package. Install with pip and enjoy the Python ecosystem immediately. Visit the project on Github. Release news 13-Jul-2015 MyHDL 0.9.0 released General news 18-Mar-2015 Python3 Support Tweets by @MyHDL !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+\"://platform.twitter.com/widgets.js\";fjs.parentNode.insertBefore(js,fjs);}}(document,\"script\",\"twitter-wjs\");", 
             "title": "MyHDL", 
             "url": "/index.html"
         }, 

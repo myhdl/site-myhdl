@@ -2,11 +2,11 @@
 title: MyHDL
 layout: home
 content:
-    - start 
+    - start
     - docs
     - support
     - users
-    - info 
+    - info
 tagline:
     From Python to Silicon!
 ---
@@ -16,7 +16,7 @@ tagline:
 <h1> Design hardware with Python</h1>
 <p class="lead">
 MyHDL turns Python into a hardware description and verification
-language, providing hardware engineers with unprecedented power.
+language, providing hardware engineers with the power of the Python ecosystem.
 </p>
     </div>
 </div>
@@ -36,7 +36,7 @@ implemented using a standard tool flow.
 <h3><i class="fa fa-check-square-o"></i> Silicon proven</h3>
 <p>
 Many MyHDL designs have been implemented in ASICs and FPGAs,
-including some high volume applications. 
+including some high volume applications.
 </p>
     </div>
 

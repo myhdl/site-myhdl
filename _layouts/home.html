@@ -1,6 +1,6 @@
 {% extends "_base.html" %}
 
-{% block home %} 
+{% block home %}
 {% endblock %}
 
 {% block body %}
@@ -27,20 +27,25 @@
     <div class="col-md-5 col-md-offset-1 text-center">
       {% set news = site.reflinks['/news/releases'].content[0] %}
       <div class="panel panel-default">
-        <div class="panel-heading">Release news</div>
+        <div class="panel-heading">
+          <h1 class="panel-title">Release news</h1>
+        </div>
         <div class="panel-body">
           {{news.date|dateformat}}&nbsp;&nbsp;<a href="news/releases">{{news.title}}</a>
         </div>
       </div>
-    </div>
-    <div class="col-md-5 text-center">
       {% set news = site.reflinks['/news/general'].content[0] %}
       <div class="panel panel-default">
-        <div class="panel-heading">General news</div>
+        <div class="panel-heading">
+          <h1 class="panel-title">General news</h1>
+        </div>
         <div class="panel-body">
           {{news.date|dateformat}}&nbsp;&nbsp;<a href="news/general">{{news.title}}</a>
         </div>
       </div>
+    </div>
+    <div class="col-md-5 text-center">
+      {% include 'twitter_timeline.html' %}
    </div>
   </div>
 </div>
@@ -50,4 +55,3 @@
 {% include 'footer.html' %}
 
 {% endblock %}
-
