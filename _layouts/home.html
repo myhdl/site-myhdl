@@ -24,28 +24,39 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-5 col-md-offset-1 text-center">
-      {% set news = site.reflinks['/news/releases'].content[0] %}
+    <div class="col-md-4 col-md-offset-2 ">
+      {% set rel = site.reflinks['/news/releases'].content[0] %}
       <div class="panel panel-default">
         <div class="panel-heading">
           <h1 class="panel-title">Release news</h1>
         </div>
         <div class="panel-body">
-          {{news.date|dateformat}}&nbsp;&nbsp;<a href="news/releases">{{news.title}}</a>
+          <p>{{rel.date|dateformat}}&nbsp;&nbsp;<a href="news/releases">{{rel.title}}</a></p>
         </div>
       </div>
-      {% set news = site.reflinks['/news/general'].content[0] %}
+      {% set news0 = site.reflinks['/news/general'].content[0] %}
+      {% set news1 = site.reflinks['/news/general'].content[1] %}
+      {% set news2 = site.reflinks['/news/general'].content[2] %}
       <div class="panel panel-default">
         <div class="panel-heading">
           <h1 class="panel-title">General news</h1>
         </div>
         <div class="panel-body">
-          {{news.date|dateformat}}&nbsp;&nbsp;<a href="news/general">{{news.title}}</a>
+          <p>{{news0.date|dateformat}}&nbsp;&nbsp;<a href="news/general">{{news0.title}}</a></p>
+          <p>{{news1.date|dateformat}}&nbsp;&nbsp;<a href="news/general">{{news1.title}}</a></p>
+          <p>{{news2.date|dateformat}}&nbsp;&nbsp;<a href="news/general">{{news2.title}}</a></p>
         </div>
       </div>
     </div>
-    <div class="col-md-5 text-center">
-      {% include 'twitter_timeline.html' %}
+    <div class="col-md-5">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h1 class="panel-title">Tweets</h1>
+        </div>
+        <div class="panel-body">
+          {% include 'twitter_timeline.html' %}
+        </div>
+      </div>
    </div>
   </div>
 </div>
