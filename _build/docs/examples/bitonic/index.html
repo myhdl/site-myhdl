@@ -109,7 +109,7 @@
  
 <h1>Bitonic Sort
 </h1>
-        <p><i>Last modified: 15-Dec-2015</i></p> 
+        <p><i>Last modified: 17-Dec-2015</i></p> 
     </div>
 
     <div class="row">
@@ -148,7 +148,7 @@ this section.</p>
 <p><em>(start quote)</em></p>
 <p>In the following, an implementation of bitonic sort in Java is given. The number of elements to be sorted must be a power of 2.</p>
 <p>The program is assumed to be encapsulated in a class with the following elements:</p>
-<div class="codehilite"><pre>private static int[] a;         // the array to be sorted
+<div class="codehilite"><pre><span></span>private static int[] a;         // the array to be sorted
 private final static boolean ASCENDING=true, DESCENDING=false; // sorting direction
 </pre></div>
 
@@ -157,7 +157,7 @@ private final static boolean ASCENDING=true, DESCENDING=false; // sorting direct
 indicates the sorting direction. If <code>dir</code> is <code>ASCENDING</code> and <code>a[i] &gt; a[j]</code> is
 true or <code>dir</code> is DESCENDING and <code>a[i] &gt; a[j]</code> is false then <code>a[i]</code> and <code>a[j]</code>
 are interchanged.</p>
-<div class="codehilite"><pre>private static void compare(int i, int j, boolean dir)
+<div class="codehilite"><pre><span></span>private static void compare(int i, int j, boolean dir)
 {
     if (dir==(a[i]&gt;a[j]))
     {
@@ -172,7 +172,7 @@ are interchanged.</p>
 <p>The procedure <code>bitonicMerge</code> recursively sorts a bitonic sequence in ascending
 order, if <code>dir = ASCENDING</code>, and in descending order otherwise. The sequence to
 be sorted starts at index position <code>lo</code>, the number of elements is <code>n</code>.</p>
-<div class="codehilite"><pre>private static void bitonicMerge(int lo, int n, boolean dir)
+<div class="codehilite"><pre><span></span>private static void bitonicMerge(int lo, int n, boolean dir)
 {
     if (n&gt;1)
     {
@@ -188,7 +188,7 @@ be sorted starts at index position <code>lo</code>, the number of elements is <c
 
 <p>Procedure <code>bitonicSort</code> first produces a bitonic sequence by recursively
 sorting its two halves in opposite directions, and then calls <code>bitonicMerge</code>.</p>
-<div class="codehilite"><pre>private static void bitonicSort(int lo, int n, boolean dir)
+<div class="codehilite"><pre><span></span>private static void bitonicSort(int lo, int n, boolean dir)
 {
     if (n&gt;1)
     {
@@ -203,7 +203,7 @@ sorting its two halves in opposite directions, and then calls <code>bitonicMerge
 
 <p>When called with parameters <code>lo = 0</code>, <code>n = a.length()</code> and <code>dir = ASCENDING</code>,
 procedure <code>bitonicSort</code> sorts the whole array <code>a</code>.</p>
-<div class="codehilite"><pre>public static void sort()
+<div class="codehilite"><pre><span></span>public static void sort()
 {
     bitonicSort(0, a.length(), ASCENDING);
 }
@@ -231,7 +231,7 @@ a "feedthrough" circuit for this purpose.</p>
 Java version.</p>
 <p>We start by importing the <code>myhdl</code> library, and by defining some boolean
 constants:</p>
-<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">DESCENDING</span><span class="p">,</span> <span class="n">ASCENDING</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">True</span>
 </pre></div>
@@ -240,7 +240,7 @@ constants:</p>
 <p>The <code>compare</code> leaf module is a combinatorial circuit with two input and two
 output signals. By default, the inputs are "fed through" to the outputs, but
 under the same condition as in the Java code, they are interchanged:</p>
-<div class="codehilite"><pre><span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">z1</span><span class="p">,</span> <span class="n">z2</span><span class="p">,</span> <span class="nb">dir</span><span class="p">):</span>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">z1</span><span class="p">,</span> <span class="n">z2</span><span class="p">,</span> <span class="nb">dir</span><span class="p">):</span>
 
     <span class="nd">@always_comb</span>
     <span class="k">def</span> <span class="nf">logic</span><span class="p">():</span>
@@ -256,7 +256,7 @@ under the same condition as in the Java code, they are interchanged:</p>
 
 <p>As mentioned, we will also need a feedthrough circuit, the equivalent of "doing
 nothing" in the Java code:</p>
-<div class="codehilite"><pre><span class="k">def</span> <span class="nf">feedthru</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">feedthru</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
 
     <span class="nd">@always_comb</span>
     <span class="k">def</span> <span class="nf">logic</span><span class="p">():</span>
@@ -271,7 +271,7 @@ signals as its input and its output. Instead of manipulating array elements
 based on indices as in Java, it generates the output from the input list of
 signals. Note how an additional list of signals is introduced in the case of 
 <code>n &gt; 1</code>, and how the recursion stops with a <code>feedthru</code> instance.</p>
-<div class="codehilite"><pre><span class="k">def</span> <span class="nf">bitonicMerge</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="nb">dir</span><span class="p">):</span>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">bitonicMerge</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="nb">dir</span><span class="p">):</span>
 
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">k</span> <span class="o">=</span> <span class="n">n</span><span class="o">//</span><span class="mi">2</span>
@@ -290,7 +290,7 @@ signals. Note how an additional list of signals is introduced in the case of
 
 
 <p>Function <code>bitonicSort</code> is written in a similar fashion:</p>
-<div class="codehilite"><pre><span class="k">def</span> <span class="nf">bitonicSort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="nb">dir</span><span class="p">):</span>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">bitonicSort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="nb">dir</span><span class="p">):</span>
 
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">k</span> <span class="o">=</span> <span class="n">n</span><span class="o">//</span><span class="mi">2</span>
@@ -313,7 +313,7 @@ There is a slight restriction however. The Verilog convertor cannot handle
 lists of signals in a top level interface. (This is related to the fact that
 Verilog memories cannot be used as ports.) To make the design suited for
 conversion, we have to splice the lists into individual signals:</p>
-<div class="codehilite"><pre><span class="k">def</span> <span class="nf">Array8Sorter</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span><span class="p">,</span>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">Array8Sorter</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span><span class="p">,</span>
                  <span class="n">z0</span><span class="p">,</span> <span class="n">z1</span><span class="p">,</span> <span class="n">z2</span><span class="p">,</span> <span class="n">z3</span><span class="p">,</span> <span class="n">z4</span><span class="p">,</span> <span class="n">z5</span><span class="p">,</span> <span class="n">z6</span><span class="p">,</span> <span class="n">z7</span><span class="p">):</span>
 
     <span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span><span class="p">]</span>
@@ -327,7 +327,7 @@ conversion, we have to splice the lists into individual signals:</p>
 <p>Verifying the sorter design is easy enough. We set up a list of random data
 values, assign it to the inputs of the circuit, then sort the data list and
 compare it with the outputs.</p>
-<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
 
 <span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
 

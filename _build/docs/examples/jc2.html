@@ -109,7 +109,7 @@
  
 <h1>Johnson Counter
 </h1>
-        <p><i>Last modified: 21-Jun-2015</i></p> 
+        <p><i>Last modified: 17-Dec-2015</i></p> 
     </div>
 
     <div class="row">
@@ -135,10 +135,10 @@ counter to hold its current state until goLeft or goRight is pulsed.
 After power-up, the counter is stopped with all outputs low (LEDs lit).</p>
 <h2 id="myhdl-code">MyHDL code</h2>
 <p>The MyHDL code for this design looks as follows.</p>
-<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">ACTIVE</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">DirType</span> <span class="o">=</span> <span class="n">enum</span><span class="p">(</span><span class="s">&#39;RIGHT&#39;</span><span class="p">,</span> <span class="s">&#39;LEFT&#39;</span><span class="p">)</span>
+<span class="n">DirType</span> <span class="o">=</span> <span class="n">enum</span><span class="p">(</span><span class="s1">&#39;RIGHT&#39;</span><span class="p">,</span> <span class="s1">&#39;LEFT&#39;</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">jc2</span><span class="p">(</span><span class="n">goLeft</span><span class="p">,</span> <span class="n">goRight</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
 
@@ -159,17 +159,17 @@ After power-up, the counter is stopped with all outputs low (LEDs lit).</p>
 
     <span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">logic</span><span class="p">():</span>
-        <span class="c"># direction</span>
+        <span class="c1"># direction</span>
         <span class="k">if</span> <span class="n">goRight</span> <span class="o">==</span> <span class="n">ACTIVE</span><span class="p">:</span>
             <span class="nb">dir</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">DirType</span><span class="o">.</span><span class="n">RIGHT</span>
             <span class="n">run</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">elif</span> <span class="n">goLeft</span> <span class="o">==</span> <span class="n">ACTIVE</span><span class="p">:</span>
             <span class="nb">dir</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">DirType</span><span class="o">.</span><span class="n">LEFT</span>
             <span class="n">run</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">True</span>
-        <span class="c"># stop</span>
+        <span class="c1"># stop</span>
         <span class="k">if</span> <span class="n">stop</span> <span class="o">==</span> <span class="n">ACTIVE</span><span class="p">:</span>
             <span class="n">run</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">False</span>
-        <span class="c"># counter action</span>
+        <span class="c1"># counter action</span>
         <span class="k">if</span> <span class="n">run</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">dir</span> <span class="o">==</span> <span class="n">DirType</span><span class="o">.</span><span class="n">LEFT</span><span class="p">:</span>
                 <span class="n">q</span><span class="o">.</span><span class="n">next</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
@@ -186,7 +186,7 @@ After power-up, the counter is stopped with all outputs low (LEDs lit).</p>
 clarity when the encoding is not specified.</p>
 <h2 id="test-bench">Test bench</h2>
 <p>The following is a test bench for a basic verification of the design.</p>
-<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">ACTIVE</span><span class="p">,</span> <span class="n">INACTIVE</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="nb">bool</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
@@ -217,14 +217,14 @@ clarity when the encoding is not specified.</p>
 
     <span class="nd">@instance</span>
     <span class="k">def</span> <span class="nf">monitor</span><span class="p">():</span>
-        <span class="k">print</span> <span class="s">&quot;goLeft goRight stop clk q&quot;</span>
-        <span class="k">print</span> <span class="s">&quot;-------------------------&quot;</span>
+        <span class="k">print</span> <span class="s2">&quot;goLeft goRight stop clk q&quot;</span>
+        <span class="k">print</span> <span class="s2">&quot;-------------------------&quot;</span>
         <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">clk</span><span class="o">.</span><span class="n">negedge</span>
             <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">print</span> <span class="s">&quot;</span><span class="si">%d</span><span class="s"> </span><span class="si">%d</span><span class="s"> </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">goLeft</span><span class="p">,</span> <span class="n">goRight</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span> <span class="p">,</span>
+            <span class="k">print</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">goLeft</span><span class="p">,</span> <span class="n">goRight</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span> <span class="p">,</span>
             <span class="k">yield</span> <span class="n">clk</span><span class="o">.</span><span class="n">posedge</span>
-            <span class="k">print</span> <span class="s">&quot;C&quot;</span><span class="p">,</span>
+            <span class="k">print</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span>
             <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
             <span class="k">print</span> <span class="nb">bin</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 
@@ -239,7 +239,7 @@ clarity when the encoding is not specified.</p>
 generator, and a response monitor, together with an instance of the design
 under test. Such a setup is quite typical.</p>
 <p>When we simulate this test bench, the output is as follows:</p>
-<div class="codehilite"><pre>$ python test_jc2.py
+<div class="codehilite"><pre><span></span>$ python test_jc2.py
 goLeft goRight stop clk q
 -------------------------
 1 1 1 C 0000
@@ -288,7 +288,7 @@ automatically, using the <code>toVerilog</code> function. Remember: there is no 
 converting when the design doesn't work. The simulation will catch much more
 errors than the converter. In MyHDL, like in Python, the run-time rules.</p>
 <p>Conversion to Verilog can be done with code like the following:</p>
-<div class="codehilite"><pre><span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="n">jc2</span><span class="p">):</span>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="n">jc2</span><span class="p">):</span>
     <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">clk</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="n">INACTIVE</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
     <span class="n">q</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">4</span><span class="p">:])</span>
     <span class="n">toVerilog</span><span class="p">(</span><span class="n">jc2</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
@@ -299,7 +299,7 @@ errors than the converter. In MyHDL, like in Python, the run-time rules.</p>
 
 <p>As you see, conversion works on an instantiated, elaborated design.</p>
 <p>The resulting Verilog code is as follows:</p>
-<div class="codehilite"><pre><span class="k">module</span> <span class="n">jc2</span> <span class="p">(</span>
+<div class="codehilite"><pre><span></span><span class="k">module</span> <span class="n">jc2</span> <span class="p">(</span>
     <span class="n">goLeft</span><span class="p">,</span>
     <span class="n">goRight</span><span class="p">,</span>
     <span class="n">stop</span><span class="p">,</span>
@@ -382,10 +382,10 @@ edge. Can this be done? The answer is positive: however, to support that we
 will need to use variables instead of signals for the state registers <code>dir</code> and
 <code>run</code>. </p>
 <p>The modified MyHDL code looks as follows:</p>
-<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">ACTIVE</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">DirType</span> <span class="o">=</span> <span class="n">enum</span><span class="p">(</span><span class="s">&#39;RIGHT&#39;</span><span class="p">,</span> <span class="s">&#39;LEFT&#39;</span><span class="p">)</span>
+<span class="n">DirType</span> <span class="o">=</span> <span class="n">enum</span><span class="p">(</span><span class="s1">&#39;RIGHT&#39;</span><span class="p">,</span> <span class="s1">&#39;LEFT&#39;</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">jc2_alt</span><span class="p">(</span><span class="n">goLeft</span><span class="p">,</span> <span class="n">goRight</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
 
@@ -408,17 +408,17 @@ will need to use variables instead of signals for the state registers <code>dir<
         <span class="n">run</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">clk</span><span class="o">.</span><span class="n">posedge</span>
-            <span class="c"># direction</span>
+            <span class="c1"># direction</span>
             <span class="k">if</span> <span class="n">goRight</span> <span class="o">==</span> <span class="n">ACTIVE</span><span class="p">:</span>
                 <span class="nb">dir</span> <span class="o">=</span> <span class="n">DirType</span><span class="o">.</span><span class="n">RIGHT</span>
                 <span class="n">run</span> <span class="o">=</span> <span class="bp">True</span>
             <span class="k">elif</span> <span class="n">goLeft</span> <span class="o">==</span> <span class="n">ACTIVE</span><span class="p">:</span>
                 <span class="nb">dir</span> <span class="o">=</span> <span class="n">DirType</span><span class="o">.</span><span class="n">LEFT</span>
                 <span class="n">run</span> <span class="o">=</span> <span class="bp">True</span>
-            <span class="c"># stop</span>
+            <span class="c1"># stop</span>
             <span class="k">if</span> <span class="n">stop</span> <span class="o">==</span> <span class="n">ACTIVE</span><span class="p">:</span>
                 <span class="n">run</span> <span class="o">=</span> <span class="bp">False</span>
-            <span class="c"># counter action</span>
+            <span class="c1"># counter action</span>
             <span class="k">if</span> <span class="n">run</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">dir</span> <span class="o">==</span> <span class="n">DirType</span><span class="o">.</span><span class="n">LEFT</span><span class="p">:</span>
                     <span class="n">q</span><span class="o">.</span><span class="n">next</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
@@ -453,7 +453,7 @@ confuse a lot of designers. This coding style is also a favourite theme of this
 author :-) ( --- <em><a href="jan@jandecaluwe.com">Jan Decaluwe</a></em>). </p>
 <p>To verify whether we now have the desired behavior, we can run the original
 test bench on the alternative design:</p>
-<div class="codehilite"><pre>Alternative design
+<div class="codehilite"><pre><span></span>Alternative design
 ------------------
 goLeft goRight stop clk q
 -------------------------
@@ -489,7 +489,7 @@ goLeft goRight stop clk q
 <p>If you compare this output with the previous one, you will see that the counter
 response to a control input change is now indeed one clock cycle earlier.</p>
 <p>Like before, we can convert the MyHDL code automatically to Verilog:</p>
-<div class="codehilite"><pre><span class="k">module</span> <span class="n">jc2_alt</span> <span class="p">(</span>
+<div class="codehilite"><pre><span></span><span class="k">module</span> <span class="n">jc2_alt</span> <span class="p">(</span>
     <span class="n">goLeft</span><span class="p">,</span>
     <span class="n">goRight</span><span class="p">,</span>
     <span class="n">stop</span><span class="p">,</span>

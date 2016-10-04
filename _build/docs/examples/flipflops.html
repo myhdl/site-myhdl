@@ -109,7 +109,7 @@
  
 <h1>Flip-flops and Latches
 </h1>
-        <p><i>Last modified: 11-Jan-2016</i></p> 
+        <p><i>Last modified: 04-Feb-2016</i></p> 
     </div>
 
     <div class="row">
@@ -130,7 +130,7 @@ suited to explain basic MyHDL usage and to compare MyHDL with other solutions.</
 <code>d</code> input to the <code>q</code> output on every rising edge of the clock <code>clk</code>.</p>
 <h3 id="description">Description</h3>
 <p>Here is the description of a D flip-flop in MyHDL:</p>
-<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="k">def</span> <span class="nf">dff</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">):</span>
 
@@ -144,7 +144,7 @@ suited to explain basic MyHDL usage and to compare MyHDL with other solutions.</
 
 <h3 id="simulation">Simulation</h3>
 <p>Let's write a small test bench to simulate the design:</p>
-<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
 
 <span class="k">def</span> <span class="nf">test_dff</span><span class="p">():</span>
 
@@ -185,7 +185,7 @@ debug small designs.</p>
 <h3 id="automatic-conversion-to-verilog">Automatic conversion to Verilog</h3>
 <p>With MyHDL's <code>toVerilog</code> function, a D flip-flop instance can be converted to
 Verilog code:</p>
-<div class="codehilite"><pre><span class="k">def</span> <span class="nf">convert</span><span class="p">():</span>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">convert</span><span class="p">():</span>
     <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
     <span class="n">toVerilog</span><span class="p">(</span><span class="n">dff</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">)</span>
 
@@ -194,7 +194,7 @@ Verilog code:</p>
 
 
 <p>This is the resulting Verilog code:</p>
-<div class="codehilite"><pre><span class="k">module</span> <span class="n">dff</span> <span class="p">(</span>
+<div class="codehilite"><pre><span></span><span class="k">module</span> <span class="n">dff</span> <span class="p">(</span>
     <span class="n">q</span><span class="p">,</span>
     <span class="n">d</span><span class="p">,</span>
     <span class="n">clk</span>
@@ -221,7 +221,7 @@ a basic D flip-flop as in the previous section. When the reset pin is active,
 the output is held to zero. Typically, the reset pin is active low.</p>
 <h3 id="description_1">Description</h3>
 <p>Here is the description:</p>
-<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="k">def</span> <span class="nf">dffa</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">rst</span><span class="p">):</span>
 
@@ -238,7 +238,7 @@ the output is held to zero. Typically, the reset pin is active low.</p>
 
 <h3 id="simulation_1">Simulation</h3>
 <p>Here is a test bench for the design:</p>
-<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
 
 <span class="k">def</span> <span class="nf">test_dffa</span><span class="p">():</span>
 
@@ -282,7 +282,7 @@ random duration.</p>
 <p><img src="test_dffa.jpg" class="img-responsive" alt="test_dffa waveforms"></p>
 <h3 id="automatic-conversion-to-verilog_1">Automatic conversion to Verilog</h3>
 <p>The design can be converted to Verilog as follows:</p>
-<div class="codehilite"><pre><span class="k">def</span> <span class="nf">convert</span><span class="p">():</span>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">convert</span><span class="p">():</span>
     <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">rst</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
     <span class="n">toVerilog</span><span class="p">(</span><span class="n">dffa</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">rst</span><span class="p">)</span>
 
@@ -291,7 +291,7 @@ random duration.</p>
 
 
 <p>The result looks like this:</p>
-<div class="codehilite"><pre><span class="k">module</span> <span class="n">dffa</span> <span class="p">(</span>
+<div class="codehilite"><pre><span></span><span class="k">module</span> <span class="n">dffa</span> <span class="p">(</span>
     <span class="n">q</span><span class="p">,</span>
     <span class="n">d</span><span class="p">,</span>
     <span class="n">clk</span><span class="p">,</span>
@@ -325,7 +325,7 @@ gate pin. When the gate is open, the output follows the input combinatorially.
 When it is closed, the output keeps its value.</p>
 <h3 id="description_2">Description</h3>
 <p>The following code describes a latch:</p>
-<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="k">def</span> <span class="nf">latch</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">g</span><span class="p">):</span>
 
@@ -344,7 +344,7 @@ generator describes a circuit that is necessarily combinatorial, but merely
 that it triggers whenever one of the input signals changes.</p>
 <h3 id="simulation_2">Simulation</h3>
 <p>Here is a test bench to simulate the latch:</p>
-<div class="codehilite"><pre><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
 
 <span class="k">def</span> <span class="nf">test_latch</span><span class="p">():</span>
 
@@ -378,7 +378,7 @@ generator for the input and for the controlling gate.</p>
 <p><img src="test_latch.jpg" class="img-responsive" alt="test_latch waveforms"></p>
 <h3 id="automatic-conversion-to-verilog_2">Automatic conversion to Verilog</h3>
 <p>We can convert the design as follows:</p>
-<div class="codehilite"><pre><span class="k">def</span> <span class="nf">convert</span><span class="p">():</span>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">convert</span><span class="p">():</span>
     <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">g</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
     <span class="n">toVerilog</span><span class="p">(</span><span class="n">latch</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
 
@@ -387,7 +387,7 @@ generator for the input and for the controlling gate.</p>
 
 
 <p>Here is the result:</p>
-<div class="codehilite"><pre><span class="k">module</span> <span class="n">latch</span> <span class="p">(</span>
+<div class="codehilite"><pre><span></span><span class="k">module</span> <span class="n">latch</span> <span class="p">(</span>
     <span class="n">q</span><span class="p">,</span>
     <span class="n">d</span><span class="p">,</span>
     <span class="n">g</span>
