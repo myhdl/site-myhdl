@@ -108,7 +108,7 @@
  
 <h1>Performance
 </h1>
-        <p><i>Last modified: 17-Dec-2015</i></p> 
+        <p><i>Last modified: 10-Nov-2017</i></p> 
     </div>
 
     <div class="row">
@@ -442,89 +442,18 @@ up to a minute, depending on the size of the program. To get a feeling for
 what it may mean for MyHDL, I have run one of the benchmarks (<code>longdiv</code>)
 several times, each time doubling the number of test vectors. The results
 are as follows:</p>
-<table class="table">
-<thead>
-<tr>
-<th align="center">log<sub>2</sub>(#vectors)</th>
-<th align="left">MyHDL@cPython</th>
-<th align="left">MyHDL@pypy</th>
-<th align="center">Speedup factor</th>
-<th align="center"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="center">9</td>
-<td align="left">1.7</td>
-<td align="left">1.9</td>
-<td align="center">0.9</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">10</td>
-<td align="left">3.1</td>
-<td align="left">2.2</td>
-<td align="center">1.4</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">11</td>
-<td align="left">6.0</td>
-<td align="left">2.5</td>
-<td align="center">2.4</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">12</td>
-<td align="left">11.9</td>
-<td align="left">3.1</td>
-<td align="center">3.8</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">13</td>
-<td align="left">23.4</td>
-<td align="left">4.2</td>
-<td align="center">5.6</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">14</td>
-<td align="left">46.8</td>
-<td align="left">6.3</td>
-<td align="center">7.4</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">15</td>
-<td align="left">93.9</td>
-<td align="left">10.7</td>
-<td align="center">8.8</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">16</td>
-<td align="left">186.6</td>
-<td align="left">19.1</td>
-<td align="center">9.8</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">17</td>
-<td align="left">373.1</td>
-<td align="left">35.8</td>
-<td align="center">10.4</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">18</td>
-<td align="left">750.7</td>
-<td align="left">69.4</td>
-<td align="center">10.8</td>
-<td align="center"></td>
-</tr>
-</tbody>
-</table>
+<p>|  log<sub>2</sub>(#vectors)  | MyHDL@cPython |  MyHDL@pypy  |  Speedup factor  |
+|:-------:|:------------------|:--------------|:------------:|:----------------:|
+|    9    |      1.7       |      1.9   |   0.9  |
+|   10    |      3.1       |      2.2   |   1.4  |
+|   11    |      6.0       |      2.5   |   2.4  |
+|   12    |     11.9       |      3.1   |   3.8  |
+|   13    |     23.4       |      4.2   |   5.6  |
+|   14    |     46.8       |      6.3   |   7.4  |
+|   15    |     93.9       |     10.7   |   8.8  |
+|   16    |    186.6       |     19.1   |   9.8  |
+|   17    |    373.1       |     35.8   |  10.4  |
+|   18    |    750.7       |     69.4   |  10.8  |</p>
 <p>As you can see, the simulation gets up to speed after a few seconds. To get
 the initial offset out of the speedup factor, it has to run long enough.
 For this reason, I have engineered the benchmarks so that the PyPy version
