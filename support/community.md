@@ -9,14 +9,15 @@ are welcomed on the forum.  The forum, for all
 practical purposes, has replaced the mailing-list.  For more iformation
 on the mailing-list see below.
 
-In addition to the forum there is an active [gitter channel](https://gitter.im/jandecaluwe/myhdl)
+In addition to the forum there is an active
+[gitter channel](https://gitter.im/myhdl/myhdl)
 and a [#myhdl](https://webchat.freenode.net/) IRC channel
 on [freenode](https://freenode.net/)
 
 [The MyHDL Mailing List](https://sourceforge.net/p/myhdl/mailman) was
 used heavily in the past but has been primarily replaced by the
 [discourse forum](http://discourse.myhdl.org/) and
-[gitter channel](https://gitter.im/jandecaluwe/myhdl).
+[gitter channel](https://gitter.im/myhdl/myhdl).
 
 The mailing list is archived on <http://gmane.org>, which
 provides a bidirectional gateway to the mailing list. Gmane
@@ -29,5 +30,6 @@ All interface options are described here:
 
 In particular, to access the list as a usenet newsgroup, you
 can use this link:
-[The MyHDL Newsgroup](http://news.gmane.org/gmane.comp.python.myhdl).
+[The MyHDL Newsgroup](http://gmane.org/find.php?list=myhdl)
+<!-- [The MyHDL Newsgroup](http://news.gmane.org/gmane.comp.python.myhdl). -->
 
