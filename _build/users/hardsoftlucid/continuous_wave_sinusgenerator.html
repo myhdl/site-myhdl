@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Continuous Sinus Waveform Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Bootstrap -->
+    <link href="/css/bootstrap-flatly.min.css" rel="stylesheet" media="screen">
+    <!-- customizations -->
+    <link href="/css/site.css" rel="stylesheet" media="screen">
+    <!-- pygments -->
+    <link href="/css/syntax.css" rel="stylesheet" media="screen">
+    <!-- icons -->
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/media/myhdl_favicon.ico">
+                          
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-48954307-2', 'myhdl.org');
+  ga('send', 'pageview');
+
+</script>
+ 
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">MyHDL</a>
+        </div>
+        <div class="navbar-collapse collapse">
+
+          <ul class="nav navbar-nav navbar-left">
+ 
+            <li class="dropdown">
+              <a href="/start/" class="dropdown-toggle" data-toggle="dropdown">Start <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/start/overview.html">Overview</a></li>    
+                <li><a href="/start/installation.html">Installation</a></li>    
+                <li><a href="/start/why.html">Why MyHDL?</a></li>    
+                <li><a href="/start/whatitisnot.html">What MyHDL is not</a></li>    
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="/docs/" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="http://docs.myhdl.org">Manual</a></li>    
+                <li><a href="/docs/examples/">Examples</a></li>    
+                <li><a href="/docs/performance.html">Performance</a></li>    
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="/support/" class="dropdown-toggle" data-toggle="dropdown">Support <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/support/faq.html">FAQ</a></li>    
+                <li><a href="/support/community.html">Community</a></li>    
+                <li><a href="https://github.com/jandecaluwe/myhdl/issues">Issue Tracker</a></li>    
+                <li><a href="/support/resources.html">Resources</a></li>    
+                <li><a href="http://dev.myhdl.org">Development documentation</a></li>    
+                <li><a href="/support/commercial.html">Commercial support</a></li>    
+              </ul>
+            </li>
+            <li class="active"><a href="/users/">Users</a></li>
+          </ul>
+
+          <form class="navbar-form navbar-left" action="/search.html" role="search">
+            <div class="form-group">
+              <input type="text" required name="q" id="tipue_search_input" class="form-control" placeholder="Search"> 
+            </div>
+          </form>
+
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/info.html">Info</a></li>
+          </ul>
+
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+
+<div class="container">
+
+    <ol class="breadcrumb">
+       <li><a href="/">Home</a></li>
+       <li><a href="/users/">Users</a></li>
+       <li><a href="/users/hardsoftlucid/">Norbert Feurle</a></li>
+       <li class="active">Continuous Sinus Waveform Generator</li>
+    </ol>
+
+    <div class="page-header">
+ 
+        <h1>Continuous Sinus Waveform Generator</h1>
+        <p><i>Last modified: 07-Jul-2020</i></p> 
+    </div>
+
+    <div class="row">
+
+        <div class="content">
+        <main>
+            <div class="col-md-7" role="main">
+                <p>The follwing is a small hardware description which will generate a sinus waveform. This is accomplished by using the recursive chebycheff formulation, thereby only one multiplication per clock-cycle is used.</p>
+<p>The plotting of the generated waveform is done using pylab/matplotlib.</p>
+<h2 id="myhdl-code">Myhdl Code</h2>
+<div class="codehilite"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">cos</span><span class="p">,</span><span class="n">pi</span>
+<span class="kn">import</span> <span class="nn">pylab</span>
+
+
+<span class="k">def</span> <span class="nf">unit_singen</span><span class="p">(</span><span class="n">i_clk</span><span class="p">,</span><span class="n">i_reset</span><span class="p">,</span><span class="n">i_enable</span><span class="p">,</span><span class="n">o_outvalue</span><span class="p">,</span><span class="n">frequenzSIN</span><span class="p">,</span><span class="n">clkfrequnez</span><span class="p">):</span>
+
+    <span class="n">INTERNALWIDTH</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">o_outvalue</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span> 
+
+    <span class="n">KONSTANT_FACTOR</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">frequenzSIN</span><span class="o">*</span><span class="mf">1.0</span><span class="o">/</span><span class="n">clkfrequnez</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">INTERNALWIDTH</span><span class="p">))</span>
+
+    <span class="n">Reg_T0</span><span class="o">=</span><span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">((</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">INTERNALWIDTH</span><span class="p">))</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">min</span><span class="o">=</span><span class="n">o_outvalue</span><span class="o">.</span><span class="n">min</span><span class="p">,</span><span class="nb">max</span><span class="o">=</span><span class="n">o_outvalue</span><span class="o">.</span><span class="n">max</span><span class="p">))</span>
+    <span class="n">Reg_T1</span><span class="o">=</span><span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="n">KONSTANT_FACTOR</span><span class="p">,</span><span class="nb">min</span><span class="o">=</span><span class="n">o_outvalue</span><span class="o">.</span><span class="n">min</span><span class="p">,</span><span class="nb">max</span><span class="o">=</span><span class="n">o_outvalue</span><span class="o">.</span><span class="n">max</span><span class="p">))</span>
+
+    <span class="nd">@always</span><span class="p">(</span><span class="n">i_clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">,</span><span class="n">i_reset</span><span class="o">.</span><span class="n">negedge</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">logicCC</span><span class="p">():</span>
+      <span class="k">if</span> <span class="n">i_reset</span><span class="o">==</span> <span class="mi">0</span> <span class="p">:</span>
+    <span class="n">Reg_T0</span><span class="o">.</span><span class="n">next</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">INTERNALWIDTH</span><span class="p">))</span><span class="o">-</span><span class="mi">1</span>
+    <span class="n">Reg_T1</span><span class="o">.</span><span class="n">next</span><span class="o">=</span><span class="n">KONSTANT_FACTOR</span>
+      <span class="k">else</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">i_enable</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+      <span class="c1"># recursive chebycheff formulation for sinus waveform calculation</span>
+      <span class="c1"># often taylor approximations or other polynomial approximations </span>
+          <span class="c1"># are used, but if you want a continuous waveform,</span>
+      <span class="c1"># the recursive chebycheff formulation could save a bunch of multiplications.</span>
+      <span class="n">Reg_T0</span><span class="o">.</span><span class="n">next</span><span class="o">=</span><span class="n">Reg_T1</span>
+      <span class="n">Reg_T1</span><span class="o">.</span><span class="n">next</span><span class="o">=</span><span class="p">((</span><span class="n">KONSTANT_FACTOR</span> <span class="o">*</span> <span class="n">Reg_T1</span><span class="p">)</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">INTERNALWIDTH</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="n">Reg_T0</span>
+
+    <span class="nd">@always_comb</span>
+    <span class="k">def</span> <span class="nf">comb_logic</span><span class="p">():</span>
+      <span class="n">o_outvalue</span><span class="o">.</span><span class="n">next</span><span class="o">=</span><span class="n">Reg_T1</span>
+
+    <span class="k">return</span> <span class="n">instances</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">test_singen</span><span class="p">(</span><span class="n">SimulateNPoints</span><span class="o">=</span><span class="mi">200</span><span class="p">):</span>
+
+   <span class="n">OUTPUT_BITWIDTH</span><span class="o">=</span><span class="mi">30</span>
+   <span class="n">Sinusvalue</span><span class="o">=</span><span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">min</span><span class="o">=-</span><span class="mi">2</span><span class="o">**</span><span class="n">OUTPUT_BITWIDTH</span><span class="p">,</span><span class="nb">max</span><span class="o">=</span><span class="mi">2</span><span class="o">**</span><span class="n">OUTPUT_BITWIDTH</span><span class="p">))</span>
+   <span class="n">clk</span><span class="o">=</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+   <span class="n">enable</span><span class="o">=</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+   <span class="n">reset</span><span class="o">=</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+   <span class="n">frequenzSIN</span><span class="o">=</span><span class="mf">0.75e6</span>   <span class="c1"># make a 1.45 mhz Sinus</span>
+   <span class="n">clk_frequnez</span><span class="o">=</span><span class="mf">10e6</span>   <span class="c1"># 10 mhz </span>
+
+   <span class="n">clk_period</span><span class="o">=</span><span class="mf">1.0</span><span class="o">/</span><span class="n">clk_frequnez</span>
+   <span class="n">singen_inst</span> <span class="o">=</span> <span class="n">unit_singen</span><span class="p">(</span><span class="n">clk</span><span class="p">,</span><span class="n">reset</span><span class="p">,</span><span class="n">enable</span><span class="p">,</span><span class="n">Sinusvalue</span><span class="p">,</span><span class="n">frequenzSIN</span><span class="p">,</span><span class="n">clk_frequnez</span><span class="p">)</span>
+
+   <span class="nd">@always</span><span class="p">(</span><span class="n">delay</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">clk_period</span><span class="o">*</span><span class="mf">0.5</span><span class="o">*</span><span class="mf">1e9</span><span class="p">)))</span>  <span class="c1">## delay in nano seconds</span>
+   <span class="k">def</span> <span class="nf">clkgen</span><span class="p">():</span>
+       <span class="n">clk</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">clk</span>
+
+
+   <span class="n">sinlist</span><span class="o">=</span><span class="p">[]</span>
+
+   <span class="nd">@instance</span>
+   <span class="k">def</span> <span class="nf">stimulus</span><span class="p">():</span>
+
+       <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+     <span class="n">reset</span><span class="o">.</span><span class="n">next</span><span class="o">=</span><span class="mi">0</span>
+     <span class="n">enable</span><span class="o">.</span><span class="n">next</span><span class="o">=</span><span class="mi">0</span>
+     <span class="k">yield</span> <span class="n">clk</span><span class="o">.</span><span class="n">posedge</span>
+     <span class="n">reset</span><span class="o">.</span><span class="n">next</span><span class="o">=</span><span class="mi">1</span>
+     <span class="k">yield</span> <span class="n">clk</span><span class="o">.</span><span class="n">posedge</span>
+     <span class="n">enable</span><span class="o">.</span><span class="n">next</span><span class="o">=</span><span class="mi">1</span>
+     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">SimulateNPoints</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">clk</span><span class="o">.</span><span class="n">posedge</span>
+        <span class="c1">#Save the results from the simulation</span>
+        <span class="n">sinlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">Sinusvalue</span><span class="p">))</span>
+
+     <span class="c1"># Plot the Simulation Result using pylab/Mathplotlib</span>
+     <span class="n">pylab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+     <span class="n">pylab</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">211</span><span class="p">)</span>
+     <span class="n">pylab</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pylab</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="n">clk_period</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sinlist</span><span class="p">)</span><span class="o">-</span><span class="mf">0.5</span><span class="p">),</span><span class="n">clk_period</span><span class="p">),</span><span class="n">sinlist</span><span class="p">)</span>
+     <span class="n">pylab</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+     <span class="n">pylab</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">)</span>
+     <span class="n">pylab</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">212</span><span class="p">)</span>
+     <span class="n">pylab</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">pylab</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">clk_frequnez</span><span class="o">/</span><span class="mf">2.0</span><span class="p">,</span><span class="n">clk_frequnez</span><span class="o">/</span><span class="mf">2.0</span><span class="p">,</span><span class="n">clk_frequnez</span><span class="o">/</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sinlist</span><span class="p">))),</span><span class="nb">abs</span><span class="p">(</span><span class="n">pylab</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">pylab</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">pylab</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sinlist</span><span class="p">)))))</span>
+     <span class="n">pylab</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency&quot;</span><span class="p">)</span>
+     <span class="n">pylab</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">)</span>
+     <span class="n">pylab</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+     <span class="k">raise</span> <span class="n">StopSimulation</span>
+
+   <span class="n">toVHDL</span><span class="p">(</span><span class="n">unit_singen</span><span class="p">,</span><span class="n">clk</span><span class="p">,</span><span class="n">reset</span><span class="p">,</span><span class="n">enable</span><span class="p">,</span><span class="n">Sinusvalue</span><span class="p">,</span><span class="n">frequenzSIN</span><span class="p">,</span><span class="n">clk_frequnez</span><span class="p">)</span>
+
+   <span class="k">return</span> <span class="n">instances</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">test_singen</span><span class="p">(</span><span class="n">SimulateNPoints</span><span class="o">=</span><span class="mi">200</span><span class="p">))</span>
+    <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+
+<h2 id="waveform-plot">Waveform Plot</h2>
+<p><img alt="Continuous Sinwave FFT" src="/users/hardsoftlucid/continuous_sinwave_fft.png" /></p>
+<h2 id="conversion-to-vhdl">Conversion to VHDL</h2>
+<div class="codehilite"><pre><span></span><span class="c1">-- File: unit_singen.vhd</span>
+<span class="c1">-- Generated by MyHDL 0.7</span>
+<span class="c1">-- Date: Tue Mar 27 11:52:47 2012</span>
+
+
+<span class="k">library</span> <span class="nn">IEEE</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">IEEE.std_logic_1164.</span><span class="k">all</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">IEEE.numeric_std.</span><span class="k">all</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">std.textio.</span><span class="k">all</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nn">work.pck_myhdl_07.</span><span class="k">all</span><span class="p">;</span>
+
+<span class="k">entity</span> <span class="nc">unit_singen</span> <span class="k">is</span>
+    <span class="k">port</span> <span class="p">(</span>
+        <span class="n">i_clk</span><span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+        <span class="n">i_reset</span><span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+        <span class="n">i_enable</span><span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+        <span class="n">o_outvalue</span><span class="o">:</span> <span class="k">out</span> <span class="kt">signed</span> <span class="p">(</span><span class="mi">30</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">);</span>
+<span class="k">end</span> <span class="k">entity</span> <span class="nc">unit_singen</span><span class="p">;</span>
+
+
+<span class="k">architecture</span> <span class="nc">MyHDL</span> <span class="k">of</span> <span class="nc">unit_singen</span> <span class="k">is</span>
+
+<span class="k">signal</span> <span class="n">Reg_T1</span><span class="o">:</span> <span class="kt">signed</span> <span class="p">(</span><span class="mi">30</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+<span class="k">signal</span> <span class="n">Reg_T0</span><span class="o">:</span> <span class="kt">signed</span> <span class="p">(</span><span class="mi">30</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+
+<span class="k">begin</span>
+
+
+
+
+
+<span class="n">o_outvalue</span> <span class="o">&lt;=</span> <span class="n">Reg_T1</span><span class="p">;</span>
+
+
+<span class="nc">UNIT_SINGEN_LOGICCC</span><span class="o">:</span> <span class="k">process</span> <span class="p">(</span><span class="n">i_clk</span><span class="p">,</span> <span class="n">i_reset</span><span class="p">)</span> <span class="k">is</span>
+<span class="k">begin</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i_reset</span> <span class="o">=</span> <span class="sc">&#39;0&#39;</span><span class="p">)</span> <span class="k">then</span>
+        <span class="n">Reg_T0</span> <span class="o">&lt;=</span> <span class="n">to_signed</span><span class="p">((</span><span class="mi">2</span> <span class="o">**</span> <span class="mi">29</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">31</span><span class="p">);</span>
+        <span class="n">Reg_T1</span> <span class="o">&lt;=</span> <span class="s">&quot;0011100100000110010000000011101&quot;</span><span class="p">;</span>
+    <span class="k">elsif</span> <span class="n">rising_edge</span><span class="p">(</span><span class="n">i_clk</span><span class="p">)</span> <span class="k">then</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">i_enable</span> <span class="o">=</span> <span class="sc">&#39;1&#39;</span><span class="p">)</span> <span class="k">then</span>
+            <span class="n">Reg_T0</span> <span class="o">&lt;=</span> <span class="n">Reg_T1</span><span class="p">;</span>
+            <span class="n">Reg_T1</span> <span class="o">&lt;=</span> <span class="n">resize</span><span class="p">(</span><span class="n">shift_right</span><span class="p">((</span><span class="mi">478355485</span> <span class="o">*</span> <span class="n">Reg_T1</span><span class="p">),</span> <span class="p">(</span><span class="mi">29</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="n">Reg_T0</span><span class="p">,</span> <span class="mi">31</span><span class="p">);</span>
+        <span class="k">end</span> <span class="k">if</span><span class="p">;</span>
+    <span class="k">end</span> <span class="k">if</span><span class="p">;</span>
+<span class="k">end</span> <span class="k">process</span> <span class="nc">UNIT_SINGEN_LOGICCC</span><span class="p">;</span>
+
+<span class="k">end</span> <span class="k">architecture</span> <span class="nc">MyHDL</span><span class="p">;</span>
+</pre></div>
+            </div>
+        </main>
+        </div>
+
+ 
+        <div class="col-md-3" role="navigation"> 
+          <nav class="hidden-print hidden-xs hidden-sm">
+            <div class="sidebar" data-spy="affix" 
+                 data-offset-top="80" 
+                 data-offset-bottom="60">
+                <div class="well">
+                    <a href="#"><strong style="font-size:90%">Continuous Sinus Waveform Generator</strong></a>
+                    <div class="toc">
+<ul>
+<li><a href="#myhdl-code">Myhdl Code</a></li>
+<li><a href="#waveform-plot">Waveform Plot</a></li>
+<li><a href="#conversion-to-vhdl">Conversion to VHDL</a></li>
+</ul>
+</div>
+
+                </div>
+            </div>
+          </nav>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <div style="margin: 8px">
+<a href="https://twitter.com/MyHDL" class="twitter-follow-button" data-show-count="true">Follow @MyHDL</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+<a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+<!-- Place this tag where you want the +1 button to render. -->
+<div class="g-plusone" data-size="medium"></div>
+
+<!-- Place this tag after the last +1 button tag. -->
+<script type="text/javascript">
+window.__gcfg = {
+    lang: 'en-US'
+};
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>        </div>
+        <p></p>
+        <p>
+           <a href="https://github.com/myhdl/site-myhdl"><i class="fa fa-github"></i>Website source</a>
+        <p>
+           Content licensed under the
+           <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a> license.
+           See <a href="/terms-of-use.html">Terms of Use</a>
+        </p> 
+        <p>
+           Powered by <a href="http://urubu.jandecaluwe.com">Urubu</a>
+        </p> 
+    </div>
+</div> 
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <!-- <script src="https://code.jquery.com/jquery.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/js/bootstrap.min.js"></script>
+ 
+
+  </body>
+</html>

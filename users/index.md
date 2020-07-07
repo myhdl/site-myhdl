@@ -5,6 +5,7 @@ content:
     - jandecaluwe
     - benallard
     - cfelton
+    - hardsoftlucid
 description:
     MyHDL users and their projects
 ---
