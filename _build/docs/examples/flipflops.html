@@ -109,7 +109,7 @@
  
 <h1>Flip-flops and Latches
 </h1>
-        <p><i>Last modified: 10-Nov-2017</i></p> 
+        <p><i>Last modified: 20-Apr-2022</i></p> 
     </div>
 
     <div class="row">
@@ -132,6 +132,7 @@ suited to explain basic MyHDL usage and to compare MyHDL with other solutions.</
 <p>Here is the description of a D flip-flop in MyHDL:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
 
+<span class="nd">@block</span>
 <span class="k">def</span> <span class="nf">dff</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">):</span>
 
     <span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
@@ -143,9 +144,10 @@ suited to explain basic MyHDL usage and to compare MyHDL with other solutions.</
 
 
 <h3 id="simulation">Simulation</h3>
-<p>Let's write a small test bench to simulate the design:</p>
+<p>Let's add a small test bench to simulate the design:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
 
+<span class="nd">@block</span>
 <span class="k">def</span> <span class="nf">test_dff</span><span class="p">():</span>
 
     <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
@@ -164,9 +166,9 @@ suited to explain basic MyHDL usage and to compare MyHDL with other solutions.</
 
 
 <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="n">timesteps</span><span class="p">):</span>
-    <span class="n">tb</span> <span class="o">=</span> <span class="n">traceSignals</span><span class="p">(</span><span class="n">test_dff</span><span class="p">)</span>
-    <span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span>
-    <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">timesteps</span><span class="p">)</span>
+    <span class="n">simInst</span> <span class="o">=</span> <span class="n">test_dff</span><span class="p">()</span> 
+    <span class="n">simInst</span><span class="o">.</span><span class="n">config_sim</span><span class="p">(</span><span class="n">trace</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">tracebackup</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">simInst</span><span class="o">.</span><span class="n">run_sim</span><span class="p">(</span><span class="n">timesteps</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> 
 
 <span class="n">simulate</span><span class="p">(</span><span class="mi">2000</span><span class="p">)</span>
 </pre></div>
@@ -182,12 +184,14 @@ method, inspecting waveforms has its drawbacks, but it can be very effective to
 debug small designs.</p>
 <p>Here's a screen shot of the simulation waveforms:</p>
 <p><img src="test_dff.jpg" class="img-responsive" alt="test_dff waveforms"></p>
-<h3 id="automatic-conversion-to-verilog">Automatic conversion to Verilog</h3>
-<p>With MyHDL's <code>toVerilog</code> function, a D flip-flop instance can be converted to
-Verilog code:</p>
+<h3 id="automatic-conversion-to-verilog-or-vhdl">Automatic conversion to Verilog or VHDL</h3>
+<p>With MyHDL's <code>convert</code> function, a D flip-flop instance can be converted to
+Verilog or VHDL code:</p>
 <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">convert</span><span class="p">():</span>
     <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
-    <span class="n">toVerilog</span><span class="p">(</span><span class="n">dff</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">)</span>
+    <span class="n">convInst</span> <span class="o">=</span> <span class="n">dff</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">)</span>  <span class="c1">#, &#39;Verilog&#39;)  </span>
+    <span class="n">convInst</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">hdl</span><span class="o">=</span><span class="s1">&#39;Verilog&#39;</span><span class="p">)</span>
+    <span class="n">convInst</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">hdl</span><span class="o">=</span><span class="s1">&#39;VHDL&#39;</span><span class="p">)</span>
 
 <span class="n">convert</span><span class="p">()</span>
 </pre></div>
@@ -205,7 +209,7 @@ Verilog code:</p>
 <span class="k">input</span> <span class="n">d</span><span class="p">;</span>
 <span class="k">input</span> <span class="n">clk</span><span class="p">;</span>
 
-<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">_dff_logic</span>
+<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="no">DFF_LOGIC</span>
     <span class="n">q</span> <span class="o">&lt;=</span> <span class="n">d</span><span class="p">;</span>
 <span class="k">end</span>
 
@@ -223,11 +227,12 @@ the output is held to zero. Typically, the reset pin is active low.</p>
 <p>Here is the description:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
 
+<span class="nd">@block</span>
 <span class="k">def</span> <span class="nf">dffa</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">rst</span><span class="p">):</span>
 
-    <span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">,</span> <span class="n">rst</span><span class="o">.</span><span class="n">negedge</span><span class="p">)</span>
+    <span class="nd">@always_seq</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="n">rst</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">logic</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">rst</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">rst</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>    <span class="c1"># nRst ?  or use active high ?</span>
             <span class="n">q</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">q</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">d</span>
@@ -240,11 +245,13 @@ the output is held to zero. Typically, the reset pin is active low.</p>
 <p>Here is a test bench for the design:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
 
+<span class="nd">@block</span>
 <span class="k">def</span> <span class="nf">test_dffa</span><span class="p">():</span>
 
-    <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">rst</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
+    <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+    <span class="n">rst</span> <span class="o">=</span> <span class="n">ResetSignal</span><span class="p">(</span><span class="n">val</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">isasync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
-    <span class="n">dffa_inst</span> <span class="o">=</span> <span class="n">dffa</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">rst</span><span class="p">)</span>
+    <span class="n">dffa_inst01</span> <span class="o">=</span> <span class="n">dffa</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">rst</span><span class="p">)</span>
 
     <span class="nd">@always</span><span class="p">(</span><span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
     <span class="k">def</span> <span class="nf">clkgen</span><span class="p">():</span>
@@ -266,12 +273,13 @@ the output is held to zero. Typically, the reset pin is active low.</p>
 
     <span class="k">return</span> <span class="n">dffa_inst</span><span class="p">,</span> <span class="n">clkgen</span><span class="p">,</span> <span class="n">stimulus</span><span class="p">,</span> <span class="n">rstgen</span>
 
-<span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="n">timesteps</span><span class="p">):</span>
-    <span class="n">tb</span> <span class="o">=</span> <span class="n">traceSignals</span><span class="p">(</span><span class="n">test_dffa</span><span class="p">)</span>
-    <span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span>
-    <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">timesteps</span><span class="p">)</span>
 
-<span class="n">simulate</span><span class="p">(</span><span class="mi">20000</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="n">timesteps</span><span class="p">):</span>
+    <span class="n">simInst</span> <span class="o">=</span> <span class="n">test_dffa</span><span class="p">()</span> 
+    <span class="n">simInst</span><span class="o">.</span><span class="n">config_sim</span><span class="p">(</span><span class="n">trace</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">tracebackup</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">simInst</span><span class="o">.</span><span class="n">run_sim</span><span class="p">(</span><span class="n">timesteps</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> 
+
+<span class="n">simulate</span><span class="p">(</span><span class="mi">2000</span><span class="p">)</span>
 </pre></div>
 
 
@@ -280,41 +288,45 @@ reset generator, that generates reset pulses at random moments and with a
 random duration.</p>
 <p>Here is a screen shot of the waveforms:</p>
 <p><img src="test_dffa.jpg" class="img-responsive" alt="test_dffa waveforms"></p>
-<h3 id="automatic-conversion-to-verilog_1">Automatic conversion to Verilog</h3>
-<p>The design can be converted to Verilog as follows:</p>
+<h3 id="automatic-conversion-to-verilog-or-vhdl_1">Automatic conversion to Verilog or VHDL</h3>
+<p>The design can be converted to Verilog and VHDL:</p>
 <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">convert</span><span class="p">():</span>
-    <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">rst</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
-    <span class="n">toVerilog</span><span class="p">(</span><span class="n">dffa</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">rst</span><span class="p">)</span>
+    <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+    <span class="n">rst</span> <span class="o">=</span> <span class="n">ResetSignal</span><span class="p">(</span><span class="n">val</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">isasync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">convInst</span> <span class="o">=</span> <span class="n">dffa</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">rst</span><span class="p">)</span>
+    <span class="n">convInst</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">hdl</span><span class="o">=</span><span class="s1">&#39;Verilog&#39;</span><span class="p">)</span>
+    <span class="n">convInst</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">hdl</span><span class="o">=</span><span class="s1">&#39;VHDL&#39;</span><span class="p">)</span>
 
 <span class="n">convert</span><span class="p">()</span>
 </pre></div>
 
 
-<p>The result looks like this:</p>
-<div class="codehilite"><pre><span></span><span class="k">module</span> <span class="n">dffa</span> <span class="p">(</span>
-    <span class="n">q</span><span class="p">,</span>
-    <span class="n">d</span><span class="p">,</span>
-    <span class="n">clk</span><span class="p">,</span>
-    <span class="n">rst</span>
-<span class="p">);</span>
+<p>The VHDL result looks like this:</p>
+<div class="codehilite"><pre><span></span><span class="k">entity</span> <span class="nc">dffa</span> <span class="k">is</span>
+    <span class="k">port</span> <span class="p">(</span>
+        <span class="n">q</span><span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
+        <span class="n">d</span><span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+        <span class="n">clk</span><span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+        <span class="n">rst</span><span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span>
+    <span class="p">);</span>
+<span class="k">end</span> <span class="k">entity</span> <span class="nc">dffa</span><span class="p">;</span>
 
-<span class="k">output</span> <span class="n">q</span><span class="p">;</span>
-<span class="kt">reg</span> <span class="n">q</span><span class="p">;</span>
-<span class="k">input</span> <span class="n">d</span><span class="p">;</span>
-<span class="k">input</span> <span class="n">clk</span><span class="p">;</span>
-<span class="k">input</span> <span class="n">rst</span><span class="p">;</span>
+<span class="k">architecture</span> <span class="nc">MyHDL</span> <span class="k">of</span> <span class="nc">dffa</span> <span class="k">is</span>
+<span class="k">begin</span>
+<span class="nc">DFFA_LOGIC</span><span class="o">:</span> <span class="k">process</span> <span class="p">(</span><span class="n">clk</span><span class="p">,</span> <span class="n">rst</span><span class="p">)</span> <span class="k">is</span>
+<span class="k">begin</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">rst</span> <span class="o">=</span> <span class="sc">&#39;0&#39;</span><span class="p">)</span> <span class="k">then</span>
+        <span class="n">q</span> <span class="o">&lt;=</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
+    <span class="k">elsif</span> <span class="n">rising_edge</span><span class="p">(</span><span class="n">clk</span><span class="p">)</span> <span class="k">then</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">rst</span> <span class="o">=</span> <span class="sc">&#39;0&#39;</span><span class="p">)</span> <span class="k">then</span>
+            <span class="n">q</span> <span class="o">&lt;=</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
+        <span class="k">else</span>
+            <span class="n">q</span> <span class="o">&lt;=</span> <span class="n">d</span><span class="p">;</span>
+        <span class="k">end</span> <span class="k">if</span><span class="p">;</span>
+    <span class="k">end</span> <span class="k">if</span><span class="p">;</span>
+<span class="k">end</span> <span class="k">process</span> <span class="nc">DFFA_LOGIC</span><span class="p">;</span>
 
-
-<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">_dffa_logic</span>
-    <span class="k">if</span> <span class="p">((</span><span class="n">rst</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
-        <span class="n">q</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
-    <span class="k">end</span>
-    <span class="k">else</span> <span class="k">begin</span>
-        <span class="n">q</span> <span class="o">&lt;=</span> <span class="n">d</span><span class="p">;</span>
-    <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="k">endmodule</span>
+<span class="k">end</span> <span class="k">architecture</span> <span class="nc">MyHDL</span><span class="p">;</span>
 </pre></div>
 
 
@@ -327,6 +339,7 @@ When it is closed, the output keeps its value.</p>
 <p>The following code describes a latch:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
 
+<span class="nd">@block</span> 
 <span class="k">def</span> <span class="nf">latch</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">g</span><span class="p">):</span>
 
     <span class="nd">@always_comb</span>
@@ -346,11 +359,12 @@ that it triggers whenever one of the input signals changes.</p>
 <p>Here is a test bench to simulate the latch:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
 
+<span class="nd">@block</span> 
 <span class="k">def</span> <span class="nf">test_latch</span><span class="p">():</span>
 
     <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">g</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
 
-    <span class="n">latch_inst</span> <span class="o">=</span> <span class="n">latch</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+    <span class="n">latch_inst</span> <span class="o">=</span> <span class="n">latch</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span> 
 
     <span class="nd">@always</span><span class="p">(</span><span class="n">delay</span><span class="p">(</span><span class="mi">7</span><span class="p">))</span>
     <span class="k">def</span> <span class="nf">dgen</span><span class="p">():</span>
@@ -364,11 +378,11 @@ that it triggers whenever one of the input signals changes.</p>
     <span class="k">return</span> <span class="n">latch_inst</span><span class="p">,</span> <span class="n">dgen</span><span class="p">,</span> <span class="n">ggen</span>
 
 <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="n">timesteps</span><span class="p">):</span>
-    <span class="n">tb</span> <span class="o">=</span> <span class="n">traceSignals</span><span class="p">(</span><span class="n">test_latch</span><span class="p">)</span>
-    <span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span>
-    <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">timesteps</span><span class="p">)</span>
+    <span class="n">simInst</span> <span class="o">=</span> <span class="n">test_latch</span><span class="p">()</span> 
+    <span class="n">simInst</span><span class="o">.</span><span class="n">config_sim</span><span class="p">(</span><span class="n">trace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">simInst</span><span class="o">.</span><span class="n">run_sim</span><span class="p">(</span><span class="n">timesteps</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> 
 
-<span class="n">simulate</span><span class="p">(</span><span class="mi">20000</span><span class="p">)</span>
+<span class="n">simulate</span><span class="p">(</span><span class="mi">2000</span><span class="p">)</span>
 </pre></div>
 
 
@@ -376,17 +390,19 @@ that it triggers whenever one of the input signals changes.</p>
 generator for the input and for the controlling gate.</p>
 <p>Here is a screen shot of the simulation waveforms:</p>
 <p><img src="test_latch.jpg" class="img-responsive" alt="test_latch waveforms"></p>
-<h3 id="automatic-conversion-to-verilog_2">Automatic conversion to Verilog</h3>
+<h3 id="automatic-conversion-to-verilog-or-vhdl_2">Automatic conversion to Verilog or VHDL</h3>
 <p>We can convert the design as follows:</p>
 <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">convert</span><span class="p">():</span>
     <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">g</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
-    <span class="n">toVerilog</span><span class="p">(</span><span class="n">latch</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+    <span class="n">convInst</span> <span class="o">=</span> <span class="n">latch</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+    <span class="n">convInst</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">hdl</span><span class="o">=</span><span class="s1">&#39;Verilog&#39;</span><span class="p">)</span>
+    <span class="n">convInst</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">hdl</span><span class="o">=</span><span class="s1">&#39;VHDL&#39;</span><span class="p">)</span>
 
 <span class="n">convert</span><span class="p">()</span>
 </pre></div>
 
 
-<p>Here is the result:</p>
+<p>Here is the verilog result:</p>
 <div class="codehilite"><pre><span></span><span class="k">module</span> <span class="n">latch</span> <span class="p">(</span>
     <span class="n">q</span><span class="p">,</span>
     <span class="n">d</span><span class="p">,</span>
@@ -398,9 +414,9 @@ generator for the input and for the controlling gate.</p>
 <span class="k">input</span> <span class="n">d</span><span class="p">;</span>
 <span class="k">input</span> <span class="n">g</span><span class="p">;</span>
 
-<span class="k">always</span> <span class="p">@(</span><span class="n">d</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">_latch_logic</span>
+<span class="k">always</span> <span class="p">@(</span><span class="n">g</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="no">LATCH_LOGIC</span>
     <span class="k">if</span> <span class="p">((</span><span class="n">g</span> <span class="o">==</span> <span class="mh">1</span><span class="p">))</span> <span class="k">begin</span>
-        <span class="n">q</span> <span class="o">&lt;=</span> <span class="n">d</span><span class="p">;</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">d</span><span class="p">;</span>
     <span class="k">end</span>
 <span class="k">end</span>
 
@@ -429,21 +445,21 @@ it infers which signals are used as inputs to the <code>always</code> block</p>
 <li><a href="#specification">Specification</a></li>
 <li><a href="#description">Description</a></li>
 <li><a href="#simulation">Simulation</a></li>
-<li><a href="#automatic-conversion-to-verilog">Automatic conversion to Verilog</a></li>
+<li><a href="#automatic-conversion-to-verilog-or-vhdl">Automatic conversion to Verilog or VHDL</a></li>
 </ul>
 </li>
 <li><a href="#d-flip-flop-with-asynchronous-reset">D flip-flop with asynchronous reset</a><ul>
 <li><a href="#specification_1">Specification</a></li>
 <li><a href="#description_1">Description</a></li>
 <li><a href="#simulation_1">Simulation</a></li>
-<li><a href="#automatic-conversion-to-verilog_1">Automatic conversion to Verilog</a></li>
+<li><a href="#automatic-conversion-to-verilog-or-vhdl_1">Automatic conversion to Verilog or VHDL</a></li>
 </ul>
 </li>
 <li><a href="#latch">Latch</a><ul>
 <li><a href="#specification_2">Specification</a></li>
 <li><a href="#description_2">Description</a></li>
 <li><a href="#simulation_2">Simulation</a></li>
-<li><a href="#automatic-conversion-to-verilog_2">Automatic conversion to Verilog</a></li>
+<li><a href="#automatic-conversion-to-verilog-or-vhdl_2">Automatic conversion to Verilog or VHDL</a></li>
 </ul>
 </li>
 </ul>
