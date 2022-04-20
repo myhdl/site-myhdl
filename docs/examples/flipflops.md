@@ -4,7 +4,7 @@ layout:  article
 summary.md: | 
     * modelling and simulating small sequential devices
     * waveform viewing
-    * automatic conversion to Verilog
+    * automatic conversion to Verilog or VHDL
 ---
 
 Introduction
@@ -32,8 +32,10 @@ Description
 Here is the description of a D flip-flop in MyHDL:
 
 ```python
+
 from myhdl import *
 
+@block
 def dff(q, d, clk):
 
     @always(clk.posedge)
@@ -41,20 +43,23 @@ def dff(q, d, clk):
         q.next = d
 
     return logic
+
 ```
 
 Simulation
 ----------
 
-Let's write a small test bench to simulate the design:
+Let's add a small test bench to simulate the design:
 
 ```python
+
 from random import randrange
 
+@block
 def test_dff():
-    
+
     q, d, clk = [Signal(bool(0)) for i in range(3)]
-    
+
     dff_inst = dff(q, d, clk)
 
     @always(delay(10))
@@ -69,9 +74,9 @@ def test_dff():
 
 
 def simulate(timesteps):
-    tb = traceSignals(test_dff)
-    sim = Simulation(tb)
-    sim.run(timesteps)
+    simInst = test_dff() 
+    simInst.config_sim(trace=True, tracebackup=False)
+    simInst.run_sim(timesteps, quiet=0) 
 
 simulate(2000)
 
@@ -91,16 +96,19 @@ Here's a screen shot of the simulation waveforms:
 
 <img src="test_dff.jpg" class="img-responsive" alt="test_dff waveforms">
 
-Automatic conversion to Verilog
--------------------------------
+Automatic conversion to Verilog or VHDL
+---------------------------------------
 
-With MyHDL's `toVerilog` function, a D flip-flop instance can be converted to
-Verilog code:
+With MyHDL's `convert` function, a D flip-flop instance can be converted to
+Verilog or VHDL code:
 
 ```python
+
 def convert():
     q, d, clk = [Signal(bool(0)) for i in range(3)]
-    toVerilog(dff, q, d, clk)
+    convInst = dff(q, d, clk)  #, 'Verilog')  
+    convInst.convert(hdl='Verilog')
+    convInst.convert(hdl='VHDL')
 
 convert()
 
@@ -120,11 +128,12 @@ reg q;
 input d;
 input clk;
 
-always @(posedge clk) begin: _dff_logic
+always @(posedge clk) begin: DFF_LOGIC
     q <= d;
 end
 
 endmodule
+
 ```
 
 D flip-flop with asynchronous reset
@@ -144,13 +153,15 @@ Description
 Here is the description:
 
 ```python
+
 from myhdl import *
 
+@block
 def dffa(q, d, clk, rst):
 
-    @always(clk.posedge, rst.negedge)
+    @always_seq(clk.posedge, reset=rst)
     def logic():
-        if rst == 0:
+        if rst == 0:    # nRst ?  or use active high ?
             q.next = 0
         else:
             q.next = d
@@ -165,13 +176,16 @@ Simulation
 Here is a test bench for the design:
 
 ```python
+
 from random import randrange
 
+@block
 def test_dffa():
-    
-    q, d, clk, rst = [Signal(bool(0)) for i in range(4)]
-    
-    dffa_inst = dffa(q, d, clk, rst)
+
+    q, d, clk = [Signal(bool(0)) for i in range(3)]
+    rst = ResetSignal(val=1, active=0, isasync=True)
+
+    dffa_inst01 = dffa(q, d, clk, rst)
 
     @always(delay(10))
     def clkgen():
@@ -193,12 +207,13 @@ def test_dffa():
 
     return dffa_inst, clkgen, stimulus, rstgen
 
-def simulate(timesteps):
-    tb = traceSignals(test_dffa)
-    sim = Simulation(tb)
-    sim.run(timesteps)
 
-simulate(20000)
+def simulate(timesteps):
+    simInst = test_dffa() 
+    simInst.config_sim(trace=True, tracebackup=False)
+    simInst.run_sim(timesteps, quiet=0) 
+
+simulate(2000)
 ```
 
 Compared to the test bench for the basic D flip-flop, there is an additional
@@ -209,46 +224,52 @@ Here is a screen shot of the waveforms:
 
 <img src="test_dffa.jpg" class="img-responsive" alt="test_dffa waveforms">
 
-Automatic conversion to Verilog
--------------------------------
+Automatic conversion to Verilog or VHDL
+---------------------------------------
 
-The design can be converted to Verilog as follows:
+The design can be converted to Verilog and VHDL:
 
 ```python
+
 def convert():
-    q, d, clk, rst = [Signal(bool(0)) for i in range(4)]
-    toVerilog(dffa, q, d, clk, rst)
- 
+    q, d, clk = [Signal(bool(0)) for i in range(3)]
+    rst = ResetSignal(val=1, active=0, isasync=True)
+    convInst = dffa(q, d, clk, rst)
+    convInst.convert(hdl='Verilog')
+    convInst.convert(hdl='VHDL')
+
 convert()
+
 ```
  
-The result looks like this:
+The VHDL result looks like this:
 
-```verilog
-module dffa (
-    q,
-    d,
-    clk,
-    rst
-);
+```vhdl
+entity dffa is
+    port (
+        q: out std_logic;
+        d: in std_logic;
+        clk: in std_logic;
+        rst: in std_logic
+    );
+end entity dffa;
 
-output q;
-reg q;
-input d;
-input clk;
-input rst;
+architecture MyHDL of dffa is
+begin
+DFFA_LOGIC: process (clk, rst) is
+begin
+    if (rst = '0') then
+        q <= '0';
+    elsif rising_edge(clk) then
+        if (rst = '0') then
+            q <= '0';
+        else
+            q <= d;
+        end if;
+    end if;
+end process DFFA_LOGIC;
 
-
-always @(posedge clk or negedge rst) begin: _dffa_logic
-    if ((rst == 0)) begin
-        q <= 0;
-    end
-    else begin
-        q <= d;
-    end
-end
-
-endmodule
+end architecture MyHDL;
 ```
 
 Latch
@@ -267,8 +288,10 @@ Description
 The following code describes a latch:
 
 ```python
+
 from myhdl import *
 
+@block 
 def latch(q, d, g):
 
     @always_comb
@@ -277,6 +300,7 @@ def latch(q, d, g):
             q.next = d
 
     return logic
+
 ```
 
 Note the usage of the `always_comb` decorator. This is somewhat of a misnomer.
@@ -290,13 +314,15 @@ Simulation
 Here is a test bench to simulate the latch:
 
 ```python
+
 from random import randrange
 
+@block 
 def test_latch():
-    
+
     q, d, g = [Signal(bool(0)) for i in range(3)]
-    
-    latch_inst = latch(q, d, g)
+
+    latch_inst = latch(q, d, g) 
 
     @always(delay(7))
     def dgen():
@@ -310,11 +336,12 @@ def test_latch():
     return latch_inst, dgen, ggen
 
 def simulate(timesteps):
-    tb = traceSignals(test_latch)
-    sim = Simulation(tb)
-    sim.run(timesteps)
+    simInst = test_latch() 
+    simInst.config_sim(trace=True)
+    simInst.run_sim(timesteps, quiet=0) 
 
-simulate(20000)
+simulate(2000)
+
 ```
 
 In addition to the latch instance, the test bench creates a random data
@@ -324,22 +351,27 @@ Here is a screen shot of the simulation waveforms:
 
 <img src="test_latch.jpg" class="img-responsive" alt="test_latch waveforms">
 
-Automatic conversion to Verilog
--------------------------------
+Automatic conversion to Verilog or VHDL
+---------------------------------------
 
 We can convert the design as follows:
 
 ```python
+
 def convert():
     q, d, g = [Signal(bool(0)) for i in range(3)]
-    toVerilog(latch, q, d, g)
- 
+    convInst = latch(q, d, g)
+    convInst.convert(hdl='Verilog')
+    convInst.convert(hdl='VHDL')
+
 convert()
+
 ```
 
-Here is the result:
+Here is the verilog result:
 
 ```verilog
+
 module latch (
     q,
     d,
@@ -351,13 +383,14 @@ reg q;
 input d;
 input g;
 
-always @(d, g) begin: _latch_logic
+always @(g, d) begin: LATCH_LOGIC
     if ((g == 1)) begin
-        q <= d;
+        q = d;
     end
 end
 
 endmodule
+
 ```
 
 Note that when the `toVerilog` function converts the `always_comb` decorator,
