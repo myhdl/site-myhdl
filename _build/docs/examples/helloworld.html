@@ -109,7 +109,7 @@
  
 <h1>Hello World
 </h1>
-        <p><i>Last modified: 16-Apr-2022</i></p> 
+        <p><i>Last modified: 21-Apr-2022</i></p> 
     </div>
 
     <div class="row">
@@ -408,7 +408,7 @@ as follows:</p>
 <span class="kt">reg</span> <span class="p">[</span><span class="mh">49</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">shiftReg</span><span class="p">;</span>
 
 
-<span class="k">always</span> <span class="p">@(</span><span class="n">shiftReg</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="no">HELLOWORLD_ASSIGN</span>
+<span class="k">always</span> <span class="p">@(</span><span class="n">shiftReg</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">HELLOWORLD_ASSIGN</span>
     <span class="kt">reg</span> <span class="p">[</span><span class="mh">4</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">v</span><span class="p">;</span>
     <span class="n">v</span> <span class="o">=</span> <span class="mh">4&#39;h0</span><span class="p">;</span>
     <span class="n">v</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">shiftReg</span><span class="p">[</span><span class="mh">49</span><span class="p">];</span>
@@ -418,7 +418,7 @@ as follows:</p>
 <span class="k">end</span>
 
 
-<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">pixelClock</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="no">HELLOWORLD_DRAW</span>
+<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">pixelClock</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">HELLOWORLD_DRAW</span>
     <span class="kt">reg</span> <span class="p">[</span><span class="mh">6</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">row</span><span class="p">;</span>
     <span class="n">row</span> <span class="o">=</span> <span class="mh">6&#39;h0</span><span class="p">;</span>
     <span class="k">if</span> <span class="p">((</span><span class="n">hCounter</span> <span class="o">==</span> <span class="mh">1055</span><span class="p">))</span> <span class="k">begin</span>
