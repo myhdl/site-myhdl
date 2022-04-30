@@ -1,9 +1,0 @@
-syntax: glob
-*~
-*.pyc
-*.swp
-*.bak
-*.orig
-*.tar
-*.gz
-*.zip
