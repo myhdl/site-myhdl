@@ -44,8 +44,9 @@ from myhdl import *
 ACTIVE = 0
 DirType = enum('RIGHT', 'LEFT')
 
+@block
 def jc2(goLeft, goRight, stop, clk, q):
-    
+
     """ A bi-directional 4-bit Johnson counter with stop control.
 
     I/O pins:
@@ -83,6 +84,7 @@ def jc2(goLeft, goRight, stop, clk, q):
                 q.next[3] = not q[0]
 
     return logic
+
 ```
 
 We use an enumerated type for the direction state `dir`. We prefer this for
@@ -94,17 +96,19 @@ Test bench
 The following is a test bench for a basic verification of the design.
 
 ```python
+
 from myhdl import *
 
 ACTIVE, INACTIVE = bool(0), bool(1)
 
 from jc2 import jc2
 
-def test(jc2):
-    
+@block
+def test():
+
     goLeft, goRight, stop, clk = [Signal(INACTIVE) for i in range(4)]
     q = Signal(intbv(0)[4:])
-    
+
     @always(delay(10))
     def clkgen():
         clk.next = not clk
@@ -125,21 +129,25 @@ def test(jc2):
 
     @instance
     def monitor():
-        print "goLeft goRight stop clk q"
-        print "-------------------------"
+        print("goLeft goRight stop clk q")
+        print("------------------------------")
         while True:
             yield clk.negedge
             yield delay(1)
-            print "%d %d %d" % (goLeft, goRight, stop) ,
+            pStr = str('{:^6} {:^6} {:^5} '.format(
+                int(goLeft), int(goRight), int(stop)))
             yield clk.posedge
-            print "C",
+            pStr += " C "
             yield delay(1)
-            print bin(q, 4)
+            pStr += ' '+bin(q, 4)
+            print(pStr)
 
     return clkgen, jc2_inst, stimulus, monitor
 
-sim = Simulation(test(jc2))
-sim.run()
+simInst = test()
+simInst.config_sim(trace=True, tracebackup=False)
+simInst.run_sim()
+
 ```
 
 We use a number of decorated functions to create a clock generator, a stimulus
@@ -149,34 +157,35 @@ under test. Such a setup is quite typical.
 When we simulate this test bench, the output is as follows:
 
 ```
-$ python test_jc2.py
+
 goLeft goRight stop clk q
--------------------------
-1 1 1 C 0000
-1 1 1 C 0000
-0 1 1 C 0000
-1 1 1 C 0001
-1 1 1 C 0011
-1 1 1 C 0111
-1 1 1 C 1111
-1 1 1 C 1110
-1 1 1 C 1100
-1 1 1 C 1000
-1 1 1 C 0000
-1 1 1 C 0001
-1 1 0 C 0011
-1 1 1 C 0011
-1 1 1 C 0011
-1 0 1 C 0011
-1 1 1 C 0001
-1 1 1 C 0000
-1 1 1 C 1000
-1 1 1 C 1100
-1 1 1 C 1110
-1 1 1 C 1111
-1 1 1 C 0111
-1 1 1 C 0011
-1 1 1 C 0001
+----------------------------
+  1      1      1    C  0000
+  1      1      1    C  0000
+  0      1      1    C  0000
+  1      1      1    C  0001
+  1      1      1    C  0011
+  1      1      1    C  0111
+  1      1      1    C  1111
+  1      1      1    C  1110
+  1      1      1    C  1100
+  1      1      1    C  1000
+  1      1      1    C  0000
+  1      1      1    C  0001
+  1      1      0    C  0011
+  1      1      1    C  0011
+  1      1      1    C  0011
+  1      0      1    C  0011
+  1      1      1    C  0001
+  1      1      1    C  0000
+  1      1      1    C  1000
+  1      1      1    C  1100
+  1      1      1    C  1110
+  1      1      1    C  1111
+  1      1      1    C  0111
+  1      1      1    C  0011
+  1      1      1    C  0001
+
 ```
 
 You can see the basic operation of the Johnson counter in action.
@@ -194,23 +203,27 @@ using a unit test framework such as Python's `unittest` package, to facilitate
 test writing and to make it part of a regression test suite. Consult the MyHDL
 manual for more info on such techniques.
 
-Automatic conversion to Verilog
-===============================
+Automatic conversion to Verilog or VHDL
+=======================================
 
-A working MyHDL design intended for implementation can be converted to Verilog
-automatically, using the `toVerilog` function. Remember: there is no point in
+A working MyHDL design intended for implementation can be converted to Verilog or VHDL 
+automatically, using the `convInst.convert()` function. Remember: there is no point in
 converting when the design doesn't work. The simulation will catch much more
 errors than the converter. In MyHDL, like in Python, the run-time rules.
 
 Conversion to Verilog can be done with code like the following:
 
 ```python
-def convert(jc2):
+
+def convert():
     left, right, stop, clk = [Signal(INACTIVE) for i in range(4)]
     q = Signal(intbv(0)[4:])
-    toVerilog(jc2, left, right, stop, clk, q)
+    convInst = jc2 (left, right, stop, clk, q)
+    convInst.convert(hdl='Verilog')
+    convInst.convert(hdl='VHDL')
 
-convert(jc2)
+convert()
+
 ```
 
 As you see, conversion works on an instantiated, elaborated design.
@@ -218,6 +231,7 @@ As you see, conversion works on an instantiated, elaborated design.
 The resulting Verilog code is as follows:
 
 ```verilog
+
 module jc2 (
     goLeft,
     goRight,
@@ -225,6 +239,15 @@ module jc2 (
     clk,
     q
 );
+// A bi-directional 4-bit Johnson counter with stop control.
+// 
+// I/O pins:
+// --------
+// clk      : input free-running slow clock 
+// goLeft   : input signal to shift left (active-low switch)
+// goRight    : input signal to shift right (active-low switch)
+// stop     : input signal to stop counting (active-low switch)
+// q        : 4-bit counter output (active-low LEDs; q[0] is right-most)
 
 input goLeft;
 input goRight;
@@ -233,34 +256,32 @@ input clk;
 output [3:0] q;
 reg [3:0] q;
 
-reg run;
 reg [0:0] dir;
+reg run;
 
 
-always @(posedge clk) begin: _jc2_logic
+
+always @(posedge clk) begin: JC2_LOGIC
     if ((goRight == 0)) begin
         dir <= 1'b0;
-        run <= 1;
+        run <= 1'b1;
     end
     else if ((goLeft == 0)) begin
         dir <= 1'b1;
-        run <= 1;
+        run <= 1'b1;
     end
     if ((stop == 0)) begin
-        run <= 0;
+        run <= 1'b0;
     end
     if (run) begin
-        // synthesis parallel_case full_case
-        casez (dir)
-            1'b1: begin
-                q[4-1:1] <= q[3-1:0];
-                q[0] <= (!q[3]);
-            end
-            default: begin
-                q[3-1:0] <= q[4-1:1];
-                q[3] <= (!q[0]);
-            end
-        endcase
+        if ((dir == 1'b1)) begin
+            q[4-1:1] <= q[3-1:0];
+            q[0] <= (!q[3]);
+        end
+        else begin
+            q[3-1:0] <= q[4-1:1];
+            q[3] <= (!q[0]);
+        end
     end
 end
 
@@ -314,8 +335,9 @@ from myhdl import *
 ACTIVE = 0
 DirType = enum('RIGHT', 'LEFT')
 
+@block
 def jc2_alt(goLeft, goRight, stop, clk, q):
-    
+
     """ A bi-directional 4-bit Johnson counter with stop control.
 
     I/O pins:
@@ -387,33 +409,33 @@ test bench on the alternative design:
 Alternative design
 ------------------
 goLeft goRight stop clk q
--------------------------
-1 1 1 C 0000
-1 1 1 C 0000
-0 1 1 C 0001
-1 1 1 C 0011
-1 1 1 C 0111
-1 1 1 C 1111
-1 1 1 C 1110
+------------------------------
+  1      1      1    C  0000
+  1      1      1    C  0000
+  0      1      1    C  0001
+  1      1      1    C  0011
+  1      1      1    C  0111
+  1      1      1    C  1111
+  1      1      1    C  1110
+  1      1      1    C  1100
+  1      1      1    C  1000
+  1      1      1    C  0000
+  1      1      1    C  0001
+  1      1      1    C  0011
+  1      1      0    C  0011
+  1      1      1    C  0011
+  1      1      1    C  0011
+  1      0      1    C  0001
+  1      1      1    C  0000
+  1      1      1    C  1000
+  1      1      1    C  1100
+  1      1      1    C  1110
+  1      1      1    C  1111
+  1      1      1    C  0111
+  1      1      1    C  0011
+  1      1      1    C  0001
+  1      1      1    C  0000
 
-1 1 1 C 1100
-1 1 1 C 1000
-1 1 1 C 0000
-1 1 1 C 0001
-1 1 1 C 0011
-1 1 0 C 0011
-1 1 1 C 0011
-1 1 1 C 0011
-1 0 1 C 0001
-1 1 1 C 0000
-1 1 1 C 1000
-1 1 1 C 1100
-1 1 1 C 1110
-1 1 1 C 1111
-1 1 1 C 0111
-1 1 1 C 0011
-1 1 1 C 0001
-1 1 1 C 0000
 ```
 
 If you compare this output with the previous one, you will see that the counter
@@ -429,6 +451,16 @@ module jc2_alt (
     clk,
     q
 );
+// A bi-directional 4-bit Johnson counter with stop control.
+// 
+// I/O pins:
+// --------
+// 
+// clk      : input free-running clock 
+// goLeft   : input signal to shift left (active-low switch)
+// goRight  : input signal to shift right (active-low switch)
+// stop     : input signal to stop counting (active-low switch)
+// q        : 4-bit counter output (active-low LEDs; q[0] is right-most)
 
 input goLeft;
 input goRight;
@@ -439,32 +471,30 @@ reg [3:0] q;
 
 
 
-always @(posedge clk) begin: _jc2_alt_logic
-    reg run;
+
+always @(posedge clk) begin: JC2_ALT_LOGIC
     reg [1-1:0] dir;
+    reg run;
     if ((goRight == 0)) begin
         dir = 1'b0;
-        run = 1;
+        run = 1'b1;
     end
     else if ((goLeft == 0)) begin
         dir = 1'b1;
-        run = 1;
+        run = 1'b1;
     end
     if ((stop == 0)) begin
-        run = 0;
+        run = 1'b0;
     end
     if (run) begin
-        // synthesis parallel_case full_case
-        casez (dir)
-            1'b1: begin
-                q[4-1:1] <= q[3-1:0];
-                q[0] <= (!q[3]);
-            end
-            default: begin
-                q[3-1:0] <= q[4-1:1];
-                q[3] <= (!q[0]);
-            end
-        endcase
+        if ((dir == 1'b1)) begin
+            q[4-1:1] <= q[3-1:0];
+            q[0] <= (!q[3]);
+        end
+        else begin
+            q[3-1:0] <= q[4-1:1];
+            q[3] <= (!q[0]);
+        end
     end
 end
 
