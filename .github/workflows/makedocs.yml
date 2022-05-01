@@ -21,3 +21,8 @@ jobs:
       - name: Running Make
         run: |
           make
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add _build/*.html
+          git commit -m "updating _build"
+          git push
