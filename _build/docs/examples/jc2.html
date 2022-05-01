@@ -109,7 +109,7 @@
  
 <h1>Johnson Counter
 </h1>
-        <p><i>Last modified: 16-Apr-2022</i></p> 
+        <p><i>Last modified: 27-Apr-2022</i></p> 
     </div>
 
     <div class="row">
@@ -140,6 +140,7 @@ After power-up, the counter is stopped with all outputs low (LEDs lit).</p>
 <span class="n">ACTIVE</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">DirType</span> <span class="o">=</span> <span class="n">enum</span><span class="p">(</span><span class="s1">&#39;RIGHT&#39;</span><span class="p">,</span> <span class="s1">&#39;LEFT&#39;</span><span class="p">)</span>
 
+<span class="nd">@block</span>
 <span class="k">def</span> <span class="nf">jc2</span><span class="p">(</span><span class="n">goLeft</span><span class="p">,</span> <span class="n">goRight</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot; A bi-directional 4-bit Johnson counter with stop control.</span>
@@ -155,20 +156,20 @@ After power-up, the counter is stopped with all outputs low (LEDs lit).</p>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nb">dir</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">DirType</span><span class="o">.</span><span class="n">LEFT</span><span class="p">)</span>
-    <span class="n">run</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="nd">@always</span><span class="p">(</span><span class="n">clk</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">logic</span><span class="p">():</span>
         <span class="c1"># direction</span>
         <span class="k">if</span> <span class="n">goRight</span> <span class="o">==</span> <span class="n">ACTIVE</span><span class="p">:</span>
             <span class="nb">dir</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">DirType</span><span class="o">.</span><span class="n">RIGHT</span>
-            <span class="n">run</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">run</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">elif</span> <span class="n">goLeft</span> <span class="o">==</span> <span class="n">ACTIVE</span><span class="p">:</span>
             <span class="nb">dir</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">DirType</span><span class="o">.</span><span class="n">LEFT</span>
-            <span class="n">run</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">run</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># stop</span>
         <span class="k">if</span> <span class="n">stop</span> <span class="o">==</span> <span class="n">ACTIVE</span><span class="p">:</span>
-            <span class="n">run</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">run</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># counter action</span>
         <span class="k">if</span> <span class="n">run</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">dir</span> <span class="o">==</span> <span class="n">DirType</span><span class="o">.</span><span class="n">LEFT</span><span class="p">:</span>
@@ -192,7 +193,8 @@ clarity when the encoding is not specified.</p>
 
 <span class="kn">from</span> <span class="nn">jc2</span> <span class="kn">import</span> <span class="n">jc2</span>
 
-<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">jc2</span><span class="p">):</span>
+<span class="nd">@block</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
 
     <span class="n">goLeft</span><span class="p">,</span> <span class="n">goRight</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">clk</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="n">INACTIVE</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
     <span class="n">q</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">4</span><span class="p">:])</span>
@@ -217,21 +219,24 @@ clarity when the encoding is not specified.</p>
 
     <span class="nd">@instance</span>
     <span class="k">def</span> <span class="nf">monitor</span><span class="p">():</span>
-        <span class="k">print</span> <span class="s2">&quot;goLeft goRight stop clk q&quot;</span>
-        <span class="k">print</span> <span class="s2">&quot;-------------------------&quot;</span>
-        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;goLeft goRight stop clk q&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;------------------------------&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">clk</span><span class="o">.</span><span class="n">negedge</span>
             <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">print</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">goLeft</span><span class="p">,</span> <span class="n">goRight</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span> <span class="p">,</span>
+            <span class="n">pStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:^6}</span><span class="s1"> </span><span class="si">{:^6}</span><span class="s1"> </span><span class="si">{:^5}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">goLeft</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">goRight</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">stop</span><span class="p">)))</span>
             <span class="k">yield</span> <span class="n">clk</span><span class="o">.</span><span class="n">posedge</span>
-            <span class="k">print</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span>
+            <span class="n">pStr</span> <span class="o">+=</span> <span class="s2">&quot; C &quot;</span>
             <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">print</span> <span class="nb">bin</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="n">pStr</span> <span class="o">+=</span> <span class="s1">&#39; &#39;</span><span class="o">+</span><span class="nb">bin</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">pStr</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">clkgen</span><span class="p">,</span> <span class="n">jc2_inst</span><span class="p">,</span> <span class="n">stimulus</span><span class="p">,</span> <span class="n">monitor</span>
 
-<span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">test</span><span class="p">(</span><span class="n">jc2</span><span class="p">))</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">simInst</span> <span class="o">=</span> <span class="n">test</span><span class="p">()</span>
+<span class="n">simInst</span><span class="o">.</span><span class="n">config_sim</span><span class="p">(</span><span class="n">trace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tracebackup</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">simInst</span><span class="o">.</span><span class="n">run_sim</span><span class="p">()</span>
 </pre></div>
 
 
@@ -239,34 +244,33 @@ clarity when the encoding is not specified.</p>
 generator, and a response monitor, together with an instance of the design
 under test. Such a setup is quite typical.</p>
 <p>When we simulate this test bench, the output is as follows:</p>
-<div class="codehilite"><pre><span></span>$ python test_jc2.py
-goLeft goRight stop clk q
--------------------------
-1 1 1 C 0000
-1 1 1 C 0000
-0 1 1 C 0000
-1 1 1 C 0001
-1 1 1 C 0011
-1 1 1 C 0111
-1 1 1 C 1111
-1 1 1 C 1110
-1 1 1 C 1100
-1 1 1 C 1000
-1 1 1 C 0000
-1 1 1 C 0001
-1 1 0 C 0011
-1 1 1 C 0011
-1 1 1 C 0011
-1 0 1 C 0011
-1 1 1 C 0001
-1 1 1 C 0000
-1 1 1 C 1000
-1 1 1 C 1100
-1 1 1 C 1110
-1 1 1 C 1111
-1 1 1 C 0111
-1 1 1 C 0011
-1 1 1 C 0001
+<div class="codehilite"><pre><span></span>goLeft goRight stop clk q
+----------------------------
+  1      1      1    C  0000
+  1      1      1    C  0000
+  0      1      1    C  0000
+  1      1      1    C  0001
+  1      1      1    C  0011
+  1      1      1    C  0111
+  1      1      1    C  1111
+  1      1      1    C  1110
+  1      1      1    C  1100
+  1      1      1    C  1000
+  1      1      1    C  0000
+  1      1      1    C  0001
+  1      1      0    C  0011
+  1      1      1    C  0011
+  1      1      1    C  0011
+  1      0      1    C  0011
+  1      1      1    C  0001
+  1      1      1    C  0000
+  1      1      1    C  1000
+  1      1      1    C  1100
+  1      1      1    C  1110
+  1      1      1    C  1111
+  1      1      1    C  0111
+  1      1      1    C  0011
+  1      1      1    C  0001
 </pre></div>
 
 
@@ -282,18 +286,20 @@ tests to cover corner cases. In addition, such a test bench should be written
 using a unit test framework such as Python's <code>unittest</code> package, to facilitate
 test writing and to make it part of a regression test suite. Consult the MyHDL
 manual for more info on such techniques.</p>
-<h2 id="automatic-conversion-to-verilog">Automatic conversion to Verilog</h2>
-<p>A working MyHDL design intended for implementation can be converted to Verilog
-automatically, using the <code>toVerilog</code> function. Remember: there is no point in
+<h2 id="automatic-conversion-to-verilog-or-vhdl">Automatic conversion to Verilog or VHDL</h2>
+<p>A working MyHDL design intended for implementation can be converted to Verilog or VHDL 
+automatically, using the <code>convInst.convert()</code> function. Remember: there is no point in
 converting when the design doesn't work. The simulation will catch much more
 errors than the converter. In MyHDL, like in Python, the run-time rules.</p>
 <p>Conversion to Verilog can be done with code like the following:</p>
-<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="n">jc2</span><span class="p">):</span>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">convert</span><span class="p">():</span>
     <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">clk</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="n">INACTIVE</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
     <span class="n">q</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">4</span><span class="p">:])</span>
-    <span class="n">toVerilog</span><span class="p">(</span><span class="n">jc2</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+    <span class="n">convInst</span> <span class="o">=</span> <span class="n">jc2</span> <span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+    <span class="n">convInst</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">hdl</span><span class="o">=</span><span class="s1">&#39;Verilog&#39;</span><span class="p">)</span>
+    <span class="n">convInst</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">hdl</span><span class="o">=</span><span class="s1">&#39;VHDL&#39;</span><span class="p">)</span>
 
-<span class="n">convert</span><span class="p">(</span><span class="n">jc2</span><span class="p">)</span>
+<span class="n">convert</span><span class="p">()</span>
 </pre></div>
 
 
@@ -306,6 +312,15 @@ errors than the converter. In MyHDL, like in Python, the run-time rules.</p>
     <span class="n">clk</span><span class="p">,</span>
     <span class="n">q</span>
 <span class="p">);</span>
+<span class="c1">// A bi-directional 4-bit Johnson counter with stop control.</span>
+<span class="c1">// </span>
+<span class="c1">// I/O pins:</span>
+<span class="c1">// --------</span>
+<span class="c1">// clk      : input free-running slow clock </span>
+<span class="c1">// goLeft   : input signal to shift left (active-low switch)</span>
+<span class="c1">// goRight    : input signal to shift right (active-low switch)</span>
+<span class="c1">// stop     : input signal to stop counting (active-low switch)</span>
+<span class="c1">// q        : 4-bit counter output (active-low LEDs; q[0] is right-most)</span>
 
 <span class="k">input</span> <span class="n">goLeft</span><span class="p">;</span>
 <span class="k">input</span> <span class="n">goRight</span><span class="p">;</span>
@@ -314,34 +329,32 @@ errors than the converter. In MyHDL, like in Python, the run-time rules.</p>
 <span class="k">output</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">q</span><span class="p">;</span>
 <span class="kt">reg</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">q</span><span class="p">;</span>
 
-<span class="kt">reg</span> <span class="n">run</span><span class="p">;</span>
 <span class="kt">reg</span> <span class="p">[</span><span class="mh">0</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">dir</span><span class="p">;</span>
+<span class="kt">reg</span> <span class="n">run</span><span class="p">;</span>
 
 
-<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">_jc2_logic</span>
+
+<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">JC2_LOGIC</span>
     <span class="k">if</span> <span class="p">((</span><span class="n">goRight</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
         <span class="n">dir</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-        <span class="n">run</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
+        <span class="n">run</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
     <span class="k">end</span>
     <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="n">goLeft</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
         <span class="n">dir</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-        <span class="n">run</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
+        <span class="n">run</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
     <span class="k">end</span>
     <span class="k">if</span> <span class="p">((</span><span class="n">stop</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
-        <span class="n">run</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+        <span class="n">run</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
     <span class="k">end</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">run</span><span class="p">)</span> <span class="k">begin</span>
-        <span class="c1">// synthesis parallel_case full_case</span>
-        <span class="k">casez</span> <span class="p">(</span><span class="n">dir</span><span class="p">)</span>
-            <span class="mh">1</span><span class="mb">&#39;b1</span><span class="o">:</span> <span class="k">begin</span>
-                <span class="n">q</span><span class="p">[</span><span class="mh">4</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
-                <span class="n">q</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="o">!</span><span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="p">]);</span>
-            <span class="k">end</span>
-            <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
-                <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">q</span><span class="p">[</span><span class="mh">4</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">1</span><span class="p">];</span>
-                <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="o">!</span><span class="n">q</span><span class="p">[</span><span class="mh">0</span><span class="p">]);</span>
-            <span class="k">end</span>
-        <span class="k">endcase</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">dir</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">))</span> <span class="k">begin</span>
+            <span class="n">q</span><span class="p">[</span><span class="mh">4</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+            <span class="n">q</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="o">!</span><span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="p">]);</span>
+        <span class="k">end</span>
+        <span class="k">else</span> <span class="k">begin</span>
+            <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">q</span><span class="p">[</span><span class="mh">4</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">1</span><span class="p">];</span>
+            <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="o">!</span><span class="n">q</span><span class="p">[</span><span class="mh">0</span><span class="p">]);</span>
+        <span class="k">end</span>
     <span class="k">end</span>
 <span class="k">end</span>
 
@@ -387,6 +400,7 @@ will need to use variables instead of signals for the state registers <code>dir<
 <span class="n">ACTIVE</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">DirType</span> <span class="o">=</span> <span class="n">enum</span><span class="p">(</span><span class="s1">&#39;RIGHT&#39;</span><span class="p">,</span> <span class="s1">&#39;LEFT&#39;</span><span class="p">)</span>
 
+<span class="nd">@block</span>
 <span class="k">def</span> <span class="nf">jc2_alt</span><span class="p">(</span><span class="n">goLeft</span><span class="p">,</span> <span class="n">goRight</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot; A bi-directional 4-bit Johnson counter with stop control.</span>
@@ -405,19 +419,19 @@ will need to use variables instead of signals for the state registers <code>dir<
     <span class="nd">@instance</span>
     <span class="k">def</span> <span class="nf">logic</span><span class="p">():</span>
         <span class="nb">dir</span> <span class="o">=</span> <span class="n">DirType</span><span class="o">.</span><span class="n">LEFT</span>
-        <span class="n">run</span> <span class="o">=</span> <span class="bp">False</span>
-        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">run</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">clk</span><span class="o">.</span><span class="n">posedge</span>
             <span class="c1"># direction</span>
             <span class="k">if</span> <span class="n">goRight</span> <span class="o">==</span> <span class="n">ACTIVE</span><span class="p">:</span>
                 <span class="nb">dir</span> <span class="o">=</span> <span class="n">DirType</span><span class="o">.</span><span class="n">RIGHT</span>
-                <span class="n">run</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">run</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">elif</span> <span class="n">goLeft</span> <span class="o">==</span> <span class="n">ACTIVE</span><span class="p">:</span>
                 <span class="nb">dir</span> <span class="o">=</span> <span class="n">DirType</span><span class="o">.</span><span class="n">LEFT</span>
-                <span class="n">run</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">run</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="c1"># stop</span>
             <span class="k">if</span> <span class="n">stop</span> <span class="o">==</span> <span class="n">ACTIVE</span><span class="p">:</span>
-                <span class="n">run</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="n">run</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="c1"># counter action</span>
             <span class="k">if</span> <span class="n">run</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">dir</span> <span class="o">==</span> <span class="n">DirType</span><span class="o">.</span><span class="n">LEFT</span><span class="p">:</span>
@@ -456,33 +470,32 @@ test bench on the alternative design:</p>
 <div class="codehilite"><pre><span></span>Alternative design
 ------------------
 goLeft goRight stop clk q
--------------------------
-1 1 1 C 0000
-1 1 1 C 0000
-0 1 1 C 0001
-1 1 1 C 0011
-1 1 1 C 0111
-1 1 1 C 1111
-1 1 1 C 1110
-
-1 1 1 C 1100
-1 1 1 C 1000
-1 1 1 C 0000
-1 1 1 C 0001
-1 1 1 C 0011
-1 1 0 C 0011
-1 1 1 C 0011
-1 1 1 C 0011
-1 0 1 C 0001
-1 1 1 C 0000
-1 1 1 C 1000
-1 1 1 C 1100
-1 1 1 C 1110
-1 1 1 C 1111
-1 1 1 C 0111
-1 1 1 C 0011
-1 1 1 C 0001
-1 1 1 C 0000
+------------------------------
+  1      1      1    C  0000
+  1      1      1    C  0000
+  0      1      1    C  0001
+  1      1      1    C  0011
+  1      1      1    C  0111
+  1      1      1    C  1111
+  1      1      1    C  1110
+  1      1      1    C  1100
+  1      1      1    C  1000
+  1      1      1    C  0000
+  1      1      1    C  0001
+  1      1      1    C  0011
+  1      1      0    C  0011
+  1      1      1    C  0011
+  1      1      1    C  0011
+  1      0      1    C  0001
+  1      1      1    C  0000
+  1      1      1    C  1000
+  1      1      1    C  1100
+  1      1      1    C  1110
+  1      1      1    C  1111
+  1      1      1    C  0111
+  1      1      1    C  0011
+  1      1      1    C  0001
+  1      1      1    C  0000
 </pre></div>
 
 
@@ -496,6 +509,16 @@ response to a control input change is now indeed one clock cycle earlier.</p>
     <span class="n">clk</span><span class="p">,</span>
     <span class="n">q</span>
 <span class="p">);</span>
+<span class="c1">// A bi-directional 4-bit Johnson counter with stop control.</span>
+<span class="c1">// </span>
+<span class="c1">// I/O pins:</span>
+<span class="c1">// --------</span>
+<span class="c1">// </span>
+<span class="c1">// clk      : input free-running clock </span>
+<span class="c1">// goLeft   : input signal to shift left (active-low switch)</span>
+<span class="c1">// goRight  : input signal to shift right (active-low switch)</span>
+<span class="c1">// stop     : input signal to stop counting (active-low switch)</span>
+<span class="c1">// q        : 4-bit counter output (active-low LEDs; q[0] is right-most)</span>
 
 <span class="k">input</span> <span class="n">goLeft</span><span class="p">;</span>
 <span class="k">input</span> <span class="n">goRight</span><span class="p">;</span>
@@ -506,32 +529,30 @@ response to a control input change is now indeed one clock cycle earlier.</p>
 
 
 
-<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">_jc2_alt_logic</span>
-    <span class="kt">reg</span> <span class="n">run</span><span class="p">;</span>
+
+<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">JC2_ALT_LOGIC</span>
     <span class="kt">reg</span> <span class="p">[</span><span class="mh">1</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">dir</span><span class="p">;</span>
+    <span class="kt">reg</span> <span class="n">run</span><span class="p">;</span>
     <span class="k">if</span> <span class="p">((</span><span class="n">goRight</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
         <span class="n">dir</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-        <span class="n">run</span> <span class="o">=</span> <span class="mh">1</span><span class="p">;</span>
+        <span class="n">run</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
     <span class="k">end</span>
     <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="n">goLeft</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
         <span class="n">dir</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-        <span class="n">run</span> <span class="o">=</span> <span class="mh">1</span><span class="p">;</span>
+        <span class="n">run</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
     <span class="k">end</span>
     <span class="k">if</span> <span class="p">((</span><span class="n">stop</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">begin</span>
-        <span class="n">run</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+        <span class="n">run</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
     <span class="k">end</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">run</span><span class="p">)</span> <span class="k">begin</span>
-        <span class="c1">// synthesis parallel_case full_case</span>
-        <span class="k">casez</span> <span class="p">(</span><span class="n">dir</span><span class="p">)</span>
-            <span class="mh">1</span><span class="mb">&#39;b1</span><span class="o">:</span> <span class="k">begin</span>
-                <span class="n">q</span><span class="p">[</span><span class="mh">4</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
-                <span class="n">q</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="o">!</span><span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="p">]);</span>
-            <span class="k">end</span>
-            <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
-                <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">q</span><span class="p">[</span><span class="mh">4</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">1</span><span class="p">];</span>
-                <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="o">!</span><span class="n">q</span><span class="p">[</span><span class="mh">0</span><span class="p">]);</span>
-            <span class="k">end</span>
-        <span class="k">endcase</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">dir</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">))</span> <span class="k">begin</span>
+            <span class="n">q</span><span class="p">[</span><span class="mh">4</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+            <span class="n">q</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="o">!</span><span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="p">]);</span>
+        <span class="k">end</span>
+        <span class="k">else</span> <span class="k">begin</span>
+            <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">q</span><span class="p">[</span><span class="mh">4</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">1</span><span class="p">];</span>
+            <span class="n">q</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="o">!</span><span class="n">q</span><span class="p">[</span><span class="mh">0</span><span class="p">]);</span>
+        <span class="k">end</span>
     <span class="k">end</span>
 <span class="k">end</span>
 
@@ -569,7 +590,7 @@ with such rules is to ignore them.</p>
 <li><a href="#specification">Specification</a></li>
 <li><a href="#myhdl-code">MyHDL code</a></li>
 <li><a href="#test-bench">Test bench</a></li>
-<li><a href="#automatic-conversion-to-verilog">Automatic conversion to Verilog</a></li>
+<li><a href="#automatic-conversion-to-verilog-or-vhdl">Automatic conversion to Verilog or VHDL</a></li>
 <li><a href="#alternative-design">Alternative design</a></li>
 </ul>
 </div>
