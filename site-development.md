@@ -26,4 +26,3 @@ You can visit the old version of the site under [old.myhdl.org].    The orginal
 content has been checked in under `_ori`. There is a `convert.py` script that
 can help to convert the original dokuwiki format to Markdown. It is far from
 comprehensive, but should provide a good starting point.
-
