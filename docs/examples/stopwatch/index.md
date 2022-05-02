@@ -37,10 +37,11 @@ simply assume that a 10Hz clock is available.
 The interface of the stopwatch design looks as follows:
 
 ```python
+@block
 def StopWatch(tens_led, ones_led, tenths_led, startstop, reset, clock):
 
     """ 3 digit stopwatch with seconds and tenths of a second.
-    
+
     tens_led: 7 segment led for most significant digit of the seconds
     ones_led: 7 segment led for least significant digit of the seconds
     tenths_led: 7 segment led for tenths of a second
@@ -111,7 +112,7 @@ def TimeCount(tens, ones, tenths, startstop, reset, clock):
 
 The actual implementation is left open for now. We will first write the test, using the interface.
 
-The following code is the unit test for the time counter subsystem:
+The following code is the unit test for the time counter subsystem in file `test_TimeCount.py`:
 
 ```python
 from random import randrange
@@ -125,6 +126,7 @@ LOW, HIGH = bool(0), bool(1)
 MAX_COUNT = 6 * 10 * 10
 PERIOD = 10
 
+@block
 def bench():
 
     """ Unit test for time counter. """
@@ -219,6 +221,7 @@ The following is an implementation of the time counter, in file `TimeCount.py`:
 ```python
 from myhdl import *
 
+@block
 def TimeCount(tens, ones, tenths, startstop, reset, clock):
 
     """ 3 digit time counter in seconds and tenths of a second.
@@ -231,29 +234,29 @@ def TimeCount(tens, ones, tenths, startstop, reset, clock):
     clock: 10kHz clock input
 
     """
-    
+
     @instance
     def logic():
         seen = False
         counting = False
-        
+
         while True:
             yield clock.posedge, reset.posedge
-            
+
             if reset:
                 tens.next = 0
                 ones.next = 0
                 tenths.next = 0
                 seen = False
                 counting = False
-                
+
             else:
                 if startstop and not seen:
                     seen = True
                     counting = not counting
                 elif not startstop:
                     seen = False
-                    
+
                 if counting:
                     if tenths == 9:
                         tenths.next = 0
@@ -269,20 +272,21 @@ def TimeCount(tens, ones, tenths, startstop, reset, clock):
                         tenths.next = tenths + 1
 
     return logic
+
 ```
 
 `py.test` confirms that this is a valid implementation:
 
 ```
 $ py.test test_TimeCount.py
-=================================== test process starts ===================================
-testing-mode: inprocess
-executable:   /usr/local/bin/python  (2.4.2-final-0)
-using py lib: /usr/local/lib/python2.4/site-packages/py <rev unknown>
- 
-test_TimeCount.py[1] .
- 
-======================== tests finished: 1 passed in 1.85 seconds =========================
+============================= test session starts ==============================
+platform linux -- Python 3.7.3, pytest-7.1.1, pluggy-1.0.0
+rootdir: /home/jan/tmp/projects/myhdl/myhdl.org/work/testing-examples-code/stopwatch
+collected 1 item                                                               
+
+test_TimeCount.py .                                                      [100%]
+
+============================== 1 passed in 0.68s ===============================
 ```
 
 bcd to led convertor design
@@ -336,6 +340,7 @@ from bcd2led import bcd2led
 
 PERIOD = 10
 
+@block
 def bench():
     
       led = Signal(intbv(0)[7:])
@@ -385,6 +390,7 @@ for key, val in seven_segment.encoding.items():
         code[key] = int(val, 2)
 code = tuple(code)
 
+@block
 def bcd2led(led, bcd, clock):
 
     """ bcd to seven segment led convertor.
@@ -412,14 +418,14 @@ When we run `py.test`, we get the following output:
 ```
 $ py.test
 ============================= test process starts ==============================
-testing-mode: inprocess
-executable:   /usr/local/bin/python  (2.4.2-final-0)
-using py lib: /usr/local/lib/python2.4/site-packages/py <rev unknown>
- 
-test_TimeCount.py[1] .
-test_bcd2led.py[1] .
- 
-=================== tests finished: 2 passed in 2.47 seconds ===================
+platform linux -- Python 3.7.3, pytest-7.1.1, pluggy-1.0.0
+rootdir: /.../testing-examples-code/stopwatch
+collected 2 items                                                              
+
+test_TimeCount.py .                                                      [ 50%]
+test_bcd2led.py .                                                        [100%]
+
+============================== 2 passed in 0.53s ===============================
 ```
 
 Note that when run with no arguments, `py.test` finds and runs all test
@@ -438,6 +444,7 @@ from myhdl import *
 from TimeCount import TimeCount
 from bcd2led import bcd2led
 
+@block
 def StopWatch(tens_led, ones_led, tenths_led, startstop, reset, clock):
 
     """ 3 digit stopwatch with seconds and tenths of a second.
@@ -464,20 +471,20 @@ def StopWatch(tens_led, ones_led, tenths_led, startstop, reset, clock):
 Implementation
 ==============
 
-Automatic conversion to Verilog
--------------------------------
+Automatic conversion to Verilog or VHDL
+---------------------------------------
 
 To go to an implementation, we first convert the design to Verilog
 automatically, using MyHDL's `toVerilog` function:
 
 ```python
 def convert():
-    
     tens_led, ones_led, tenths_led = [Signal(intbv(0)[7:]) for i in range(3)]
     startstop, reset, clock = [Signal(bool(0)) for i in range(3)]
+    convInst = StopWatch(tens_led, ones_led, tenths_led, startstop, reset, clock)
+    convInst.convert(hdl='Verilog')
+    convInst.convert(hdl='VHDL')
 
-    toVerilog(StopWatch, tens_led, ones_led, tenths_led, startstop, reset, clock)
-                          
 convert()
 ```
 
@@ -508,23 +515,23 @@ reg [3:0] tens;
 reg [3:0] tenths;
 
 
-always @(posedge clock or posedge reset) begin: _StopWatch_timecount_inst_logic
+always @(posedge clock, posedge reset) begin: STOPWATCH_TIMECOUNT0_LOGIC
     reg seen;
     reg counting;
     if (reset) begin
         tens <= 0;
         ones <= 0;
         tenths <= 0;
-        seen = 0;
-        counting = 0;
+        seen = 1'b0;
+        counting = 1'b0;
     end
     else begin
         if ((startstop && (!seen))) begin
-            seen = 1;
+            seen = 1'b1;
             counting = (!counting);
         end
         else if ((!startstop)) begin
-            seen = 0;
+            seen = 1'b0;
         end
         if (counting) begin
             if ((tenths == 9)) begin
@@ -549,8 +556,7 @@ always @(posedge clock or posedge reset) begin: _StopWatch_timecount_inst_logic
     end
 end
 
-always @(posedge clock) begin: _StopWatch_bcd2led_tens_logic
-    // synthesis parallel_case full_case
+always @(posedge clock) begin: STOPWATCH_BCD2LED0_LOGIC
     case (tens)
         0: tens_led <= 64;
         1: tens_led <= 121;
@@ -565,8 +571,7 @@ always @(posedge clock) begin: _StopWatch_bcd2led_tens_logic
     endcase
 end
 
-always @(posedge clock) begin: _StopWatch_bcd2led_ones_logic
-    // synthesis parallel_case full_case
+always @(posedge clock) begin: STOPWATCH_BCD2LED1_LOGIC
     case (ones)
         0: ones_led <= 64;
         1: ones_led <= 121;
@@ -581,8 +586,7 @@ always @(posedge clock) begin: _StopWatch_bcd2led_ones_logic
     endcase
 end
 
-always @(posedge clock) begin: _StopWatch_bcd2led_tenths_logic
-    // synthesis parallel_case full_case
+always @(posedge clock) begin: STOPWATCH_BCD2LED2_LOGIC
     case (tenths)
         0: tenths_led <= 64;
         1: tenths_led <= 121;
