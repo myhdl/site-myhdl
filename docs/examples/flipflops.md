@@ -393,5 +393,5 @@ endmodule
 
 ```
 
-Note that when the `toVerilog` function converts the `always_comb` decorator,
+Note that when the `convert` function converts the `always_comb` decorator,
 it infers which signals are used as inputs to the `always` block

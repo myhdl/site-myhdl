@@ -1,5 +1,5 @@
 ---
-title:   StopWatch 
+title:   StopWatch
 layout:  wide_article
 content: []
 summary.md: |
@@ -96,6 +96,7 @@ interface of the time counter looks as follows:
 ```python
 from myhdl import *
 
+@block
 def TimeCount(tens, ones, tenths, startstop, reset, clock):
 
     """ 3 digit time counter in seconds and tenths of a second.
@@ -281,7 +282,7 @@ def TimeCount(tens, ones, tenths, startstop, reset, clock):
 $ py.test test_TimeCount.py
 ============================= test session starts ==============================
 platform linux -- Python 3.7.3, pytest-7.1.1, pluggy-1.0.0
-rootdir: /home/jan/tmp/projects/myhdl/myhdl.org/work/testing-examples-code/stopwatch
+rootdir: /.../testing-examples-code/stopwatch
 collected 1 item                                                               
 
 test_TimeCount.py .                                                      [100%]
@@ -475,7 +476,7 @@ Automatic conversion to Verilog or VHDL
 ---------------------------------------
 
 To go to an implementation, we first convert the design to Verilog
-automatically, using MyHDL's `toVerilog` function:
+or VHDL automatically, using MyHDL's `convert` function:
 
 ```python
 def convert():
