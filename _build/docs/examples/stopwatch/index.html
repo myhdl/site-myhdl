@@ -109,7 +109,7 @@
  
 <h1>StopWatch
 </h1>
-        <p><i>Last modified: 16-Apr-2022</i></p> 
+        <p><i>Last modified: 08-May-2022</i></p> 
     </div>
 
     <div class="row">
@@ -135,7 +135,8 @@ stopwatch will only have three digits: two digits for the seconds, and one for
 the tenths of a second. Also, we will not consider clock generation issues and
 simply assume that a 10Hz clock is available.</p>
 <p>The interface of the stopwatch design looks as follows:</p>
-<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">StopWatch</span><span class="p">(</span><span class="n">tens_led</span><span class="p">,</span> <span class="n">ones_led</span><span class="p">,</span> <span class="n">tenths_led</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">clock</span><span class="p">):</span>
+<div class="codehilite"><pre><span></span><span class="nd">@block</span>
+<span class="k">def</span> <span class="nf">StopWatch</span><span class="p">(</span><span class="n">tens_led</span><span class="p">,</span> <span class="n">ones_led</span><span class="p">,</span> <span class="n">tenths_led</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">clock</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot; 3 digit stopwatch with seconds and tenths of a second.</span>
 
@@ -180,6 +181,7 @@ and the interface. The specification was described in previous sections. The
 interface of the time counter looks as follows:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
 
+<span class="nd">@block</span>
 <span class="k">def</span> <span class="nf">TimeCount</span><span class="p">(</span><span class="n">tens</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">tenths</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">clock</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot; 3 digit time counter in seconds and tenths of a second.</span>
@@ -196,7 +198,7 @@ interface of the time counter looks as follows:</p>
 
 
 <p>The actual implementation is left open for now. We will first write the test, using the interface.</p>
-<p>The following code is the unit test for the time counter subsystem:</p>
+<p>The following code is the unit test for the time counter subsystem in file <code>test_TimeCount.py</code>:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
 
 <span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
@@ -208,6 +210,7 @@ interface of the time counter looks as follows:</p>
 <span class="n">MAX_COUNT</span> <span class="o">=</span> <span class="mi">6</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">*</span> <span class="mi">10</span>
 <span class="n">PERIOD</span> <span class="o">=</span> <span class="mi">10</span>
 
+<span class="nd">@block</span>
 <span class="k">def</span> <span class="nf">bench</span><span class="p">():</span>
 
     <span class="sd">&quot;&quot;&quot; Unit test for time counter. &quot;&quot;&quot;</span>
@@ -218,7 +221,7 @@ interface of the time counter looks as follows:</p>
     <span class="n">dut</span> <span class="o">=</span> <span class="n">TimeCount</span><span class="p">(</span><span class="n">tens</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">tenths</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">clock</span><span class="p">)</span>
 
     <span class="n">count</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">counting</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">counting</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="nd">@always</span><span class="p">(</span><span class="n">delay</span><span class="p">(</span><span class="n">PERIOD</span><span class="o">//</span><span class="mi">2</span><span class="p">))</span>
     <span class="k">def</span> <span class="nf">clkgen</span><span class="p">():</span>
@@ -227,7 +230,7 @@ interface of the time counter looks as follows:</p>
     <span class="nd">@always</span><span class="p">(</span><span class="n">startstop</span><span class="o">.</span><span class="n">posedge</span><span class="p">,</span> <span class="n">reset</span><span class="o">.</span><span class="n">posedge</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">action</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
-            <span class="n">counting</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">counting</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">count</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">counting</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">counting</span>      
@@ -297,6 +300,7 @@ section <a href="cookbook:stopwatch#more_about_py.test">More about py.test</a>.<
 <p>The following is an implementation of the time counter, in file <code>TimeCount.py</code>:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
 
+<span class="nd">@block</span>
 <span class="k">def</span> <span class="nf">TimeCount</span><span class="p">(</span><span class="n">tens</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">tenths</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">clock</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot; 3 digit time counter in seconds and tenths of a second.</span>
@@ -312,25 +316,25 @@ section <a href="cookbook:stopwatch#more_about_py.test">More about py.test</a>.<
 
     <span class="nd">@instance</span>
     <span class="k">def</span> <span class="nf">logic</span><span class="p">():</span>
-        <span class="n">seen</span> <span class="o">=</span> <span class="bp">False</span>
-        <span class="n">counting</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">seen</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">counting</span> <span class="o">=</span> <span class="kc">False</span>
 
-        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">clock</span><span class="o">.</span><span class="n">posedge</span><span class="p">,</span> <span class="n">reset</span><span class="o">.</span><span class="n">posedge</span>
 
             <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
                 <span class="n">tens</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">ones</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">tenths</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="n">seen</span> <span class="o">=</span> <span class="bp">False</span>
-                <span class="n">counting</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="n">seen</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">counting</span> <span class="o">=</span> <span class="kc">False</span>
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">startstop</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">seen</span><span class="p">:</span>
-                    <span class="n">seen</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="n">seen</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="n">counting</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">counting</span>
                 <span class="k">elif</span> <span class="ow">not</span> <span class="n">startstop</span><span class="p">:</span>
-                    <span class="n">seen</span> <span class="o">=</span> <span class="bp">False</span>
+                    <span class="n">seen</span> <span class="o">=</span> <span class="kc">False</span>
 
                 <span class="k">if</span> <span class="n">counting</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">tenths</span> <span class="o">==</span> <span class="mi">9</span><span class="p">:</span>
@@ -352,14 +356,14 @@ section <a href="cookbook:stopwatch#more_about_py.test">More about py.test</a>.<
 
 <p><code>py.test</code> confirms that this is a valid implementation:</p>
 <div class="codehilite"><pre><span></span>$ py.test test_TimeCount.py
-=================================== test process starts ===================================
-testing-mode: inprocess
-executable:   /usr/local/bin/python  (2.4.2-final-0)
-using py lib: /usr/local/lib/python2.4/site-packages/py &lt;rev unknown&gt;
+============================= test session starts ==============================
+platform linux -- Python 3.7.3, pytest-7.1.1, pluggy-1.0.0
+rootdir: /.../testing-examples-code/stopwatch
+collected 1 item                                                               
 
-test_TimeCount.py[1] .
+test_TimeCount.py .                                                      [100%]
 
-======================== tests finished: 1 passed in 1.85 seconds =========================
+============================== 1 passed in 0.68s ===============================
 </pre></div>
 
 
@@ -404,6 +408,7 @@ dictionary:</p>
 
 <span class="n">PERIOD</span> <span class="o">=</span> <span class="mi">10</span>
 
+<span class="nd">@block</span>
 <span class="k">def</span> <span class="nf">bench</span><span class="p">():</span>
 
       <span class="n">led</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">7</span><span class="p">:])</span>
@@ -443,12 +448,13 @@ encoding for a digit.</p>
 
 <span class="kn">from</span> <span class="nn">myhdl</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="n">code</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span> <span class="o">*</span> <span class="mi">10</span>
+<span class="n">code</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="mi">10</span>
 <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">seven_segment</span><span class="o">.</span><span class="n">encoding</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
     <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">key</span> <span class="o">&lt;=</span> <span class="mi">9</span><span class="p">:</span>
         <span class="n">code</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="n">code</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
 
+<span class="nd">@block</span>
 <span class="k">def</span> <span class="nf">bcd2led</span><span class="p">(</span><span class="n">led</span><span class="p">,</span> <span class="n">bcd</span><span class="p">,</span> <span class="n">clock</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot; bcd to seven segment led convertor.</span>
@@ -474,14 +480,14 @@ synthesis tools.</p>
 <p>When we run <code>py.test</code>, we get the following output:</p>
 <div class="codehilite"><pre><span></span>$ py.test
 ============================= test process starts ==============================
-testing-mode: inprocess
-executable:   /usr/local/bin/python  (2.4.2-final-0)
-using py lib: /usr/local/lib/python2.4/site-packages/py &lt;rev unknown&gt;
+platform linux -- Python 3.7.3, pytest-7.1.1, pluggy-1.0.0
+rootdir: /.../testing-examples-code/stopwatch
+collected 2 items                                                              
 
-test_TimeCount.py[1] .
-test_bcd2led.py[1] .
+test_TimeCount.py .                                                      [ 50%]
+test_bcd2led.py .                                                        [100%]
 
-=================== tests finished: 2 passed in 2.47 seconds ===================
+============================== 2 passed in 0.53s ===============================
 </pre></div>
 
 
@@ -496,6 +502,7 @@ designed modules:</p>
 <span class="kn">from</span> <span class="nn">TimeCount</span> <span class="kn">import</span> <span class="n">TimeCount</span>
 <span class="kn">from</span> <span class="nn">bcd2led</span> <span class="kn">import</span> <span class="n">bcd2led</span>
 
+<span class="nd">@block</span>
 <span class="k">def</span> <span class="nf">StopWatch</span><span class="p">(</span><span class="n">tens_led</span><span class="p">,</span> <span class="n">ones_led</span><span class="p">,</span> <span class="n">tenths_led</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">clock</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot; 3 digit stopwatch with seconds and tenths of a second.</span>
@@ -521,15 +528,15 @@ designed modules:</p>
 
 
 <h2 id="implementation">Implementation</h2>
-<h3 id="automatic-conversion-to-verilog">Automatic conversion to Verilog</h3>
+<h3 id="automatic-conversion-to-verilog-or-vhdl">Automatic conversion to Verilog or VHDL</h3>
 <p>To go to an implementation, we first convert the design to Verilog
-automatically, using MyHDL's <code>toVerilog</code> function:</p>
+or VHDL automatically, using MyHDL's <code>convert</code> function:</p>
 <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">convert</span><span class="p">():</span>
-
     <span class="n">tens_led</span><span class="p">,</span> <span class="n">ones_led</span><span class="p">,</span> <span class="n">tenths_led</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="n">intbv</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">7</span><span class="p">:])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
     <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">clock</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
-
-    <span class="n">toVerilog</span><span class="p">(</span><span class="n">StopWatch</span><span class="p">,</span> <span class="n">tens_led</span><span class="p">,</span> <span class="n">ones_led</span><span class="p">,</span> <span class="n">tenths_led</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">clock</span><span class="p">)</span>
+    <span class="n">convInst</span> <span class="o">=</span> <span class="n">StopWatch</span><span class="p">(</span><span class="n">tens_led</span><span class="p">,</span> <span class="n">ones_led</span><span class="p">,</span> <span class="n">tenths_led</span><span class="p">,</span> <span class="n">startstop</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">clock</span><span class="p">)</span>
+    <span class="n">convInst</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">hdl</span><span class="o">=</span><span class="s1">&#39;Verilog&#39;</span><span class="p">)</span>
+    <span class="n">convInst</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">hdl</span><span class="o">=</span><span class="s1">&#39;VHDL&#39;</span><span class="p">)</span>
 
 <span class="n">convert</span><span class="p">()</span>
 </pre></div>
@@ -560,23 +567,23 @@ automatically, using MyHDL's <code>toVerilog</code> function:</p>
 <span class="kt">reg</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tenths</span><span class="p">;</span>
 
 
-<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clock</span> <span class="k">or</span> <span class="k">posedge</span> <span class="n">reset</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">_StopWatch_timecount_inst_logic</span>
+<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clock</span><span class="p">,</span> <span class="k">posedge</span> <span class="n">reset</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">STOPWATCH_TIMECOUNT0_LOGIC</span>
     <span class="kt">reg</span> <span class="n">seen</span><span class="p">;</span>
     <span class="kt">reg</span> <span class="n">counting</span><span class="p">;</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">reset</span><span class="p">)</span> <span class="k">begin</span>
         <span class="n">tens</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
         <span class="n">ones</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
         <span class="n">tenths</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
-        <span class="n">seen</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
-        <span class="n">counting</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+        <span class="n">seen</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+        <span class="n">counting</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
     <span class="k">end</span>
     <span class="k">else</span> <span class="k">begin</span>
         <span class="k">if</span> <span class="p">((</span><span class="n">startstop</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="o">!</span><span class="n">seen</span><span class="p">)))</span> <span class="k">begin</span>
-            <span class="n">seen</span> <span class="o">=</span> <span class="mh">1</span><span class="p">;</span>
+            <span class="n">seen</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
             <span class="n">counting</span> <span class="o">=</span> <span class="p">(</span><span class="o">!</span><span class="n">counting</span><span class="p">);</span>
         <span class="k">end</span>
         <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="o">!</span><span class="n">startstop</span><span class="p">))</span> <span class="k">begin</span>
-            <span class="n">seen</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+            <span class="n">seen</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
         <span class="k">end</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">counting</span><span class="p">)</span> <span class="k">begin</span>
             <span class="k">if</span> <span class="p">((</span><span class="n">tenths</span> <span class="o">==</span> <span class="mh">9</span><span class="p">))</span> <span class="k">begin</span>
@@ -601,8 +608,7 @@ automatically, using MyHDL's <code>toVerilog</code> function:</p>
     <span class="k">end</span>
 <span class="k">end</span>
 
-<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clock</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">_StopWatch_bcd2led_tens_logic</span>
-    <span class="c1">// synthesis parallel_case full_case</span>
+<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clock</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">STOPWATCH_BCD2LED0_LOGIC</span>
     <span class="k">case</span> <span class="p">(</span><span class="n">tens</span><span class="p">)</span>
         <span class="mh">0</span><span class="o">:</span> <span class="n">tens_led</span> <span class="o">&lt;=</span> <span class="mh">64</span><span class="p">;</span>
         <span class="mh">1</span><span class="o">:</span> <span class="n">tens_led</span> <span class="o">&lt;=</span> <span class="mh">121</span><span class="p">;</span>
@@ -617,8 +623,7 @@ automatically, using MyHDL's <code>toVerilog</code> function:</p>
     <span class="k">endcase</span>
 <span class="k">end</span>
 
-<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clock</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">_StopWatch_bcd2led_ones_logic</span>
-    <span class="c1">// synthesis parallel_case full_case</span>
+<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clock</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">STOPWATCH_BCD2LED1_LOGIC</span>
     <span class="k">case</span> <span class="p">(</span><span class="n">ones</span><span class="p">)</span>
         <span class="mh">0</span><span class="o">:</span> <span class="n">ones_led</span> <span class="o">&lt;=</span> <span class="mh">64</span><span class="p">;</span>
         <span class="mh">1</span><span class="o">:</span> <span class="n">ones_led</span> <span class="o">&lt;=</span> <span class="mh">121</span><span class="p">;</span>
@@ -633,8 +638,7 @@ automatically, using MyHDL's <code>toVerilog</code> function:</p>
     <span class="k">endcase</span>
 <span class="k">end</span>
 
-<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clock</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">_StopWatch_bcd2led_tenths_logic</span>
-    <span class="c1">// synthesis parallel_case full_case</span>
+<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clock</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">STOPWATCH_BCD2LED2_LOGIC</span>
     <span class="k">case</span> <span class="p">(</span><span class="n">tenths</span><span class="p">)</span>
         <span class="mh">0</span><span class="o">:</span> <span class="n">tenths_led</span> <span class="o">&lt;=</span> <span class="mh">64</span><span class="p">;</span>
         <span class="mh">1</span><span class="o">:</span> <span class="n">tenths_led</span> <span class="o">&lt;=</span> <span class="mh">121</span><span class="p">;</span>
@@ -767,7 +771,7 @@ choice for MyHDL in the future.</p>
 </li>
 <li><a href="#top-level-design">Top level design</a></li>
 <li><a href="#implementation">Implementation</a><ul>
-<li><a href="#automatic-conversion-to-verilog">Automatic conversion to Verilog</a></li>
+<li><a href="#automatic-conversion-to-verilog-or-vhdl">Automatic conversion to Verilog or VHDL</a></li>
 <li><a href="#synthesis">Synthesis</a></li>
 <li><a href="#fpga-implementation">FPGA implementation</a></li>
 <li><a href="#cpld-implementation">CPLD implementation</a></li>
