@@ -109,7 +109,7 @@
  
 <h1>Flip-flops and Latches
 </h1>
-        <p><i>Last modified: 20-Apr-2022</i></p> 
+        <p><i>Last modified: 08-May-2022</i></p> 
     </div>
 
     <div class="row">
@@ -167,7 +167,7 @@ suited to explain basic MyHDL usage and to compare MyHDL with other solutions.</
 
 <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="n">timesteps</span><span class="p">):</span>
     <span class="n">simInst</span> <span class="o">=</span> <span class="n">test_dff</span><span class="p">()</span> 
-    <span class="n">simInst</span><span class="o">.</span><span class="n">config_sim</span><span class="p">(</span><span class="n">trace</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">tracebackup</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">simInst</span><span class="o">.</span><span class="n">config_sim</span><span class="p">(</span><span class="n">trace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tracebackup</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">simInst</span><span class="o">.</span><span class="n">run_sim</span><span class="p">(</span><span class="n">timesteps</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> 
 
 <span class="n">simulate</span><span class="p">(</span><span class="mi">2000</span><span class="p">)</span>
@@ -209,7 +209,7 @@ Verilog or VHDL code:</p>
 <span class="k">input</span> <span class="n">d</span><span class="p">;</span>
 <span class="k">input</span> <span class="n">clk</span><span class="p">;</span>
 
-<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="no">DFF_LOGIC</span>
+<span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">DFF_LOGIC</span>
     <span class="n">q</span> <span class="o">&lt;=</span> <span class="n">d</span><span class="p">;</span>
 <span class="k">end</span>
 
@@ -249,7 +249,7 @@ the output is held to zero. Typically, the reset pin is active low.</p>
 <span class="k">def</span> <span class="nf">test_dffa</span><span class="p">():</span>
 
     <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
-    <span class="n">rst</span> <span class="o">=</span> <span class="n">ResetSignal</span><span class="p">(</span><span class="n">val</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">isasync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">rst</span> <span class="o">=</span> <span class="n">ResetSignal</span><span class="p">(</span><span class="n">val</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">isasync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">dffa_inst01</span> <span class="o">=</span> <span class="n">dffa</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">rst</span><span class="p">)</span>
 
@@ -265,7 +265,7 @@ the output is held to zero. Typically, the reset pin is active low.</p>
     <span class="k">def</span> <span class="nf">rstgen</span><span class="p">():</span>
         <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
         <span class="n">rst</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="n">randrange</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
             <span class="n">rst</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">yield</span> <span class="n">delay</span><span class="p">(</span><span class="n">randrange</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="mi">140</span><span class="p">))</span>
@@ -276,7 +276,7 @@ the output is held to zero. Typically, the reset pin is active low.</p>
 
 <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="n">timesteps</span><span class="p">):</span>
     <span class="n">simInst</span> <span class="o">=</span> <span class="n">test_dffa</span><span class="p">()</span> 
-    <span class="n">simInst</span><span class="o">.</span><span class="n">config_sim</span><span class="p">(</span><span class="n">trace</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">tracebackup</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">simInst</span><span class="o">.</span><span class="n">config_sim</span><span class="p">(</span><span class="n">trace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tracebackup</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">simInst</span><span class="o">.</span><span class="n">run_sim</span><span class="p">(</span><span class="n">timesteps</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> 
 
 <span class="n">simulate</span><span class="p">(</span><span class="mi">2000</span><span class="p">)</span>
@@ -292,7 +292,7 @@ random duration.</p>
 <p>The design can be converted to Verilog and VHDL:</p>
 <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">convert</span><span class="p">():</span>
     <span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span> <span class="o">=</span> <span class="p">[</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
-    <span class="n">rst</span> <span class="o">=</span> <span class="n">ResetSignal</span><span class="p">(</span><span class="n">val</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">isasync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">rst</span> <span class="o">=</span> <span class="n">ResetSignal</span><span class="p">(</span><span class="n">val</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">isasync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">convInst</span> <span class="o">=</span> <span class="n">dffa</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">rst</span><span class="p">)</span>
     <span class="n">convInst</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">hdl</span><span class="o">=</span><span class="s1">&#39;Verilog&#39;</span><span class="p">)</span>
     <span class="n">convInst</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">hdl</span><span class="o">=</span><span class="s1">&#39;VHDL&#39;</span><span class="p">)</span>
@@ -379,7 +379,7 @@ that it triggers whenever one of the input signals changes.</p>
 
 <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="n">timesteps</span><span class="p">):</span>
     <span class="n">simInst</span> <span class="o">=</span> <span class="n">test_latch</span><span class="p">()</span> 
-    <span class="n">simInst</span><span class="o">.</span><span class="n">config_sim</span><span class="p">(</span><span class="n">trace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">simInst</span><span class="o">.</span><span class="n">config_sim</span><span class="p">(</span><span class="n">trace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">simInst</span><span class="o">.</span><span class="n">run_sim</span><span class="p">(</span><span class="n">timesteps</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> 
 
 <span class="n">simulate</span><span class="p">(</span><span class="mi">2000</span><span class="p">)</span>
@@ -414,7 +414,7 @@ generator for the input and for the controlling gate.</p>
 <span class="k">input</span> <span class="n">d</span><span class="p">;</span>
 <span class="k">input</span> <span class="n">g</span><span class="p">;</span>
 
-<span class="k">always</span> <span class="p">@(</span><span class="n">g</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="no">LATCH_LOGIC</span>
+<span class="k">always</span> <span class="p">@(</span><span class="n">g</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">LATCH_LOGIC</span>
     <span class="k">if</span> <span class="p">((</span><span class="n">g</span> <span class="o">==</span> <span class="mh">1</span><span class="p">))</span> <span class="k">begin</span>
         <span class="n">q</span> <span class="o">=</span> <span class="n">d</span><span class="p">;</span>
     <span class="k">end</span>
@@ -424,7 +424,7 @@ generator for the input and for the controlling gate.</p>
 </pre></div>
 
 
-<p>Note that when the <code>toVerilog</code> function converts the <code>always_comb</code> decorator,
+<p>Note that when the <code>convert</code> function converts the <code>always_comb</code> decorator,
 it infers which signals are used as inputs to the <code>always</code> block</p>
             </div>
         </main>
